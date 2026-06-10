@@ -1,0 +1,8 @@
+{
+  "HEADER": {
+    "LOGIN": "Login",
+    "LOGOUT": "Logout",
+    "CUSTOMER_SALES": "Customer Sales",
+    "DASHBOARD": "Dashboard"
+  }
+}

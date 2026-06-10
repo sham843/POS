@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
@@ -18,7 +18,7 @@ export class LanguageService {
 
   initLanguage() {
     this.translate.addLangs(this.supportedLanguages.map(l => l.code));
-    this.translate.setDefaultLang(this.DEFAULT_LANG);
+    this.translate.setFallbackLang(this.DEFAULT_LANG);
 
     const savedLang = localStorage.getItem(this.LANGUAGE_KEY) || this.DEFAULT_LANG;
     this.setLanguage(savedLang);
@@ -30,6 +30,6 @@ export class LanguageService {
   }
 
   getCurrentLanguage(): string {
-    return this.translate.currentLang || this.DEFAULT_LANG;
+    return this.translate.currentLang() || this.DEFAULT_LANG;
   }
 }
