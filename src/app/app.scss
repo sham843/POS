@@ -1,8 +1,9 @@
 :host {
   display: block;
   font-family: 'Inter', sans-serif;
-  background-color: #f8f9fa;
+  background-color: var(--bg-color);
   min-height: 100vh;
+  transition: background-color 0.3s ease;
 }
 
 .app-header {
@@ -10,25 +11,28 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #ffffff;
+  background-color: var(--form-bg);
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease;
   
   .logo h2 {
     margin: 0;
-    color: #333;
+    color: var(--text-primary);
   }
 
   .language-switcher {
     padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
+    border: 1px solid var(--input-border);
     border-radius: 4px;
     font-size: 1rem;
-    background-color: white;
+    background-color: var(--form-bg);
+    color: var(--text-primary);
     cursor: pointer;
+    transition: all 0.3s ease;
     
     &:focus {
       outline: none;
-      border-color: #007bff;
+      border-color: var(--btn-primary-bg);
     }
   }
 }
@@ -44,18 +48,19 @@
     gap: 1.5rem;
     
     .card {
-      background: white;
+      background: var(--form-bg);
       padding: 1.5rem;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: background-color 0.3s ease;
       
       h3 {
         margin-top: 0;
-        color: #007bff;
+        color: var(--btn-primary-bg);
       }
       
       p {
-        color: #666;
+        color: var(--text-secondary);
         margin-bottom: 0;
       }
     }

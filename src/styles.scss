@@ -1,1 +1,66 @@
 /* You can add global styles to this file, and also import other style files */
+/* Global Theme Variables */
+:root {
+  /* Light Theme Variables (Default) */
+  --bg-color: #fef8f1;
+  --border-color: #0e4a3f;
+  --text-primary: #1e1b4b;
+  --text-secondary: #6c757d;
+  --form-bg: #ffffff;
+  --input-bg: #ffffff;
+  --input-border: #a7f3d0;
+  --input-text: #1e1b4b;
+  --btn-primary-bg: #116256;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-text: #1e1b4b;
+  --btn-secondary-border: #94a3b8;
+  --checkbox-bg: transparent;
+  --checkbox-border: #cbd5e1;
+}
+
+[data-theme="dark"] {
+  --bg-color: #0f172a;
+  --border-color: #34d399;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --form-bg: #1e293b;
+  --input-bg: #0f172a;
+  --input-border: #475569;
+  --input-text: #f8fafc;
+  --btn-primary-bg: #34d399;
+  --btn-primary-text: #0f172a;
+  --btn-secondary-bg: #1e293b;
+  --btn-secondary-text: #f8fafc;
+  --btn-secondary-border: #475569;
+  --checkbox-bg: #0f172a;
+  --checkbox-border: #475569;
+}
+
+/* System theme logic */
+@media (prefers-color-scheme: dark) {
+  [data-theme="system"] {
+    --bg-color: #0f172a;
+    --border-color: #34d399;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --form-bg: #1e293b;
+    --input-bg: #0f172a;
+    --input-border: #475569;
+    --input-text: #f8fafc;
+    --btn-primary-bg: #34d399;
+    --btn-primary-text: #0f172a;
+    --btn-secondary-bg: #1e293b;
+    --btn-secondary-text: #f8fafc;
+    --btn-secondary-border: #475569;
+    --checkbox-bg: #0f172a;
+    --checkbox-border: #475569;
+  }
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  margin: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
