@@ -6,36 +6,7 @@
   transition: background-color 0.3s ease;
 }
 
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: var(--form-bg);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: background-color 0.3s ease;
-  
-  .logo h2 {
-    margin: 0;
-    color: var(--text-primary);
-  }
 
-  .language-switcher {
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--input-border);
-    border-radius: 4px;
-    font-size: 1rem;
-    background-color: var(--form-bg);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    
-    &:focus {
-      outline: none;
-      border-color: var(--btn-primary-bg);
-    }
-  }
-}
 
 .main-content {
   padding: 2rem;

@@ -1,42 +1,5 @@
-<header class="app-header">
-  <div class="logo">
-    <h2>{{ title() }}</h2>
-  </div>
-  <div class="controls" style="display: flex; gap: 1rem; align-items: center;">
-    <div class="theme-switcher-global" style="display: flex; gap: 0.25rem; background: #f1f5f9; padding: 0.25rem; border-radius: 2rem;">
-      <button (click)="setTheme('system')" [style.background]="currentTheme === 'system' ? '#fff' : 'transparent'" [style.boxShadow]="currentTheme === 'system' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'" style="border: none; border-radius: 1.5rem; padding: 0.25rem 0.75rem; font-size: 0.85rem; cursor: pointer; font-weight: 600;">System</button>
-      <button (click)="setTheme('light')" [style.background]="currentTheme === 'light' ? '#fff' : 'transparent'" [style.boxShadow]="currentTheme === 'light' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'" style="border: none; border-radius: 1.5rem; padding: 0.25rem 0.75rem; font-size: 0.85rem; cursor: pointer; font-weight: 600;">Light</button>
-      <button (click)="setTheme('dark')" [style.background]="currentTheme === 'dark' ? '#fff' : 'transparent'" [style.boxShadow]="currentTheme === 'dark' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'" style="border: none; border-radius: 1.5rem; padding: 0.25rem 0.75rem; font-size: 0.85rem; cursor: pointer; font-weight: 600;">Dark</button>
-    </div>
-    <select class="language-switcher" (change)="onLanguageChange($event)">
-      @for (lang of languageService.supportedLanguages; track lang.code) {
-        <option [value]="lang.code" [selected]="lang.code === languageService.getCurrentLanguage()">
-          {{ lang.name }}
-        </option>
-      }
-    </select>
-  </div>
-</header>
 
-<main class="main-content">
-  <div class="card-grid">
-    <div class="card">
-      <h3>{{ 'HEADER.LOGIN' | translate }}</h3>
-      <p>Authenticate into the system.</p>
-    </div>
-    <div class="card">
-      <h3>{{ 'HEADER.LOGOUT' | translate }}</h3>
-      <p>End your current session.</p>
-    </div>
-    <div class="card">
-      <h3>{{ 'HEADER.CUSTOMER_SALES' | translate }}</h3>
-      <p>Manage customer transactions.</p>
-    </div>
-    <div class="card">
-      <h3>{{ 'HEADER.DASHBOARD' | translate }}</h3>
-      <p>View your analytics and stats.</p>
-    </div>
-  </div>
-</main>
+
+
 
 <router-outlet />
