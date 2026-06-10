@@ -1,1 +1,43 @@
-<p>login works!</p>
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Welcome Back</h2>
+      <p>Please enter your details to sign in.</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input 
+          type="text" 
+          id="username" 
+          formControlName="username" 
+          placeholder="Enter your username"
+          [class.is-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password" 
+          placeholder="Enter your password"
+          [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+        >
+      </div>
+
+      <div class="form-actions">
+        <div class="remember-me">
+          <input type="checkbox" id="rememberMe" formControlName="rememberMe">
+          <label for="rememberMe">Remember me</label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="loginForm.invalid">
+        Sign In
+      </button>
+    </form>
+  </div>
+</div>

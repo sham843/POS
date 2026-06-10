@@ -1,11 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageService } from '../../../services/language.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
