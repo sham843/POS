@@ -16,7 +16,7 @@
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="d-flex flex-column">
 
         <!-- Username Input -->
-        <mat-form-field appearance="outline" class="w-100">
+        <mat-form-field [appearance]="appearance" class="w-100">
           <mat-label>Username</mat-label>
           <input matInput type="tel" placeholder="Enter 10-digit mobile number" formControlName="username">
           <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
@@ -28,7 +28,7 @@
         </mat-form-field>
 
         <!-- Password Input -->
-        <mat-form-field appearance="outline" class="w-100 md-input">
+        <mat-form-field [appearance]="appearance" class="w-100">
           <mat-label>Password</mat-label>
           <input matInput type="password" placeholder="Enter your password" formControlName="password">
           <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
