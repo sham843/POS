@@ -1,19 +1,23 @@
 <div class="cart-container">
   <div class="cart-header">
     <div class="ch-left">
-      <div class="bill-tab">Bill 1 <mat-icon>close</mat-icon></div>
-      <button class="add-bill-btn"><mat-icon>add</mat-icon></button>
+      <div class="bill-tab">Bill 1 <button mat-icon-button class="small-icon-btn"><mat-icon>close</mat-icon></button></div>
+      <button mat-mini-fab color="primary" class="add-bill-btn"><mat-icon>add</mat-icon></button>
     </div>
     <div class="ch-right">
-      <div class="customer-toggle">
-        <label><input type="radio" name="cust" checked> Bill No</label>
-        <label><input type="radio" name="cust"> Customer</label>
-      </div>
-      <div class="customer-search">
-        <input type="text" placeholder="Customer Name / Code">
-        <mat-icon>search</mat-icon>
-        <mat-icon class="clear-icon">close</mat-icon>
-      </div>
+      <mat-radio-group aria-label="Select an option" value="billNo" class="customer-toggle">
+        <mat-radio-button value="billNo">Bill No</mat-radio-button>
+        <mat-radio-button value="customer">Customer</mat-radio-button>
+      </mat-radio-group>
+      
+      <mat-form-field appearance="outline" class="customer-search dense-form-field">
+        <input matInput placeholder="Customer Name / Code">
+        <mat-icon matPrefix>search</mat-icon>
+        <button matSuffix mat-icon-button aria-label="Clear">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+      
       <div class="clerk-info">
         <span class="clerk-name">Pravin Varpe</span>
         <div class="clerk-avatar"></div>
@@ -21,22 +25,52 @@
     </div>
   </div>
 
-  <div class="cart-table-wrapper">
-    <table class="cart-table">
-      <thead>
-        <tr>
-          <th>Product Details</th>
-          <th>Quantity</th>
-          <th>Rate (₹)</th>
-          <th>Discount(%)</th>
-          <th>Amount (₹)</th>
-          <th>GST</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Table empty by default or dummy data -->
-      </tbody>
+  <div class="cart-table-wrapper mat-elevation-z1">
+    <table mat-table [dataSource]="dataSource" class="cart-table">
+      
+      <ng-container matColumnDef="details">
+        <th mat-header-cell *matHeaderCellDef> Product Details </th>
+        <td mat-cell *matCellDef="let element"> {{element.details}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef> Quantity </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="qty-control">
+            <button mat-icon-button class="tiny-icon-btn"><mat-icon>remove</mat-icon></button>
+            <span>{{element.quantity}}</span>
+            <button mat-icon-button class="tiny-icon-btn"><mat-icon>add</mat-icon></button>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="rate">
+        <th mat-header-cell *matHeaderCellDef> Rate (₹) </th>
+        <td mat-cell *matCellDef="let element"> {{element.rate | number:'1.2-2'}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="discount">
+        <th mat-header-cell *matHeaderCellDef> Discount(%) </th>
+        <td mat-cell *matCellDef="let element"> {{element.discount | number:'1.2-2'}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef> Amount (₹) </th>
+        <td mat-cell *matCellDef="let element"> {{element.amount | number:'1.2-2'}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="gst">
+        <th mat-header-cell *matHeaderCellDef> GST </th>
+        <td mat-cell *matCellDef="let element"> {{element.gst}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef> Total </th>
+        <td mat-cell *matCellDef="let element"> {{element.total | number:'1.2-2'}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>
 </div>

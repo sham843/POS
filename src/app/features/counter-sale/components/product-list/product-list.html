@@ -1,30 +1,32 @@
 <div class="product-list-container">
   
   <div class="pl-header">
-    <div class="search-bar">
-      <input type="text" placeholder="Search by Product Name / Product Code">
-    </div>
+    <mat-form-field appearance="outline" class="search-bar dense-form-field">
+      <input matInput placeholder="Search by Product Name / Product Code">
+    </mat-form-field>
   </div>
 
   <div class="categories-scroll">
-    <button class="cat-pill active">All</button>
-    <button class="cat-pill">गाय दूध</button>
-    <button class="cat-pill">कोवळे दूध</button>
-    <button class="cat-pill">म्हैस दूध</button>
-    <button class="cat-pill">खरवस गाय</button>
-    <button class="cat-pill">खरवस म्हैस</button>
-    <button class="cat-pill">क्रीम गाय</button>
-    <button class="cat-pill">क्रीम म्हैस</button>
-    <button class="cat-pill">लोणी गाय</button>
+    <mat-chip-listbox aria-label="Category selection">
+      <mat-chip-option selected>All</mat-chip-option>
+      <mat-chip-option>गाय दूध</mat-chip-option>
+      <mat-chip-option>कोवळे दूध</mat-chip-option>
+      <mat-chip-option>म्हैस दूध</mat-chip-option>
+      <mat-chip-option>खरवस गाय</mat-chip-option>
+      <mat-chip-option>खरवस म्हैस</mat-chip-option>
+      <mat-chip-option>क्रीम गाय</mat-chip-option>
+      <mat-chip-option>क्रीम म्हैस</mat-chip-option>
+      <mat-chip-option>लोणी गाय</mat-chip-option>
+    </mat-chip-listbox>
   </div>
 
   <div class="product-grid">
-    <div class="product-card" *ngFor="let prod of ['गाय दूध', 'गाय दूध 1 ltr पॅकिंग', 'गाय दूध 500ml पॅकिंग', 'कोवळे दूध', 'म्हैस दूध', 'म्हैस दूध 1 ltr पॅकिंग', 'म्हैस दूध 500ml पॅकिंग', 'बासुंदी लूज', 'खवा 125 gm', 'खवा 250 gm', 'खवा 500 gm', 'खवा लूज']">
+    <mat-card class="product-card" matRipple *ngFor="let prod of ['गाय दूध', 'गाय दूध 1 ltr पॅकिंग', 'गाय दूध 500ml पॅकिंग', 'कोवळे दूध', 'म्हैस दूध', 'म्हैस दूध 1 ltr पॅकिंग', 'म्हैस दूध 500ml पॅकिंग', 'बासुंदी लूज', 'खवा 125 gm', 'खवा 250 gm', 'खवा 500 gm', 'खवा लूज']">
       <div class="red-tag"></div>
-      <div class="pc-details">
+      <mat-card-content class="pc-details">
         <h4>{{prod}}</h4>
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 
   <div class="pl-footer">

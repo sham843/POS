@@ -19,7 +19,7 @@
   .bill-tab {
     background: #009688;
     color: #fff;
-    padding: 6px 12px;
+    padding: 2px 6px 2px 12px;
     border-radius: 4px;
     font-weight: 500;
     font-size: 13px;
@@ -27,34 +27,16 @@
     align-items: center;
     gap: 6px;
     
-    mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
-  }
-  
-  .add-bill-btn {
-    background: #fff;
-    border: 1px solid #ced4da;
-    color: #495057;
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    
-    &:hover {
-      background: #f8f9fa;
-    }
-    
-    mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+    .small-icon-btn {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+      }
     }
   }
 }
@@ -66,48 +48,43 @@
   
   .customer-toggle {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     font-size: 13px;
     color: #495057;
     
-    label {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
+    ::ng-deep .mat-mdc-radio-button .mdc-form-field {
+      font-size: 13px;
+      color: #495057;
     }
   }
   
-  .customer-search {
-    display: flex;
-    align-items: center;
-    padding: 6px 12px;
-    border-radius: 4px;
-    background: #ffffff;
-    border: 1px solid #ced4da;
+  .dense-form-field {
+    width: 220px;
     
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      padding: 0 8px;
+    }
+    ::ng-deep .mat-mdc-form-field-flex {
+      height: 36px;
+      align-items: center;
+    }
+    ::ng-deep .mat-mdc-form-field-infix {
+      padding: 0;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+    }
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
     input {
-      border: none;
-      background: transparent;
-      outline: none;
-      color: #212529;
-      width: 180px;
       font-size: 13px;
     }
-    
     mat-icon {
       font-size: 18px;
       width: 18px;
       height: 18px;
       color: #009688;
-      
-      &.clear-icon {
-        color: #dc3545;
-        background: #f8d7da;
-        border-radius: 2px;
-        margin-left: 4px;
-        cursor: pointer;
-      }
     }
   }
   
@@ -119,7 +96,7 @@
     .clerk-name {
       font-size: 13px;
       font-weight: 500;
-      color: #dc3545; /* Matches red name in screenshot */
+      color: #dc3545;
     }
     
     .clerk-avatar {
@@ -134,7 +111,6 @@
 .cart-table-wrapper {
   flex: 1;
   overflow-y: auto;
-  border: 1px solid #dee2e6;
   border-radius: 4px;
   background: #fff;
   
@@ -149,27 +125,49 @@
 
 .cart-table {
   width: 100%;
-  border-collapse: collapse;
   
-  th {
-    text-align: left;
-    padding: 10px;
-    color: #0d6efd; /* Light blue header text matching screenshot */
+  th.mat-mdc-header-cell {
+    color: #0d6efd;
     background: #e6f2ff;
     font-weight: 500;
     font-size: 13px;
-    border-bottom: 1px solid #dee2e6;
+    padding: 0 10px;
     border-right: 1px solid #dee2e6;
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    
+    &:last-child {
+      border-right: none;
+    }
   }
   
-  td {
-    padding: 10px;
-    border-bottom: 1px solid #dee2e6;
-    border-right: 1px solid #dee2e6;
+  td.mat-mdc-cell {
+    padding: 0 10px;
     color: #212529;
     font-size: 13px;
+    border-right: 1px solid #dee2e6;
+    
+    &:last-child {
+      border-right: none;
+    }
+  }
+  
+  .qty-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    .tiny-icon-btn {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
   }
 }

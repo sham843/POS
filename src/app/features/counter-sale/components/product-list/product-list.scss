@@ -6,34 +6,34 @@
 
 .pl-header {
   margin-bottom: 12px;
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid #ced4da;
-  background: #ffffff;
   
-  input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    outline: none;
-    color: var(--pos-text-primary);
-    font-size: 14px;
-    font-family: inherit;
+  .dense-form-field {
+    width: 100%;
     
-    &::placeholder {
-      color: #adb5bd;
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      padding: 0 12px;
+      background: #ffffff;
+    }
+    ::ng-deep .mat-mdc-form-field-flex {
+      height: 40px;
+      align-items: center;
+    }
+    ::ng-deep .mat-mdc-form-field-infix {
+      padding: 0;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+    }
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+    input {
+      font-size: 14px;
     }
   }
 }
 
 .categories-scroll {
-  display: flex;
-  gap: 8px;
   overflow-x: auto;
   padding-bottom: 8px;
   margin-bottom: 12px;
@@ -45,28 +45,17 @@
     background: #ced4da;
     border-radius: 4px;
   }
-}
-
-.cat-pill {
-  white-space: nowrap;
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: 1px solid #ced4da;
-  background: #ffffff;
-  color: var(--pos-text-primary);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
   
-  &:hover {
-    background: #f8f9fa;
-  }
-  
-  &.active {
-    background: #0d6efd;
-    color: #fff;
-    border-color: #0d6efd;
+  mat-chip-listbox {
+    ::ng-deep .mat-mdc-standard-chip {
+      background: #ffffff;
+      border: 1px solid #ced4da;
+      &.mdc-evolution-chip--selected {
+        background: #0d6efd;
+        border-color: #0d6efd;
+        color: #fff;
+      }
+    }
   }
 }
 
@@ -88,22 +77,16 @@
 }
 
 .product-card {
-  border-radius: 6px;
-  padding: 24px 12px;
-  background: #f1f3f5;
-  border: 1px solid #e9ecef;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
-  text-align: center;
   position: relative;
   transition: all 0.15s;
+  background: #f1f3f5;
+  border: 1px solid #e9ecef;
+  box-shadow: none !important;
 
   &:hover {
     background: #e9ecef;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05) !important;
   }
 
   .red-tag {
@@ -117,6 +100,13 @@
   }
 
   .pc-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px 12px !important;
+    
     h4 {
       margin: 0;
       font-size: 13px;

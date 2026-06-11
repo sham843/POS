@@ -15,13 +15,7 @@
   
   .kp-top-btn {
     flex: 1;
-    background: #f1f3f5;
-    border: 1px solid #dee2e6;
-    padding: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #495057;
-    cursor: pointer;
+    border-radius: 0;
     
     &:first-child {
       border-radius: 4px 0 0 4px;
@@ -43,20 +37,9 @@
   display: flex;
   gap: 4px;
   
-  button {
+  .preset-btn {
     flex: 1;
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    padding: 8px;
-    border-radius: 4px;
-    color: #495057;
     font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    
-    &:hover {
-      background: #e9ecef;
-    }
   }
 }
 
@@ -66,30 +49,17 @@
   gap: 6px;
   
   .kp-btn {
-    background: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
     height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 16px;
     font-weight: 500;
-    color: #212529;
-    cursor: pointer;
-    transition: background 0.1s;
-    
-    &:hover {
-      background: #f8f9fa;
-    }
     
     &.kp-clear {
-      background: #212529;
       color: #fff;
-      border-color: #212529;
       
-      &:hover {
-        background: #343a40;
+      ::ng-deep .mdc-button__label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
   }
@@ -103,26 +73,28 @@
   
   .pay-btn {
     flex: 1;
-    border: none;
-    border-radius: 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 4px;
-    font-size: 13px;
     font-weight: 600;
-    cursor: pointer;
-    transition: filter 0.2s;
+    padding: 12px 0;
+    line-height: 1.2;
+    
+    ::ng-deep .mdc-button__label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
     
     mat-icon {
       font-size: 20px;
       width: 20px;
       height: 20px;
-    }
-    
-    &:hover {
-      filter: brightness(0.95);
+      margin: 0;
     }
     
     &.cash-btn {
