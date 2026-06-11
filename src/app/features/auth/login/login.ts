@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-export class Login {
+export class Login implements OnInit {
   loginForm: FormGroup;
   appearance: any = 'outline';
   isLoading = false;
@@ -38,9 +38,17 @@ export class Login {
     this.appearance = this.configService.getConfig()?.formFieldAppearance || 'outline';
     
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
+      username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
+    });
+  }
+
+  ngOnInit(): void {
+    // Call handshaking API on load
+    this.authService.handshake().subscribe({
+      next: (res) => console.log('Handshake successful:', res),
+      error: (err) => console.error('Handshake failed:', err)
     });
   }
 

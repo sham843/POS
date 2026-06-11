@@ -7,7 +7,11 @@ import { ApiService } from './api.service';
 })
 export class AuthService {
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) { }
+
+  handshake(): Observable<any> {
+    return this.apiService.post<any>('api/v1/auth/handshaking', {});
+  }
 
   login(credentials: { username: string; password: string }): Observable<any> {
     return this.apiService.post<any>('api/v1/auth/login', credentials).pipe(
