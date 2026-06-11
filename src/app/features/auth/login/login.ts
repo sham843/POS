@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ConfigService } from '../../../core/services/config.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -24,10 +26,16 @@ import { ConfigService } from '../../../core/services/config.service';
 export class Login {
   loginForm: FormGroup;
   appearance: any = 'outline';
+  isLoading = false;
+  errorMessage = '';
 
-  constructor(private fb: FormBuilder, private configService: ConfigService) {
+  constructor(
+    private fb: FormBuilder, 
+    private configService: ConfigService,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.appearance = this.configService.getConfig()?.formFieldAppearance || 'outline';
-    console.log('Login Form Appearance set to:', this.appearance);
     
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
@@ -38,7 +46,24 @@ export class Login {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      console.log('Login payload:', this.loginForm.value);
+      this.isLoading = true;
+      this.errorMessage = '';
+      
+      const { username, password } = this.loginForm.value;
+      
+      this.authService.login({ username, password }).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          console.log('Login successful!', response);
+          // Navigate to dashboard or home after successful login
+          this.router.navigate(['/']);
+        },
+        error: (error) => {
+          this.isLoading = false;
+          console.error('Login error', error);
+          this.errorMessage = error?.error?.message || 'Login failed. Please check your credentials and try again.';
+        }
+      });
     } else {
       this.loginForm.markAllAsTouched();
     }

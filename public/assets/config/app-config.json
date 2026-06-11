@@ -1,3 +1,4 @@
 {
-  "formFieldAppearance": "outline"
+  "formFieldAppearance": "outline",
+  "apiUrl": "https://demoposapi.hitechdairy.in"
 }

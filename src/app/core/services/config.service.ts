@@ -17,8 +17,10 @@ export class ConfigService {
       console.log('App Config Loaded Successfully:', this.config);
     } catch (error) {
       console.error('Failed to load application configuration', error);
-      // Set defaults in case of failure
-      this.config = { formFieldAppearance: 'outline' };
+      this.config = { 
+        formFieldAppearance: 'outline',
+        apiUrl: 'https://demoposapi.hitechdairy.in'
+      };
     }
   }
 
