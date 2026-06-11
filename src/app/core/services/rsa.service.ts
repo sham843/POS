@@ -80,4 +80,21 @@ export class RsaService {
     const lines = matched ? matched.join('\n') : '';
     return `-----BEGIN ${label}-----\n${lines}\n-----END ${label}-----`;
   }
+
+  async decryptAesKey(encryptedBase64: string): Promise<string> {
+    if (!this.keyPair) {
+      this.keyPair = await this.getKeyPairFromStorage();
+    }
+    
+    const encryptedBytes = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
+    
+    const decryptedBuffer = await crypto.subtle.decrypt(
+      { name: 'RSA-OAEP' },
+      this.keyPair.privateKey,
+      encryptedBytes
+    );
+    
+    const decoder = new TextDecoder();
+    return decoder.decode(decryptedBuffer);
+  }
 }

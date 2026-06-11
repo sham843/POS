@@ -15,7 +15,7 @@ import { RsaService } from '../../../core/services/rsa.service';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -34,7 +34,7 @@ export class Login implements OnInit {
   publickey!: string;
 
   constructor(
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private configService: ConfigService,
     private authService: AuthService,
     private crypto: CryptoService,
@@ -42,7 +42,7 @@ export class Login implements OnInit {
     private router: Router
   ) {
     this.appearance = this.configService.getConfig()?.formFieldAppearance || 'outline';
-    
+
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -54,7 +54,6 @@ export class Login implements OnInit {
     await this.crypto.generateSessionKey();
     await this.rsaService.generateKeyPair(); // Generates and stores
     this.publickey = await this.rsaService.exportPublicKeyPEM(); // Uses stored key
-    //console.log("Public key", this.publickey);
 
     // Call handshaking API on load
     this.authService.handshake(this.publickey).subscribe({
@@ -67,9 +66,9 @@ export class Login implements OnInit {
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
-      
+
       const { username, password } = this.loginForm.value;
-      
+
       this.authService.login({ username, password }).subscribe({
         next: (response) => {
           this.isLoading = false;

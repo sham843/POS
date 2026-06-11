@@ -7,14 +7,14 @@ import { ConfigService } from './config.service';
     providedIn: 'root'
 })
 export class ApiService {
-    private baseUrl: string;
+    private get baseUrl(): string {
+        return this.configService.getConfig()?.apiUrl || '';
+    }
 
     constructor(
         private http: HttpClient,
         private configService: ConfigService
-    ) {
-        this.baseUrl = this.configService.getConfig()?.apiUrl;
-    }
+    ) {}
 
     get<T>(endpoint: string, params?: HttpParams): Observable<T> {
         return this.http.get<T>(`${this.baseUrl}/${endpoint}`, { params });
@@ -30,5 +30,10 @@ export class ApiService {
 
     delete<T>(endpoint: string): Observable<T> {
         return this.http.delete<T>(`${this.baseUrl}/${endpoint}`);
+    }
+
+    handshaking(publicKey?: string): Observable<any> {
+        const payload = publicKey ? { publicKey } : {};
+        return this.post<any>('api/v1/auth/handshaking', payload);
     }
 }
