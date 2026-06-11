@@ -11,7 +11,7 @@ html {
         tertiary: mat.$blue-palette,
       ),
       typography: Roboto,
-      density: -2,
+      density: 0,
     ));
 }
 
@@ -119,9 +119,4 @@ body {
 
 mat-error {
   margin-left: -15px;
-  margin-top: -5px;
-}
-
-.mat-mdc-form-field {
-  margin-bottom: 10px;
 }
