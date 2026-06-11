@@ -9,8 +9,9 @@ export class AuthService {
 
   constructor(private apiService: ApiService) { }
 
-  handshake(): Observable<any> {
-    return this.apiService.post<any>('api/v1/auth/handshaking', {});
+  handshake(publicKey?: string): Observable<any> {
+    const payload = publicKey ? { publicKey } : {};
+    return this.apiService.post<any>('api/v1/auth/handshaking', payload);
   }
 
   login(credentials: { username: string; password: string }): Observable<any> {

@@ -8,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { CryptoService } from '../../../core/services/crypto.service';
+import { RsaService } from '../../../core/services/rsa.service';
 
 @Component({
   selector: 'app-login',
@@ -29,10 +31,14 @@ export class Login implements OnInit {
   isLoading = false;
   errorMessage = '';
 
+  publickey!: string;
+
   constructor(
     private fb: FormBuilder, 
     private configService: ConfigService,
     private authService: AuthService,
+    private crypto: CryptoService,
+    private rsaService: RsaService,
     private router: Router
   ) {
     this.appearance = this.configService.getConfig()?.formFieldAppearance || 'outline';
@@ -44,9 +50,14 @@ export class Login implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    await this.crypto.generateSessionKey();
+    await this.rsaService.generateKeyPair(); // Generates and stores
+    this.publickey = await this.rsaService.exportPublicKeyPEM(); // Uses stored key
+    //console.log("Public key", this.publickey);
+
     // Call handshaking API on load
-    this.authService.handshake().subscribe({
+    this.authService.handshake(this.publickey).subscribe({
       next: (res) => console.log('Handshake successful:', res),
       error: (err) => console.error('Handshake failed:', err)
     });
