@@ -1,1 +1,49 @@
-<p>product-list works!</p>
+<div class="product-list-container">
+  
+  <div class="pl-header">
+    <div class="search-bar">
+      <input type="text" placeholder="Search by Product Name / Product Code">
+    </div>
+  </div>
+
+  <div class="categories-scroll">
+    <button class="cat-pill active">All</button>
+    <button class="cat-pill">गाय दूध</button>
+    <button class="cat-pill">कोवळे दूध</button>
+    <button class="cat-pill">म्हैस दूध</button>
+    <button class="cat-pill">खरवस गाय</button>
+    <button class="cat-pill">खरवस म्हैस</button>
+    <button class="cat-pill">क्रीम गाय</button>
+    <button class="cat-pill">क्रीम म्हैस</button>
+    <button class="cat-pill">लोणी गाय</button>
+  </div>
+
+  <div class="product-grid">
+    <div class="product-card" *ngFor="let prod of ['गाय दूध', 'गाय दूध 1 ltr पॅकिंग', 'गाय दूध 500ml पॅकिंग', 'कोवळे दूध', 'म्हैस दूध', 'म्हैस दूध 1 ltr पॅकिंग', 'म्हैस दूध 500ml पॅकिंग', 'बासुंदी लूज', 'खवा 125 gm', 'खवा 250 gm', 'खवा 500 gm', 'खवा लूज']">
+      <div class="red-tag"></div>
+      <div class="pc-details">
+        <h4>{{prod}}</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="pl-footer">
+    <div class="pagination">
+      <span>«</span>
+      <span class="active">1</span>
+      <span>2</span>
+      <span>3</span>
+      <span>4</span>
+      <span>5</span>
+      <span>6</span>
+      <span>7</span>
+      <span>8</span>
+      <span>»</span>
+    </div>
+    <div class="pl-summary">
+      <div class="badge">Bills : <span class="val">0</span></div>
+      <div class="badge green">Amount : <span class="val">₹ 0</span></div>
+    </div>
+  </div>
+
+</div>

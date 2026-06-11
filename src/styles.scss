@@ -62,6 +62,19 @@ body {
   --btn-secondary-border: #94a3b8;
   --checkbox-bg: transparent;
   --checkbox-border: #cbd5e1;
+
+  /* POS Modern Flat UI Variables */
+  --pos-bg: #f8f9fa;
+  --pos-card-bg: #ffffff;
+  --pos-card-border: #dee2e6;
+  --pos-accent: #007bff;
+  --pos-accent-hover: #0056b3;
+  --pos-glass-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Very subtle flat shadow */
+  --pos-text-primary: #212529;
+  --pos-text-secondary: #6c757d;
+  --pos-success: #28a745;
+  --pos-warning: #ffc107;
+  --pos-danger: #dc3545;
 }
 
 [data-theme='dark'] {
@@ -80,6 +93,19 @@ body {
   --btn-secondary-border: #475569;
   --checkbox-bg: #0f172a;
   --checkbox-border: #475569;
+
+  /* POS Modern Flat UI Variables (Dark Mode if needed, keeping flat) */
+  --pos-bg: #212529;
+  --pos-card-bg: #343a40;
+  --pos-card-border: #495057;
+  --pos-accent: #0d6efd;
+  --pos-accent-hover: #0b5ed7;
+  --pos-glass-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  --pos-text-primary: #f8f9fa;
+  --pos-text-secondary: #ced4da;
+  --pos-success: #198754;
+  --pos-warning: #ffc107;
+  --pos-danger: #dc3545;
 }
 
 /* System theme logic */
@@ -100,6 +126,19 @@ body {
     --btn-secondary-border: #475569;
     --checkbox-bg: #0f172a;
     --checkbox-border: #475569;
+
+    /* POS Modern Flat UI Variables (System Dark) */
+    --pos-bg: #212529;
+    --pos-card-bg: #343a40;
+    --pos-card-border: #495057;
+    --pos-accent: #0d6efd;
+    --pos-accent-hover: #0b5ed7;
+    --pos-glass-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    --pos-text-primary: #f8f9fa;
+    --pos-text-secondary: #ced4da;
+    --pos-success: #198754;
+    --pos-warning: #ffc107;
+    --pos-danger: #dc3545;
   }
 }
 

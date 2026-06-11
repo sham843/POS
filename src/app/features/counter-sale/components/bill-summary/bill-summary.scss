@@ -1,0 +1,53 @@
+.summary-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #ffffff;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #495057;
+  padding: 0 4px;
+  
+  .label {
+    flex: 1;
+    text-align: right;
+    margin-right: 20px;
+  }
+  
+  .value {
+    width: 60px;
+    text-align: right;
+    font-weight: 500;
+    color: #212529;
+  }
+  
+  .text-danger {
+    color: #dc3545;
+  }
+}
+
+.total-payable-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #dbeafe; /* Light blue from screenshot */
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+  
+  .label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e3a8a;
+  }
+  
+  .value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e3a8a;
+  }
+}

@@ -1,1 +1,51 @@
-<p>payment works!</p>
+<div class="payment-container">
+  
+  <div class="keypad-section">
+    <div class="kp-top-row">
+      <button class="kp-top-btn active">Quantity</button>
+      <button class="kp-top-btn">Amount</button>
+      <button class="kp-top-btn">Discount</button>
+    </div>
+    <div class="preset-qty">
+      <button>0.125</button>
+      <button>0.250</button>
+      <button>0.500</button>
+    </div>
+    <div class="keypad-grid">
+      <button class="kp-btn">1</button>
+      <button class="kp-btn">2</button>
+      <button class="kp-btn">3</button>
+      <button class="kp-btn">4</button>
+      
+      <button class="kp-btn">5</button>
+      <button class="kp-btn">6</button>
+      <button class="kp-btn">7</button>
+      <button class="kp-btn">8</button>
+      
+      <button class="kp-btn">9</button>
+      <button class="kp-btn">.</button>
+      <button class="kp-btn">0</button>
+      <button class="kp-btn kp-clear"><mat-icon>backspace</mat-icon></button>
+    </div>
+  </div>
+
+  <div class="payment-actions">
+    <button class="pay-btn cash-btn">
+      <mat-icon>payments</mat-icon>
+      Cash
+    </button>
+    <button class="pay-btn online-btn">
+      <mat-icon>qr_code_scanner</mat-icon>
+      Online
+    </button>
+    <button class="pay-btn credit-btn">
+      <mat-icon>credit_card</mat-icon>
+      Credit/Coupon
+    </button>
+    <button class="pay-btn clear-btn">
+      <mat-icon>delete_sweep</mat-icon>
+      Clear
+    </button>
+  </div>
+
+</div>

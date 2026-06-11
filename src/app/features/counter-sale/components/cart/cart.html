@@ -1,1 +1,42 @@
-<p>cart works!</p>
+<div class="cart-container">
+  <div class="cart-header">
+    <div class="ch-left">
+      <div class="bill-tab">Bill 1 <mat-icon>close</mat-icon></div>
+      <button class="add-bill-btn"><mat-icon>add</mat-icon></button>
+    </div>
+    <div class="ch-right">
+      <div class="customer-toggle">
+        <label><input type="radio" name="cust" checked> Bill No</label>
+        <label><input type="radio" name="cust"> Customer</label>
+      </div>
+      <div class="customer-search">
+        <input type="text" placeholder="Customer Name / Code">
+        <mat-icon>search</mat-icon>
+        <mat-icon class="clear-icon">close</mat-icon>
+      </div>
+      <div class="clerk-info">
+        <span class="clerk-name">Pravin Varpe</span>
+        <div class="clerk-avatar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart-table-wrapper">
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Product Details</th>
+          <th>Quantity</th>
+          <th>Rate (₹)</th>
+          <th>Discount(%)</th>
+          <th>Amount (₹)</th>
+          <th>GST</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Table empty by default or dummy data -->
+      </tbody>
+    </table>
+  </div>
+</div>
