@@ -13,6 +13,14 @@ html {
       typography: Roboto,
       density: 0,
     ));
+  
+  // Decrease ONLY the input field size globally
+  @include mat.form-field-density(-2);
+}
+
+// Ensure form fields have breathing room to prevent error message overlap
+.mat-mdc-form-field {
+  margin-bottom: 12px;
 }
 
 body {

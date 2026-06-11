@@ -15,15 +15,15 @@
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="d-flex flex-column">
 
-        <!-- Email Input -->
-        <mat-form-field appearance="outline" class="w-100 md-input">
-          <mat-label>Email address</mat-label>
-          <input matInput type="email" placeholder="name@example.com" formControlName="email">
-          <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
-            Email is required
+        <!-- Username Input -->
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Username</mat-label>
+          <input matInput type="tel" placeholder="Enter 10-digit mobile number" formControlName="username">
+          <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
+            Username is required
           </mat-error>
-          <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
-            Please enter a valid email address
+          <mat-error *ngIf="loginForm.get('username')?.hasError('pattern')">
+            Please enter a valid 10-digit mobile number
           </mat-error>
         </mat-form-field>
 
