@@ -12,7 +12,18 @@
     
     ::ng-deep .mat-mdc-text-field-wrapper {
       padding: 0 12px;
-      background: #ffffff;
+      background: #f8f9fa; /* Subtle light background instead of harsh white */
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      
+      &.mdc-text-field--focused {
+        background: #ffffff;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+      }
+    }
+    ::ng-deep .mdc-notched-outline {
+      display: none; /* Hide default harsh outline */
     }
     ::ng-deep .mat-mdc-form-field-flex {
       height: 40px;
@@ -79,24 +90,26 @@
 .product-card {
   cursor: pointer;
   position: relative;
-  transition: all 0.15s;
-  background: #f1f3f5;
-  border: 1px solid #e9ecef;
-  box-shadow: none !important;
+  transition: all 0.2s ease-in-out;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+  border-radius: 8px !important;
 
   &:hover {
-    background: #e9ecef;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    border-color: #cbd5e1 !important;
   }
 
   .red-tag {
     position: absolute;
-    top: 6px;
-    left: 6px;
+    top: 8px;
+    left: 8px;
     width: 8px;
     height: 8px;
     background: #dc3545;
-    border-radius: 2px;
+    border-radius: 50%; /* Modern standard is circular dot */
   }
 
   .pc-details {
@@ -106,12 +119,14 @@
     justify-content: center;
     text-align: center;
     padding: 24px 12px !important;
+    height: 100%;
     
     h4 {
       margin: 0;
       font-size: 13px;
       font-weight: 600;
-      color: #212529;
+      color: #1e293b;
+      line-height: 1.4;
     }
   }
 }
