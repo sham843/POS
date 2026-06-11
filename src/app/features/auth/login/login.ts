@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -33,14 +33,14 @@ export class Login implements OnInit {
 
   publickey: string = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private configService: ConfigService,
-    private authService: AuthService,
-    private router: Router,
-    private crypto: CryptoSessionService,
-    private rsaService: RsaService
-  ) {
+  private fb = inject(FormBuilder);
+  private configService = inject(ConfigService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private crypto = inject(CryptoSessionService);
+  private rsaService = inject(RsaService);
+
+  constructor() {
     this.appearance = this.configService.getConfig()?.formFieldAppearance || 'outline';
 
     this.loginForm = this.fb.group({
