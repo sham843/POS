@@ -17,65 +17,49 @@
         <p class="text-muted">Please enter your details to sign in.</p>
       </div>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="d-flex flex-column">
+        
         <!-- Email Input -->
-        <div class="mb-4">
-          <label for="email" class="form-label fw-medium text-dark mb-2">Email address</label>
-          <input 
-            type="email" 
-            class="form-control form-control-lg bg-body-tertiary border-0 rounded-3" 
-            id="email" 
-            placeholder="name@example.com"
-            formControlName="email"
-            [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-          >
-          <div class="invalid-feedback" *ngIf="loginForm.get('email')?.hasError('required')">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Email address</mat-label>
+          <input matInput type="email" placeholder="name@example.com" formControlName="email">
+          <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
             Email is required
-          </div>
-          <div class="invalid-feedback" *ngIf="loginForm.get('email')?.hasError('email')">
+          </mat-error>
+          <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
             Please enter a valid email address
-          </div>
-        </div>
+          </mat-error>
+        </mat-form-field>
 
         <!-- Password Input -->
-        <div class="mb-4">
-          <label for="password" class="form-label fw-medium text-dark mb-2">Password</label>
-          <input 
-            type="password" 
-            class="form-control form-control-lg bg-body-tertiary border-0 rounded-3" 
-            id="password" 
-            placeholder="Enter your password"
-            formControlName="password"
-            [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-          >
-          <div class="invalid-feedback" *ngIf="loginForm.get('password')?.hasError('required')">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" placeholder="Enter your password" formControlName="password">
+          <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
             Password is required
-          </div>
-          <div class="invalid-feedback" *ngIf="loginForm.get('password')?.hasError('minlength')">
+          </mat-error>
+          <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
             Password must be at least 6 characters
-          </div>
-        </div>
+          </mat-error>
+        </mat-form-field>
 
         <!-- Remember Me & Forgot Password -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="rememberMe" formControlName="rememberMe">
-            <label class="form-check-label text-muted" for="rememberMe">
-              Remember me
-            </label>
-          </div>
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-1">
+          <mat-checkbox formControlName="rememberMe" color="primary">
+            Remember me
+          </mat-checkbox>
           <a href="#" class="text-decoration-none text-primary fw-medium fs-sm">Forgot password?</a>
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold login-btn">
+        <button mat-flat-button color="primary" type="submit" class="w-100 py-4 fw-bold fs-6">
           Sign In
         </button>
       </form>
       
       <!-- Footer Text -->
-      <div class="text-center mt-4">
-        <p class="text-muted fs-sm mb-0">Don't have an account? <a href="#" class="text-decoration-none fw-medium">Contact admin</a></p>
+      <div class="text-center mt-4 pt-2">
+        <p class="text-muted fs-sm mb-0">Don't have an account? <a href="#" class="text-decoration-none text-primary fw-medium">Contact admin</a></p>
       </div>
     </div>
   </div>

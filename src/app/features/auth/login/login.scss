@@ -1,8 +1,6 @@
 $primary-color: #4f46e5;
-$primary-hover: #4338ca;
 $bg-color: #f3f4f6;
 $text-main: #111827;
-$text-muted: #6b7280;
 
 .login-container {
   min-height: 100vh;
@@ -11,7 +9,6 @@ $text-muted: #6b7280;
   justify-content: center;
   background-color: $bg-color;
   padding: 1.5rem;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .login-wrapper {
@@ -58,41 +55,24 @@ $text-muted: #6b7280;
     letter-spacing: -0.025em;
   }
 
-  .form-check-input {
-    &:checked {
-      background-color: $primary-color;
-      border-color: $primary-color;
-    }
-
-    &:focus {
-      box-shadow: 0 0 0 4px rgba($primary-color, 0.1);
-    }
-  }
-
   .text-primary {
     color: $primary-color !important;
   }
 
-  .login-btn {
-    background-color: $primary-color;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    transition: all 0.2s ease-in-out;
+  .fs-sm {
+    font-size: 0.875rem;
+  }
 
+  /* Override Material button to add some smooth transition */
+  button[mat-flat-button] {
+    transition: all 0.2s ease-in-out;
     &:hover {
-      background-color: $primary-hover;
       transform: translateY(-1px);
       box-shadow: 0 4px 6px -1px rgba($primary-color, 0.3), 0 2px 4px -1px rgba($primary-color, 0.2);
     }
-
     &:active {
       transform: translateY(0);
     }
-  }
-
-  .fs-sm {
-    font-size: 0.875rem;
   }
 }
 
