@@ -1,1 +1,82 @@
-<p>login works!</p>
+<div class="login-container">
+  <div class="login-wrapper shadow-lg">
+    
+    <!-- Left Side: Branding / Visuals -->
+    <div class="login-branding d-none d-md-flex flex-column justify-content-center align-items-center text-center p-5">
+      <div class="brand-content">
+        <h1 class="display-5 fw-bold text-white mb-3">HiTech Dairy</h1>
+        <p class="lead text-white-50 mb-0">The modern POS solution for your dairy business.</p>
+      </div>
+      <div class="brand-overlay"></div>
+    </div>
+
+    <!-- Right Side: Login Form -->
+    <div class="login-form-section p-4 p-md-5">
+      <div class="form-header mb-4">
+        <h2 class="fw-bold mb-1">Welcome back</h2>
+        <p class="text-muted">Please enter your details to sign in.</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Email Input -->
+        <div class="mb-4">
+          <label for="email" class="form-label fw-medium text-dark mb-2">Email address</label>
+          <input 
+            type="email" 
+            class="form-control form-control-lg bg-body-tertiary border-0 rounded-3" 
+            id="email" 
+            placeholder="name@example.com"
+            formControlName="email"
+            [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+          >
+          <div class="invalid-feedback" *ngIf="loginForm.get('email')?.hasError('required')">
+            Email is required
+          </div>
+          <div class="invalid-feedback" *ngIf="loginForm.get('email')?.hasError('email')">
+            Please enter a valid email address
+          </div>
+        </div>
+
+        <!-- Password Input -->
+        <div class="mb-4">
+          <label for="password" class="form-label fw-medium text-dark mb-2">Password</label>
+          <input 
+            type="password" 
+            class="form-control form-control-lg bg-body-tertiary border-0 rounded-3" 
+            id="password" 
+            placeholder="Enter your password"
+            formControlName="password"
+            [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          >
+          <div class="invalid-feedback" *ngIf="loginForm.get('password')?.hasError('required')">
+            Password is required
+          </div>
+          <div class="invalid-feedback" *ngIf="loginForm.get('password')?.hasError('minlength')">
+            Password must be at least 6 characters
+          </div>
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="rememberMe" formControlName="rememberMe">
+            <label class="form-check-label text-muted" for="rememberMe">
+              Remember me
+            </label>
+          </div>
+          <a href="#" class="text-decoration-none text-primary fw-medium fs-sm">Forgot password?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold login-btn">
+          Sign In
+        </button>
+      </form>
+      
+      <!-- Footer Text -->
+      <div class="text-center mt-4">
+        <p class="text-muted fs-sm mb-0">Don't have an account? <a href="#" class="text-decoration-none fw-medium">Contact admin</a></p>
+      </div>
+    </div>
+  </div>
+</div>
