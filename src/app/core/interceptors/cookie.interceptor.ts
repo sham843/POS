@@ -12,7 +12,6 @@ export const cookieInterceptor: HttpInterceptorFn = (req, next) => {
     // We use withCredentials to pass native browser cookies
     // If the token is a JWT, we pass it via the Authorization header (standard)
     clonedReq = req.clone({
-      withCredentials: true,
       setHeaders: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -20,7 +19,6 @@ export const cookieInterceptor: HttpInterceptorFn = (req, next) => {
     });
   } else {
     clonedReq = req.clone({
-      withCredentials: true,
       setHeaders: {
         'Content-Type': 'application/json'
       }
