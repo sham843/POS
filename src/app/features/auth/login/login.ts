@@ -91,7 +91,6 @@ export class Login implements OnInit {
 
           localStorage.setItem('tk_9xf1BzX', token);
           localStorage.setItem('UserDetails', data);
-          localStorage.setItem('auth_token', token);
           this.errorMessage = '';
           this.router.navigate(['/session-summary']);
 
