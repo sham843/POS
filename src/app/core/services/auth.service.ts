@@ -10,11 +10,11 @@ export class AuthService {
   constructor(private apiService: ApiService) { }
 
   handshake(publickey: string): Observable<any> {
-    return this.apiService.post<any>('api/v1/auth/handshaking', { publicKey: publickey });
+    return this.apiService.post<any>('api/v1/auth/handshaking', { publicKey: publickey }, undefined, 'main');
   }
 
   login(credentials: any): Observable<any> {
-    return this.apiService.post<any>('api/v1/auth/login', credentials).pipe(
+    return this.apiService.post<any>('api/v1/auth/login', credentials, undefined, 'main').pipe(
       tap(response => {
         // If the API returns a token, store it
         if (response && response.token) {

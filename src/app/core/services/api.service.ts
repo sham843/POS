@@ -7,8 +7,14 @@ import { ConfigService } from './config.service';
     providedIn: 'root'
 })
 export class ApiService {
-    private get baseUrl(): string {
-        return this.configService.getConfig()?.apiUrl || '';
+
+    private getBaseUrl(apiName: string = 'main'): string {
+        const config = this.configService.getConfig();
+        switch (apiName) {
+            case 'main':
+            default:
+                return config?.apiUrl || '';
+        }
     }
 
     constructor(
@@ -16,24 +22,19 @@ export class ApiService {
         private configService: ConfigService
     ) { }
 
-    get<T>(endpoint: string, params?: HttpParams): Observable<T> {
-        const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}/${endpoint}`;
-        return this.http.get<T>(url, { params });
+    get<T>(endpoint: string, params?: HttpParams, apiName: string = 'main'): Observable<T> {
+        return this.http.get<T>(`${this.getBaseUrl(apiName)}/${endpoint}`, { params });
     }
 
-    post<T>(endpoint: string, body: any, headers?: HttpHeaders): Observable<T> {
-        console.log(endpoint)
-        const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}/${endpoint}`;
-        return this.http.post<T>(url, body, { headers });
+    post<T>(endpoint: string, body: any, headers?: HttpHeaders, apiName: string = 'main'): Observable<T> {
+        return this.http.post<T>(`${this.getBaseUrl(apiName)}/${endpoint}`, body, { headers });
     }
 
-    put<T>(endpoint: string, body: any): Observable<T> {
-        const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}/${endpoint}`;
-        return this.http.put<T>(url, body);
+    put<T>(endpoint: string, body: any, apiName: string = 'main'): Observable<T> {
+        return this.http.put<T>(`${this.getBaseUrl(apiName)}/${endpoint}`, body);
     }
 
-    delete<T>(endpoint: string): Observable<T> {
-        const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}/${endpoint}`;
-        return this.http.delete<T>(url);
+    delete<T>(endpoint: string, apiName: string = 'main'): Observable<T> {
+        return this.http.delete<T>(`${this.getBaseUrl(apiName)}/${endpoint}`);
     }
 }
