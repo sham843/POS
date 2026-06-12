@@ -31,7 +31,6 @@ import { LoaderService } from '../../../core/services/loader.service';
 export class Login implements OnInit {
   loginForm: FormGroup;
   appearance: any = 'outline';
-  isLoading = false;
   hidePassword = true;
   errorMessage = '';
 
@@ -72,7 +71,6 @@ export class Login implements OnInit {
       next: async (response) => {
         const data = response.data;
         await this.rsaService.decryptAesKey(data);
-        this.isLoading = false;
       },
       error: (error) => {
         console.error('Login failed', error);
@@ -82,7 +80,6 @@ export class Login implements OnInit {
 
   async onSubmit() {
     if (this.loginForm.valid) {
-      this.isLoading = true;
       this.errorMessage = '';
       this.loaderService.show(); // Show loader during encryption and login
 
@@ -103,18 +100,15 @@ export class Login implements OnInit {
             this.errorMessage = '';
             this.router.navigate(['/session-summary']);
 
-            this.isLoading = false;
             this.loaderService.hide(); // Hide loader on success
           },
           error: (error) => {
-            this.isLoading = false;
             this.loaderService.hide(); // Hide loader on error
             this.errorMessage = error?.error?.message || 'Login failed. Please check your credentials and try again.';
           }
         });
       } catch (e) {
         this.loaderService.hide(); // Ensure loader is hidden on unexpected encryption error
-        this.isLoading = false;
         this.errorMessage = 'An error occurred while encrypting credentials.';
       }
     } else {

@@ -21,11 +21,12 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem('tk_9xf1BzX');
+    localStorage.removeItem('UserDetails');
   }
 
   getToken(): string | null {
-    return localStorage.getItem('auth_token');
+    return localStorage.getItem('tk_9xf1BzX');
   }
 
   isLoggedIn(): boolean {
