@@ -13,10 +13,9 @@ export class AuthService {
     return this.apiService.post<any>('api/v1/auth/handshaking', { publicKey: publickey }, undefined, 'main');
   }
 
-  login(credentials: any): Observable<any> {
-    return this.apiService.post<any>('api/v1/auth/login', credentials, undefined, 'main').pipe(
+  login(credentials: string): Observable<any> {
+    return this.apiService.post<any>('api/v1/auth/login', JSON.stringify({ data: credentials }), undefined, 'main').pipe(
       tap(response => {
-        // If the API returns a token, store it
         if (response && response.token) {
           localStorage.setItem('auth_token', response.token);
         }

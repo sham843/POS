@@ -79,11 +79,10 @@ export class Login implements OnInit {
       const loginData = { username, password };
       const encrypted = await this.rsaService.aesEncrypt(JSON.stringify(loginData));
 
-      this.authService.login({ data: encrypted }).subscribe({
+      this.authService.login(encrypted).subscribe({
         next: (response) => {
           this.isLoading = false;
           console.log('Login successful!', response);
-          // Navigate to dashboard or home after successful login
           this.router.navigate(['/']);
         },
         error: (error) => {
