@@ -10,11 +10,11 @@ export class AuthService {
   constructor(private apiService: ApiService) { }
 
   handshake(publickey: string): Observable<any> {
-    return this.apiService.post<any>('api/v1/auth/handshaking', { publicKey: publickey }, undefined, 'main');
+    return this.apiService.post<any>('auth/handshaking', { publicKey: publickey }, undefined, 'main');
   }
 
   login(credentials: string): Observable<any> {
-    return this.apiService.post<any>('api/v1/auth/login', JSON.stringify({ data: credentials }), undefined, 'main').pipe(
+    return this.apiService.post<any>('auth/login', JSON.stringify({ data: credentials }), undefined, 'main').pipe(
       tap(response => {
         if (response && response.token) {
           localStorage.setItem('auth_token', response.token);

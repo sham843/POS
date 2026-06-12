@@ -1,0 +1,14 @@
+{
+  "/api": {
+    "target": "http://demoposapi.hitechdairy.in/api/v1/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/auth": {
+    "target": "http://demoposapi.hitechdairy.in/api/v1/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

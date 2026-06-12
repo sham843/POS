@@ -23,18 +23,18 @@ export class ApiService {
     ) { }
 
     get<T>(endpoint: string, params?: HttpParams, apiName: string = 'main'): Observable<T> {
-        return this.http.get<T>(`${this.getBaseUrl(apiName)}/${endpoint}`, { params });
+        return this.http.get<T>(`${this.getBaseUrl(apiName)}${this.getBaseUrl(apiName) ? '/' : ''}${endpoint}`, { params, withCredentials: true });
     }
 
     post<T>(endpoint: string, body: any, headers?: HttpHeaders, apiName: string = 'main'): Observable<T> {
-        return this.http.post<T>(`${this.getBaseUrl(apiName)}/${endpoint}`, body, { headers });
+        return this.http.post<T>(`${this.getBaseUrl(apiName)}${this.getBaseUrl(apiName) ? '/' : ''}${endpoint}`, body, { headers, withCredentials: true });
     }
 
     put<T>(endpoint: string, body: any, apiName: string = 'main'): Observable<T> {
-        return this.http.put<T>(`${this.getBaseUrl(apiName)}/${endpoint}`, body);
+        return this.http.put<T>(`${this.getBaseUrl(apiName)}${this.getBaseUrl(apiName) ? '/' : ''}${endpoint}`, body, { withCredentials: true });
     }
 
     delete<T>(endpoint: string, apiName: string = 'main'): Observable<T> {
-        return this.http.delete<T>(`${this.getBaseUrl(apiName)}/${endpoint}`);
+        return this.http.delete<T>(`${this.getBaseUrl(apiName)}${this.getBaseUrl(apiName) ? '/' : ''}${endpoint}`, { withCredentials: true });
     }
 }
