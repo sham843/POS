@@ -2,28 +2,35 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 
+/**
+ * Intercepts HTTP requests to inject the Bearer authentication token.
+ * It strictly ignores authentication endpoints to prevent CORS preflight issues.
+ */
 export const cookieInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.getToken();
 
-  let clonedReq = req;
+  // Skip adding the Authorization token for handshaking and login to avoid CORS rejection
+  if (req.url.includes('/auth/')) {
+    return next(req);
+  }
 
+  // Inject Bearer token if it exists in local storage
   if (token) {
-    // We use withCredentials to pass native browser cookies
-    // If the token is a JWT, we pass it via the Authorization header (standard)
-    clonedReq = req.clone({
+    const clonedReq = req.clone({
       setHeaders: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
-  } else {
-    clonedReq = req.clone({
-      setHeaders: {
-        'Content-Type': 'application/json'
-      }
-    });
+    return next(clonedReq);
   }
 
-  return next(clonedReq);
+  // If no token, just set Content-Type
+  const defaultReq = req.clone({
+    setHeaders: {
+      'Content-Type': 'application/json'
+    }
+  });
+  return next(defaultReq);
 };
