@@ -19,7 +19,7 @@ export class SessionSummary implements OnInit {
   userDetails: any = null;
   currentDate: Date = new Date();
 
-  ngOnInit(): void {
+  async ngOnInit() {
     const userStr = localStorage.getItem('UserDetails');
     if (userStr) {
       try {
@@ -28,19 +28,18 @@ export class SessionSummary implements OnInit {
         console.error('Failed to parse UserDetails', e);
       }
     }
+
+    try {
+      // Load master data as soon as the page opens
+      await this.masterDataService.loadAndStoreMasterData(this.userDetails);
+    } catch (error) {
+      console.error('Failed to load master data on init', error);
+    }
   }
 
-  async startSession() {
-    try {
-      // The global ngx-spinner will automatically show up because this service calls APIs
-      // which trigger the api.interceptor.ts
-      await this.masterDataService.loadAndStoreMasterData();
-      
-      // Navigate to next screen
-      this.router.navigate(['/counter-sale']);
-    } catch (error) {
-      console.error('Failed to start session', error);
-      // The api.interceptor will automatically show the error toast
-    }
+  startSession() {
+    // Master data is already loaded in ngOnInit
+    // Just navigate to next screen
+    this.router.navigate(['/counter-sale']);
   }
 }

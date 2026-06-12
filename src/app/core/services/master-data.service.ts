@@ -17,7 +17,8 @@ export class MasterDataService {
    * Fetches all master data from APIs and stores it in IndexedDB.
    * This is typically called on the Session Start screen.
    */
-  async loadAndStoreMasterData(): Promise<void> {
+  async loadAndStoreMasterData(userData: any): Promise<void> {
+    console.log(userData)
     // TODO: Replace these placeholder endpoints with the real API endpoints.
     try {
       const responses = await firstValueFrom(forkJoin({
@@ -30,7 +31,7 @@ export class MasterDataService {
       }));
 
       // Store in Dexie
-      await this.dbService.transaction('rw', 
+      await this.dbService.transaction('rw',
         [
           this.dbService.bankAccounts,
           this.dbService.cashLedger,
