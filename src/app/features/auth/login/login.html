@@ -32,7 +32,11 @@
         <!-- Password Input -->
         <mat-form-field [appearance]="appearance" class="w-100">
           <mat-label>Password</mat-label>
-          <input matInput type="password" placeholder="Enter your password" formControlName="password">
+          <input matInput [type]="hidePassword ? 'password' : 'text'" placeholder="Enter your password"
+            formControlName="password">
+          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button" tabindex="-1">
+            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
           <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
             Password is required
           </mat-error>
@@ -46,11 +50,11 @@
           <mat-checkbox formControlName="rememberMe" color="primary">
             Remember me
           </mat-checkbox>
-          <a href="#" class="text-decoration-none text-primary fw-medium fs-sm">Forgot password?</a>
         </div>
 
         <!-- Submit Button -->
-        <button mat-flat-button color="primary" type="submit" [disabled]="isLoading" class="w-100 py-4 fw-bold fs-6 mt-2">
+        <button mat-flat-button color="primary" type="submit" [disabled]="isLoading"
+          class="w-100 py-4 fw-bold fs-6 mt-2">
           {{ isLoading ? 'Signing in...' : 'Sign In' }}
         </button>
       </form>

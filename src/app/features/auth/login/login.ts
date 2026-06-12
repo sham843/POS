@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CryptoSessionService } from '../../../core/services/crypto-session.service';
@@ -20,7 +21,8 @@ import { RsaService } from '../../../core/services/rsa.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatIconModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -29,6 +31,7 @@ export class Login implements OnInit {
   loginForm: FormGroup;
   appearance: any = 'outline';
   isLoading = false;
+  hidePassword = true;
   errorMessage = '';
 
   publickey: string = '';
@@ -80,10 +83,22 @@ export class Login implements OnInit {
       const encrypted = await this.rsaService.aesEncrypt(JSON.stringify(loginData));
 
       this.authService.login(encrypted).subscribe({
-        next: (response) => {
+        next: async (response) => {
+          const encryptedToken = response.token;
+          const encryptedData = response.data;
+          const token = await this.rsaService.aesDecrypt(encryptedToken);
+          const data = await this.rsaService.aesDecrypt(encryptedData);
+          
+          localStorage.setItem('tk_9xf1BzX', token);
+          localStorage.setItem('UserDetails', data);
+          
+          // Set the decrypted token for AuthService/Interceptor to use
+          localStorage.setItem('auth_token', token);
+          
+          this.errorMessage = '';
+          this.router.navigate(['/session-start']);
+
           this.isLoading = false;
-          console.log('Login successful!', response);
-          this.router.navigate(['/']);
         },
         error: (error) => {
           this.isLoading = false;
