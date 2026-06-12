@@ -1,0 +1,264 @@
+.custom-pos-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: #F8F9FA;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  overflow: hidden;
+}
+
+/* TOP HEADER */
+.pos-top-header {
+  height: 64px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid #E5E7EB;
+  gap: 24px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    background: #0052CC;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+  
+  .brand-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+  }
+}
+
+.header-search {
+  flex: 1;
+  max-width: 400px;
+  
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    height: 40px;
+    padding: 0 12px;
+    
+    .search-icon {
+      color: #0052CC;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+    
+    input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      background: transparent;
+      color: #374151;
+      
+      &::placeholder {
+        color: #9CA3AF;
+      }
+    }
+    
+    .shortcut-key {
+      font-size: 11px;
+      font-weight: 600;
+      color: #0052CC;
+      background: #EFF6FF;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+    }
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  
+  .action-block {
+    display: flex;
+    align-items: center;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 6px 12px;
+    height: 40px;
+    box-sizing: border-box;
+    gap: 8px;
+    
+    .block-icon {
+      color: #6B7280;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    &.customer-block .block-icon {
+      color: #0052CC;
+    }
+    
+    .block-details {
+      display: flex;
+      flex-direction: column;
+      
+      .block-label {
+        font-size: 10px;
+        color: #6B7280;
+        font-weight: 500;
+        line-height: 1;
+        margin-bottom: 2px;
+      }
+      
+      .block-value {
+        font-size: 12px;
+        font-weight: 600;
+        color: #111827;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+          margin-left: 4px;
+        }
+      }
+    }
+    
+    .shortcut-key {
+      font-size: 11px;
+      font-weight: 600;
+      color: #0052CC;
+      background: #EFF6FF;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+  }
+  
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    &.outline-btn {
+      background: #ffffff;
+      border: 1px solid #E5E7EB;
+      color: #374151;
+    }
+    
+    &.filled-btn {
+      background: #0052CC;
+      color: #ffffff;
+    }
+  }
+}
+
+/* MAIN LAYOUT SPLIT */
+.pos-main-content {
+  flex: 1;
+  display: flex;
+  padding: 16px;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.pos-left-side {
+  flex: 5.5; /* Approx 55% width */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pos-right-side {
+  flex: 4.5; /* Approx 45% width */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  gap: 16px;
+  
+  .cart-section-container {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .checkout-unified-card {
+    display: flex;
+    flex-direction: row;
+    background: #ffffff;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    overflow: hidden;
+    
+    .checkout-left-pane {
+      flex: 7; /* 70% */
+      display: flex;
+      flex-direction: column;
+      
+      app-bill-summary {
+        display: block;
+        height: 100%;
+      }
+    }
+    
+    .payment-divider-vertical {
+      width: 1px;
+      background: #E5E7EB;
+    }
+    
+    .checkout-right-pane {
+      flex: 3; /* 30% */
+      display: flex;
+      flex-direction: column;
+      
+      app-payment {
+        display: block;
+        padding: 16px;
+        background: #ffffff;
+        height: 100%;
+      }
+    }
+  }
+}

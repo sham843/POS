@@ -1,0 +1,73 @@
+<div class="custom-pos-layout">
+
+  <!-- TOP HEADER -->
+  <div class="pos-top-header">
+    <div class="header-brand">
+      <div class="brand-icon">
+        <mat-icon>water_drop</mat-icon>
+      </div>
+      <div class="brand-name">Dairy Shop POS</div>
+    </div>
+
+    <div class="header-search">
+      <div class="search-box">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" placeholder="Search product by name / code">
+        <span class="shortcut-key">F2</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="action-block customer-block">
+        <mat-icon class="block-icon">person_outline</mat-icon>
+        <div class="block-details">
+          <span class="block-label">Customer</span>
+          <span class="block-value">Walk-In Customer <mat-icon>expand_more</mat-icon></span>
+        </div>
+        <span class="shortcut-key">F4</span>
+      </div>
+
+      <div class="action-block">
+        <mat-icon class="block-icon">receipt_long</mat-icon>
+        <div class="block-details">
+          <span class="block-label">Bill No.</span>
+          <span class="block-value">INV-2026-1024</span>
+        </div>
+      </div>
+
+      <div class="action-block">
+        <mat-icon class="block-icon">schedule</mat-icon>
+        <div class="block-details">
+          <span class="block-label">Time</span>
+          <span class="block-value">04:43 PM</span>
+        </div>
+      </div>
+
+      <button class="icon-btn outline-btn"><mat-icon>light_mode</mat-icon></button>
+      <button class="icon-btn filled-btn"><mat-icon>menu</mat-icon></button>
+    </div>
+  </div>
+
+  <!-- MAIN SPLIT CONTENT -->
+  <div class="pos-main-content">
+    <div class="pos-left-side">
+      <app-product-list></app-product-list>
+    </div>
+    
+    <div class="pos-right-side">
+      <div class="cart-section-container">
+        <app-cart></app-cart>
+      </div>
+      <div class="checkout-unified-card">
+        <div class="checkout-left-pane">
+          <app-bill-summary></app-bill-summary>
+        </div>
+        <div class="payment-divider-vertical"></div>
+        <div class="checkout-right-pane">
+          <app-payment></app-payment>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

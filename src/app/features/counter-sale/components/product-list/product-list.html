@@ -1,0 +1,112 @@
+<div class="custom-product-list">
+  
+  <div class="category-pills">
+    <button class="pill-btn active">
+      <mat-icon>grid_view</mat-icon> All
+    </button>
+    <button class="pill-btn">
+      <mat-icon>water_drop</mat-icon> Milk
+    </button>
+    <button class="pill-btn">
+      <mat-icon>view_in_ar</mat-icon> Paneer
+    </button>
+    <button class="pill-btn">
+      <mat-icon>cruelty_free</mat-icon> Ghee
+    </button>
+    <button class="pill-btn">
+      <mat-icon>restaurant</mat-icon> Khava
+    </button>
+    <button class="pill-btn">
+      <mat-icon>local_drink</mat-icon> Lassi
+    </button>
+    <button class="pill-btn more-btn">
+      <mat-icon>more_horiz</mat-icon> More
+    </button>
+  </div>
+
+  <div class="products-grid">
+    <!-- Card 1 -->
+    <div class="prod-card">
+      <mat-icon class="fav-icon">star_border</mat-icon>
+      <div class="prod-image">
+        <div class="img-placeholder"><i class="fa-solid fa-bottle-droplet" style="color: #93C5FD; font-size: 32px;"></i></div>
+      </div>
+      <div class="prod-info">
+        <div class="prod-name">Fresh Milk 1L</div>
+        <div class="prod-price">₹65.00</div>
+        <div class="prod-status in-stock"><span class="dot"></span> In Stock</div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="prod-card">
+      <mat-icon class="fav-icon">star_border</mat-icon>
+      <div class="prod-image">
+        <div class="img-placeholder"><i class="fa-solid fa-cheese" style="color: #FCD34D; font-size: 32px;"></i></div>
+      </div>
+      <div class="prod-info">
+        <div class="prod-name">Paneer 200g</div>
+        <div class="prod-price">₹90.00</div>
+        <div class="prod-status in-stock"><span class="dot"></span> In Stock</div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="prod-card">
+      <mat-icon class="fav-icon">star_border</mat-icon>
+      <div class="prod-image">
+        <div class="img-placeholder"><i class="fa-solid fa-ice-cream" style="color: #F9A8D4; font-size: 32px;"></i></div>
+      </div>
+      <div class="prod-info">
+        <div class="prod-name">Curd 500g</div>
+        <div class="prod-price">₹40.00</div>
+        <div class="prod-status in-stock"><span class="dot"></span> In Stock</div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="prod-card">
+      <mat-icon class="fav-icon">star_border</mat-icon>
+      <div class="prod-image">
+        <div class="img-placeholder"><i class="fa-solid fa-jar" style="color: #FDBA74; font-size: 32px;"></i></div>
+      </div>
+      <div class="prod-info">
+        <div class="prod-name">Ghee 500ml</div>
+        <div class="prod-price">₹450.00</div>
+        <div class="prod-status low-stock"><span class="dot"></span> Low Stock</div>
+      </div>
+    </div>
+
+    <!-- Generate more cards for demonstration -->
+    <div class="prod-card" *ngFor="let item of [1,2,3,4,5,6,7,8,9,10,11]">
+      <mat-icon class="fav-icon">star_border</mat-icon>
+      <div class="prod-image">
+        <div class="img-placeholder"><i class="fa-solid fa-cube" style="color: #D1D5DB; font-size: 32px;"></i></div>
+      </div>
+      <div class="prod-info">
+        <div class="prod-name">Product Name</div>
+        <div class="prod-price">₹0.00</div>
+        <div class="prod-status in-stock"><span class="dot"></span> In Stock</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="pl-footer">
+    <div class="items-count">
+      Showing 1 – 15 of 120 items
+    </div>
+    <div class="pagination-controls">
+      <button class="nav-btn"><mat-icon>chevron_left</mat-icon></button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn">4</button>
+      <button class="page-btn">5</button>
+      <span class="ellipsis">...</span>
+      <button class="page-btn">10</button>
+      <button class="nav-btn"><mat-icon>chevron_right</mat-icon></button>
+    </div>
+  </div>
+
+</div>
