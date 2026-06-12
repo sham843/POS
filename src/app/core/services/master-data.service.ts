@@ -17,13 +17,27 @@ export class MasterDataService {
    * Fetches all master data from APIs and stores it in IndexedDB.
    * This is typically called on the Session Start screen.
    */
-  async loadAndStoreMasterData(userData: any): Promise<void> {
-    console.log(userData)
-    // TODO: Replace these placeholder endpoints with the real API endpoints.
+  async loadAndStoreMasterData(): Promise<void> {
     try {
+      // Get user details from localStorage to build the query string
+      let organizationId = '';
+      let unitId = '';
+      const userStr = localStorage.getItem('UserDetails');
+      if (userStr) {
+        try {
+          const userDetails = JSON.parse(userStr);
+          organizationId = userDetails.organizationId || '';
+          unitId = userDetails.unitid || '';
+        } catch (e) {
+          console.error('Failed to parse UserDetails in MasterDataService', e);
+        }
+      }
+
+      const queryString = `?organizationId=${organizationId}&unitId=${unitId}`;
+
       const responses = await firstValueFrom(forkJoin({
-        bankAccounts: this.apiService.get<any[]>('api/v1/master/bank-accounts'),
-        cashLedger: this.apiService.get<any[]>('api/v1/master/cash-ledger'),
+        bankAccounts: this.apiService.get<any[]>(`api/v1/customer/bank-account${queryString}`),
+        cashLedger: this.apiService.get<any[]>(`api/v1/customer/cash-ledger${queryString}`),
         companyLedgers: this.apiService.get<any[]>('api/v1/master/company-ledgers'),
         customers: this.apiService.get<any[]>('api/v1/master/customers'),
         saleLedgers: this.apiService.get<any[]>('api/v1/master/sale-ledgers'),

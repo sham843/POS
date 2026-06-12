@@ -31,7 +31,7 @@ export class SessionSummary implements OnInit {
 
     try {
       // Load master data as soon as the page opens
-      await this.masterDataService.loadAndStoreMasterData(this.userDetails);
+      await this.masterDataService.loadAndStoreMasterData();
     } catch (error) {
       console.error('Failed to load master data on init', error);
     }
