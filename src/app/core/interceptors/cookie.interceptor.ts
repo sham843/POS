@@ -9,12 +9,12 @@ export const cookieInterceptor: HttpInterceptorFn = (req, next) => {
   let clonedReq = req;
 
   if (token) {
-    // Set the .AspNetCore.Session cookie explicitly via header
-    // and enable withCredentials to pass native browser cookies
+    // We use withCredentials to pass native browser cookies
+    // If the token is a JWT, we pass it via the Authorization header (standard)
     clonedReq = req.clone({
       withCredentials: true,
       setHeaders: {
-        'Cookie': `.AspNetCore.Session=${token}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
