@@ -88,21 +88,17 @@ export class Login implements OnInit {
           const encryptedData = response.data;
           const token = await this.rsaService.aesDecrypt(encryptedToken);
           const data = await this.rsaService.aesDecrypt(encryptedData);
-          
+
           localStorage.setItem('tk_9xf1BzX', token);
           localStorage.setItem('UserDetails', data);
-          
-          // Set the decrypted token for AuthService/Interceptor to use
           localStorage.setItem('auth_token', token);
-          
           this.errorMessage = '';
-          this.router.navigate(['/session-start']);
+          this.router.navigate(['/session-summary']);
 
           this.isLoading = false;
         },
         error: (error) => {
           this.isLoading = false;
-          console.error('Login error', error);
           this.errorMessage = error?.error?.message || 'Login failed. Please check your credentials and try again.';
         }
       });
