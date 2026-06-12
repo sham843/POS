@@ -1,1 +1,83 @@
-<p>session-summary works!</p>
+<div class="session-container container-fluid p-4 bg-light min-vh-100 d-flex justify-content-center align-items-center">
+  <div class="row w-100 max-w-1000 shadow-sm bg-white rounded-4 overflow-hidden">
+    
+    <!-- Left Side: Profile Info -->
+    <div class="col-md-4 p-5 d-flex flex-column align-items-center justify-content-center border-end">
+      <div class="profile-avatar mb-3">
+        <!-- SVG Avatar or Image placeholder -->
+        <img src="assets/images/avatar.png" alt="Profile" class="rounded-circle" width="100" height="100" onerror="this.src='https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff&rounded=true&size=100'">
+      </div>
+      <h4 class="fw-bold mb-3">{{ userDetails?.name || 'User Name' }}</h4>
+      <div class="d-flex align-items-center text-muted mb-2">
+        <mat-icon class="me-2 fs-6" style="width: 18px; height: 18px;">phone</mat-icon>
+        <span>{{ userDetails?.mobileNumber || 'N/A' }}</span>
+      </div>
+      <div class="d-flex align-items-center text-muted">
+        <mat-icon class="me-2 fs-6" style="width: 18px; height: 18px;">person_outline</mat-icon>
+        <span>Counter Sale</span>
+      </div>
+    </div>
+
+    <!-- Right Side: Session Details -->
+    <div class="col-md-8 p-5">
+      <div class="session-details-list">
+        
+        <div class="detail-row d-flex justify-content-between align-items-center py-3 border-bottom">
+          <div class="d-flex align-items-center text-muted">
+            <mat-icon class="me-2 fs-6">calendar_today</mat-icon>
+            <span>Date</span>
+          </div>
+          <span class="fw-bold">{{ currentDate | date:'dd-MM-yyyy' }}</span>
+        </div>
+
+        <div class="detail-row d-flex justify-content-between align-items-center py-3 border-bottom">
+          <div class="d-flex align-items-center text-muted">
+            <mat-icon class="me-2 fs-6">receipt</mat-icon>
+            <span>Total Bills</span>
+          </div>
+          <span class="fw-bold">0</span>
+        </div>
+
+        <div class="detail-row d-flex justify-content-between align-items-center py-3 border-bottom">
+          <div class="d-flex align-items-center text-muted">
+            <mat-icon class="me-2 fs-6">account_balance_wallet</mat-icon>
+            <span>Collection</span>
+          </div>
+          <span class="fw-bold">₹ 0.00</span>
+        </div>
+
+        <div class="detail-row d-flex justify-content-between align-items-center py-3 border-bottom">
+          <div class="d-flex align-items-center text-muted">
+            <mat-icon class="me-2 fs-6">access_time</mat-icon>
+            <span>Start Time</span>
+          </div>
+          <span class="fw-bold">{{ currentDate | date:'hh:mm a' }}</span>
+        </div>
+
+        <div class="detail-row d-flex justify-content-between align-items-center py-3 border-bottom">
+          <div class="d-flex align-items-center text-muted">
+            <mat-icon class="me-2 fs-6">schedule</mat-icon>
+            <span>End Time</span>
+          </div>
+          <span class="fw-bold">-</span>
+        </div>
+
+        <div class="detail-row d-flex justify-content-between align-items-center py-3 border-bottom">
+          <div class="d-flex align-items-center text-muted">
+            <mat-icon class="me-2 fs-6">payments</mat-icon>
+            <span>Opening Balance For Current Session</span>
+          </div>
+          <span class="fw-bold">₹ 0.00</span>
+        </div>
+
+      </div>
+
+      <div class="mt-4 text-center text-md-start">
+        <button mat-flat-button color="primary" class="py-4 px-5 rounded-pill shadow-sm fs-6" (click)="startSession()">
+          Start Session
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
