@@ -92,31 +92,31 @@ export class Login implements OnInit {
         const encrypted = await this.rsaService.aesEncrypt(JSON.stringify(loginData));
 
         this.authService.login(encrypted).subscribe({
-        next: async (response) => {
-          const encryptedToken = response.token;
-          const encryptedData = response.data;
-          const token = await this.rsaService.aesDecrypt(encryptedToken);
-          const data = await this.rsaService.aesDecrypt(encryptedData);
+          next: async (response) => {
+            const encryptedToken = response.token;
+            const encryptedData = response.data;
+            const token = await this.rsaService.aesDecrypt(encryptedToken);
+            const data = await this.rsaService.aesDecrypt(encryptedData);
 
-          localStorage.setItem('tk_9xf1BzX', token);
-          localStorage.setItem('UserDetails', data);
-          this.errorMessage = '';
-          this.router.navigate(['/session-summary']);
+            localStorage.setItem('tk_9xf1BzX', token);
+            localStorage.setItem('UserDetails', data);
+            this.errorMessage = '';
+            this.router.navigate(['/session-summary']);
 
-          this.isLoading = false;
-          this.loaderService.hide(); // Hide loader on success
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.loaderService.hide(); // Hide loader on error
-          this.errorMessage = error?.error?.message || 'Login failed. Please check your credentials and try again.';
-        }
-      });
-    } catch (e) {
-      this.loaderService.hide(); // Ensure loader is hidden on unexpected encryption error
-      this.isLoading = false;
-      this.errorMessage = 'An error occurred while encrypting credentials.';
-    }
+            this.isLoading = false;
+            this.loaderService.hide(); // Hide loader on success
+          },
+          error: (error) => {
+            this.isLoading = false;
+            this.loaderService.hide(); // Hide loader on error
+            this.errorMessage = error?.error?.message || 'Login failed. Please check your credentials and try again.';
+          }
+        });
+      } catch (e) {
+        this.loaderService.hide(); // Ensure loader is hidden on unexpected encryption error
+        this.isLoading = false;
+        this.errorMessage = 'An error occurred while encrypting credentials.';
+      }
     } else {
       this.loginForm.markAllAsTouched();
     }

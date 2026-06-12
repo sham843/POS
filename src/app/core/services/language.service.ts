@@ -9,6 +9,6 @@ export class LanguageService {
 
   initLanguage() {
     // Initialize language logic here
-    console.log('LanguageService initialized');
+    // console.log('LanguageService initialized');
   }
 }

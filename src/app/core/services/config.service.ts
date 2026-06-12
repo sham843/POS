@@ -14,10 +14,10 @@ export class ConfigService {
     try {
       const timestamp = new Date().getTime();
       this.config = await firstValueFrom(this.http.get(`assets/config/app-config.json?v=${timestamp}`));
-      console.log('App Config Loaded Successfully:', this.config);
+      // console.log('App Config Loaded Successfully:', this.config);
     } catch (error) {
-      console.error('Failed to load application configuration', error);
-      this.config = { 
+      // console.error('Failed to load application configuration', error);
+      this.config = {
         formFieldAppearance: 'outline',
         apiUrl: 'https://demoposapi.hitechdairy.in'
       };
