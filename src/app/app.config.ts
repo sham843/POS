@@ -1,4 +1,5 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, APP_INITIALIZER } from '@angular/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideTranslateService } from '@ngx-translate/core';
@@ -8,6 +9,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { routes } from './app.routes';
 import { ConfigService } from './core/services/config.service';
 import { cookieInterceptor } from './core/interceptors/cookie.interceptor';
+import { apiInterceptor } from './core/interceptors/api.interceptor';
 
 export function initializeApp(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -20,7 +22,8 @@ export function formFieldOptionsFactory(configService: ConfigService) {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(withInterceptors([cookieInterceptor])),
+    provideAnimations(),
+    provideHttpClient(withInterceptors([cookieInterceptor, apiInterceptor])),
     provideTranslateService(),
     provideTranslateHttpLoader({ prefix: 'assets/i18n/', suffix: '.json' }),
     provideBrowserGlobalErrorListeners(),

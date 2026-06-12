@@ -11,6 +11,7 @@ import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CryptoSessionService } from '../../../core/services/crypto-session.service';
 import { RsaService } from '../../../core/services/rsa.service';
+import { LoaderService } from '../../../core/services/loader.service';
 
 @Component({
   selector: 'app-login',
@@ -42,6 +43,7 @@ export class Login implements OnInit {
   private router = inject(Router);
   private crypto = inject(CryptoSessionService);
   private rsaService = inject(RsaService);
+  private loaderService = inject(LoaderService);
 
   constructor() {
     this.appearance = this.configService.getConfig()?.formFieldAppearance || 'outline';
@@ -54,10 +56,15 @@ export class Login implements OnInit {
   }
 
   async ngOnInit() {
-    await this.crypto.generateSessionKey();
-    await this.rsaService.generateKeyPair(); // Generates and stores
-    this.publickey = await this.rsaService.exportPublicKeyPEM(); // Uses stored key
-    await this.handshaking(this.publickey)
+    this.loaderService.show(); // Start loader for key generation
+    try {
+      await this.crypto.generateSessionKey();
+      await this.rsaService.generateKeyPair(); // Generates and stores
+      this.publickey = await this.rsaService.exportPublicKeyPEM(); // Uses stored key
+      await this.handshaking(this.publickey);
+    } finally {
+      this.loaderService.hide(); // Hide loader after init logic
+    }
   }
 
   async handshaking(publickey: string) {
@@ -77,12 +84,14 @@ export class Login implements OnInit {
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
+      this.loaderService.show(); // Show loader during encryption and login
 
-      const { username, password } = this.loginForm.value;
-      const loginData = { username, password };
-      const encrypted = await this.rsaService.aesEncrypt(JSON.stringify(loginData));
+      try {
+        const { username, password } = this.loginForm.value;
+        const loginData = { username, password };
+        const encrypted = await this.rsaService.aesEncrypt(JSON.stringify(loginData));
 
-      this.authService.login(encrypted).subscribe({
+        this.authService.login(encrypted).subscribe({
         next: async (response) => {
           const encryptedToken = response.token;
           const encryptedData = response.data;
@@ -95,12 +104,19 @@ export class Login implements OnInit {
           this.router.navigate(['/session-summary']);
 
           this.isLoading = false;
+          this.loaderService.hide(); // Hide loader on success
         },
         error: (error) => {
           this.isLoading = false;
+          this.loaderService.hide(); // Hide loader on error
           this.errorMessage = error?.error?.message || 'Login failed. Please check your credentials and try again.';
         }
       });
+    } catch (e) {
+      this.loaderService.hide(); // Ensure loader is hidden on unexpected encryption error
+      this.isLoading = false;
+      this.errorMessage = 'An error occurred while encrypting credentials.';
+    }
     } else {
       this.loginForm.markAllAsTouched();
     }
