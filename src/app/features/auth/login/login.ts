@@ -54,10 +54,19 @@ export class Login implements OnInit {
     await this.crypto.generateSessionKey();
     await this.rsaService.generateKeyPair(); // Generates and stores
     this.publickey = await this.rsaService.exportPublicKeyPEM(); // Uses stored key
-    // Call handshaking API on load
-    this.authService.handshake(this.publickey).subscribe({
-      next: (res) => console.log('Handshake successful:', res),
-      error: (err) => console.error('Handshake failed:', err)
+    await this.handshaking(this.publickey)
+  }
+
+  async handshaking(publickey: string) {
+    this.authService.handshake(publickey).subscribe({
+      next: async (response) => {
+        const data = response.data;
+        await this.rsaService.decryptAesKey(data);
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Login failed', error);
+      }
     });
   }
 
