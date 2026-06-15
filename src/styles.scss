@@ -94,6 +94,46 @@ body {
   --checkbox-bg: #0f172a;
   --checkbox-border: #475569;
 
+  /* Fix Material Input Colors for Dark Mode */
+  --mdc-filled-text-field-input-text-color: var(--input-text);
+  --mdc-filled-text-field-label-text-color: var(--text-secondary);
+  --mdc-filled-text-field-hover-label-text-color: var(--text-primary);
+  --mdc-filled-text-field-focus-label-text-color: var(--border-color);
+  --mdc-outlined-text-field-input-text-color: var(--input-text);
+  --mdc-outlined-text-field-label-text-color: var(--text-secondary);
+  --mdc-outlined-text-field-hover-label-text-color: var(--text-primary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--border-color);
+  
+  .mat-mdc-input-element {
+    color: var(--input-text) !important;
+  }
+  .mat-mdc-form-field-input-control::placeholder {
+    color: var(--text-secondary) !important;
+  }
+  .mdc-floating-label {
+    color: var(--text-secondary) !important;
+  }
+  
+  /* Fix Checkbox and Icons for Dark Mode */
+  .mat-mdc-checkbox {
+    --mdc-checkbox-unselected-icon-color: var(--input-text);
+    --mdc-checkbox-unselected-hover-icon-color: var(--input-text);
+    --mdc-checkbox-unselected-focus-icon-color: var(--input-text);
+    --mdc-checkbox-unselected-pressed-icon-color: var(--input-text);
+  }
+  
+  /* Fallback for Checkbox outline */
+  .mdc-checkbox__background {
+    border-color: var(--input-text) !important;
+  }
+  
+  --mdc-filled-text-field-caret-color: var(--input-text);
+  --mdc-outlined-text-field-caret-color: var(--input-text);
+  
+  .mat-mdc-form-field .mat-mdc-icon-button {
+    color: var(--input-text) !important;
+  }
+
   /* POS Modern Flat UI Variables (Dark Mode if needed, keeping flat) */
   --pos-bg: #212529;
   --pos-card-bg: #343a40;
@@ -126,6 +166,46 @@ body {
     --btn-secondary-border: #475569;
     --checkbox-bg: #0f172a;
     --checkbox-border: #475569;
+
+    /* Fix Material Input Colors for Dark Mode */
+    --mdc-filled-text-field-input-text-color: var(--input-text);
+    --mdc-filled-text-field-label-text-color: var(--text-secondary);
+    --mdc-filled-text-field-hover-label-text-color: var(--text-primary);
+    --mdc-filled-text-field-focus-label-text-color: var(--border-color);
+    --mdc-outlined-text-field-input-text-color: var(--input-text);
+    --mdc-outlined-text-field-label-text-color: var(--text-secondary);
+    --mdc-outlined-text-field-hover-label-text-color: var(--text-primary);
+    --mdc-outlined-text-field-focus-label-text-color: var(--border-color);
+    
+    .mat-mdc-input-element {
+      color: var(--input-text) !important;
+    }
+    .mat-mdc-form-field-input-control::placeholder {
+      color: var(--text-secondary) !important;
+    }
+    .mdc-floating-label {
+      color: var(--text-secondary) !important;
+    }
+    
+    /* Fix Checkbox and Icons for Dark Mode */
+    .mat-mdc-checkbox {
+      --mdc-checkbox-unselected-icon-color: var(--input-text);
+      --mdc-checkbox-unselected-hover-icon-color: var(--input-text);
+      --mdc-checkbox-unselected-focus-icon-color: var(--input-text);
+      --mdc-checkbox-unselected-pressed-icon-color: var(--input-text);
+    }
+    
+    /* Fallback for Checkbox outline */
+    .mdc-checkbox__background {
+      border-color: var(--input-text) !important;
+    }
+    
+    --mdc-filled-text-field-caret-color: var(--input-text);
+    --mdc-outlined-text-field-caret-color: var(--input-text);
+    
+    .mat-mdc-form-field .mat-mdc-icon-button {
+      color: var(--input-text) !important;
+    }
 
     /* POS Modern Flat UI Variables (System Dark) */
     --pos-bg: #212529;
@@ -166,6 +246,30 @@ body {
 
 mat-error {
   margin-left: -15px;
+}
+
+/* Global Custom Button Styles */
+.app-primary-btn {
+  background-color: var(--btn-primary-bg) !important;
+  color: var(--btn-primary-text) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease-in-out !important;
+  
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Fix for Chrome autofill background in dark mode */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--form-bg) inset !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 /* Global Custom Button Styles */

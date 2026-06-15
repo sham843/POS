@@ -10,7 +10,7 @@
     <div class="login-form-section p-4 p-md-5">
       <div class="form-header mb-4">
         <h2 class="fw-bold mb-1">Welcome back</h2>
-        <p class="text-muted">Please enter your details to sign in.</p>
+        <p style="color: var(--text-secondary)">Please enter your details to sign in.</p>
       </div>
 
       <!-- API Error Message -->
@@ -48,22 +48,15 @@
         <!-- Remember Me & Forgot Password -->
         <div class="d-flex justify-content-between align-items-center mb-4 mt-1">
           <mat-checkbox formControlName="rememberMe" color="primary">
-            Remember me
+            <span style="color: var(--text-primary)">Remember me</span>
           </mat-checkbox>
         </div>
 
         <!-- Submit Button -->
-        <button mat-flat-button type="submit"
-          class="w-100 py-4 fw-bold fs-6 mt-2 app-primary-btn">
+        <button mat-flat-button type="submit" class="w-100 py-4 fw-bold fs-6 mt-2 app-primary-btn">
           Sign In
         </button>
       </form>
-
-      <!-- Footer Text -->
-      <div class="text-center mt-4 pt-2">
-        <p class="text-muted fs-sm mb-0">Don't have an account? <a href="#"
-            class="text-decoration-none text-primary fw-medium">Contact admin</a></p>
-      </div>
     </div>
   </div>
 </div>

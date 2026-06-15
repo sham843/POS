@@ -1,1 +1,49 @@
-<p>home works!</p>
+<div class="home-container">
+  <!-- Header / Navbar -->
+  <mat-toolbar color="primary" class="home-header">
+    <div class="brand">
+      <mat-icon class="brand-icon">storefront</mat-icon>
+      <span class="brand-name ms-2">Hitech Dairy POS</span>
+    </div>
+
+    <span class="spacer"></span>
+
+    <!-- Language Selector -->
+    <button mat-button [matMenuTriggerFor]="langMenu" class="me-2">
+      <mat-icon>language</mat-icon>
+      <span class="d-none d-sm-inline ms-1">{{ currentLang }}</span>
+    </button>
+    <mat-menu #langMenu="matMenu">
+      <button mat-menu-item *ngFor="let lang of languages" (click)="setLanguage(lang.label)">
+        {{ lang.label }}
+      </button>
+    </mat-menu>
+
+    <!-- Theme Selector -->
+    <button mat-icon-button [matMenuTriggerFor]="themeMenu" aria-label="Toggle theme" class="me-2">
+      <mat-icon *ngIf="currentTheme === 'light'">light_mode</mat-icon>
+      <mat-icon *ngIf="currentTheme === 'dark'">dark_mode</mat-icon>
+      <mat-icon *ngIf="currentTheme === 'system'">settings_brightness</mat-icon>
+    </button>
+    <mat-menu #themeMenu="matMenu">
+      <button mat-menu-item *ngFor="let theme of themes" (click)="setTheme(theme.code)">
+        <mat-icon>{{ theme.icon }}</mat-icon>
+        <span>{{ theme.label }}</span>
+      </button>
+    </mat-menu>
+
+    <!-- Login Button -->
+    <a mat-stroked-button color="primary" routerLink="/login" class="ms-2 login-btn">
+      Sign In
+    </a>
+  </mat-toolbar>
+
+  <!-- Hero Section (Content) -->
+  <div class="hero-section text-center p-4 p-md-5">
+    <h1 class="display-4 fw-bold mb-4">Manage Your Dairy Business Smartly</h1>
+    <p class="lead text-muted mb-5">The ultimate POS solution for fast billing, inventory management, and reports.</p>
+    <a mat-flat-button color="primary" routerLink="/login" class="app-primary-btn py-3 px-5 fs-5">
+      Get Started Now
+    </a>
+  </div>
+</div>
