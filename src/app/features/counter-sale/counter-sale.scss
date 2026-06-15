@@ -318,50 +318,64 @@
       align-items: center;
       gap: 12px;
 
-      .date-time-info {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        color: #4B5563;
-        white-space: nowrap; /* Prevent wrapping */
-        
-        mat-icon {
-          font-size: 16px;
-          width: 16px;
-          height: 16px;
-        }
-
-        .dt-text {
-          font-size: 13px;
-          font-weight: 500;
-          white-space: nowrap; /* Prevent PM from wrapping to new line */
-          font-variant-numeric: tabular-nums; /* Prevent jittering when seconds change */
-        }
-      }
-
-      .divider-vertical {
-        width: 1px;
-        height: 14px;
-        background: #D1D5DB;
-      }
-
       .stats {
         display: flex;
         align-items: center;
-        gap: 12px;
-        color: #4B5563;
-        font-size: 13px;
+        gap: 8px;
         white-space: nowrap; /* Prevent stats from wrapping */
 
         .stat {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 10px;
+          border-radius: 6px;
+          font-size: 13px;
+          font-weight: 500;
+          border: 1px solid transparent;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+
+          strong {
+            font-weight: 700;
+          }
+        }
+
+        .date-stat {
+          background-color: #EFF6FF;
+          border-color: #BFDBFE;
+          color: #1D4ED8;
+          font-variant-numeric: tabular-nums;
+          strong {
+            color: #1E3A8A;
+          }
+        }
+
+
+        .bill-stat {
+          background-color: #F3F4F6;
+          border-color: #E5E7EB;
+          color: #4B5563;
           strong {
             color: #111827;
-            font-weight: 600;
+          }
+        }
+
+        .sales-stat {
+          background-color: #ECFDF5;
+          border-color: #D1FAE5;
+          color: #047857;
+          strong {
+            color: #065F46;
           }
         }
 
         .divider {
-          color: #D1D5DB;
+          display: none; /* Hidden since we now use badges */
         }
       }
     }

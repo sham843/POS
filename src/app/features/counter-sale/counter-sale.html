@@ -66,15 +66,13 @@
       <!-- RECENT BILLS STRIP -->
       <div class="recent-bills-strip">
         <div class="strip-left">
-          <div class="date-time-info">
-            <mat-icon>schedule</mat-icon>
-            <span class="dt-text">{{ currentTime() | date:'dd MMM yyyy, hh:mm:ss a' }}</span>
-          </div>
-          <div class="divider-vertical"></div>
           <div class="stats">
-            <span class="stat">Bills: <strong>18</strong></span>
-            <span class="divider">|</span>
-            <span class="stat">Bills: <strong>₹3,920</strong></span>
+            <span class="stat date-stat">
+              <mat-icon>calendar_today</mat-icon>
+              <strong>{{ currentTime() | date:'dd MMM yyyy, hh:mm:ss a' }}</strong>
+            </span>
+            <span class="stat bill-stat">Bills: <strong>18</strong></span>
+            <span class="stat sales-stat">Sales: <strong>₹3,920</strong></span>
           </div>
         </div>
         <button class="prev-bill-btn">
