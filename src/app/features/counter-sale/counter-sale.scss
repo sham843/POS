@@ -1,12 +1,20 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .custom-pos-layout {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 64px);
   /* Subtract main-layout header height */
-  width: 100vw;
+  width: 100%;
+  max-width: 100%;
   background-color: #F8F9FA;
   font-family: 'Inter', 'Roboto', sans-serif;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 /* SUB HEADER */
@@ -16,7 +24,8 @@
   /* Light blue background */
   display: flex;
   align-items: center;
-  padding: 0 16px;
+  padding: 0 16px 0 32px;
+  /* Matched 32px left padding */
   border-bottom: 1px solid #BFDBFE;
   /* Slightly darker blue border */
   gap: 24px;
@@ -24,7 +33,7 @@
 
 .sub-header-search {
   flex: 1;
-  max-width: 450px;
+  max-width: 300px;
 
   .search-box {
     display: flex;
@@ -237,6 +246,7 @@
   flex: 1;
   display: flex;
   padding: 16px;
+  /* 32px padding on the left to balance right side */
   gap: 16px;
   overflow: hidden;
 }
@@ -246,6 +256,7 @@
   /* Approx 55% width */
   display: flex;
   flex-direction: column;
+  //padding-left: 16px; /* Added 16px padding to match right side visual spacing */
   overflow: hidden;
 }
 
@@ -298,7 +309,8 @@
 
       app-payment {
         display: block;
-        padding: 16px; /* Increased top padding for alignment and breathing room */
+        padding: 16px;
+        /* Increased top padding for alignment and breathing room */
         background: #ffffff;
         height: 100%;
       }
@@ -311,7 +323,8 @@
     justify-content: space-between;
     background: transparent;
     padding: 0 4px;
-    margin-top: 8px; /* Small gap from checkout card */
+    margin-top: 8px;
+    /* Small gap from checkout card */
 
     .strip-left {
       display: flex;
@@ -322,7 +335,8 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        white-space: nowrap; /* Prevent stats from wrapping */
+        white-space: nowrap;
+        /* Prevent stats from wrapping */
 
         .stat {
           display: inline-flex;
@@ -350,6 +364,7 @@
           border-color: #BFDBFE;
           color: #1D4ED8;
           font-variant-numeric: tabular-nums;
+
           strong {
             color: #1E3A8A;
           }
@@ -360,6 +375,7 @@
           background-color: #F3F4F6;
           border-color: #E5E7EB;
           color: #4B5563;
+
           strong {
             color: #111827;
           }
@@ -369,13 +385,15 @@
           background-color: #ECFDF5;
           border-color: #D1FAE5;
           color: #047857;
+
           strong {
             color: #065F46;
           }
         }
 
         .divider {
-          display: none; /* Hidden since we now use badges */
+          display: none;
+          /* Hidden since we now use badges */
         }
       }
     }
@@ -385,22 +403,27 @@
       align-items: center;
       gap: 6px;
       padding: 6px 12px;
-      background: #EFF6FF; /* Theme light background */
-      border: 1px solid #BFDBFE; /* Theme light border */
+      background: #EFF6FF;
+      /* Theme light background */
+      border: 1px solid #BFDBFE;
+      /* Theme light border */
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s;
-      white-space: nowrap; /* Prevent button text from wrapping */
+      white-space: nowrap;
+      /* Prevent button text from wrapping */
 
       mat-icon {
         font-size: 16px;
         width: 16px;
         height: 16px;
-        color: #0052CC; /* Theme primary color */
+        color: #0052CC;
+        /* Theme primary color */
       }
 
       .highlight {
-        color: #0052CC; /* Theme primary color */
+        color: #0052CC;
+        /* Theme primary color */
         font-weight: 600;
         font-size: 12px;
       }
@@ -413,7 +436,8 @@
       }
 
       &:hover {
-        background: #DBEAFE; /* Slightly darker theme background on hover */
+        background: #DBEAFE;
+        /* Slightly darker theme background on hover */
       }
     }
   }

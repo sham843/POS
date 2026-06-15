@@ -2,10 +2,12 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
+  max-width: 100vw;
   background-color: #F8F9FA;
   font-family: 'Inter', 'Roboto', sans-serif;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 /* TOP HEADER */
@@ -15,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 16px 0 32px; /* Added more left padding to balance with right side */
   border-bottom: 1px solid #E5E7EB;
   gap: 24px;
 }
