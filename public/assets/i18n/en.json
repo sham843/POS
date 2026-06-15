@@ -19,5 +19,15 @@
     "SIGN_IN": "Sign In",
     "NO_ACCOUNT": "Don't have an account?",
     "CONTACT_ADMIN": "Contact admin"
+  },
+  "SESSION_SUMMARY": {
+    "COUNTER_SALE": "Counter Sale",
+    "COLLECTION": "Collection",
+    "TOTAL_BILLS": "Total Bills",
+    "OPENING_BAL": "Opening Bal.",
+    "DATE": "Date",
+    "START_TIME": "Start Time",
+    "END_TIME": "End Time",
+    "START_SESSION": "Start Session"
   }
 }

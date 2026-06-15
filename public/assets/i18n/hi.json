@@ -19,5 +19,15 @@
     "SIGN_IN": "लॉगिन करें",
     "NO_ACCOUNT": "अकाउंट नहीं है?",
     "CONTACT_ADMIN": "एडमिन से संपर्क करें"
+  },
+  "SESSION_SUMMARY": {
+    "COUNTER_SALE": "काउंटर बिक्री",
+    "COLLECTION": "जमा राशि",
+    "TOTAL_BILLS": "कुल बिल",
+    "OPENING_BAL": "प्रारंभिक राशि",
+    "DATE": "दिनांक",
+    "START_TIME": "प्रारंभ समय",
+    "END_TIME": "समापन समय",
+    "START_SESSION": "सत्र शुरू करें"
   }
 }

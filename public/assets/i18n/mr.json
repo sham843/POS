@@ -19,5 +19,15 @@
     "SIGN_IN": "लॉगिन करा",
     "NO_ACCOUNT": "अकाउंट नाहीये?",
     "CONTACT_ADMIN": "अॅडमिनला संपर्क करा"
+  },
+  "SESSION_SUMMARY": {
+    "COUNTER_SALE": "काऊंटर विक्री",
+    "COLLECTION": "जमा रक्कम",
+    "TOTAL_BILLS": "एकूण बिले",
+    "OPENING_BAL": "सुरुवातीची रक्कम",
+    "DATE": "दिनांक",
+    "START_TIME": "सुरुवात वेळ",
+    "END_TIME": "शेवट वेळ",
+    "START_SESSION": "सत्र सुरु करा"
   }
 }

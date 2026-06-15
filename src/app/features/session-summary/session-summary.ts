@@ -3,12 +3,13 @@ import { Component, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MasterDataService } from '../../core/services/master-data.service';
 
 @Component({
   selector: 'app-session-summary',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, TranslatePipe],
   templateUrl: './session-summary.html',
   styleUrl: './session-summary.scss',
 })
