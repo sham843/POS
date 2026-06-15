@@ -9,8 +9,8 @@
 .summary-details {
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  gap: 6px;
+  padding: 12px 16px;
+  gap: 4px;
 }
 
 .summary-row {
@@ -19,12 +19,12 @@
   align-items: center;
   
   .label {
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 400;
     color: #374151;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
   }
   
   .discount-input {
@@ -32,10 +32,10 @@
     align-items: center;
     border: 1px solid #D1D5DB;
     border-radius: 6px;
-    height: 32px;
+    height: 28px;
     background: #ffffff;
     overflow: hidden;
-    width: 80px;
+    width: 70px;
     
     input {
       flex: 1;
@@ -44,8 +44,8 @@
       border: none;
       outline: none;
       text-align: center;
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: 500;
       color: #111827;
       background: transparent;
     }
@@ -54,7 +54,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
+      width: 28px;
       height: 100%;
       background: #F9FAFB;
       border-left: 1px solid #D1D5DB;
@@ -64,8 +64,8 @@
   }
   
   .value {
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 500;
     color: #111827;
     
     &.text-danger {
@@ -79,18 +79,18 @@
   justify-content: space-between;
   align-items: center;
   background: #EFF6FF;
-  padding: 16px;
+  padding: 12px 16px;
   border-top: 1px solid #E5E7EB;
   
   .tp-label {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 600;
     color: #0052CC;
   }
   
   .tp-value {
-    font-size: 26px;
-    font-weight: 800;
+    font-size: 22px;
+    font-weight: 700;
     color: #0052CC;
   }
 }

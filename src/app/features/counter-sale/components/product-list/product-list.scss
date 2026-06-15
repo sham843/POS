@@ -125,17 +125,24 @@
     .img-placeholder {
       width: 60px;
       height: 60px;
-      background: #F3F4F6;
+      background: transparent; /* Transparent background */
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #9CA3AF;
       
-      mat-icon {
+      mat-icon, i {
         font-size: 32px;
         width: 32px;
         height: 32px;
+      }
+      
+      /* Style for PNG images */
+      img {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
       }
     }
   }

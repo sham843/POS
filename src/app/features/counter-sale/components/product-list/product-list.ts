@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 'app-product-list',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
@@ -22,4 +22,4 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
 })
-export class ProductList {}
+export class ProductList { }

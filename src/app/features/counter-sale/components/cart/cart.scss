@@ -59,7 +59,7 @@
   padding: 8px 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
   
   &::-webkit-scrollbar {
     width: 4px;
@@ -74,7 +74,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding-bottom: 16px;
+  padding-bottom: 8px;
   border-bottom: 1px solid #F3F4F6;
   
   &:last-child {
