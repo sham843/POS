@@ -3,16 +3,18 @@ import { inject } from '@angular/core';
 import { throwError, TimeoutError } from 'rxjs';
 import { catchError, finalize, timeout } from 'rxjs/operators';
 import { Router } from '@angular/router';
-// import { LoaderService } from '../services/loader.service';
+import { LoaderService } from '../services/loader.service';
 import { NotificationService } from '../services/notification.service';
 
 export const apiInterceptor: HttpInterceptorFn = (req, next) => {
-  // const loaderService = inject(LoaderService);
+  const loaderService = inject(LoaderService);
   const notificationService = inject(NotificationService);
   const router = inject(Router);
 
-  // Show loader on request start
-  // loaderService.show();
+  // Show loader on request start for non-GET requests
+  if (req.method !== 'GET') {
+    loaderService.show();
+  }
 
   return next(req).pipe(
     // 30 seconds timeout
@@ -73,7 +75,9 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
     }),
     finalize(() => {
       // Hide loader when request completes (success or error)
-      //loaderService.hide();
+      if (req.method !== 'GET') {
+        loaderService.hide();
+      }
     })
   );
 };
