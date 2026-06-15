@@ -11,7 +11,10 @@ export class AuthService {
   constructor(private apiService: ApiService) { }
 
   handshake(publickey: string): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 
+      'Content-Type': 'application/json',
+      'X-Skip-Loader': 'true'
+    });
     return this.apiService.post<any>('api/v1/auth/handshaking', JSON.stringify({ publicKey: publickey }), headers, 'main');
   }
 

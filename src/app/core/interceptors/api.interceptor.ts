@@ -11,12 +11,20 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
   const notificationService = inject(NotificationService);
   const router = inject(Router);
 
-  // Show loader on request start for non-GET requests
-  if (req.method !== 'GET') {
+  const skipLoader = req.headers.has('X-Skip-Loader');
+  
+  // Remove the custom header so it doesn't go to the server
+  let modifiedReq = req;
+  if (skipLoader) {
+    modifiedReq = req.clone({ headers: req.headers.delete('X-Skip-Loader') });
+  }
+
+  // Show loader on request start for non-GET requests unless skipped
+  if (req.method !== 'GET' && !skipLoader) {
     loaderService.show();
   }
 
-  return next(req).pipe(
+  return next(modifiedReq).pipe(
     // 30 seconds timeout
     timeout(30000),
     catchError((error: any) => {
@@ -75,7 +83,7 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
     }),
     finalize(() => {
       // Hide loader when request completes (success or error)
-      if (req.method !== 'GET') {
+      if (req.method !== 'GET' && !skipLoader) {
         loaderService.hide();
       }
     })
