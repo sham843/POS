@@ -12,11 +12,11 @@
   margin-bottom: 16px;
   overflow-x: auto;
   padding-bottom: 4px;
-  
+
   &::-webkit-scrollbar {
     height: 0;
   }
-  
+
   .pill-btn {
     display: flex;
     align-items: center;
@@ -31,24 +31,26 @@
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
-    
+
     i {
       font-size: 16px;
       color: #6B7280;
     }
-    
+
     &.active {
       background: #0052CC;
       color: #ffffff;
       border-color: #0052CC;
-      
+
       i {
         color: #ffffff;
       }
     }
-    
+
     &.more-btn {
-      margin-left: auto; /* Push 'More' to the right if there's space */
+      margin-left: auto;
+
+      /* Push 'More' to the right if there's space */
       i {
         color: #6B7280;
       }
@@ -64,10 +66,11 @@
   gap: 12px;
   overflow-y: auto;
   align-content: start;
-  
+
   &::-webkit-scrollbar {
     width: 6px;
   }
+
   &::-webkit-scrollbar-thumb {
     background: #D1D5DB;
     border-radius: 4px;
@@ -78,19 +81,17 @@
   background: #ffffff;
   border: 1px solid #E5E7EB;
   border-radius: 12px;
-  padding: 8px;
+  padding: 12.5px;
   display: flex;
   flex-direction: column;
   position: relative;
-  aspect-ratio: 1;
   justify-content: space-between;
-  position: relative;
   transition: box-shadow 0.2s;
-  
+
   &:hover {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   }
-  
+
   .fav-icon {
     position: absolute;
     top: 12px;
@@ -100,12 +101,12 @@
     height: 20px;
     color: #9CA3AF;
     cursor: pointer;
-    
+
     &:hover {
       color: #F59E0B;
     }
   }
-  
+
   .prod-image {
     flex: 1;
     display: flex;
@@ -113,29 +114,31 @@
     justify-content: center;
     margin-bottom: 8px;
     margin-top: 8px;
-    
+
     img {
       max-height: 100%;
       max-width: 100%;
       object-fit: contain;
     }
-    
+
     .img-placeholder {
       width: 60px;
       height: 60px;
-      background: transparent; /* Transparent background */
+      background: transparent;
+      /* Transparent background */
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #9CA3AF;
-      
-      mat-icon, i {
+
+      mat-icon,
+      i {
         font-size: 32px;
         width: 32px;
         height: 32px;
       }
-      
+
       /* Style for PNG images */
       img {
         width: 32px;
@@ -144,12 +147,12 @@
       }
     }
   }
-  
+
   .prod-info {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    
+
     .prod-name {
       font-size: 12px;
       font-weight: 600;
@@ -159,35 +162,47 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
-    .prod-price {
-      font-size: 14px;
-      font-weight: 700;
-      color: #0052CC;
-    }
-    
-    .prod-status {
+
+    .prod-price-row {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 4px;
-      font-size: 10px;
-      font-weight: 500;
       margin-top: 2px;
-      
-      .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
+
+      .prod-price {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0052CC;
       }
-      
-      &.in-stock {
-        color: #10B981;
-        .dot { background: #10B981; }
-      }
-      
-      &.low-stock {
-        color: #F59E0B;
-        .dot { background: #F59E0B; }
+
+      .prod-status {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 10px;
+        font-weight: 500;
+
+        .dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+        }
+
+        &.in-stock {
+          color: #059669;
+
+          .dot {
+            background: #10B981;
+          }
+        }
+
+        &.low-stock {
+          color: #D97706;
+
+          .dot {
+            background: #F59E0B;
+          }
+        }
       }
     }
   }
@@ -201,13 +216,14 @@
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid #E5E7EB;
-  
+
   .pagination-controls {
     display: flex;
     align-items: center;
     gap: 4px;
-    
-    .page-btn, .nav-btn {
+
+    .page-btn,
+    .nav-btn {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -220,30 +236,30 @@
       font-weight: 600;
       color: #374151;
       cursor: pointer;
-      
+
       &:hover {
         background: #F3F4F6;
       }
-      
+
       &.active {
         background: #0052CC;
         color: white;
       }
-      
+
       mat-icon {
         font-size: 18px;
         width: 18px;
         height: 18px;
       }
     }
-    
+
     .ellipsis {
       font-size: 14px;
       color: #6B7280;
       padding: 0 4px;
     }
   }
-  
+
   .items-count {
     font-size: 13px;
     color: #6B7280;
