@@ -1,16 +1,18 @@
 <div class="login-container">
   <div class="login-wrapper shadow-lg">
 
-    <!-- Left Side: Branding / Visuals -->
-    <div class="login-branding d-none d-md-flex flex-column justify-content-center align-items-center text-center p-5">
-      <div class="brand-overlay"></div>
+    <!-- Left side Branding Image -->
+    <div class="login-branding d-none d-md-flex align-items-center justify-content-center p-5">
+      <div class="brand-content text-white text-center">
+        <!-- Optional branding text/logo can go here -->
+      </div>
     </div>
 
-    <!-- Right Side: Login Form -->
+    <!-- Right side Form Section -->
     <div class="login-form-section p-4 p-md-5">
       <div class="form-header mb-4">
-        <h2 class="fw-bold mb-1">Welcome back</h2>
-        <p style="color: var(--text-secondary)">Please enter your details to sign in.</p>
+        <h2 class="fw-bold mb-1">{{ 'LOGIN.WELCOME_BACK' | translate }}</h2>
+        <p style="color: var(--text-secondary)">{{ 'LOGIN.ENTER_DETAILS' | translate }}</p>
       </div>
 
       <!-- API Error Message -->
@@ -22,8 +24,8 @@
 
         <!-- Username Input -->
         <mat-form-field [appearance]="appearance" class="w-100">
-          <mat-label>Username</mat-label>
-          <input matInput type="text" placeholder="Enter your username" formControlName="username">
+          <mat-label>{{ 'LOGIN.USERNAME' | translate }}</mat-label>
+          <input matInput type="text" formControlName="username">
           <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
             Username is required
           </mat-error>
@@ -31,9 +33,8 @@
 
         <!-- Password Input -->
         <mat-form-field [appearance]="appearance" class="w-100">
-          <mat-label>Password</mat-label>
-          <input matInput [type]="hidePassword ? 'password' : 'text'" placeholder="Enter your password"
-            formControlName="password">
+          <mat-label>{{ 'LOGIN.PASSWORD' | translate }}</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
           <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button" tabindex="-1">
             <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>
@@ -48,15 +49,21 @@
         <!-- Remember Me & Forgot Password -->
         <div class="d-flex justify-content-between align-items-center mb-4 mt-1">
           <mat-checkbox formControlName="rememberMe" color="primary">
-            <span style="color: var(--text-primary)">Remember me</span>
+            <span style="color: var(--text-primary)">{{ 'LOGIN.REMEMBER_ME' | translate }}</span>
           </mat-checkbox>
         </div>
 
         <!-- Submit Button -->
         <button mat-flat-button type="submit" class="w-100 py-4 fw-bold fs-6 mt-2 app-primary-btn">
-          Sign In
+          {{ 'LOGIN.SIGN_IN' | translate }}
         </button>
       </form>
+      
+      <!-- Footer Text -->
+      <div class="text-center mt-4 pt-2">
+        <p class="fs-sm mb-0" style="color: var(--text-secondary)">{{ 'LOGIN.NO_ACCOUNT' | translate }} <a href="#"
+            class="text-decoration-none text-primary fw-medium">{{ 'LOGIN.CONTACT_ADMIN' | translate }}</a></p>
+      </div>
     </div>
   </div>
 </div>

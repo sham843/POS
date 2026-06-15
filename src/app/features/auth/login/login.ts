@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CryptoSessionService } from '../../../core/services/crypto-session.service';
@@ -23,7 +24,8 @@ import { LoaderService } from '../../../core/services/loader.service';
     MatInputModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatIconModule
+    MatIconModule,
+    TranslatePipe
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',

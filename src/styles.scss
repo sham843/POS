@@ -77,7 +77,7 @@ body {
   --pos-danger: #dc3545;
 }
 
-[data-theme='dark'] {
+@mixin dark-theme-styles {
   --bg-color: #0f172a;
   --border-color: #34d399;
   --text-primary: #f8fafc;
@@ -148,77 +148,14 @@ body {
   --pos-danger: #dc3545;
 }
 
+[data-theme='dark'] {
+  @include dark-theme-styles;
+}
+
 /* System theme logic */
 @media (prefers-color-scheme: dark) {
   [data-theme='system'] {
-    --bg-color: #0f172a;
-    --border-color: #34d399;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --form-bg: #1e293b;
-    --input-bg: #0f172a;
-    --input-border: #475569;
-    --input-text: #f8fafc;
-    --btn-primary-bg: #34d399;
-    --btn-primary-text: #0f172a;
-    --btn-secondary-bg: #1e293b;
-    --btn-secondary-text: #f8fafc;
-    --btn-secondary-border: #475569;
-    --checkbox-bg: #0f172a;
-    --checkbox-border: #475569;
-
-    /* Fix Material Input Colors for Dark Mode */
-    --mdc-filled-text-field-input-text-color: var(--input-text);
-    --mdc-filled-text-field-label-text-color: var(--text-secondary);
-    --mdc-filled-text-field-hover-label-text-color: var(--text-primary);
-    --mdc-filled-text-field-focus-label-text-color: var(--border-color);
-    --mdc-outlined-text-field-input-text-color: var(--input-text);
-    --mdc-outlined-text-field-label-text-color: var(--text-secondary);
-    --mdc-outlined-text-field-hover-label-text-color: var(--text-primary);
-    --mdc-outlined-text-field-focus-label-text-color: var(--border-color);
-    
-    .mat-mdc-input-element {
-      color: var(--input-text) !important;
-    }
-    .mat-mdc-form-field-input-control::placeholder {
-      color: var(--text-secondary) !important;
-    }
-    .mdc-floating-label {
-      color: var(--text-secondary) !important;
-    }
-    
-    /* Fix Checkbox and Icons for Dark Mode */
-    .mat-mdc-checkbox {
-      --mdc-checkbox-unselected-icon-color: var(--input-text);
-      --mdc-checkbox-unselected-hover-icon-color: var(--input-text);
-      --mdc-checkbox-unselected-focus-icon-color: var(--input-text);
-      --mdc-checkbox-unselected-pressed-icon-color: var(--input-text);
-    }
-    
-    /* Fallback for Checkbox outline */
-    .mdc-checkbox__background {
-      border-color: var(--input-text) !important;
-    }
-    
-    --mdc-filled-text-field-caret-color: var(--input-text);
-    --mdc-outlined-text-field-caret-color: var(--input-text);
-    
-    .mat-mdc-form-field .mat-mdc-icon-button {
-      color: var(--input-text) !important;
-    }
-
-    /* POS Modern Flat UI Variables (System Dark) */
-    --pos-bg: #212529;
-    --pos-card-bg: #343a40;
-    --pos-card-border: #495057;
-    --pos-accent: #0d6efd;
-    --pos-accent-hover: #0b5ed7;
-    --pos-glass-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    --pos-text-primary: #f8f9fa;
-    --pos-text-secondary: #ced4da;
-    --pos-success: #198754;
-    --pos-warning: #ffc107;
-    --pos-danger: #dc3545;
+    @include dark-theme-styles;
   }
 }
 
@@ -270,18 +207,4 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px var(--form-bg) inset !important;
   -webkit-text-fill-color: var(--text-primary) !important;
   transition: background-color 5000s ease-in-out 0s;
-}
-
-/* Global Custom Button Styles */
-.app-primary-btn {
-  background-color: var(--btn-primary-bg) !important;
-  color: var(--btn-primary-text) !important;
-  border-radius: 8px !important;
-  transition: all 0.2s ease-in-out !important;
-  
-  &:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  }
 }

@@ -5,7 +5,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ThemeService } from '../../core/services/theme.service';
+import { LanguageService } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +17,8 @@ import { ThemeService } from '../../core/services/theme.service';
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    RouterModule
+    RouterModule,
+    TranslatePipe
   ],
   standalone: true,
   templateUrl: './home.html',
@@ -23,8 +26,9 @@ import { ThemeService } from '../../core/services/theme.service';
 })
 export class Home implements OnInit {
   public themeService = inject(ThemeService);
+  public languageService = inject(LanguageService);
   
-  currentLang = 'English';
+  currentLangLabel = 'English';
   currentTheme = 'system';
 
   languages = [
@@ -41,8 +45,9 @@ export class Home implements OnInit {
 
   ngOnInit() {
     this.currentTheme = this.themeService.getCurrentTheme();
-    const savedLang = localStorage.getItem('app-lang') || 'English';
-    this.currentLang = savedLang;
+    const savedLangCode = this.languageService.getCurrentLanguage();
+    const lang = this.languages.find(l => l.code === savedLangCode);
+    this.currentLangLabel = lang ? lang.label : 'English';
   }
 
   setTheme(theme: string) {
@@ -50,10 +55,9 @@ export class Home implements OnInit {
     this.themeService.setTheme(theme);
   }
 
-  setLanguage(langLabel: string) {
-    this.currentLang = langLabel;
-    localStorage.setItem('app-lang', langLabel);
-    // In the future, integrate with ngx-translate or Angular i18n here
+  setLanguage(langCode: string, langLabel: string) {
+    this.currentLangLabel = langLabel;
+    this.languageService.setLanguage(langCode);
   }
 }
 

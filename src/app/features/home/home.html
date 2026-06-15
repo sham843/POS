@@ -11,10 +11,10 @@
     <!-- Language Selector -->
     <button mat-button [matMenuTriggerFor]="langMenu" class="me-2">
       <mat-icon>language</mat-icon>
-      <span class="d-none d-sm-inline ms-1">{{ currentLang }}</span>
+      <span class="d-none d-sm-inline ms-1">{{ currentLangLabel }}</span>
     </button>
     <mat-menu #langMenu="matMenu">
-      <button mat-menu-item *ngFor="let lang of languages" (click)="setLanguage(lang.label)">
+      <button mat-menu-item *ngFor="let lang of languages" (click)="setLanguage(lang.code, lang.label)">
         {{ lang.label }}
       </button>
     </mat-menu>
@@ -34,16 +34,16 @@
 
     <!-- Login Button -->
     <a mat-stroked-button color="primary" routerLink="/login" class="ms-2 login-btn">
-      Sign In
+      {{ 'HEADER.LOGIN' | translate }}
     </a>
   </mat-toolbar>
 
   <!-- Hero Section (Content) -->
   <div class="hero-section text-center p-4 p-md-5">
-    <h1 class="display-4 fw-bold mb-4">Manage Your Dairy Business Smartly</h1>
-    <p class="lead text-muted mb-5">The ultimate POS solution for fast billing, inventory management, and reports.</p>
+    <h1 class="display-4 fw-bold mb-4">{{ 'HOME.HERO_TITLE' | translate }}</h1>
+    <p class="lead text-muted mb-5">{{ 'HOME.HERO_SUBTITLE' | translate }}</p>
     <a mat-flat-button color="primary" routerLink="/login" class="app-primary-btn py-3 px-5 fs-5">
-      Get Started Now
+      {{ 'HOME.GET_STARTED' | translate }}
     </a>
   </div>
 </div>

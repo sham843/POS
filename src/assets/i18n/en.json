@@ -4,5 +4,20 @@
     "LOGOUT": "Logout",
     "CUSTOMER_SALES": "Customer Sales",
     "DASHBOARD": "Dashboard"
+  },
+  "HOME": {
+    "HERO_TITLE": "Manage Your Dairy Business Smartly",
+    "HERO_SUBTITLE": "The ultimate POS solution for fast billing, inventory management, and reports.",
+    "GET_STARTED": "Get Started Now"
+  },
+  "LOGIN": {
+    "WELCOME_BACK": "Welcome back",
+    "ENTER_DETAILS": "Please enter your details to sign in.",
+    "USERNAME": "Username",
+    "PASSWORD": "Password",
+    "REMEMBER_ME": "Remember me",
+    "SIGN_IN": "Sign In",
+    "NO_ACCOUNT": "Don't have an account?",
+    "CONTACT_ADMIN": "Contact admin"
   }
 }
