@@ -20,7 +20,8 @@
 }
 
 .sub-header-search {
-  max-width: 300px;
+  flex: 1;
+  max-width: 450px;
   
   .search-box {
     display: flex;
@@ -46,7 +47,6 @@
       font-size: 13px;
       background: transparent;
       color: #374151;
-      width: 150px;
       
       &::placeholder {
         color: #9CA3AF;
@@ -101,10 +101,10 @@
     &.active {
       background: #ffffff; /* White background */
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-      color: #7E22CE; /* Purple from reference image, or use #0052CC for blue */
+      color: #0052CC; /* Blue theme */
       
       mat-icon {
-        color: #7E22CE;
+        color: #0052CC;
       }
     }
   }
@@ -200,8 +200,16 @@
     height: 20px;
   }
   
-  &:hover {
+  &:hover:not(:disabled) {
     background: #EFF6FF; /* Light blue hover */
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #F3F4F6;
+    border-color: #D1D5DB;
+    color: #9CA3AF;
   }
 }
 

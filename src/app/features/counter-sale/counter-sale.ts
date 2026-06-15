@@ -31,18 +31,29 @@ export class CounterSale {
     { id: 1, name: 'Bill 1', active: true }
   ]);
   
-  searchType = signal<'bill' | 'customer'>('bill');
+  searchType = signal<'product' | 'bill' | 'customer'>('product');
   nextBillId = 2;
 
-  setSearchType(type: 'bill' | 'customer') {
+  setSearchType(type: 'product' | 'bill' | 'customer') {
     this.searchType.set(type);
   }
 
   addBill() {
+    if (this.bills().length >= 5) {
+      return;
+    }
+    
+    // Find the smallest available ID
+    const existingIds = this.bills().map(b => b.id);
+    let newId = 1;
+    while (existingIds.includes(newId)) {
+      newId++;
+    }
+
     const currentBills = this.bills().map(b => ({ ...b, active: false }));
     const newBill: BillTab = {
-      id: this.nextBillId++,
-      name: `Bill ${this.nextBillId - 1}`,
+      id: newId,
+      name: `Bill ${newId}`,
       active: true
     };
     this.bills.set([...currentBills, newBill]);

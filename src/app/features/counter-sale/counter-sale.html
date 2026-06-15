@@ -3,17 +3,14 @@
   <!-- SUB HEADER (Only for Counter Sale) -->
   <div class="pos-sub-header">
     
-    <!-- SEARCH -->
-    <div class="sub-header-search">
-      <div class="search-box">
-        <mat-icon class="search-icon">search</mat-icon>
-        <input type="text" [placeholder]="searchType() === 'bill' ? 'Search by Bill No.' : 'Search by Customer Name'">
-        <span class="shortcut-key">F2</span>
-      </div>
-    </div>
-
     <!-- SEARCH TYPE CHIPS (Segmented Control) -->
     <div class="search-type-chips">
+      <div class="chip" 
+           [class.active]="searchType() === 'product'" 
+           (click)="setSearchType('product')">
+        <mat-icon>inventory_2</mat-icon>
+        <span>Product</span>
+      </div>
       <div class="chip" 
            [class.active]="searchType() === 'bill'" 
            (click)="setSearchType('bill')">
@@ -28,6 +25,15 @@
       </div>
     </div>
 
+    <!-- SEARCH -->
+    <div class="sub-header-search">
+      <div class="search-box">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" [placeholder]="searchType() === 'product' ? 'Search by Product Name / Code' : (searchType() === 'bill' ? 'Search by Bill No.' : 'Search by Customer Name')">
+        <span class="shortcut-key">F2</span>
+      </div>
+    </div>
+
     <!-- MULTIPLE BILL TABS -->
     <div class="bill-tabs-container">
       <div class="bill-tabs-scroll">
@@ -39,7 +45,7 @@
           <mat-icon class="close-icon" (click)="removeBill(bill.id, $event)">close</mat-icon>
         </div>
       </div>
-      <button class="add-bill-btn" (click)="addBill()" title="New Bill">
+      <button class="add-bill-btn" (click)="addBill()" [disabled]="bills().length >= 5" title="Maximum 5 bills allowed">
         <mat-icon>add</mat-icon>
       </button>
     </div>

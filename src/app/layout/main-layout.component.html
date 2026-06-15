@@ -8,24 +8,28 @@
       <div class="brand-name">Dairy Shop POS</div>
     </div>
 
+    <!-- Push items to the right -->
+    <div style="flex: 1"></div>
+
     <!-- Navigation Links in Header -->
     <div class="header-nav-links">
       <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
-        <mat-icon>space_dashboard</mat-icon>
+        <i class="fa-solid fa-chart-pie"></i>
         <span class="nav-text">Dashboard</span>
       </a>
       <a routerLink="/counter-sale" routerLinkActive="active" class="nav-link">
-        <mat-icon>point_of_sale</mat-icon>
+        <i class="fa-solid fa-cash-register"></i>
         <span class="nav-text">POS</span>
       </a>
       <a routerLink="/reports" routerLinkActive="active" class="nav-link">
-        <mat-icon>analytics</mat-icon>
+        <i class="fa-solid fa-chart-line"></i>
         <span class="nav-text">Reports</span>
       </a>
+      <a routerLink="/settings" routerLinkActive="active" class="nav-link">
+        <i class="fa-solid fa-gear"></i>
+        <span class="nav-text">Settings</span>
+      </a>
     </div>
-
-    <!-- Push actions to the right -->
-    <div style="flex: 1"></div>
 
     <div class="header-actions">
       <div class="action-block">
@@ -37,7 +41,26 @@
       </div>
 
       <button class="icon-btn outline-btn"><mat-icon>light_mode</mat-icon></button>
-      <button class="icon-btn filled-btn"><mat-icon>menu</mat-icon></button>
+      
+      <!-- Profile Dropdown Container -->
+      <div class="profile-menu-container">
+        <button class="profile-avatar" (click)="toggleProfileMenu()">
+          PV
+        </button>
+        
+        <!-- Dropdown Menu -->
+        <div class="profile-dropdown" *ngIf="showProfileMenu()">
+          <div class="dropdown-header">
+            <span class="user-name">Prashant Varma</span>
+            <span class="user-role">Admin</span>
+          </div>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item text-danger" (click)="endSession()">
+            <mat-icon>logout</mat-icon>
+            End Session
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
