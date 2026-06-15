@@ -1,19 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { MasterDataService } from '../../core/services/master-data.service';
+import { MasterDataService } from '../../../core/services/master-data.service';
 
 @Component({
-  selector: 'app-session-summary',
-  standalone: true,
+  selector: 'app-session-start',
   imports: [CommonModule, MatButtonModule, MatIconModule, TranslatePipe],
-  templateUrl: './session-summary.html',
-  styleUrl: './session-summary.scss',
+  standalone: true,
+  templateUrl: './session-start.html',
+  styleUrl: './session-start.scss',
 })
-export class SessionSummary implements OnInit {
+export class SessionStart {
   private masterDataService = inject(MasterDataService);
   private router = inject(Router);
 
@@ -54,3 +54,4 @@ export class SessionSummary implements OnInit {
     this.router.navigate(['/login']);
   }
 }
+

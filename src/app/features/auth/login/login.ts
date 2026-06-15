@@ -100,7 +100,7 @@ export class Login implements OnInit {
             localStorage.setItem('tk_9xf1BzX', token);
             localStorage.setItem('UserDetails', data);
             this.errorMessage = '';
-            this.router.navigate(['/session-summary']);
+            this.router.navigate(['/session-start']);
 
             this.loaderService.hide(); // Hide loader on success
           },
