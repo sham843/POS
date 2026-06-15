@@ -56,19 +56,6 @@ $text-main: #111827;
     font-size: 0.875rem;
   }
 
-  /* Override Material button to add some smooth transition */
-  button[mat-flat-button] {
-    transition: all 0.2s ease-in-out;
-
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 6px -1px rgba($primary-color, 0.3), 0 2px 4px -1px rgba($primary-color, 0.2);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-  }
 }
 
 @media (max-width: 768px) {

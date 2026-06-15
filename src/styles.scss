@@ -167,3 +167,17 @@ body {
 mat-error {
   margin-left: -15px;
 }
+
+/* Global Custom Button Styles */
+.app-primary-btn {
+  background-color: var(--btn-primary-bg) !important;
+  color: var(--btn-primary-text) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease-in-out !important;
+  
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+}
