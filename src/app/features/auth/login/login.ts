@@ -55,14 +55,14 @@ export class Login implements OnInit {
   }
 
   async ngOnInit() {
-    this.loaderService.show(); // Start loader for key generation
+    //this.loaderService.show(); // Start loader for key generation
     try {
       await this.crypto.generateSessionKey();
       await this.rsaService.generateKeyPair(); // Generates and stores
       this.publickey = await this.rsaService.exportPublicKeyPEM(); // Uses stored key
       await this.handshaking(this.publickey);
     } finally {
-      this.loaderService.hide(); // Hide loader after init logic
+      // this.loaderService.hide(); // Hide loader after init logic
     }
   }
 
