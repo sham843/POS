@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
@@ -17,14 +17,14 @@ export class SessionStart {
   private masterDataService = inject(MasterDataService);
   private router = inject(Router);
 
-  userDetails: any = null;
-  currentDate: Date = new Date();
+  userDetails = signal<any>(null);
+  currentDate = signal<Date>(new Date());
 
   async ngOnInit() {
     const userStr = localStorage.getItem('UserDetails');
     if (userStr) {
       try {
-        this.userDetails = JSON.parse(userStr);
+        this.userDetails.set(JSON.parse(userStr));
       } catch (e) {
         console.error('Failed to parse UserDetails', e);
       }
@@ -45,7 +45,7 @@ export class SessionStart {
   }
 
   onAvatarError(event: any) {
-    const name = this.userDetails?.name || 'User';
+    const name = this.userDetails()?.name || 'User';
     event.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=116256&color=fff&rounded=true&size=90`;
   }
 

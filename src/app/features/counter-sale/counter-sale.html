@@ -39,7 +39,7 @@
         <mat-icon class="block-icon">schedule</mat-icon>
         <div class="block-details">
           <span class="block-label">Time</span>
-          <span class="block-value">04:43 PM</span>
+          <span class="block-value">{{ currentTime() | date:'hh:mm:ss a' }}</span>
         </div>
       </div>
 
