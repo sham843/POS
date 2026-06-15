@@ -1,0 +1,48 @@
+<div class="main-layout-container">
+  <!-- TOP HEADER -->
+  <div class="pos-top-header">
+    <div class="header-brand">
+      <div class="brand-icon">
+        <mat-icon>water_drop</mat-icon>
+      </div>
+      <div class="brand-name">Dairy Shop POS</div>
+    </div>
+
+    <!-- Navigation Links in Header -->
+    <div class="header-nav-links">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+        <mat-icon>space_dashboard</mat-icon>
+        <span class="nav-text">Dashboard</span>
+      </a>
+      <a routerLink="/counter-sale" routerLinkActive="active" class="nav-link">
+        <mat-icon>point_of_sale</mat-icon>
+        <span class="nav-text">POS</span>
+      </a>
+      <a routerLink="/reports" routerLinkActive="active" class="nav-link">
+        <mat-icon>analytics</mat-icon>
+        <span class="nav-text">Reports</span>
+      </a>
+    </div>
+
+    <!-- Push actions to the right -->
+    <div style="flex: 1"></div>
+
+    <div class="header-actions">
+      <div class="action-block">
+        <mat-icon class="block-icon">schedule</mat-icon>
+        <div class="block-details">
+          <span class="block-label">Time</span>
+          <span class="block-value">{{ currentTime() | date:'hh:mm:ss a' }}</span>
+        </div>
+      </div>
+
+      <button class="icon-btn outline-btn"><mat-icon>light_mode</mat-icon></button>
+      <button class="icon-btn filled-btn"><mat-icon>menu</mat-icon></button>
+    </div>
+  </div>
+
+  <!-- ROUTER OUTLET -->
+  <div class="layout-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

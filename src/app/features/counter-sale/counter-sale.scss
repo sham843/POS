@@ -1,57 +1,26 @@
 .custom-pos-layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(100vh - 64px); /* Subtract main-layout header height */
   width: 100vw;
   background-color: #F8F9FA;
   font-family: 'Inter', 'Roboto', sans-serif;
   overflow: hidden;
 }
 
-/* TOP HEADER */
-.pos-top-header {
-  height: 64px;
-  background: #ffffff;
+/* SUB HEADER */
+.pos-sub-header {
+  height: 56px;
+  background: #EFF6FF; /* Light blue background */
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 16px;
-  border-bottom: 1px solid #E5E7EB;
+  border-bottom: 1px solid #BFDBFE; /* Slightly darker blue border */
   gap: 24px;
 }
 
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  
-  .brand-icon {
-    width: 36px;
-    height: 36px;
-    background: #0052CC;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    
-    mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-  }
-  
-  .brand-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: #111827;
-  }
-}
-
-.header-search {
-  flex: 1;
-  max-width: 400px;
+.sub-header-search {
+  max-width: 300px;
   
   .search-box {
     display: flex;
@@ -59,14 +28,14 @@
     background: #ffffff;
     border: 1px solid #D1D5DB;
     border-radius: 8px;
-    height: 40px;
+    height: 36px;
     padding: 0 12px;
     
     .search-icon {
       color: #0052CC;
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
       margin-right: 8px;
     }
     
@@ -74,9 +43,10 @@
       flex: 1;
       border: none;
       outline: none;
-      font-size: 14px;
+      font-size: 13px;
       background: transparent;
       color: #374151;
+      width: 150px;
       
       &::placeholder {
         color: #9CA3AF;
@@ -84,7 +54,7 @@
     }
     
     .shortcut-key {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       color: #0052CC;
       background: #EFF6FF;
@@ -95,101 +65,146 @@
   }
 }
 
-.header-actions {
+.search-type-chips {
   display: flex;
   align-items: center;
-  gap: 16px;
+  background: #E5EDF6; /* Slightly darker than sub-header to stand out */
+  padding: 4px;
+  border-radius: 8px;
+  gap: 4px;
   
-  .action-block {
+  .chip {
     display: flex;
     align-items: center;
-    background: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 6px 12px;
-    height: 40px;
-    box-sizing: border-box;
-    gap: 8px;
-    
-    .block-icon {
-      color: #6B7280;
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-    
-    &.customer-block .block-icon {
-      color: #0052CC;
-    }
-    
-    .block-details {
-      display: flex;
-      flex-direction: column;
-      
-      .block-label {
-        font-size: 10px;
-        color: #6B7280;
-        font-weight: 500;
-        line-height: 1;
-        margin-bottom: 2px;
-      }
-      
-      .block-value {
-        font-size: 12px;
-        font-weight: 600;
-        color: #111827;
-        line-height: 1;
-        display: flex;
-        align-items: center;
-        
-        mat-icon {
-          font-size: 14px;
-          width: 14px;
-          height: 14px;
-          margin-left: 4px;
-        }
-      }
-    }
-    
-    .shortcut-key {
-      font-size: 11px;
-      font-weight: 600;
-      color: #0052CC;
-      background: #EFF6FF;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 4px;
-    }
-  }
-  
-  .icon-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4B5563; /* Gray text for inactive */
+    background: transparent;
     cursor: pointer;
-    border: none;
+    transition: all 0.2s ease;
     
     mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #6B7280; /* Gray icon for inactive */
     }
     
-    &.outline-btn {
-      background: #ffffff;
-      border: 1px solid #E5E7EB;
+    &:hover:not(.active) {
       color: #374151;
+      mat-icon { color: #4B5563; }
     }
     
-    &.filled-btn {
-      background: #0052CC;
-      color: #ffffff;
+    &.active {
+      background: #ffffff; /* White background */
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+      color: #7E22CE; /* Purple from reference image, or use #0052CC for blue */
+      
+      mat-icon {
+        color: #7E22CE;
+      }
     }
   }
 }
+
+/* BILL TABS CONTAINER */
+.bill-tabs-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.bill-tabs-scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+}
+
+.bill-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 36px;
+  border-radius: 8px; /* Rounded rectangle instead of pill */
+  background: #ffffff;
+  border: 1px solid #D1D5DB;
+  color: #4B5563;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  
+  .close-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    color: #9CA3AF;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: #E5E7EB;
+      color: #4B5563;
+    }
+  }
+
+  &:hover:not(.active) {
+    background: #F3F4F6;
+  }
+
+  &.active {
+    background: #0052CC; /* Blue theme */
+    border-color: #0052CC;
+    color: #ffffff;
+    
+    .close-icon {
+      color: rgba(255, 255, 255, 0.8);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+.add-bill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #0052CC;
+  color: #0052CC;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  &:hover {
+    background: #EFF6FF; /* Light blue hover */
+  }
+}
+
 
 /* MAIN LAYOUT SPLIT */
 .pos-main-content {

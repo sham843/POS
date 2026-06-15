@@ -1,51 +1,49 @@
 <div class="custom-pos-layout">
 
-  <!-- TOP HEADER -->
-  <div class="pos-top-header">
-    <div class="header-brand">
-      <div class="brand-icon">
-        <mat-icon>water_drop</mat-icon>
-      </div>
-      <div class="brand-name">Dairy Shop POS</div>
-    </div>
-
-    <div class="header-search">
+  <!-- SUB HEADER (Only for Counter Sale) -->
+  <div class="pos-sub-header">
+    
+    <!-- SEARCH -->
+    <div class="sub-header-search">
       <div class="search-box">
         <mat-icon class="search-icon">search</mat-icon>
-        <input type="text" placeholder="Search product by name / code">
+        <input type="text" [placeholder]="searchType() === 'bill' ? 'Search by Bill No.' : 'Search by Customer Name'">
         <span class="shortcut-key">F2</span>
       </div>
     </div>
 
-    <div class="header-actions">
-      <div class="action-block customer-block">
-        <mat-icon class="block-icon">person_outline</mat-icon>
-        <div class="block-details">
-          <span class="block-label">Customer</span>
-          <span class="block-value">Walk-In Customer <mat-icon>expand_more</mat-icon></span>
-        </div>
-        <span class="shortcut-key">F4</span>
+    <!-- SEARCH TYPE CHIPS (Segmented Control) -->
+    <div class="search-type-chips">
+      <div class="chip" 
+           [class.active]="searchType() === 'bill'" 
+           (click)="setSearchType('bill')">
+        <mat-icon>receipt_long</mat-icon>
+        <span>Bill No.</span>
       </div>
-
-      <div class="action-block">
-        <mat-icon class="block-icon">receipt_long</mat-icon>
-        <div class="block-details">
-          <span class="block-label">Bill No.</span>
-          <span class="block-value">INV-2026-1024</span>
-        </div>
+      <div class="chip" 
+           [class.active]="searchType() === 'customer'" 
+           (click)="setSearchType('customer')">
+        <mat-icon>person_outline</mat-icon>
+        <span>Customer</span>
       </div>
-
-      <div class="action-block">
-        <mat-icon class="block-icon">schedule</mat-icon>
-        <div class="block-details">
-          <span class="block-label">Time</span>
-          <span class="block-value">{{ currentTime() | date:'hh:mm:ss a' }}</span>
-        </div>
-      </div>
-
-      <button class="icon-btn outline-btn"><mat-icon>light_mode</mat-icon></button>
-      <button class="icon-btn filled-btn"><mat-icon>menu</mat-icon></button>
     </div>
+
+    <!-- MULTIPLE BILL TABS -->
+    <div class="bill-tabs-container">
+      <div class="bill-tabs-scroll">
+        <div class="bill-tab" 
+             *ngFor="let bill of bills()" 
+             [class.active]="bill.active"
+             (click)="selectBill(bill.id)">
+          <span class="bill-name">{{ bill.name }}</span>
+          <mat-icon class="close-icon" (click)="removeBill(bill.id, $event)">close</mat-icon>
+        </div>
+      </div>
+      <button class="add-bill-btn" (click)="addBill()" title="New Bill">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
   </div>
 
   <!-- MAIN SPLIT CONTENT -->

@@ -8,6 +8,17 @@ export const routes: Routes = [
   { path: 'login', canActivate: [noAuthGuard], loadComponent: () => import('./features/auth/login/login').then(m => m.Login) },
   { path: 'session-start', canActivate: [authGuard], loadComponent: () => import('./features/session/session-start/session-start').then(m => m.SessionStart) },
   { path: 'session-end', canActivate: [authGuard], loadComponent: () => import('./features/session/session-end/session-end').then(m => m.SessionEnd) },
-  { path: 'counter-sale', canActivate: [authGuard], loadComponent: () => import('./features/counter-sale/counter-sale').then(m => m.CounterSale) },
+  
+  {
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () => import('./layout/main-layout.component').then(m => m.MainLayoutComponent),
+    children: [
+      { path: 'counter-sale', loadComponent: () => import('./features/counter-sale/counter-sale').then(m => m.CounterSale) },
+      { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard) },
+      { path: 'reports', loadComponent: () => import('./features/reports/reports').then(m => m.Reports) }
+    ]
+  },
+
   { path: '**', loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent) }
 ];

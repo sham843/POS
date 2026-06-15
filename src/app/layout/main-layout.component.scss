@@ -1,0 +1,240 @@
+.main-layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: #F8F9FA;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  overflow: hidden;
+}
+
+/* TOP HEADER */
+.pos-top-header {
+  height: 64px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid #E5E7EB;
+  gap: 24px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    background: #0052CC;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+  
+  .brand-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+  }
+}
+
+.header-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 20px;
+
+  .nav-link {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    padding: 0 16px;
+    color: #6B7280;
+    text-decoration: none;
+    transition: all 0.2s;
+    background: transparent;
+    font-weight: 500;
+    font-size: 14px;
+    gap: 6px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      background: #F3F4F6;
+      color: #111827;
+    }
+
+    &.active {
+      background: #EFF6FF;
+      color: #0052CC;
+      font-weight: 600;
+    }
+  }
+}
+
+.header-search {
+  flex: 1;
+  max-width: 400px;
+  
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    height: 40px;
+    padding: 0 12px;
+    
+    .search-icon {
+      color: #0052CC;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+    
+    input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      background: transparent;
+      color: #374151;
+      
+      &::placeholder {
+        color: #9CA3AF;
+      }
+    }
+    
+    .shortcut-key {
+      font-size: 11px;
+      font-weight: 600;
+      color: #0052CC;
+      background: #EFF6FF;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+    }
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  
+  .action-block {
+    display: flex;
+    align-items: center;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 6px 12px;
+    height: 40px;
+    box-sizing: border-box;
+    gap: 8px;
+    
+    .block-icon {
+      color: #6B7280;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    &.customer-block .block-icon {
+      color: #0052CC;
+    }
+    
+    .block-details {
+      display: flex;
+      flex-direction: column;
+      
+      .block-label {
+        font-size: 10px;
+        color: #6B7280;
+        font-weight: 500;
+        line-height: 1;
+        margin-bottom: 2px;
+      }
+      
+      .block-value {
+        font-size: 12px;
+        font-weight: 600;
+        color: #111827;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+          margin-left: 4px;
+        }
+      }
+    }
+    
+    .shortcut-key {
+      font-size: 11px;
+      font-weight: 600;
+      color: #0052CC;
+      background: #EFF6FF;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+  }
+  
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    &.outline-btn {
+      background: #ffffff;
+      border: 1px solid #E5E7EB;
+      color: #374151;
+    }
+    
+    &.filled-btn {
+      background: #0052CC;
+      color: #ffffff;
+    }
+  }
+}
+
+.layout-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: transparent;
+}
