@@ -43,4 +43,14 @@ export class SessionSummary implements OnInit {
     // Just navigate to next screen
     this.router.navigate(['/counter-sale']);
   }
+
+  onAvatarError(event: any) {
+    const name = this.userDetails?.name || 'User';
+    event.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=116256&color=fff&rounded=true&size=90`;
+  }
+
+  logout() {
+    localStorage.removeItem('UserDetails');
+    this.router.navigate(['/login']);
+  }
 }

@@ -1,29 +1,34 @@
-<div class="session-container min-vh-100 d-flex justify-content-center align-items-center p-4">
+<div class="session-container min-vh-100 d-flex justify-content-center align-items-center p-3">
   <div class="session-card vertical-layout d-flex flex-column overflow-hidden w-100 position-relative">
+
+    <!-- Logout Button -->
+    <button class="logout-btn position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center" 
+      (click)="logout()" title="{{ 'HEADER.LOGOUT' | translate }}">
+      <mat-icon>logout</mat-icon>
+    </button>
 
     <!-- Top Decorative Header -->
     <div class="card-header-bg"></div>
 
     <!-- Profile Info (Overlapping) -->
-    <div class="profile-section d-flex flex-column align-items-center text-center px-4 pt-0 pb-4 position-relative z-1">
-      <div class="profile-avatar mb-3">
-        <img src="assets/images/avatar.png" alt="Profile" class="rounded-circle shadow" width="90" height="90"
-          onerror="this.src='https://ui-avatars.com/api/?name=User&background=116256&color=fff&rounded=true&size=90'">
+    <div class="profile-section d-flex flex-column align-items-center text-center px-3 pt-0 pb-3 position-relative z-1">
+      <div class="profile-avatar mb-2">
+        <img src="assets/images/avatar.png" alt="Profile" class="rounded-circle shadow" width="75" height="75"
+          (error)="onAvatarError($event)">
       </div>
+      <span class="role-badge mb-1">{{ 'SESSION_SUMMARY.COUNTER_SALE' | translate }}</span>
       <h3 class="fw-bold mb-1 user-name">{{ userDetails?.name || 'User Name' }}</h3>
-      <div class="d-flex align-items-center justify-content-center text-muted mb-3">
-        <mat-icon class="me-1 fs-6 icon-small">phone</mat-icon>
-        <span class="fs-sm">{{ userDetails?.mobileNumber || 'N/A' }}</span>
-        <span class="mx-2">•</span>
-        <span class="role-badge">{{ 'SESSION_SUMMARY.COUNTER_SALE' | translate }}</span>
+      <div class="contact-info d-flex align-items-center justify-content-center text-muted">
+        <mat-icon class="me-1">phone</mat-icon>
+        <span>{{ userDetails?.mobileNumber || 'N/A' }}</span>
       </div>
     </div>
 
     <!-- Main Content -->
-    <div class="details-section px-4 pb-5 pt-2 d-flex flex-column flex-grow-1">
+    <div class="details-section px-3 pb-4 pt-0 d-flex flex-column flex-grow-1">
 
       <!-- Key Metrics (3 columns) -->
-      <div class="metrics-grid mb-4">
+      <div class="metrics-grid mb-3">
         <div class="metric-box text-center p-3 rounded-4">
           <mat-icon class="text-primary mb-1">account_balance_wallet</mat-icon>
           <div class="metric-label">{{ 'SESSION_SUMMARY.COLLECTION' | translate }}</div>
@@ -42,8 +47,8 @@
       </div>
 
       <!-- Time & Date Rows -->
-      <div class="session-details-list mb-4">
-        <div class="detail-row d-flex justify-content-between align-items-center py-3 border-bottom-dashed">
+      <div class="session-details-list mb-3">
+        <div class="detail-row d-flex justify-content-between align-items-center py-2 border-bottom-dashed">
           <div class="d-flex align-items-center text-muted">
             <mat-icon class="me-3 fs-5">calendar_today</mat-icon>
             <span class="fw-medium">{{ 'SESSION_SUMMARY.DATE' | translate }}</span>
@@ -51,7 +56,7 @@
           <span class="fw-bold text-end">{{ userDetails?.loginDate || '-' }}</span>
         </div>
 
-        <div class="detail-row d-flex justify-content-between align-items-center py-3 border-bottom-dashed">
+        <div class="detail-row d-flex justify-content-between align-items-center py-2 border-bottom-dashed">
           <div class="d-flex align-items-center text-muted">
             <mat-icon class="me-3 fs-5">access_time</mat-icon>
             <span class="fw-medium">{{ 'SESSION_SUMMARY.START_TIME' | translate }}</span>
@@ -59,7 +64,7 @@
           <span class="fw-bold text-end">{{ userDetails?.loginTime || '-' }}</span>
         </div>
 
-        <div class="detail-row d-flex justify-content-between align-items-center py-3">
+        <div class="detail-row d-flex justify-content-between align-items-center py-2">
           <div class="d-flex align-items-center text-muted">
             <mat-icon class="me-3 fs-5">schedule</mat-icon>
             <span class="fw-medium">{{ 'SESSION_SUMMARY.END_TIME' | translate }}</span>
@@ -69,7 +74,7 @@
       </div>
 
       <div class="mt-auto">
-        <button mat-flat-button color="primary" class="start-btn w-100 py-4 fs-6 rounded-pill shadow-sm"
+        <button mat-flat-button color="primary" class="start-btn w-100 py-4  fs-6 rounded-pill shadow-sm"
           (click)="startSession()">
           {{ 'SESSION_SUMMARY.START_SESSION' | translate }}
         </button>
