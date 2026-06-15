@@ -1,7 +1,8 @@
 .custom-pos-layout {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px); /* Subtract main-layout header height */
+  height: calc(100vh - 64px);
+  /* Subtract main-layout header height */
   width: 100vw;
   background-color: #F8F9FA;
   font-family: 'Inter', 'Roboto', sans-serif;
@@ -11,18 +12,20 @@
 /* SUB HEADER */
 .pos-sub-header {
   height: 56px;
-  background: #EFF6FF; /* Light blue background */
+  background: #EFF6FF;
+  /* Light blue background */
   display: flex;
   align-items: center;
   padding: 0 16px;
-  border-bottom: 1px solid #BFDBFE; /* Slightly darker blue border */
+  border-bottom: 1px solid #BFDBFE;
+  /* Slightly darker blue border */
   gap: 24px;
 }
 
 .sub-header-search {
   flex: 1;
   max-width: 450px;
-  
+
   .search-box {
     display: flex;
     align-items: center;
@@ -31,7 +34,7 @@
     border-radius: 8px;
     height: 36px;
     padding: 0 12px;
-    
+
     .search-icon {
       color: #0052CC;
       font-size: 18px;
@@ -39,7 +42,7 @@
       height: 18px;
       margin-right: 8px;
     }
-    
+
     input {
       flex: 1;
       border: none;
@@ -47,12 +50,12 @@
       font-size: 13px;
       background: transparent;
       color: #374151;
-      
+
       &::placeholder {
         color: #9CA3AF;
       }
     }
-    
+
     .shortcut-key {
       font-size: 10px;
       font-weight: 600;
@@ -68,11 +71,12 @@
 .search-type-chips {
   display: flex;
   align-items: center;
-  background: #E5EDF6; /* Slightly darker than sub-header to stand out */
+  background: #E5EDF6;
+  /* Slightly darker than sub-header to stand out */
   padding: 4px;
   border-radius: 8px;
   gap: 4px;
-  
+
   .chip {
     display: flex;
     align-items: center;
@@ -81,28 +85,36 @@
     border-radius: 6px;
     font-size: 13px;
     font-weight: 600;
-    color: #4B5563; /* Gray text for inactive */
+    color: #4B5563;
+    /* Gray text for inactive */
     background: transparent;
     cursor: pointer;
     transition: all 0.2s ease;
-    
+
     mat-icon {
       font-size: 18px;
       width: 18px;
       height: 18px;
-      color: #6B7280; /* Gray icon for inactive */
+      color: #6B7280;
+      /* Gray icon for inactive */
     }
-    
+
     &:hover:not(.active) {
       color: #374151;
-      mat-icon { color: #4B5563; }
+
+      mat-icon {
+        color: #4B5563;
+      }
     }
-    
+
     &.active {
-      background: #ffffff; /* White background */
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-      color: #0052CC; /* Blue theme */
-      
+      background: #ffffff;
+      /* White background */
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      /* Subtle shadow */
+      color: #0052CC;
+      /* Blue theme */
+
       mat-icon {
         color: #0052CC;
       }
@@ -125,9 +137,12 @@
   align-items: center;
   gap: 8px;
   overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
+
+  /* Firefox */
   &::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
+    /* Chrome/Safari */
   }
 }
 
@@ -137,7 +152,8 @@
   gap: 8px;
   padding: 0 12px;
   height: 36px;
-  border-radius: 8px; /* Rounded rectangle instead of pill */
+  border-radius: 8px;
+  /* Rounded rectangle instead of pill */
   background: #ffffff;
   border: 1px solid #D1D5DB;
   color: #4B5563;
@@ -146,7 +162,7 @@
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s ease;
-  
+
   .close-icon {
     font-size: 14px;
     width: 14px;
@@ -154,7 +170,7 @@
     border-radius: 50%;
     color: #9CA3AF;
     transition: all 0.2s ease;
-    
+
     &:hover {
       background: #E5E7EB;
       color: #4B5563;
@@ -166,13 +182,14 @@
   }
 
   &.active {
-    background: #0052CC; /* Blue theme */
+    background: #0052CC;
+    /* Blue theme */
     border-color: #0052CC;
     color: #ffffff;
-    
+
     .close-icon {
       color: rgba(255, 255, 255, 0.8);
-      
+
       &:hover {
         background: rgba(255, 255, 255, 0.2);
         color: #ffffff;
@@ -193,15 +210,16 @@
   color: #0052CC;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   mat-icon {
     font-size: 20px;
     width: 20px;
     height: 20px;
   }
-  
+
   &:hover:not(:disabled) {
-    background: #EFF6FF; /* Light blue hover */
+    background: #EFF6FF;
+    /* Light blue hover */
   }
 
   &:disabled {
@@ -224,19 +242,21 @@
 }
 
 .pos-left-side {
-  flex: 5.5; /* Approx 55% width */
+  flex: 5.5;
+  /* Approx 55% width */
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .pos-right-side {
-  flex: 4.5; /* Approx 45% width */
+  flex: 4.5;
+  /* Approx 45% width */
   display: flex;
   flex-direction: column;
   overflow: hidden;
   gap: 16px;
-  
+
   .cart-section-container {
     flex: 1;
     background: #ffffff;
@@ -246,7 +266,7 @@
     display: flex;
     flex-direction: column;
   }
-  
+
   .checkout-unified-card {
     display: flex;
     flex-direction: row;
@@ -254,28 +274,30 @@
     border: 1px solid #E5E7EB;
     border-radius: 12px;
     overflow: hidden;
-    
+
     .checkout-left-pane {
-      flex: 7; /* 70% */
+      flex: 2;
+      /* 70% */
       display: flex;
       flex-direction: column;
-      
+
       app-bill-summary {
         display: block;
         height: 100%;
       }
     }
-    
+
     .payment-divider-vertical {
       width: 1px;
       background: #E5E7EB;
     }
-    
+
     .checkout-right-pane {
-      flex: 3; /* 30% */
+      flex: 3;
+      /* 30% */
       display: flex;
       flex-direction: column;
-      
+
       app-payment {
         display: block;
         padding: 16px;
