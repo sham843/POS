@@ -156,7 +156,7 @@
         background-color: var(--btn-primary-bg);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         color: white !important;
-        font-weight: 600;
+        font-weight: 500 !important;
 
         &:hover {
             transform: translateY(-2px);
