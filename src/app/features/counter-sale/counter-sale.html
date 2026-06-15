@@ -2,24 +2,18 @@
 
   <!-- SUB HEADER (Only for Counter Sale) -->
   <div class="pos-sub-header">
-    
+
     <!-- SEARCH TYPE CHIPS (Segmented Control) -->
     <div class="search-type-chips">
-      <div class="chip" 
-           [class.active]="searchType() === 'product'" 
-           (click)="setSearchType('product')">
+      <div class="chip" [class.active]="searchType() === 'product'" (click)="setSearchType('product')">
         <mat-icon>inventory_2</mat-icon>
         <span>Product</span>
       </div>
-      <div class="chip" 
-           [class.active]="searchType() === 'bill'" 
-           (click)="setSearchType('bill')">
+      <div class="chip" [class.active]="searchType() === 'bill'" (click)="setSearchType('bill')">
         <mat-icon>receipt_long</mat-icon>
         <span>Bill No.</span>
       </div>
-      <div class="chip" 
-           [class.active]="searchType() === 'customer'" 
-           (click)="setSearchType('customer')">
+      <div class="chip" [class.active]="searchType() === 'customer'" (click)="setSearchType('customer')">
         <mat-icon>person_outline</mat-icon>
         <span>Customer</span>
       </div>
@@ -29,18 +23,15 @@
     <div class="sub-header-search">
       <div class="search-box">
         <mat-icon class="search-icon">search</mat-icon>
-        <input type="text" [placeholder]="searchType() === 'product' ? 'Search by Product Name / Code' : (searchType() === 'bill' ? 'Search by Bill No.' : 'Search by Customer Name')">
-        <span class="shortcut-key">F2</span>
+        <input type="text"
+          [placeholder]="searchType() === 'product' ? 'Search by Product Name / Code' : (searchType() === 'bill' ? 'Search by Bill No.' : 'Search by Customer Name')">
       </div>
     </div>
 
     <!-- MULTIPLE BILL TABS -->
     <div class="bill-tabs-container">
       <div class="bill-tabs-scroll">
-        <div class="bill-tab" 
-             *ngFor="let bill of bills()" 
-             [class.active]="bill.active"
-             (click)="selectBill(bill.id)">
+        <div class="bill-tab" *ngFor="let bill of bills()" [class.active]="bill.active" (click)="selectBill(bill.id)">
           <span class="bill-name">{{ bill.name }}</span>
           <mat-icon class="close-icon" (click)="removeBill(bill.id, $event)">close</mat-icon>
         </div>
@@ -57,7 +48,7 @@
     <div class="pos-left-side">
       <app-product-list></app-product-list>
     </div>
-    
+
     <div class="pos-right-side">
       <div class="cart-section-container">
         <app-cart></app-cart>
@@ -71,6 +62,27 @@
           <app-payment></app-payment>
         </div>
       </div>
+
+      <!-- RECENT BILLS STRIP -->
+      <div class="recent-bills-strip">
+        <div class="strip-left">
+          <div class="date-time-info">
+            <mat-icon>schedule</mat-icon>
+            <span class="dt-text">{{ currentTime() | date:'dd MMM yyyy, hh:mm:ss a' }}</span>
+          </div>
+          <div class="divider-vertical"></div>
+          <div class="stats">
+            <span class="stat">Bills: <strong>18</strong></span>
+            <span class="divider">|</span>
+            <span class="stat">Bills: <strong>₹3,920</strong></span>
+          </div>
+        </div>
+        <button class="prev-bill-btn">
+          <mat-icon>arrow_upward</mat-icon>
+          <span class="highlight">Previous Bill #0001</span>
+        </button>
+      </div>
+
     </div>
   </div>
 

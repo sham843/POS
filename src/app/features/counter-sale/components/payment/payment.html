@@ -1,33 +1,58 @@
 <div class="custom-payment-section">
   
+  <div class="numpad-container">
+    <div class="numpad-tabs">
+      <button class="n-tab active">Quantity</button>
+      <button class="n-tab">Amount</button>
+      <button class="n-tab">Discount</button>
+    </div>
+    
+    <div class="quick-weights">
+      <button class="qw-btn">0.125</button>
+      <button class="qw-btn">0.250</button>
+      <button class="qw-btn">0.500</button>
+    </div>
+
+    <div class="numpad-grid">
+      <button class="num-btn">1</button>
+      <button class="num-btn">2</button>
+      <button class="num-btn">3</button>
+      <button class="num-btn">4</button>
+      <button class="num-btn">5</button>
+      <button class="num-btn">6</button>
+      <button class="num-btn">7</button>
+      <button class="num-btn">8</button>
+      <button class="num-btn">9</button>
+      <button class="num-btn">.</button>
+      <button class="num-btn">0</button>
+      <button class="num-btn backspace"><mat-icon>backspace</mat-icon></button>
+    </div>
+  </div>
+
   <div class="payment-methods-grid">
     <button class="pay-card cash">
       <div class="card-content">
         <mat-icon>payments</mat-icon>
         <span class="label">Cash</span>
       </div>
-      <span class="shortcut">F8</span>
     </button>
     <button class="pay-card upi">
       <div class="card-content">
         <mat-icon>qr_code_scanner</mat-icon>
         <span class="label">UPI</span>
       </div>
-      <span class="shortcut">F9</span>
     </button>
     <button class="pay-card card">
       <div class="card-content">
         <mat-icon>credit_card</mat-icon>
         <span class="label">Card</span>
       </div>
-      <span class="shortcut">F10</span>
     </button>
     <button class="pay-card credit">
       <div class="card-content">
         <mat-icon>feed</mat-icon>
         <span class="label">Credit</span>
       </div>
-      <span class="shortcut">F11</span>
     </button>
   </div>
 

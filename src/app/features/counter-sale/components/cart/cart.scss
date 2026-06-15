@@ -140,19 +140,21 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: transparent;
+        background: #F3F4F6; /* Light gray background */
         border: none;
-        color: #0052CC;
+        color: #4B5563; /* Darker gray icon */
         cursor: pointer;
+        transition: all 0.2s;
 
         mat-icon {
-          font-size: 14px;
-          width: 14px;
-          height: 14px;
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
         }
 
         &:hover {
-          background: #EFF6FF;
+          background: #E5E7EB;
+          color: #111827;
         }
       }
 

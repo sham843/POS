@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { ProductList } from './components/product-list/product-list';
 import { Cart } from './components/cart/cart';
@@ -26,7 +26,22 @@ interface BillTab {
   templateUrl: './counter-sale.html',
   styleUrl: './counter-sale.scss',
 })
-export class CounterSale {
+export class CounterSale implements OnInit, OnDestroy {
+  currentTime = signal(new Date());
+  private timer: any;
+
+  ngOnInit() {
+    this.timer = setInterval(() => {
+      this.currentTime.set(new Date());
+    }, 1000);
+  }
+
+  ngOnDestroy() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+  }
+
   bills = signal<BillTab[]>([
     { id: 1, name: 'Bill 1', active: true }
   ]);

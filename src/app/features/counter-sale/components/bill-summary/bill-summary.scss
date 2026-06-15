@@ -9,7 +9,7 @@
 .summary-details {
   display: flex;
   flex-direction: column;
-  padding: 8px 16px;
+  padding: 16px;
   gap: 2px;
 }
 
@@ -17,7 +17,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  
+
   .label {
     font-size: 12px;
     font-weight: 400;
@@ -26,7 +26,7 @@
     align-items: center;
     gap: 8px;
   }
-  
+
   .discount-input {
     display: flex;
     align-items: center;
@@ -36,7 +36,7 @@
     background: #ffffff;
     overflow: hidden;
     width: 60px;
-    
+
     input {
       flex: 1;
       width: 100%;
@@ -49,7 +49,7 @@
       color: #111827;
       background: transparent;
     }
-    
+
     .percent {
       display: flex;
       align-items: center;
@@ -62,12 +62,12 @@
       color: #6B7280;
     }
   }
-  
+
   .value {
     font-size: 13px;
     font-weight: 500;
     color: #111827;
-    
+
     &.text-danger {
       color: #EF4444;
     }
@@ -81,13 +81,13 @@
   background: #EFF6FF;
   padding: 8px 16px;
   border-top: 1px solid #E5E7EB;
-  
+
   .tp-label {
     font-size: 13px;
     font-weight: 500;
     color: #0052CC;
   }
-  
+
   .tp-value {
     font-size: 16px;
     font-weight: 600;

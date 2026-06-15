@@ -293,15 +293,113 @@
 
     .checkout-right-pane {
       flex: 3;
-      /* 30% */
       display: flex;
       flex-direction: column;
 
       app-payment {
         display: block;
-        padding: 16px;
+        padding: 16px; /* Increased top padding for alignment and breathing room */
         background: #ffffff;
         height: 100%;
+      }
+    }
+  }
+
+  .recent-bills-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    padding: 0 4px;
+    margin-top: 8px; /* Small gap from checkout card */
+
+    .strip-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .date-time-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #4B5563;
+        white-space: nowrap; /* Prevent wrapping */
+        
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+
+        .dt-text {
+          font-size: 13px;
+          font-weight: 500;
+          white-space: nowrap; /* Prevent PM from wrapping to new line */
+          font-variant-numeric: tabular-nums; /* Prevent jittering when seconds change */
+        }
+      }
+
+      .divider-vertical {
+        width: 1px;
+        height: 14px;
+        background: #D1D5DB;
+      }
+
+      .stats {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #4B5563;
+        font-size: 13px;
+        white-space: nowrap; /* Prevent stats from wrapping */
+
+        .stat {
+          strong {
+            color: #111827;
+            font-weight: 600;
+          }
+        }
+
+        .divider {
+          color: #D1D5DB;
+        }
+      }
+    }
+
+    .prev-bill-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #EFF6FF; /* Theme light background */
+      border: 1px solid #BFDBFE; /* Theme light border */
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap; /* Prevent button text from wrapping */
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        color: #0052CC; /* Theme primary color */
+      }
+
+      .highlight {
+        color: #0052CC; /* Theme primary color */
+        font-weight: 600;
+        font-size: 12px;
+      }
+
+      .details {
+        color: #4B5563;
+        font-size: 12px;
+        font-weight: 500;
+        margin-left: 4px;
+      }
+
+      &:hover {
+        background: #DBEAFE; /* Slightly darker theme background on hover */
       }
     }
   }

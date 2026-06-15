@@ -1,44 +1,152 @@
 .custom-payment-section {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 16px;
   height: 100%;
 }
 
-.payment-methods-grid {
+.numpad-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Decreased gap */
+}
+
+.numpad-tabs {
+  display: flex;
+  gap: 4px; /* Decreased gap */
+  
+  .n-tab {
+    flex: 1;
+    height: 28px; /* Decreased height */
+    border-radius: 4px;
+    border: 1px solid #D1D5DB;
+    background: #F3F4F6;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &.active {
+      background: #0052CC;
+      color: #ffffff;
+      border-color: #0052CC;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 82, 204, 0.2);
+    }
+    
+    &:hover:not(.active) {
+      background: #E5EDF6;
+    }
+  }
+}
+
+.quick-weights {
+  display: flex;
+  gap: 4px; /* Decreased gap */
+  
+  .qw-btn {
+    flex: 1;
+    height: 28px; /* Decreased height */
+    border-radius: 4px;
+    border: 1px solid #E5E7EB;
+    background: #ffffff;
+    color: #111827;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &:hover {
+      background: #EFF6FF;
+      color: #0052CC;
+      border-color: #BFDBFE;
+    }
+  }
+}
+
+.numpad-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr); /* Ensure rows stretch equally */
+  gap: 4px; /* Decreased gap */
+  flex: 1;
+  
+  .num-btn {
+    height: 100%;
+    min-height: 32px; /* Decreased min-height */
+    border-radius: 4px;
+    border: 1px solid #E5E7EB;
+    background: #ffffff;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &:hover {
+      background: #EFF6FF;
+      color: #0052CC;
+      border-color: #BFDBFE;
+    }
+    
+    &.backspace {
+      background: #FEF2F2;
+      color: #DC2626;
+      border-color: #FECACA;
+      
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+      
+      &:hover {
+        background: #FEE2E2;
+        color: #B91C1C;
+      }
+    }
+  }
+}
+
+.payment-methods-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Match numpad-container gap */
+  width: 90px; /* Slightly narrower */
+  height: 100%;
   
   .pay-card {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 12px 8px;
-    gap: 8px;
-    border-radius: 12px;
+    padding: 4px; /* Decreased padding */
+    border-radius: 6px;
     border: none;
     cursor: pointer;
     transition: transform 0.1s;
-    
-    &:hover {
-      transform: translateY(-2px);
-    }
+    position: relative;
+    flex: 1;
     
     .card-content {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 2px; /* Decreased gap */
       
       mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
+        font-size: 18px; /* Decreased icon size */
+        width: 18px;
+        height: 18px;
       }
       
       .label {
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 700;
       }
     }
@@ -49,8 +157,8 @@
       padding: 2px 6px;
       border-radius: 4px;
       position: absolute;
-      top: 6px;
-      right: 6px;
+      top: 4px;
+      right: 4px;
     }
     
     /* Specific Colors */
