@@ -1,21 +1,38 @@
 <div class="custom-product-list">
 
-  <div class="category-pills">
+  <div class="category-pills" #pillsContainer>
     <!-- Static 'All' Button -->
-    <button class="pill-btn" [class.active]="activeCategory() === 'All'" (click)="selectCategory('All')">
-      <lucide-icon [img]="LayoutGrid" class="fa-icon"></lucide-icon> All
-    </button>
 
     <!-- Dynamic Category Buttons from Backend -->
-    @for (cat of categories(); track cat.name) {
+    @for (cat of visibleCategories(); track cat.name) {
     <button class="pill-btn" [class.active]="activeCategory() === cat.name" (click)="selectCategory(cat.name)">
       <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
     </button>
     }
 
-    <button class="pill-btn more-btn">
+    @if (overflowCategories().length > 0) {
+    <button class="pill-btn more-btn" [class.active]="isOverflowActive()" [matMenuTriggerFor]="moreMenu">
       <lucide-icon [img]="Ellipsis" class="fa-icon"></lucide-icon> More
     </button>
+    <mat-menu #moreMenu="matMenu" xPosition="before" yPosition="below" class="custom-category-menu" (closed)="menuSearchQuery.set('')">
+      <ng-template matMenuContent>
+        <div class="menu-search-wrapper" (click)="$event.stopPropagation()">
+          <lucide-icon [img]="Search" class="search-icon"></lucide-icon>
+          <input type="text" class="menu-search-input" placeholder="Search category..." [value]="menuSearchQuery()" (input)="onMenuSearch($event)">
+        </div>
+        <div class="menu-items-scroll">
+          @for (cat of filteredOverflowCategories(); track cat.name) {
+          <button mat-menu-item [class.active-menu-item]="activeCategory() === cat.name" (click)="selectCategory(cat.name)">
+            <lucide-icon [img]="Package" class="fa-icon me-2" style="display: inline-block; vertical-align: middle;"></lucide-icon>
+            <span style="vertical-align: middle;">{{ cat.name }}</span>
+          </button>
+          } @empty {
+          <div class="no-results">No categories found</div>
+          }
+        </div>
+      </ng-template>
+    </mat-menu>
+    }
   </div>
 
   @if (paginatedProducts().length > 0) {

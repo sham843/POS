@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { LucideAngularModule, LayoutGrid, Package, Ellipsis, Star, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { Component, OnInit, AfterViewInit, inject, signal, computed, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { LucideAngularModule, LayoutGrid, Package, Ellipsis, Star, ChevronLeft, ChevronRight, Search } from 'lucide-angular';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { DbService } from '../../../../core/services/db.service';
 import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
@@ -22,15 +23,18 @@ import { CounterSaleService } from '../../../../core/services/counter-sale.servi
     MatChipsModule,
     MatCardModule,
     MatButtonModule,
+    MatMenuModule,
     MatPaginatorModule,
     EmptyState
   ],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
 })
-export class ProductList implements OnInit {
+export class ProductList implements OnInit, AfterViewInit {
   private dbService = inject(DbService);
   private counterSaleService = inject(CounterSaleService);
+
+  @ViewChild('pillsContainer', { static: false }) pillsContainer!: ElementRef<HTMLDivElement>;
 
   // Expose icons to template
   readonly LayoutGrid = LayoutGrid;
@@ -39,25 +43,47 @@ export class ProductList implements OnInit {
   readonly Star = Star;
   readonly ChevronLeft = ChevronLeft;
   readonly ChevronRight = ChevronRight;
+  readonly Search = Search;
 
   // Products loaded from IndexedDB using signals
   allProducts = signal<any[]>([]);
+  allCategories = signal<any[]>([]);
   activeCategory = signal<string>('All');
   currentPage = signal<number>(1);
   pageSize = signal<number>(15);
 
   // Dynamic Categories (fallback to hardcoded if DB is empty)
   categories = signal<{ name: string }[]>([]);
+  visibleCategories = signal<{ name: string }[]>([]);
+  overflowCategories = signal<{ name: string }[]>([]);
+  menuSearchQuery = signal<string>('');
+
+  filteredOverflowCategories = computed(() => {
+    const query = this.menuSearchQuery().toLowerCase().trim();
+    const overflow = this.overflowCategories();
+    if (!query) return overflow;
+    return overflow.filter(cat => cat.name.toLowerCase().includes(query));
+  });
+
+  isOverflowActive = computed(() => {
+    const active = this.activeCategory();
+    return this.overflowCategories().some(cat => cat.name === active);
+  });
+
+  @HostListener('window:resize')
+  onResize() {
+    this.updateCategoriesOverflow();
+  }
 
   // Reactive filtered products computed signal
   filteredProducts = computed(() => {
-    const products = this.allProducts();
+    const products = this.allProducts(); // variants
+    const categories = this.allCategories(); // parent products
     const category = this.activeCategory();
     const query = this.counterSaleService.searchQuery().toLowerCase().trim();
 
     let filtered = products;
 
-    console.log(category)
     // Filter by Category
     if (category !== 'All') {
       filtered = filtered.filter(p => {
@@ -66,12 +92,23 @@ export class ProductList implements OnInit {
       });
     }
 
-    // Filter by Search Query
+    // Filter by Search Query (matching parent products in categories store)
     if (query) {
+      const matchingProductIds = new Set(
+        categories
+          .filter(c => {
+            const prodName = (c.productName || c.name || '').toLowerCase();
+            const prodCode = (c.productCode || c.code || c.materialCode || '').toLowerCase();
+            return prodName.includes(query) || prodCode.includes(query);
+          })
+          .map(c => c.id)
+      );
+
       filtered = filtered.filter(p => {
+        const matchesParent = p.productId && matchingProductIds.has(p.productId);
         const name = (p.productName || p.materialName || p.name || '').toLowerCase();
         const code = (p.productCode || p.code || p.materialCode || '').toLowerCase();
-        return name.includes(query) || code.includes(query);
+        return matchesParent || name.includes(query) || code.includes(query);
       });
     }
 
@@ -90,6 +127,12 @@ export class ProductList implements OnInit {
     await this.loadProducts();
   }
 
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.updateCategoriesOverflow();
+    }, 100);
+  }
+
   async loadProducts() {
     try {
       const products = await this.dbService.products.toArray();
@@ -98,12 +141,13 @@ export class ProductList implements OnInit {
 
       // Load categories from Db categories table, fallback to extraction if empty
       const dbCategories = await this.dbService.categories.toArray();
+      this.allCategories.set(dbCategories || []);
 
       if (dbCategories && dbCategories.length > 0) {
         const uniqueCategories = Array.from(
           new Set(
             dbCategories
-              .map(cat => cat.categoryName || cat.category || cat.materialGroupName || cat.name)
+              .map(cat => cat.productName)
               .filter(Boolean)
           )
         );
@@ -123,9 +167,66 @@ export class ProductList implements OnInit {
         }
       }
 
+      this.updateCategoriesOverflow();
     } catch (error) {
       console.error('Failed to load products from IndexedDB:', error);
     }
+  }
+
+  updateCategoriesOverflow() {
+    if (!this.pillsContainer) {
+      this.visibleCategories.set(this.categories());
+      this.overflowCategories.set([]);
+      return;
+    }
+
+    const containerWidth = this.pillsContainer.nativeElement.clientWidth;
+    const allCats = this.categories();
+
+    if (!containerWidth || allCats.length === 0) {
+      this.visibleCategories.set(allCats);
+      this.overflowCategories.set([]);
+      return;
+    }
+
+    let totalEstWidth = 0;
+    for (const cat of allCats) {
+      totalEstWidth += (51 + cat.name.length * 9.5 + 6);
+    }
+
+    if (totalEstWidth <= containerWidth) {
+      this.visibleCategories.set(allCats);
+      this.overflowCategories.set([]);
+      return;
+    }
+
+    const availableWidth = containerWidth - 96;
+    let currentWidth = 0;
+    const visible: any[] = [];
+    const overflow: any[] = [];
+
+    for (const cat of allCats) {
+      const estWidth = 51 + cat.name.length * 9.5 + 6;
+      if (currentWidth + estWidth < availableWidth) {
+        visible.push(cat);
+        currentWidth += estWidth;
+      } else {
+        overflow.push(cat);
+      }
+    }
+
+    if (visible.length === 0 && allCats.length > 0) {
+      visible.push(allCats[0]);
+      overflow.shift();
+    }
+
+    this.visibleCategories.set(visible);
+    this.overflowCategories.set(overflow);
+  }
+
+  onMenuSearch(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.menuSearchQuery.set(input.value);
   }
 
   selectCategory(name: string) {
