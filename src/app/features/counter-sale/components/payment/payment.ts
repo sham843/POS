@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule, Delete, Banknote, ScanBarcode, CreditCard, FileText } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
@@ -8,10 +8,17 @@ import { MatButtonModule } from '@angular/material/button';
   standalone: true,
   imports: [
     CommonModule, 
-    MatIconModule,
+    LucideAngularModule,
     MatButtonModule
   ],
   templateUrl: './payment.html',
   styleUrl: './payment.scss',
 })
-export class Payment {}
+export class Payment {
+  // Expose icons to template
+  readonly Delete = Delete;
+  readonly Banknote = Banknote;
+  readonly ScanBarcode = ScanBarcode;
+  readonly CreditCard = CreditCard;
+  readonly FileText = FileText;
+}

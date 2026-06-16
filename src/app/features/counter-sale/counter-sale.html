@@ -6,15 +6,15 @@
     <!-- SEARCH TYPE CHIPS (Segmented Control) -->
     <div class="search-type-chips">
       <div class="chip" [class.active]="searchType() === 'product'" (click)="setSearchType('product')">
-        <mat-icon>inventory_2</mat-icon>
+        <lucide-icon [img]="Package"></lucide-icon>
         <span>Product</span>
       </div>
       <div class="chip" [class.active]="searchType() === 'bill'" (click)="setSearchType('bill')">
-        <mat-icon>receipt_long</mat-icon>
+        <lucide-icon [img]="ReceiptText"></lucide-icon>
         <span>Bill No.</span>
       </div>
       <div class="chip" [class.active]="searchType() === 'customer'" (click)="setSearchType('customer')">
-        <mat-icon>person_outline</mat-icon>
+        <lucide-icon [img]="User"></lucide-icon>
         <span>Customer</span>
       </div>
     </div>
@@ -22,7 +22,7 @@
     <!-- SEARCH -->
     <div class="sub-header-search">
       <div class="search-box">
-        <mat-icon class="search-icon">search</mat-icon>
+        <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
         <input type="text"
           [placeholder]="searchType() === 'product' ? 'Search by Product Name / Code' : (searchType() === 'bill' ? 'Search by Bill No.' : 'Search by Customer Name')">
       </div>
@@ -33,11 +33,11 @@
       <div class="bill-tabs-scroll">
         <div class="bill-tab" *ngFor="let bill of bills()" [class.active]="bill.active" (click)="selectBill(bill.id)">
           <span class="bill-name">{{ bill.name }}</span>
-          <mat-icon class="close-icon" (click)="removeBill(bill.id, $event)">close</mat-icon>
+          <lucide-icon [img]="X" class="close-icon" (click)="removeBill(bill.id, $event)"></lucide-icon>
         </div>
       </div>
       <button class="add-bill-btn" (click)="addBill()" [disabled]="bills().length >= 5" title="Maximum 5 bills allowed">
-        <mat-icon>add</mat-icon>
+        <lucide-icon [img]="Plus"></lucide-icon>
       </button>
     </div>
 
@@ -68,7 +68,7 @@
         <div class="strip-left">
           <div class="stats">
             <span class="stat date-stat">
-              <mat-icon>calendar_today</mat-icon>
+              <lucide-icon [img]="Calendar"></lucide-icon>
               <strong>{{ currentTime() | date:'dd MMM yyyy, hh:mm:ss a' }}</strong>
             </span>
             <span class="stat bill-stat">Bills: <strong>18</strong></span>
@@ -76,7 +76,7 @@
           </div>
         </div>
         <button class="prev-bill-btn">
-          <mat-icon>arrow_upward</mat-icon>
+          <lucide-icon [img]="ArrowUp"></lucide-icon>
           <span class="highlight">Previous Bill #0001</span>
         </button>
       </div>

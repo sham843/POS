@@ -4,7 +4,7 @@
         <!-- Logout Button -->
         <button class="logout-btn position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center"
             (click)="logout()" title="{{ 'HEADER.LOGOUT' | translate }}">
-            <mat-icon>logout</mat-icon>
+            <lucide-icon [img]="LogOut"></lucide-icon>
         </button>
 
         <!-- Top Decorative Header -->
@@ -20,7 +20,7 @@
             <span class="role-badge mb-1">{{ 'SESSION_SUMMARY.COUNTER_SALE' | translate }}</span>
             <h3 class="fw-bold mb-1 user-name">{{ userDetails()?.name || 'User Name' }}</h3>
             <div class="contact-info d-flex align-items-center justify-content-center text-muted">
-                <mat-icon class="me-1">phone</mat-icon>
+                <lucide-icon [img]="Phone" class="me-1"></lucide-icon>
                 <span>{{ userDetails()?.mobileNumber || 'N/A' }}</span>
             </div>
         </div>
@@ -31,17 +31,17 @@
             <!-- Key Metrics (3 columns) -->
             <div class="metrics-grid mb-3">
                 <div class="metric-box text-center p-3 rounded-4">
-                    <mat-icon class="text-primary mb-1">account_balance_wallet</mat-icon>
+                    <lucide-icon [img]="Wallet" class="text-primary mb-1"></lucide-icon>
                     <div class="metric-label">{{ 'SESSION_SUMMARY.COLLECTION' | translate }}</div>
                     <div class="metric-value text-primary"> {{userDetails()?.totalAmount || '0.00'}}</div>
                 </div>
                 <div class="metric-box text-center p-3 rounded-4">
-                    <mat-icon class="text-success mb-1">receipt</mat-icon>
+                    <lucide-icon [img]="Receipt" class="text-success mb-1"></lucide-icon>
                     <div class="metric-label">{{ 'SESSION_SUMMARY.TOTAL_BILLS' | translate }}</div>
                     <div class="metric-value text-success">{{userDetails()?.totalBill || '0'}}</div>
                 </div>
                 <div class="metric-box text-center p-3 rounded-4">
-                    <mat-icon class="text-warning mb-1">payments</mat-icon>
+                    <lucide-icon [img]="Banknote" class="text-warning mb-1"></lucide-icon>
                     <div class="metric-label">{{ 'SESSION_SUMMARY.OPENING_BAL' | translate }}</div>
                     <div class="metric-value text-warning">₹ {{userDetails()?.openingBalance || '0.00'}}</div>
                 </div>
@@ -51,7 +51,7 @@
             <div class="session-details-list mb-3">
                 <div class="detail-row d-flex justify-content-between align-items-center py-2 border-bottom-dashed">
                     <div class="d-flex align-items-center text-muted">
-                        <mat-icon class="me-3 fs-5">calendar_today</mat-icon>
+                        <lucide-icon [img]="Calendar" class="me-3 fs-5"></lucide-icon>
                         <span class="fw-medium">{{ 'SESSION_SUMMARY.DATE' | translate }}</span>
                     </div>
                     <span class="fw-bold text-end">{{ userDetails()?.loginDate || '-' }}</span>
@@ -59,7 +59,7 @@
 
                 <div class="detail-row d-flex justify-content-between align-items-center py-2 border-bottom-dashed">
                     <div class="d-flex align-items-center text-muted">
-                        <mat-icon class="me-3 fs-5">access_time</mat-icon>
+                        <lucide-icon [img]="Clock" class="me-3 fs-5"></lucide-icon>
                         <span class="fw-medium">{{ 'SESSION_SUMMARY.START_TIME' | translate }}</span>
                     </div>
                     <span class="fw-bold text-end">{{ userDetails()?.loginTime || '-' }}</span>
@@ -67,7 +67,7 @@
 
                 <div class="detail-row d-flex justify-content-between align-items-center py-2">
                     <div class="d-flex align-items-center text-muted">
-                        <mat-icon class="me-3 fs-5">schedule</mat-icon>
+                        <lucide-icon [img]="Clock" class="me-3 fs-5"></lucide-icon>
                         <span class="fw-medium">{{ 'SESSION_SUMMARY.END_TIME' | translate }}</span>
                     </div>
                     <span class="fw-bold text-end">{{userDetails()?.logoutTime || '-'}}</span>

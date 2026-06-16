@@ -38,8 +38,7 @@
     justify-content: center;
     color: white;
 
-    mat-icon {
-      font-size: 20px;
+    lucide-icon {
       width: 20px;
       height: 20px;
     }
@@ -73,9 +72,7 @@
     font-size: 14px;
     gap: 6px;
 
-    mat-icon,
-    i[class^="fa-"] {
-      font-size: 18px;
+    lucide-icon {
       width: 20px;
       height: 20px;
       display: flex;
@@ -193,8 +190,7 @@
         min-width: 75px;
         /* Ensures container doesn't resize */
 
-        mat-icon {
-          font-size: 14px;
+        lucide-icon {
           width: 14px;
           height: 14px;
           margin-left: 4px;
@@ -223,8 +219,7 @@
     cursor: pointer;
     border: none;
 
-    mat-icon {
-      font-size: 20px;
+    lucide-icon {
       width: 20px;
       height: 20px;
     }
@@ -325,8 +320,7 @@
     width: 100%;
     text-align: left;
 
-    mat-icon {
-      font-size: 18px;
+    lucide-icon {
       width: 18px;
       height: 18px;
     }
@@ -338,7 +332,7 @@
     &.text-danger {
       color: #DC2626;
 
-      mat-icon {
+      lucide-icon {
         color: #DC2626;
       }
 

@@ -2,32 +2,32 @@
 
   <div class="category-pills">
     <button class="pill-btn active">
-      <i class="fa-solid fa-border-all"></i> All
+      <lucide-icon [img]="LayoutGrid" class="fa-icon"></lucide-icon> All
     </button>
     <button class="pill-btn">
-      <i class="fa-solid fa-bottle-droplet"></i> Milk
+      <lucide-icon [img]="Milk" class="fa-icon"></lucide-icon> Milk
     </button>
     <button class="pill-btn">
-      <i class="fa-solid fa-cube"></i> Paneer
+      <lucide-icon [img]="Box" class="fa-icon"></lucide-icon> Paneer
     </button>
     <button class="pill-btn">
-      <i class="fa-solid fa-jar"></i> Ghee
+      <lucide-icon [img]="Cylinder" class="fa-icon"></lucide-icon> Ghee
     </button>
     <button class="pill-btn">
-      <i class="fa-solid fa-bowl-food"></i> Khava
+      <lucide-icon [img]="Soup" class="fa-icon"></lucide-icon> Khava
     </button>
     <button class="pill-btn">
-      <i class="fa-solid fa-glass-water"></i> Lassi
+      <lucide-icon [img]="GlassWater" class="fa-icon"></lucide-icon> Lassi
     </button>
     <button class="pill-btn more-btn">
-      <i class="fa-solid fa-ellipsis"></i> More
+      <lucide-icon [img]="Ellipsis" class="fa-icon"></lucide-icon> More
     </button>
   </div>
 
   <div class="products-grid">
     <!-- Card 1 -->
     <div class="prod-card">
-      <mat-icon class="fav-icon">star_border</mat-icon>
+      <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
       <div class="prod-image">
         <div class="img-placeholder"><img src="assets/images/fresh_milk.png" onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image'" alt="Milk"></div>
       </div>
@@ -42,7 +42,7 @@
 
     <!-- Card 2 -->
     <div class="prod-card">
-      <mat-icon class="fav-icon">star_border</mat-icon>
+      <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
       <div class="prod-image">
         <div class="img-placeholder"><img src="assets/images/paneer.png" onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image'" alt="Paneer"></div>
       </div>
@@ -57,7 +57,7 @@
 
     <!-- Card 3 -->
     <div class="prod-card">
-      <mat-icon class="fav-icon">star_border</mat-icon>
+      <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
       <div class="prod-image">
         <div class="img-placeholder"><img src="assets/images/curd.png" onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image'" alt="Curd"></div>
       </div>
@@ -72,7 +72,7 @@
 
     <!-- Card 4 -->
     <div class="prod-card">
-      <mat-icon class="fav-icon">star_border</mat-icon>
+      <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
       <div class="prod-image">
         <div class="img-placeholder"><img src="https://placehold.co/100x100?text=No+Image" alt="Ghee"></div>
       </div>
@@ -87,7 +87,7 @@
 
     <!-- Generate more cards for demonstration -->
     <div class="prod-card" *ngFor="let item of [1,2,3,4,5,6,7,8,9,10,11]">
-      <mat-icon class="fav-icon">star_border</mat-icon>
+      <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
       <div class="prod-image">
         <div class="img-placeholder"><img src="https://placehold.co/100x100?text=No+Image" alt="Product"></div>
       </div>
@@ -107,7 +107,7 @@
       Showing 1 – 15 of 120 items
     </div>
     <div class="pagination-controls">
-      <button class="nav-btn"><mat-icon>chevron_left</mat-icon></button>
+      <button class="nav-btn"><lucide-icon [img]="ChevronLeft"></lucide-icon></button>
       <button class="page-btn active">1</button>
       <button class="page-btn">2</button>
       <button class="page-btn">3</button>
@@ -115,7 +115,7 @@
       <button class="page-btn">5</button>
       <span class="ellipsis">...</span>
       <button class="page-btn">10</button>
-      <button class="nav-btn"><mat-icon>chevron_right</mat-icon></button>
+      <button class="nav-btn"><lucide-icon [img]="ChevronRight"></lucide-icon></button>
     </div>
   </div>
 

@@ -100,8 +100,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
 
-    mat-icon {
-      font-size: 18px;
+    lucide-icon {
       width: 18px;
       height: 18px;
       color: #6B7280;
@@ -111,7 +110,7 @@
     &:hover:not(.active) {
       color: #374151;
 
-      mat-icon {
+      lucide-icon {
         color: #4B5563;
       }
     }
@@ -124,7 +123,7 @@
       color: #0052CC;
       /* Blue theme */
 
-      mat-icon {
+      lucide-icon {
         color: #0052CC;
       }
     }
@@ -220,8 +219,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
 
-  mat-icon {
-    font-size: 20px;
+  lucide-icon {
     width: 20px;
     height: 20px;
   }
@@ -348,8 +346,7 @@
           font-weight: 500;
           border: 1px solid transparent;
 
-          mat-icon {
-            font-size: 16px;
+          lucide-icon {
             width: 16px;
             height: 16px;
           }
@@ -413,8 +410,7 @@
       white-space: nowrap;
       /* Prevent button text from wrapping */
 
-      mat-icon {
-        font-size: 16px;
+      lucide-icon {
         width: 16px;
         height: 16px;
         color: #0052CC;

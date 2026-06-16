@@ -32,8 +32,9 @@
     cursor: pointer;
     white-space: nowrap;
 
-    i {
-      font-size: 16px;
+    lucide-icon {
+      width: 16px;
+      height: 16px;
       color: #6B7280;
     }
 
@@ -42,7 +43,7 @@
       color: #ffffff;
       border-color: #0052CC;
 
-      i {
+      lucide-icon {
         color: #ffffff;
       }
     }
@@ -51,7 +52,7 @@
       margin-left: auto;
 
       /* Push 'More' to the right if there's space */
-      i {
+      lucide-icon {
         color: #6B7280;
       }
     }
@@ -132,9 +133,7 @@
       justify-content: center;
       color: #9CA3AF;
 
-      mat-icon,
-      i {
-        font-size: 32px;
+      lucide-icon {
         width: 32px;
         height: 32px;
       }
@@ -246,8 +245,7 @@
         color: white;
       }
 
-      mat-icon {
-        font-size: 18px;
+      lucide-icon {
         width: 18px;
         height: 18px;
       }

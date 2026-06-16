@@ -3,7 +3,7 @@
   <div class="pos-top-header">
     <div class="header-brand">
       <div class="brand-icon">
-        <mat-icon>water_drop</mat-icon>
+        <lucide-icon [img]="Droplets"></lucide-icon>
       </div>
       <div class="brand-name">Dairy Shop POS</div>
     </div>
@@ -14,25 +14,25 @@
     <!-- Navigation Links in Header -->
     <div class="header-nav-links">
       <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
-        <i class="fa-solid fa-chart-pie"></i>
+        <lucide-icon [img]="PieChart"></lucide-icon>
         <span class="nav-text">Dashboard</span>
       </a>
       <a routerLink="/counter-sale" routerLinkActive="active" class="nav-link">
-        <i class="fa-solid fa-cash-register"></i>
+        <lucide-icon [img]="Monitor"></lucide-icon>
         <span class="nav-text">POS</span>
       </a>
       <a routerLink="/reports" routerLinkActive="active" class="nav-link">
-        <i class="fa-solid fa-chart-line"></i>
+        <lucide-icon [img]="LineChart"></lucide-icon>
         <span class="nav-text">Reports</span>
       </a>
       <a routerLink="/settings" routerLinkActive="active" class="nav-link">
-        <i class="fa-solid fa-gear"></i>
+        <lucide-icon [img]="Settings"></lucide-icon>
         <span class="nav-text">Settings</span>
       </a>
     </div>
 
     <div class="header-actions">
-      <button class="icon-btn outline-btn"><mat-icon>light_mode</mat-icon></button>
+      <button class="icon-btn outline-btn"><lucide-icon [img]="Sun"></lucide-icon></button>
       
       <!-- Profile Dropdown Container -->
       <div class="profile-menu-container">
@@ -48,7 +48,7 @@
           </div>
           <div class="dropdown-divider"></div>
           <button class="dropdown-item text-danger" (click)="endSession()">
-            <mat-icon>logout</mat-icon>
+            <lucide-icon [img]="LogOut"></lucide-icon>
             End Session
           </button>
         </div>

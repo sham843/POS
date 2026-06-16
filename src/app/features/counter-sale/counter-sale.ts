@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal, OnInit, OnDestroy } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp } from 'lucide-angular';
 import { ProductList } from './components/product-list/product-list';
 import { Cart } from './components/cart/cart';
 import { BillSummary } from './components/bill-summary/bill-summary';
@@ -17,7 +17,7 @@ interface BillTab {
   standalone: true,
   imports: [
     CommonModule,
-    MatIconModule,
+    LucideAngularModule,
     ProductList,
     Cart,
     BillSummary,
@@ -29,6 +29,16 @@ interface BillTab {
 export class CounterSale implements OnInit, OnDestroy {
   currentTime = signal(new Date());
   private timer: any;
+
+  // Expose icons to the template
+  readonly Package = Package;
+  readonly ReceiptText = ReceiptText;
+  readonly User = User;
+  readonly SearchIcon = Search; // renamed to avoid conflict
+  readonly X = X;
+  readonly Plus = Plus;
+  readonly Calendar = Calendar;
+  readonly ArrowUp = ArrowUp;
 
   ngOnInit() {
     this.timer = setInterval(() => {

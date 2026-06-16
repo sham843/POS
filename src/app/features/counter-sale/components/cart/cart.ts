@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule, Trash2, Milk, Box, IceCream, Cylinder, Minus, Plus } from 'lucide-angular';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
@@ -13,7 +13,7 @@ import { MatTableModule } from '@angular/material/table';
   standalone: true,
   imports: [
     CommonModule, 
-    MatIconModule,
+    LucideAngularModule,
     MatTabsModule,
     MatButtonModule,
     MatRadioModule,
@@ -31,5 +31,15 @@ export class Cart {
   dataSource = [
     { details: 'Fresh Milk 1L', quantity: 1, rate: 65.00, discount: 0.00, amount: 65.00, gst: '0%', total: 65.00 },
     { details: 'Paneer 200g', quantity: 2, rate: 90.00, discount: 0.00, amount: 180.00, gst: '0%', total: 180.00 },
+    { details: 'Paneer 200g', quantity: 2, rate: 90.00, discount: 0.00, amount: 180.00, gst: '0%', total: 180.00 },
   ];
+
+  // Expose icons to template
+  readonly Trash2 = Trash2;
+  readonly Milk = Milk;
+  readonly Box = Box;
+  readonly IceCream = IceCream;
+  readonly Cylinder = Cylinder;
+  readonly Minus = Minus;
+  readonly Plus = Plus;
 }

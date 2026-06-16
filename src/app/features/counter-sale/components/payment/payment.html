@@ -25,32 +25,32 @@
       <button class="num-btn">9</button>
       <button class="num-btn">.</button>
       <button class="num-btn">0</button>
-      <button class="num-btn backspace"><mat-icon>backspace</mat-icon></button>
+      <button class="num-btn backspace"><lucide-icon [img]="Delete"></lucide-icon></button>
     </div>
   </div>
 
   <div class="payment-methods-grid">
     <button class="pay-card cash">
       <div class="card-content">
-        <mat-icon>payments</mat-icon>
+        <lucide-icon [img]="Banknote"></lucide-icon>
         <span class="label">Cash</span>
       </div>
     </button>
     <button class="pay-card upi">
       <div class="card-content">
-        <mat-icon>qr_code_scanner</mat-icon>
+        <lucide-icon [img]="ScanBarcode"></lucide-icon>
         <span class="label">UPI</span>
       </div>
     </button>
     <button class="pay-card card">
       <div class="card-content">
-        <mat-icon>credit_card</mat-icon>
+        <lucide-icon [img]="CreditCard"></lucide-icon>
         <span class="label">Card</span>
       </div>
     </button>
     <button class="pay-card credit">
       <div class="card-content">
-        <mat-icon>feed</mat-icon>
+        <lucide-icon [img]="FileText"></lucide-icon>
         <span class="label">Credit</span>
       </div>
     </button>

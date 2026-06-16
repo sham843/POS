@@ -3,7 +3,7 @@
     <mat-card-header>
       <div class="header-content">
         <div class="icon-circle">
-          <mat-icon>point_of_sale</mat-icon>
+          <lucide-icon [img]="Store"></lucide-icon>
         </div>
         <div class="header-titles">
           <mat-card-title>End Shift / Close Register</mat-card-title>
@@ -36,12 +36,12 @@
         <h3>Sales Summary</h3>
         <div class="summary-grid">
           <div class="summary-box">
-            <mat-icon class="text-blue">receipt_long</mat-icon>
+            <lucide-icon [img]="ReceiptText" class="text-blue"></lucide-icon>
             <div class="s-label">Total Bills</div>
             <div class="s-value">{{ sessionData.totalBills }}</div>
           </div>
           <div class="summary-box">
-            <mat-icon class="text-green">payments</mat-icon>
+            <lucide-icon [img]="Banknote" class="text-green"></lucide-icon>
             <div class="s-label">Total Sales</div>
             <div class="s-value">₹{{ sessionData.totalSales | number:'1.2-2' }}</div>
           </div>
@@ -55,21 +55,21 @@
         <h3>Payment Breakdown</h3>
         <div class="pay-row">
           <div class="pay-type">
-            <mat-icon class="cash-icon">payments</mat-icon>
+            <lucide-icon [img]="Banknote" class="cash-icon"></lucide-icon>
             <span>Cash</span>
           </div>
           <div class="pay-amount">₹{{ sessionData.payments.cash | number:'1.2-2' }}</div>
         </div>
         <div class="pay-row">
           <div class="pay-type">
-            <mat-icon class="upi-icon">qr_code_scanner</mat-icon>
+            <lucide-icon [img]="ScanBarcode" class="collection-icon icon-purple"></lucide-icon>
             <span>UPI</span>
           </div>
           <div class="pay-amount">₹{{ sessionData.payments.upi | number:'1.2-2' }}</div>
         </div>
         <div class="pay-row">
           <div class="pay-type">
-            <mat-icon class="card-icon">credit_card</mat-icon>
+            <lucide-icon [img]="CreditCard" class="card-icon"></lucide-icon>
             <span>Card</span>
           </div>
           <div class="pay-amount">₹{{ sessionData.payments.card | number:'1.2-2' }}</div>
@@ -79,11 +79,11 @@
 
     <mat-card-actions class="action-buttons">
       <button mat-stroked-button color="primary" class="back-btn" (click)="goBack()">
-        <mat-icon>arrow_back</mat-icon>
+        <lucide-icon [img]="ArrowLeft"></lucide-icon>
         Back to POS
       </button>
       <button mat-flat-button color="warn" class="logout-btn" (click)="confirmEndSession()">
-        <mat-icon>logout</mat-icon>
+        <lucide-icon [img]="LogOut"></lucide-icon>
         Confirm & Logout
       </button>
     </mat-card-actions>

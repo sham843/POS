@@ -1,17 +1,25 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy, inject } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, Router } from '@angular/router';
+import { LucideAngularModule, Droplets, PieChart, Monitor, LineChart, Settings, Sun, LogOut } from 'lucide-angular';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, MatIconModule, RouterModule],
+  imports: [CommonModule, LucideAngularModule, RouterModule],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
+  // Expose icons to the template
+  readonly Droplets = Droplets;
+  readonly PieChart = PieChart;
+  readonly Monitor = Monitor;
+  readonly LineChart = LineChart;
+  readonly Settings = Settings;
+  readonly Sun = Sun;
+  readonly LogOut = LogOut;
   router = inject(Router);
   currentTime = signal(new Date());
   showProfileMenu = signal(false);

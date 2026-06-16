@@ -53,9 +53,7 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/ngx-spinner/animations/timer.css",
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
-              "node_modules/material-design-icons/iconfont/material-icons.css"
+              "node_modules/ngx-spinner/animations/timer.css"
             ]
           },
           "configurations": {

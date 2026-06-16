@@ -29,8 +29,7 @@
         transform: scale(1.05);
     }
 
-    mat-icon {
-        font-size: 20px;
+    lucide-icon {
         width: 20px;
         height: 20px;
     }
@@ -80,8 +79,7 @@
     .contact-info {
         font-size: 0.9rem;
 
-        mat-icon {
-            font-size: 16px;
+        lucide-icon {
             width: 16px;
             height: 16px;
         }
@@ -118,8 +116,7 @@
                 font-weight: 700;
             }
 
-            mat-icon {
-                font-size: 24px;
+            lucide-icon {
                 width: 24px;
                 height: 24px;
             }
@@ -135,8 +132,7 @@
         padding-top: 12px !important;
         padding-bottom: 12px !important;
 
-        mat-icon {
-            font-size: 20px;
+        lucide-icon {
             width: 20px;
             height: 20px;
             line-height: 20px;

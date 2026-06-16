@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule, Store, Globe, Sun, Moon, SunMoon } from 'lucide-angular';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -15,7 +15,7 @@ import { LanguageService } from '../../core/services/language.service';
     CommonModule,
     MatToolbarModule,
     MatButtonModule,
-    MatIconModule,
+    LucideAngularModule,
     MatMenuModule,
     RouterModule,
     TranslatePipe
@@ -37,10 +37,17 @@ export class Home implements OnInit {
     { code: 'hi', label: 'हिंदी' }
   ];
 
+  // Expose icons
+  readonly Store = Store;
+  readonly Globe = Globe;
+  readonly Sun = Sun;
+  readonly Moon = Moon;
+  readonly SunMoon = SunMoon;
+
   themes = [
-    { code: 'light', label: 'Light', icon: 'light_mode' },
-    { code: 'dark', label: 'Dark', icon: 'dark_mode' },
-    { code: 'system', label: 'System', icon: 'settings_brightness' }
+    { code: 'light', label: 'Light', icon: Sun },
+    { code: 'dark', label: 'Dark', icon: Moon },
+    { code: 'system', label: 'System', icon: SunMoon }
   ];
 
   ngOnInit() {

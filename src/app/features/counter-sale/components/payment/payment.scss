@@ -99,8 +99,7 @@
       color: #DC2626;
       border-color: #FECACA;
       
-      mat-icon {
-        font-size: 16px;
+      lucide-icon {
         width: 16px;
         height: 16px;
       }
@@ -139,8 +138,7 @@
       align-items: center;
       gap: 2px; /* Decreased gap */
       
-      mat-icon {
-        font-size: 18px; /* Decreased icon size */
+      lucide-icon {
         width: 18px;
         height: 18px;
       }
@@ -206,8 +204,7 @@
     cursor: pointer;
     transition: background 0.2s;
     
-    mat-icon {
-      font-size: 24px;
+    lucide-icon {
       width: 24px;
       height: 24px;
     }

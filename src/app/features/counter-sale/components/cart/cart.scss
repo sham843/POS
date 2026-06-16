@@ -41,8 +41,7 @@
     font-weight: 600;
     cursor: pointer;
 
-    mat-icon {
-      font-size: 16px;
+    lucide-icon {
       width: 16px;
       height: 16px;
     }
@@ -95,10 +94,14 @@
     justify-content: center;
     color: #9CA3AF;
 
-    mat-icon {
-      font-size: 24px;
+    lucide-icon {
       width: 24px;
       height: 24px;
+
+      &.item-icon-milk { color: #93C5FD; }
+      &.item-icon-cheese { color: #FCD34D; }
+      &.item-icon-icecream { color: #F9A8D4; }
+      &.item-icon-ghee { color: #FDBA74; }
     }
   }
 
@@ -146,8 +149,7 @@
         cursor: pointer;
         transition: all 0.2s;
 
-        mat-icon {
-          font-size: 16px;
+        lucide-icon {
           width: 16px;
           height: 16px;
         }
@@ -215,8 +217,7 @@
     height: 32px;
     border-radius: 4px;
 
-    mat-icon {
-      font-size: 20px;
+    lucide-icon {
       width: 20px;
       height: 20px;
     }

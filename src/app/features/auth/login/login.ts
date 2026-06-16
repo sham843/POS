@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule, Eye, EyeOff } from 'lucide-angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -24,7 +24,7 @@ import { LoaderService } from '../../../core/services/loader.service';
     MatInputModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatIconModule,
+    LucideAngularModule,
     TranslatePipe
   ],
   templateUrl: './login.html',
@@ -37,6 +37,10 @@ export class Login implements OnInit {
   errorMessage = '';
 
   publickey: string = '';
+
+  // Expose icons
+  readonly Eye = Eye;
+  readonly EyeOff = EyeOff;
 
   private fb = inject(FormBuilder);
   private configService = inject(ConfigService);

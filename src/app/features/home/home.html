@@ -2,7 +2,7 @@
   <!-- Header / Navbar -->
   <mat-toolbar color="primary" class="home-header">
     <div class="brand">
-      <mat-icon class="brand-icon">storefront</mat-icon>
+      <lucide-icon [img]="Store" class="brand-icon"></lucide-icon>
       <span class="brand-name ms-2">Hitech Dairy POS</span>
     </div>
 
@@ -10,7 +10,7 @@
 
     <!-- Language Selector -->
     <button mat-button [matMenuTriggerFor]="langMenu" class="me-2">
-      <mat-icon>language</mat-icon>
+      <lucide-icon [img]="Globe"></lucide-icon>
       <span class="d-none d-sm-inline ms-1">{{ currentLangLabel }}</span>
     </button>
     <mat-menu #langMenu="matMenu">
@@ -21,14 +21,14 @@
 
     <!-- Theme Selector -->
     <button mat-icon-button [matMenuTriggerFor]="themeMenu" aria-label="Toggle theme" class="me-2">
-      <mat-icon *ngIf="currentTheme === 'light'">light_mode</mat-icon>
-      <mat-icon *ngIf="currentTheme === 'dark'">dark_mode</mat-icon>
-      <mat-icon *ngIf="currentTheme === 'system'">settings_brightness</mat-icon>
+      <lucide-icon [img]="Sun" *ngIf="currentTheme === 'light'"></lucide-icon>
+      <lucide-icon [img]="Moon" *ngIf="currentTheme === 'dark'"></lucide-icon>
+      <lucide-icon [img]="SunMoon" *ngIf="currentTheme === 'system'"></lucide-icon>
     </button>
     <mat-menu #themeMenu="matMenu">
       <button mat-menu-item *ngFor="let theme of themes" (click)="setTheme(theme.code)">
-        <mat-icon>{{ theme.icon }}</mat-icon>
-        <span>{{ theme.label }}</span>
+        <lucide-icon [img]="theme.icon"></lucide-icon>
+        <span class="ms-2">{{ theme.label }}</span>
       </button>
     </mat-menu>
 

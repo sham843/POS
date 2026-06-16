@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule, LogOut, Phone, Wallet, Receipt, Banknote, Calendar, Clock } from 'lucide-angular';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MasterDataService } from '../../../core/services/master-data.service';
 
 @Component({
   selector: 'app-session-start',
-  imports: [CommonModule, MatButtonModule, MatIconModule, TranslatePipe],
+  imports: [CommonModule, MatButtonModule, LucideAngularModule, TranslatePipe],
   standalone: true,
   templateUrl: './session-start.html',
   styleUrl: './session-start.scss',
@@ -19,6 +19,15 @@ export class SessionStart {
 
   userDetails = signal<any>(null);
   currentDate = signal<Date>(new Date());
+
+  // Expose icons to the template
+  readonly LogOut = LogOut;
+  readonly Phone = Phone;
+  readonly Wallet = Wallet;
+  readonly Receipt = Receipt;
+  readonly Banknote = Banknote;
+  readonly Calendar = Calendar;
+  readonly Clock = Clock;
 
   async ngOnInit() {
     const userStr = localStorage.getItem('UserDetails');
