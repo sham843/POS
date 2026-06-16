@@ -11,7 +11,7 @@
       </div>
       <div class="chip" [class.active]="searchType() === 'bill'" (click)="setSearchType('bill')">
         <lucide-icon [img]="ReceiptText"></lucide-icon>
-        <span>Bill No.</span>
+        <span>Bill №.</span>
       </div>
       <div class="chip" [class.active]="searchType() === 'customer'" (click)="setSearchType('customer')">
         <lucide-icon [img]="User"></lucide-icon>
@@ -24,7 +24,7 @@
       <div class="search-box">
         <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
         <input type="text"
-          [placeholder]="searchType() === 'product' ? 'Search by Product Name / Code' : (searchType() === 'bill' ? 'Search by Bill No.' : 'Search by Customer Name')">
+          [placeholder]="searchType() === 'product' ? 'Search by Product Name / Code' : (searchType() === 'bill' ? 'Search by Bill №.' : 'Search by Customer Name')">
       </div>
     </div>
 
