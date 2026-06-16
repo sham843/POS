@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { LucideAngularModule, Trash2, Milk, Box, IceCream, Cylinder, Minus, Plus } from 'lucide-angular';
+import { LucideAngularModule, Trash2, Package, Minus, Plus } from 'lucide-angular';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
@@ -36,10 +36,7 @@ export class Cart {
 
   // Expose icons to template
   readonly Trash2 = Trash2;
-  readonly Milk = Milk;
-  readonly Box = Box;
-  readonly IceCream = IceCream;
-  readonly Cylinder = Cylinder;
+  readonly Package = Package;
   readonly Minus = Minus;
   readonly Plus = Plus;
 }

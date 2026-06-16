@@ -12,91 +12,26 @@
 
   <div class="cart-items-list">
 
-    <!-- Cart Item 1 -->
-    <div class="cart-item">
+    <!-- Dynamic Cart Items from Backend/Store -->
+    <div class="cart-item" *ngFor="let item of dataSource">
       <div class="item-image">
-        <lucide-icon [img]="Milk" class="item-icon-milk"></lucide-icon>
+        <!-- Generic Package icon for all items -->
+        <lucide-icon [img]="Package" class="item-icon-milk"></lucide-icon>
       </div>
       <div class="item-details">
-        <div class="item-name">Fresh Milk 1L</div>
-        <div class="item-price">₹65.00 / piece</div>
+        <div class="item-name">{{ item.details }}</div>
+        <div class="item-price">₹{{ item.rate | number:'1.2-2' }} / piece</div>
       </div>
       <div class="item-controls-row">
         <div class="item-qty-control">
           <button class="qty-btn minus"><lucide-icon [img]="Minus"></lucide-icon></button>
-          <span class="qty-val">2</span>
+          <span class="qty-val">{{ item.quantity }}</span>
           <button class="qty-btn plus"><lucide-icon [img]="Plus"></lucide-icon></button>
         </div>
-        <input type="number" placeholder="Amt" class="tiny-input" />
-        <input type="number" placeholder="Disc %" class="tiny-input" />
+        <input type="number" placeholder="Amt" class="tiny-input" [value]="item.amount" />
+        <input type="number" placeholder="Disc %" class="tiny-input" [value]="item.discount" />
       </div>
-      <div class="item-total">₹130.00</div>
-      <button class="delete-btn"><lucide-icon [img]="Trash2"></lucide-icon></button>
-    </div>
-
-    <!-- Cart Item 2 -->
-    <div class="cart-item">
-      <div class="item-image">
-        <lucide-icon [img]="Box" class="item-icon-cheese"></lucide-icon>
-      </div>
-      <div class="item-details">
-        <div class="item-name">Paneer 200g</div>
-        <div class="item-price">₹90.00 / piece</div>
-      </div>
-      <div class="item-controls-row">
-        <div class="item-qty-control">
-          <button class="qty-btn minus"><lucide-icon [img]="Minus"></lucide-icon></button>
-          <span class="qty-val">1</span>
-          <button class="qty-btn plus"><lucide-icon [img]="Plus"></lucide-icon></button>
-        </div>
-        <input type="number" placeholder="Amt" class="tiny-input" />
-        <input type="number" placeholder="Disc %" class="tiny-input" />
-      </div>
-      <div class="item-total">₹90.00</div>
-      <button class="delete-btn"><lucide-icon [img]="Trash2"></lucide-icon></button>
-    </div>
-
-    <!-- Cart Item 3 -->
-    <div class="cart-item">
-      <div class="item-image">
-        <lucide-icon [img]="IceCream" class="item-icon-icecream"></lucide-icon>
-      </div>
-      <div class="item-details">
-        <div class="item-name">Curd 500g</div>
-        <div class="item-price">₹45.00 / piece</div>
-      </div>
-      <div class="item-controls-row">
-        <div class="item-qty-control">
-          <button class="qty-btn minus"><lucide-icon [img]="Minus"></lucide-icon></button>
-          <span class="qty-val">1</span>
-          <button class="qty-btn plus"><lucide-icon [img]="Plus"></lucide-icon></button>
-        </div>
-        <input type="number" placeholder="Amt" class="tiny-input" />
-        <input type="number" placeholder="Disc %" class="tiny-input" />
-      </div>
-      <div class="item-total">₹45.00</div>
-      <button class="delete-btn"><lucide-icon [img]="Trash2"></lucide-icon></button>
-    </div>
-
-    <!-- Cart Item 4 -->
-    <div class="cart-item">
-      <div class="item-image">
-        <lucide-icon [img]="Cylinder" class="item-icon-ghee"></lucide-icon>
-      </div>
-      <div class="item-details">
-        <div class="item-name">Ghee 500ml</div>
-        <div class="item-price">₹350.00 / piece</div>
-      </div>
-      <div class="item-controls-row">
-        <div class="item-qty-control">
-          <button class="qty-btn minus"><lucide-icon [img]="Minus"></lucide-icon></button>
-          <span class="qty-val">1</span>
-          <button class="qty-btn plus"><lucide-icon [img]="Plus"></lucide-icon></button>
-        </div>
-        <input type="number" placeholder="Amt" class="tiny-input" />
-        <input type="number" placeholder="Disc %" class="tiny-input" />
-      </div>
-      <div class="item-total">₹350.00</div>
+      <div class="item-total">₹{{ item.total | number:'1.2-2' }}</div>
       <button class="delete-btn"><lucide-icon [img]="Trash2"></lucide-icon></button>
     </div>
 

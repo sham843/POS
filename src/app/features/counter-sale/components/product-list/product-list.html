@@ -1,24 +1,19 @@
 <div class="custom-product-list">
 
   <div class="category-pills">
-    <button class="pill-btn active">
+    <!-- Static 'All' Button -->
+    <button class="pill-btn" [class.active]="activeCategory === 'All'" (click)="selectCategory('All')">
       <lucide-icon [img]="LayoutGrid" class="fa-icon"></lucide-icon> All
     </button>
-    <button class="pill-btn">
-      <lucide-icon [img]="Milk" class="fa-icon"></lucide-icon> Milk
+    
+    <!-- Dynamic Category Buttons from Backend -->
+    <button class="pill-btn" 
+            *ngFor="let cat of categories" 
+            [class.active]="activeCategory === cat.name"
+            (click)="selectCategory(cat.name)">
+      <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
     </button>
-    <button class="pill-btn">
-      <lucide-icon [img]="Box" class="fa-icon"></lucide-icon> Paneer
-    </button>
-    <button class="pill-btn">
-      <lucide-icon [img]="Cylinder" class="fa-icon"></lucide-icon> Ghee
-    </button>
-    <button class="pill-btn">
-      <lucide-icon [img]="Soup" class="fa-icon"></lucide-icon> Khava
-    </button>
-    <button class="pill-btn">
-      <lucide-icon [img]="GlassWater" class="fa-icon"></lucide-icon> Lassi
-    </button>
+    
     <button class="pill-btn more-btn">
       <lucide-icon [img]="Ellipsis" class="fa-icon"></lucide-icon> More
     </button>

@@ -73,7 +73,8 @@ body {
   --pos-card-border: #dee2e6;
   --pos-accent: #007bff;
   --pos-accent-hover: #0056b3;
-  --pos-glass-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Very subtle flat shadow */
+  --pos-glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  /* Very subtle flat shadow */
   --pos-text-primary: #212529;
   --pos-text-secondary: #6c757d;
   --pos-success: #28a745;
@@ -107,17 +108,19 @@ body {
   --mdc-outlined-text-field-label-text-color: var(--text-secondary);
   --mdc-outlined-text-field-hover-label-text-color: var(--text-primary);
   --mdc-outlined-text-field-focus-label-text-color: var(--border-color);
-  
+
   .mat-mdc-input-element {
     color: var(--input-text) !important;
   }
+
   .mat-mdc-form-field-input-control::placeholder {
     color: var(--text-secondary) !important;
   }
+
   .mdc-floating-label {
     color: var(--text-secondary) !important;
   }
-  
+
   /* Fix Checkbox and Icons for Dark Mode */
   .mat-mdc-checkbox {
     --mdc-checkbox-unselected-icon-color: var(--input-text);
@@ -125,15 +128,15 @@ body {
     --mdc-checkbox-unselected-focus-icon-color: var(--input-text);
     --mdc-checkbox-unselected-pressed-icon-color: var(--input-text);
   }
-  
+
   /* Fallback for Checkbox outline */
   .mdc-checkbox__background {
     border-color: var(--input-text) !important;
   }
-  
+
   --mdc-filled-text-field-caret-color: var(--input-text);
   --mdc-outlined-text-field-caret-color: var(--input-text);
-  
+
   .mat-mdc-form-field .mat-mdc-icon-button {
     color: var(--input-text) !important;
   }
@@ -144,7 +147,7 @@ body {
   --pos-card-border: #495057;
   --pos-accent: #0d6efd;
   --pos-accent-hover: #0b5ed7;
-  --pos-glass-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  --pos-glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   --pos-text-primary: #f8f9fa;
   --pos-text-secondary: #ced4da;
   --pos-success: #198754;
@@ -195,7 +198,7 @@ mat-error {
   color: var(--btn-primary-text) !important;
   border-radius: 8px !important;
   transition: all 0.2s ease-in-out !important;
-  
+
   &:hover {
     opacity: 0.9;
     transform: translateY(-1px);
@@ -205,10 +208,22 @@ mat-error {
 
 /* Fix for Chrome autofill background in dark mode */
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px var(--form-bg) inset !important;
   -webkit-text-fill-color: var(--text-primary) !important;
   transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Global Lucide Icon Alignments and Stroke Width */
+lucide-icon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+lucide-icon svg {
+  stroke-width: 1.50px !important;
 }
