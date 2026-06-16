@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { DbService } from '../../../../core/services/db.service';
 import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
+import { CounterSaleService } from '../../../../core/services/counter-sale.service';
 
 @Component({
   selector: 'app-product-list',
@@ -29,6 +30,7 @@ import { EmptyState } from '../../../../shared/components/empty-state/empty-stat
 })
 export class ProductList implements OnInit {
   private dbService = inject(DbService);
+  private counterSaleService = inject(CounterSaleService);
 
   // Expose icons to template
   readonly LayoutGrid = LayoutGrid;
@@ -57,13 +59,28 @@ export class ProductList implements OnInit {
   filteredProducts = computed(() => {
     const products = this.allProducts();
     const category = this.activeCategory();
-    if (category === 'All') {
-      return products;
+    const query = this.counterSaleService.searchQuery().toLowerCase().trim();
+
+    let filtered = products;
+
+    // Filter by Category
+    if (category !== 'All') {
+      filtered = filtered.filter(p => {
+        const cat = p.categoryName || p.category || p.materialGroupName;
+        return cat === category;
+      });
     }
-    return products.filter(p => {
-      const cat = p.categoryName || p.category || p.materialGroupName;
-      return cat === category;
-    });
+
+    // Filter by Search Query
+    if (query) {
+      filtered = filtered.filter(p => {
+        const name = (p.productName || p.materialName || p.name || '').toLowerCase();
+        const code = (p.productCode || p.code || p.materialCode || '').toLowerCase();
+        return name.includes(query) || code.includes(query);
+      });
+    }
+
+    return filtered;
   });
 
   // Reactive paginated products computed signal

@@ -3,37 +3,47 @@
   <div class="cart-header">
     <div class="cart-title">
       <h3>Cart</h3>
-      <span class="item-count">(2 Items)</span>
+      <span class="item-count" *ngIf="dataSource().length > 0">({{ dataSource().length }} {{ dataSource().length === 1 ? 'Item' : 'Items' }})</span>
     </div>
-    <button class="clear-cart-btn">
+    <button class="clear-cart-btn" *ngIf="dataSource().length > 0">
       <lucide-icon [img]="Trash2"></lucide-icon> Clear Cart
     </button>
   </div>
 
   <div class="cart-items-list">
 
-    <!-- Dynamic Cart Items from Backend/Store -->
-    <div class="cart-item" *ngFor="let item of dataSource">
-      <div class="item-image">
-        <!-- Generic Package icon for all items -->
-        <lucide-icon [img]="Package" class="item-icon-milk"></lucide-icon>
-      </div>
-      <div class="item-details">
-        <div class="item-name">{{ item.details }}</div>
-        <div class="item-price">₹{{ item.rate | number:'1.2-2' }} / piece <span class="item-gst">(+ {{ item.gst }} GST)</span></div>
-      </div>
-      <div class="item-controls-row">
-        <div class="item-qty-control">
-          <button class="qty-btn minus"><lucide-icon [img]="Minus"></lucide-icon></button>
-          <span class="qty-val">{{ item.quantity }}</span>
-          <button class="qty-btn plus"><lucide-icon [img]="Plus"></lucide-icon></button>
+    <ng-container *ngIf="dataSource().length > 0; else emptyCart">
+      <!-- Dynamic Cart Items from Backend/Store -->
+      <div class="cart-item" *ngFor="let item of dataSource()">
+        <div class="item-image">
+          <!-- Generic Package icon for all items -->
+          <lucide-icon [img]="Package" class="item-icon-milk"></lucide-icon>
         </div>
-        <input type="number" placeholder="Amt" class="tiny-input" [value]="item.amount" />
-        <input type="number" placeholder="Disc %" class="tiny-input" [value]="item.discount" />
+        <div class="item-details">
+          <div class="item-name">{{ item.details }}</div>
+          <div class="item-price">₹{{ item.rate | number:'1.2-2' }} / piece <span class="item-gst">(+ {{ item.gst }} GST)</span></div>
+        </div>
+        <div class="item-controls-row">
+          <div class="item-qty-control">
+            <button class="qty-btn minus"><lucide-icon [img]="Minus"></lucide-icon></button>
+            <span class="qty-val">{{ item.quantity }}</span>
+            <button class="qty-btn plus"><lucide-icon [img]="Plus"></lucide-icon></button>
+          </div>
+          <input type="number" placeholder="Amt" class="tiny-input" [value]="item.amount" />
+          <input type="number" placeholder="Disc %" class="tiny-input" [value]="item.discount" />
+        </div>
+        <div class="item-total">₹{{ item.total | number:'1.2-2' }}</div>
+        <button class="delete-btn"><lucide-icon [img]="Trash2"></lucide-icon></button>
       </div>
-      <div class="item-total">₹{{ item.total | number:'1.2-2' }}</div>
-      <button class="delete-btn"><lucide-icon [img]="Trash2"></lucide-icon></button>
-    </div>
+    </ng-container>
+
+    <ng-template #emptyCart>
+      <app-empty-state
+        title="Cart is empty"
+        message="Add products to start checkout."
+        icon="cart">
+      </app-empty-state>
+    </ng-template>
 
   </div>
 

@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, inject } from '@angular/core';
 import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp } from 'lucide-angular';
 import { ProductList } from './components/product-list/product-list';
 import { Cart } from './components/cart/cart';
 import { BillSummary } from './components/bill-summary/bill-summary';
 import { Payment } from './components/payment/payment';
+import { CounterSaleService } from '../../core/services/counter-sale.service';
 
 interface BillTab {
   id: number;
@@ -27,6 +28,8 @@ interface BillTab {
   styleUrl: './counter-sale.scss',
 })
 export class CounterSale implements OnInit, OnDestroy {
+  private counterSaleService = inject(CounterSaleService);
+
   currentTime = signal(new Date());
   private timer: any;
 
@@ -56,11 +59,16 @@ export class CounterSale implements OnInit, OnDestroy {
     { id: 1, name: 'Bill 1', active: true }
   ]);
   
-  searchType = signal<'product' | 'bill' | 'customer'>('product');
+  searchType = this.counterSaleService.searchType;
   nextBillId = 2;
 
   setSearchType(type: 'product' | 'bill' | 'customer') {
     this.searchType.set(type);
+  }
+
+  onSearchChange(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.counterSaleService.updateSearchQuery(value);
   }
 
   addBill() {
