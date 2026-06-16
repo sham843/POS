@@ -24,8 +24,13 @@
       <div class="search-box">
         <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
         <input type="text"
+          #searchInput
+          [value]="searchQuery()"
           [placeholder]="searchType() === 'product' ? 'Search by Product Name' : (searchType() === 'bill' ? 'Search by Bill №.' : 'Search by Customer Name')"
           (input)="onSearchChange($event)">
+        <button class="clear-search-btn" *ngIf="searchQuery()" (click)="clearSearch(searchInput)">
+          <lucide-icon [img]="X" class="clear-icon"></lucide-icon>
+        </button>
       </div>
     </div>
 

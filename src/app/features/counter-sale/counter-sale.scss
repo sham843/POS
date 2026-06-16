@@ -65,6 +65,32 @@
       }
     }
 
+    .clear-search-btn {
+      background: transparent;
+      border: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #9CA3AF;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      margin-left: 4px;
+      transition: background-color 0.2s, color 0.2s;
+
+      .clear-icon {
+        width: 14px;
+        height: 14px;
+      }
+
+      &:hover {
+        background-color: #F3F4F6;
+        color: #374151;
+      }
+    }
+
     .shortcut-key {
       font-size: 10px;
       font-weight: 600;

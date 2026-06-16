@@ -55,6 +55,12 @@
       lucide-icon {
         color: #6B7280;
       }
+
+      &.active {
+        lucide-icon {
+          color: #ffffff !important;
+        }
+      }
     }
   }
 }

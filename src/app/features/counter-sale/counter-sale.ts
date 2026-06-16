@@ -60,6 +60,7 @@ export class CounterSale implements OnInit, OnDestroy {
   ]);
   
   searchType = this.counterSaleService.searchType;
+  searchQuery = this.counterSaleService.searchQuery;
   nextBillId = 2;
 
   setSearchType(type: 'product' | 'bill' | 'customer') {
@@ -69,6 +70,11 @@ export class CounterSale implements OnInit, OnDestroy {
   onSearchChange(event: Event) {
     const value = (event.target as HTMLInputElement).value;
     this.counterSaleService.updateSearchQuery(value);
+  }
+
+  clearSearch(inputEl: HTMLInputElement) {
+    this.counterSaleService.updateSearchQuery('');
+    inputEl.value = '';
   }
 
   addBill() {

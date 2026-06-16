@@ -86,9 +86,18 @@ export class ProductList implements OnInit, AfterViewInit {
 
     // Filter by Category
     if (category !== 'All') {
+      const matchingCategoryIds = new Set(
+        categories
+          .filter(c => (c.productName || c.name || '').toLowerCase() === category.toLowerCase())
+          .map(c => c.id)
+      );
+
       filtered = filtered.filter(p => {
-        const cat = p.categoryName || p.category || p.materialGroupName;
-        return cat === category;
+        const matchesParent = p.productId && matchingCategoryIds.has(p.productId);
+        const cat = (p.categoryName || p.category || p.materialGroupName || '').toLowerCase();
+        const matName = (p.materialName || p.productName || p.name || '').toLowerCase();
+        const targetCat = category.toLowerCase();
+        return matchesParent || cat === targetCat || matName.includes(targetCat);
       });
     }
 
@@ -230,6 +239,7 @@ export class ProductList implements OnInit, AfterViewInit {
   }
 
   selectCategory(name: string) {
+    debugger
     this.activeCategory.set(name);
     this.currentPage.set(1);
   }
