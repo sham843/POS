@@ -55,7 +55,7 @@ export class SessionStart {
 
   onAvatarError(event: any) {
     const name = this.userDetails()?.name || 'User';
-    event.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=116256&color=fff&rounded=true&size=90`;
+    event.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0052CC&color=fff&rounded=true&size=90`;
   }
 
   logout() {

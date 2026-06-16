@@ -1,5 +1,5 @@
 .session-container {
-    background-color: var(--bg-color);
+    background-color: #EFF6FF;
     color: var(--text-primary);
     font-family: 'Inter', sans-serif;
 }
@@ -32,6 +32,11 @@
     lucide-icon {
         width: 20px;
         height: 20px;
+        
+        svg {
+            width: 20px;
+            height: 20px;
+        }
     }
 }
 
@@ -80,8 +85,10 @@
         font-size: 0.9rem;
 
         lucide-icon {
-            width: 16px;
-            height: 16px;
+            width: 16px !important;
+            height: 16px !important;
+            min-width: 16px;
+            flex-shrink: 0;
         }
     }
 }
@@ -117,8 +124,10 @@
             }
 
             lucide-icon {
-                width: 24px;
-                height: 24px;
+                width: 24px !important;
+                height: 24px !important;
+                min-width: 24px;
+                flex-shrink: 0;
             }
         }
     }
@@ -133,9 +142,11 @@
         padding-bottom: 12px !important;
 
         lucide-icon {
-            width: 20px;
-            height: 20px;
-            line-height: 20px;
+            width: 24px !important;
+            height: 24px !important;
+            min-width: 24px;
+            flex-shrink: 0;
+            color: var(--pos-accent);
         }
 
         .fw-medium {

@@ -13,13 +13,18 @@
         <!-- Profile Info (Overlapping) -->
         <div
             class="profile-section d-flex flex-column align-items-center text-center px-3 pt-0 pb-3 position-relative z-1">
-            <div class="profile-avatar mb-2">
+            <div class="profile-avatar mb-3">
                 <img src="assets/images/avatar.png" alt="Profile" class="rounded-circle shadow" width="75" height="75"
                     (error)="onAvatarError($event)">
             </div>
-            <span class="role-badge mb-1">{{ 'SESSION_SUMMARY.COUNTER_SALE' | translate }}</span>
-            <h3 class="fw-bold mb-1 user-name">{{ userDetails()?.name || 'User Name' }}</h3>
-            <div class="contact-info d-flex align-items-center justify-content-center text-muted">
+            <span class="role-badge mb-2">{{ 'SESSION_SUMMARY.COUNTER_SALE' | translate }}</span>
+            <h3 class="fw-bold mb-1 user-name d-flex align-items-center justify-content-center gap-2">
+                {{ userDetails()?.name || 'User Name' }}
+                <span
+                    style="width: 10px; height: 10px; background-color: #198754; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(25, 135, 84, 0.3);"
+                    title="Online"></span>
+            </h3>
+            <div class="contact-info d-flex align-items-center justify-content-center text-muted mb-2">
                 <lucide-icon [img]="Phone" class="me-1"></lucide-icon>
                 <span>{{ userDetails()?.mobileNumber || 'N/A' }}</span>
             </div>
@@ -30,20 +35,21 @@
 
             <!-- Key Metrics (3 columns) -->
             <div class="metrics-grid mb-3">
-                <div class="metric-box text-center p-3 rounded-4">
-                    <lucide-icon [img]="Wallet" class="text-primary mb-1"></lucide-icon>
-                    <div class="metric-label">{{ 'SESSION_SUMMARY.COLLECTION' | translate }}</div>
-                    <div class="metric-value text-primary"> {{userDetails()?.totalAmount || '0.00'}}</div>
-                </div>
-                <div class="metric-box text-center p-3 rounded-4">
+                <div class="metric-box text-center p-3 rounded-4" style="background-color: #F0FDF4 !important;">
                     <lucide-icon [img]="Receipt" class="text-success mb-1"></lucide-icon>
                     <div class="metric-label">{{ 'SESSION_SUMMARY.TOTAL_BILLS' | translate }}</div>
                     <div class="metric-value text-success">{{userDetails()?.totalBill || '0'}}</div>
                 </div>
-                <div class="metric-box text-center p-3 rounded-4">
-                    <lucide-icon [img]="Banknote" class="text-warning mb-1"></lucide-icon>
+                <div class="metric-box text-center p-3 rounded-4" style="background-color: #EFF6FF !important;">
+                    <lucide-icon [img]="Wallet" class="text-primary mb-1"></lucide-icon>
+                    <div class="metric-label">{{ 'SESSION_SUMMARY.COLLECTION' | translate }}</div>
+                    <div class="metric-value text-primary">{{userDetails()?.totalAmount || '0.00'}}</div>
+                </div>
+                <div class="metric-box text-center p-3 rounded-4" style="background-color: #FFFBEB !important;">
+                    <lucide-icon [img]="Banknote" style="color: #d97706;" class="mb-1"></lucide-icon>
                     <div class="metric-label">{{ 'SESSION_SUMMARY.OPENING_BAL' | translate }}</div>
-                    <div class="metric-value text-warning">₹ {{userDetails()?.openingBalance || '0.00'}}</div>
+                    <div class="metric-value" style="color: #d97706; font-weight: 700;">₹
+                        {{userDetails()?.openingBalance || '0.00'}}</div>
                 </div>
             </div>
 
@@ -51,7 +57,8 @@
             <div class="session-details-list mb-3">
                 <div class="detail-row d-flex justify-content-between align-items-center py-2 border-bottom-dashed">
                     <div class="d-flex align-items-center text-muted">
-                        <lucide-icon [img]="Calendar" class="me-3 fs-5"></lucide-icon>
+                        <lucide-icon [img]="Calendar" [size]="24" class="me-2"
+                            style="color: var(--pos-accent)"></lucide-icon>
                         <span class="fw-medium">{{ 'SESSION_SUMMARY.DATE' | translate }}</span>
                     </div>
                     <span class="fw-bold text-end">{{ userDetails()?.loginDate || '-' }}</span>
@@ -59,7 +66,8 @@
 
                 <div class="detail-row d-flex justify-content-between align-items-center py-2 border-bottom-dashed">
                     <div class="d-flex align-items-center text-muted">
-                        <lucide-icon [img]="Clock" class="me-3 fs-5"></lucide-icon>
+                        <lucide-icon [img]="Clock" [size]="24" class="me-2"
+                            style="color: var(--pos-accent)"></lucide-icon>
                         <span class="fw-medium">{{ 'SESSION_SUMMARY.START_TIME' | translate }}</span>
                     </div>
                     <span class="fw-bold text-end">{{ userDetails()?.loginTime || '-' }}</span>
@@ -67,7 +75,8 @@
 
                 <div class="detail-row d-flex justify-content-between align-items-center py-2">
                     <div class="d-flex align-items-center text-muted">
-                        <lucide-icon [img]="Clock" class="me-3 fs-5"></lucide-icon>
+                        <lucide-icon [img]="Clock" [size]="24" class="me-2"
+                            style="color: var(--pos-accent)"></lucide-icon>
                         <span class="fw-medium">{{ 'SESSION_SUMMARY.END_TIME' | translate }}</span>
                     </div>
                     <span class="fw-bold text-end">{{userDetails()?.logoutTime || '-'}}</span>
