@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #F8F9FA;
+  background: linear-gradient(135deg, #EFF6FF 0%, #BFDBFE 100%);
   padding: 24px;
   font-family: 'Inter', 'Roboto', sans-serif;
 }
@@ -11,9 +11,10 @@
 .session-card {
   width: 100%;
   max-width: 480px;
+  background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  border: 1px solid #E5E7EB;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: none;
 
   mat-card-header {
     padding: 24px 24px 16px;
