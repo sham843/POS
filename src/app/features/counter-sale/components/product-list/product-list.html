@@ -2,17 +2,18 @@
 
   <div class="category-pills">
     <!-- Static 'All' Button -->
-    <button class="pill-btn" [class.active]="activeCategory === 'All'" (click)="selectCategory('All')">
+    <button class="pill-btn" [class.active]="activeCategory() === 'All'" (click)="selectCategory('All')">
       <lucide-icon [img]="LayoutGrid" class="fa-icon"></lucide-icon> All
     </button>
     
     <!-- Dynamic Category Buttons from Backend -->
-    <button class="pill-btn" 
-            *ngFor="let cat of categories" 
-            [class.active]="activeCategory === cat.name"
-            (click)="selectCategory(cat.name)">
-      <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
-    </button>
+    @for (cat of categories(); track cat.name) {
+      <button class="pill-btn" 
+              [class.active]="activeCategory() === cat.name"
+              (click)="selectCategory(cat.name)">
+        <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
+      </button>
+    }
     
     <button class="pill-btn more-btn">
       <lucide-icon [img]="Ellipsis" class="fa-icon"></lucide-icon> More
@@ -20,98 +21,38 @@
   </div>
 
   <div class="products-grid">
-    <!-- Card 1 -->
-    <div class="prod-card">
-      <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
-      <div class="prod-image">
-        <div class="img-placeholder"><img src="assets/images/fresh_milk.png" onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image'" alt="Milk"></div>
-      </div>
-      <div class="prod-info">
-        <div class="prod-name">Fresh Milk 1L</div>
-        <div class="prod-price-row">
-          <div class="prod-price">₹65.00</div>
-          <div class="prod-status in-stock"><span class="dot"></span> In</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 2 -->
-    <div class="prod-card">
-      <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
-      <div class="prod-image">
-        <div class="img-placeholder"><img src="assets/images/paneer.png" onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image'" alt="Paneer"></div>
-      </div>
-      <div class="prod-info">
-        <div class="prod-name">Paneer 200g</div>
-        <div class="prod-price-row">
-          <div class="prod-price">₹90.00</div>
-          <div class="prod-status in-stock"><span class="dot"></span> In</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="prod-card">
-      <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
-      <div class="prod-image">
-        <div class="img-placeholder"><img src="assets/images/curd.png" onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image'" alt="Curd"></div>
-      </div>
-      <div class="prod-info">
-        <div class="prod-name">Curd 500g</div>
-        <div class="prod-price-row">
-          <div class="prod-price">₹40.00</div>
-          <div class="prod-status in-stock"><span class="dot"></span> In</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 4 -->
-    <div class="prod-card">
-      <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
-      <div class="prod-image">
-        <div class="img-placeholder"><img src="https://placehold.co/100x100?text=No+Image" alt="Ghee"></div>
-      </div>
-      <div class="prod-info">
-        <div class="prod-name">Ghee 500ml</div>
-        <div class="prod-price-row">
-          <div class="prod-price">₹450.00</div>
-          <div class="prod-status low-stock"><span class="dot"></span> Low</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Generate more cards for demonstration -->
-    <div class="prod-card" *ngFor="let item of [1,2,3,4,5,6,7,8,9,10,11]">
-      <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
-      <div class="prod-image">
-        <div class="img-placeholder"><img src="https://placehold.co/100x100?text=No+Image" alt="Product"></div>
-      </div>
-      <div class="prod-info">
-        <div class="prod-name">Product Name</div>
-        <div class="prod-price-row">
-          <div class="prod-price">₹0.00</div>
-          <div class="prod-status in-stock"><span class="dot"></span> In</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
+    @for (p of paginatedProducts(); track p.id || p.productName || p.materialName || p.name) {
+      <div class="prod-card">
+        <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
+        <div class="prod-image">
+          <div class="img-placeholder">
+            <img [src]="p.image || p.imageUrl || 'https://placehold.co/100x100?text=No+Image'" 
+                 onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image'" 
+                 [alt]="p.productName || p.materialName || p.name">
+          </div>
+         </div>
+         <div class="prod-info">
+           <div class="prod-name">{{ p.productName || p.materialName || p.name }}</div>
+           <div class="prod-price-row">
+             <div class="prod-price">₹{{ (p.salePrice || p.mrp || p.rate || p.price || p.saleRate || 0) | number:'1.2-2' }}</div>
+             <div class="prod-status" [class.in-stock]="p.stockQty === undefined || p.stockQty > 0" [class.low-stock]="p.stockQty !== undefined && p.stockQty <= 0">
+               <span class="dot"></span> {{ (p.stockQty !== undefined && p.stockQty <= 0) ? 'Out' : 'In' }}
+             </div>
+           </div>
+         </div>
+       </div>
+     }
+   </div>
+ 
   <div class="pl-footer">
-    <div class="items-count">
-      Showing 1 – 15 of 120 items
-    </div>
-    <div class="pagination-controls">
-      <button class="nav-btn"><lucide-icon [img]="ChevronLeft"></lucide-icon></button>
-      <button class="page-btn active">1</button>
-      <button class="page-btn">2</button>
-      <button class="page-btn">3</button>
-      <button class="page-btn">4</button>
-      <button class="page-btn">5</button>
-      <span class="ellipsis">...</span>
-      <button class="page-btn">10</button>
-      <button class="nav-btn"><lucide-icon [img]="ChevronRight"></lucide-icon></button>
-    </div>
+    <mat-paginator [length]="filteredProducts().length"
+                  [pageSize]="pageSize()"
+                  hidePageSize="true"
+                  showFirstLastButtons="true"
+                  [pageIndex]="currentPage() - 1"
+                  (page)="onPageChange($event)"
+                  aria-label="Select page">
+    </mat-paginator>
   </div>
 
 </div>

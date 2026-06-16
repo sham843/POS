@@ -156,7 +156,8 @@
       font-size: 12px;
       font-weight: 600;
       color: #111827;
-      line-height: 1.2;
+      line-height: 1.5;
+      padding: 2px 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -175,6 +176,7 @@
         font-weight: 700;
         color: #0052CC;
         word-break: break-all;
+        line-height: 1.4;
       }
 
       .prod-status {
@@ -219,60 +221,46 @@
 
 /* Footer / Pagination */
 .pl-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-top: 16px;
-  padding-top: 16px;
   border-top: 1px solid #E5E7EB;
 
-  .pagination-controls {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-
-    .page-btn,
-    .nav-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: transparent;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #374151;
-      cursor: pointer;
-
-      &:hover {
-        background: #F3F4F6;
-      }
-
-      &.active {
-        background: #0052CC;
-        color: white;
-      }
-
-      lucide-icon {
-        width: 18px;
-        height: 18px;
-      }
+  ::ng-deep {
+    .mat-mdc-paginator {
+      background: transparent !important;
+      font-family: 'Inter', 'Roboto', sans-serif;
     }
 
-    .ellipsis {
-      font-size: 14px;
-      color: #6B7280;
-      padding: 0 4px;
+    .mat-mdc-paginator-container {
+      justify-content: flex-end !important;
+      padding: 0 !important;
+      min-height: 48px !important;
+    }
+
+    .mat-mdc-paginator-range-label {
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      color: #6B7280 !important;
+      margin-right: 16px !important;
+    }
+
+    .mat-mdc-paginator-navigation-button {
+      color: #374151 !important;
+      background-color: #F3F4F6 !important;
+      border-radius: 8px !important;
+      margin: 0 4px !important;
+      transition: background-color 0.2s ease, color 0.2s ease;
+
+      &:hover:not([disabled]) {
+        background-color: #E6F0FF !important;
+        color: #0052CC !important;
+      }
+
+      &[disabled] {
+        opacity: 0.4 !important;
+        background-color: transparent !important;
+      }
     }
   }
-
-    .items-count {
-      font-size: 13px;
-      color: #6B7280;
-      font-weight: 500;
-    }
 }
 
 /* --- RESPONSIVE DESIGN --- */
