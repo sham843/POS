@@ -1,1 +1,91 @@
-<p>session-end works!</p>
+<div class="session-end-container">
+  <mat-card class="session-card">
+    <mat-card-header>
+      <div class="header-content">
+        <div class="icon-circle">
+          <mat-icon>point_of_sale</mat-icon>
+        </div>
+        <div class="header-titles">
+          <mat-card-title>End Shift / Close Register</mat-card-title>
+          <mat-card-subtitle>Review your session details before closing</mat-card-subtitle>
+        </div>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- User Info -->
+      <div class="info-section">
+        <div class="info-row">
+          <span class="label">Cashier</span>
+          <span class="value">{{ sessionData.userName }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Shift Started</span>
+          <span class="value">{{ sessionData.startTime | date:'short' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Shift Ended</span>
+          <span class="value">{{ sessionData.endTime | date:'short' }}</span>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Sales Summary -->
+      <div class="summary-section">
+        <h3>Sales Summary</h3>
+        <div class="summary-grid">
+          <div class="summary-box">
+            <mat-icon class="text-blue">receipt_long</mat-icon>
+            <div class="s-label">Total Bills</div>
+            <div class="s-value">{{ sessionData.totalBills }}</div>
+          </div>
+          <div class="summary-box">
+            <mat-icon class="text-green">payments</mat-icon>
+            <div class="s-label">Total Sales</div>
+            <div class="s-value">₹{{ sessionData.totalSales | number:'1.2-2' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Payment Breakdown -->
+      <div class="payment-breakdown">
+        <h3>Payment Breakdown</h3>
+        <div class="pay-row">
+          <div class="pay-type">
+            <mat-icon class="cash-icon">payments</mat-icon>
+            <span>Cash</span>
+          </div>
+          <div class="pay-amount">₹{{ sessionData.payments.cash | number:'1.2-2' }}</div>
+        </div>
+        <div class="pay-row">
+          <div class="pay-type">
+            <mat-icon class="upi-icon">qr_code_scanner</mat-icon>
+            <span>UPI</span>
+          </div>
+          <div class="pay-amount">₹{{ sessionData.payments.upi | number:'1.2-2' }}</div>
+        </div>
+        <div class="pay-row">
+          <div class="pay-type">
+            <mat-icon class="card-icon">credit_card</mat-icon>
+            <span>Card</span>
+          </div>
+          <div class="pay-amount">₹{{ sessionData.payments.card | number:'1.2-2' }}</div>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions class="action-buttons">
+      <button mat-stroked-button color="primary" class="back-btn" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to POS
+      </button>
+      <button mat-flat-button color="warn" class="logout-btn" (click)="confirmEndSession()">
+        <mat-icon>logout</mat-icon>
+        Confirm & Logout
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
