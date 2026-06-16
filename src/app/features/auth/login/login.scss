@@ -1,11 +1,11 @@
-$primary-color: #4f46e5;
+$primary-color: var(--pos-accent);
 
 .login-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-color);
+  background-color: #EFF6FF;
   padding: 1.5rem;
   transition: background-color 0.3s ease;
 }
@@ -13,7 +13,7 @@ $primary-color: #4f46e5;
 .login-wrapper {
   display: flex;
   width: 100%;
-  max-width: 1000px;
+  max-width: 850px;
   background: var(--form-bg);
   border-radius: 24px;
   overflow: hidden;

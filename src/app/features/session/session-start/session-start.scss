@@ -17,15 +17,15 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(13, 138, 188, 0.1);
+    background: rgba(0, 82, 204, 0.1);
     border: none;
-    color: #0d8abc;
+    color: var(--pos-accent);
     z-index: 10;
     cursor: pointer;
     transition: all 0.2s ease;
 
     &:hover {
-        background: rgba(13, 138, 188, 0.2);
+        background: rgba(0, 82, 204, 0.2);
         transform: scale(1.05);
     }
 
@@ -41,7 +41,7 @@
     left: 0;
     right: 0;
     height: 90px;
-    background: linear-gradient(135deg, rgba(13, 138, 188, 0.2) 0%, rgba(13, 138, 188, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(0, 82, 204, 0.2) 0%, rgba(0, 82, 204, 0.05) 100%);
     border-bottom: none;
     z-index: 0;
 }
@@ -66,8 +66,8 @@
     }
 
     .role-badge {
-        background: rgba(13, 138, 188, 0.1);
-        color: #0d8abc;
+        background: rgba(0, 82, 204, 0.1);
+        color: var(--pos-accent);
         padding: 3px 10px;
         border-radius: 12px;
         font-size: 0.75rem;
@@ -156,7 +156,7 @@
 
         &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(17, 98, 86, 0.3);
+            box-shadow: 0 8px 15px rgba(0, 82, 204, 0.3);
         }
     }
 }
