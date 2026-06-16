@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, AfterViewInit, inject, signal, computed, ViewChild, ElementRef, HostListener, ChangeDetectionStrategy, effect } from '@angular/core';
-import { LucideAngularModule, LayoutGrid, Package, Ellipsis, Star, ChevronLeft, ChevronRight, Search } from 'lucide-angular';
+import { LucideAngularModule, Package, Ellipsis, Star, Search } from 'lucide-angular';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
@@ -35,15 +35,15 @@ export class ProductList implements OnInit, AfterViewInit {
   private dbService = inject(DbService);
   private counterSaleService = inject(CounterSaleService);
 
+  // Container ref for available width measurement
   @ViewChild('pillsContainer', { static: false }) pillsContainer!: ElementRef<HTMLDivElement>;
+  // Hidden measurement container — renders all buttons invisibly to get real widths
+  @ViewChild('measureContainer', { static: false }) measureContainer!: ElementRef<HTMLDivElement>;
 
   // Expose icons to template
-  readonly LayoutGrid = LayoutGrid;
   readonly Package = Package;
   readonly Ellipsis = Ellipsis;
   readonly Star = Star;
-  readonly ChevronLeft = ChevronLeft;
-  readonly ChevronRight = ChevronRight;
   readonly Search = Search;
 
   // Paginated products and count signals
@@ -55,10 +55,13 @@ export class ProductList implements OnInit, AfterViewInit {
   currentPage = signal<number>(1);
   pageSize = signal<number>(15);
 
-  // Dynamic Categories (fallback to hardcoded if DB is empty)
+  // All categories in DB order
   categories = signal<{ name: string }[]>([]);
+  // Visible pills (fit in container width)
   visibleCategories = signal<{ name: string }[]>([]);
+  // Overflow categories (shown inside More menu)
   overflowCategories = signal<{ name: string }[]>([]);
+  // Search inside More menu
   menuSearchQuery = signal<string>('');
 
   filteredOverflowCategories = computed(() => {
@@ -68,6 +71,7 @@ export class ProductList implements OnInit, AfterViewInit {
     return overflow.filter(cat => cat.name.toLowerCase().includes(query));
   });
 
+  // More button becomes active when selected category is in overflow
   isOverflowActive = computed(() => {
     const active = this.activeCategory();
     return this.overflowCategories().some(cat => cat.name === active);
@@ -80,7 +84,7 @@ export class ProductList implements OnInit, AfterViewInit {
       const query = this.counterSaleService.searchQuery();
       const page = this.currentPage();
       const size = this.pageSize();
-      const activeCats = this.allCategories(); // React to categories load
+      const activeCats = this.allCategories();
 
       this.fetchPaginatedProducts(category, query, page, size, activeCats);
     }, { allowSignalWrites: true });
@@ -89,6 +93,11 @@ export class ProductList implements OnInit, AfterViewInit {
   @HostListener('window:resize')
   onResize() {
     this.updateCategoriesOverflow();
+  }
+
+  ngAfterViewInit() {
+    // After first render, measure actual button widths and split visible/overflow
+    setTimeout(() => this.updateCategoriesOverflow(), 0);
   }
 
   async fetchPaginatedProducts(category: string, query: string, page: number, size: number, activeCats: any[]) {
@@ -101,7 +110,7 @@ export class ProductList implements OnInit, AfterViewInit {
         // Fast path: Load count and only the slice we need from IndexedDB
         const total = await this.dbService.products.count();
         this.totalFilteredProductsCount.set(total);
-        
+
         filtered = await this.dbService.products
           .offset((page - 1) * size)
           .limit(size)
@@ -167,33 +176,29 @@ export class ProductList implements OnInit, AfterViewInit {
     await this.loadCategoriesAndInitialProducts();
   }
 
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.updateCategoriesOverflow();
-    }, 100);
-  }
-
   async loadCategoriesAndInitialProducts() {
     try {
-      // Load categories from Db categories table, fallback to extraction if empty
-      const dbCategories = await this.dbService.categories.toArray();
+      // orderBy('id') ensures categories appear in the same sequence they were inserted in DB
+      const dbCategories = await this.dbService.categories.orderBy('id').toArray();
       const loadedCategories = dbCategories || [];
       this.allCategories.set(loadedCategories);
 
       if (loadedCategories.length > 0) {
-        const uniqueCategories = Array.from(
-          new Set(
-            loadedCategories
-              .map(cat => cat.productName)
-              .filter(Boolean)
-          )
-        );
-        if (uniqueCategories.length > 0) {
-          this.categories.set(uniqueCategories.map(name => ({ name: String(name) })));
+        // Direct map — preserve exact DB order, no Set() reordering
+        const categoryItems = loadedCategories
+          .filter(cat => cat.productName)
+          .map(cat => ({ name: String(cat.productName) }));
+        if (categoryItems.length > 0) {
+          this.categories.set(categoryItems);
+          // Set all visible initially; updateCategoriesOverflow runs after DOM renders
+          this.visibleCategories.set(categoryItems);
+          this.overflowCategories.set([]);
+          // Measure after one render tick so hidden container has actual widths
+          setTimeout(() => this.updateCategoriesOverflow(), 0);
         }
       } else {
-        // Fallback: If category table is empty, do a light scan of first few products to extract categories
-        const sampleProducts = await this.dbService.products.limit(100).toArray();
+        // Fallback: scan first 100 products to extract categories
+        const sampleProducts = await this.dbService.products.orderBy('id').limit(100).toArray();
         const uniqueCategories = Array.from(
           new Set(
             sampleProducts
@@ -202,70 +207,79 @@ export class ProductList implements OnInit, AfterViewInit {
           )
         );
         if (uniqueCategories.length > 0) {
-          this.categories.set(uniqueCategories.map(name => ({ name: String(name) })));
+          const items = uniqueCategories.map(name => ({ name: String(name) }));
+          this.categories.set(items);
+          this.visibleCategories.set(items);
+          this.overflowCategories.set([]);
+          setTimeout(() => this.updateCategoriesOverflow(), 0);
         }
       }
-
-      this.updateCategoriesOverflow();
     } catch (error) {
       console.error('Failed to load categories from IndexedDB:', error);
     }
   }
 
+  /**
+   * Uses the hidden #measureContainer (which renders all buttons at full width)
+   * to get actual offsetWidth of each button — works correctly for Marathi/Unicode text.
+   * Then splits into visible/overflow based on #pillsContainer clientWidth.
+   */
   updateCategoriesOverflow() {
-    if (!this.pillsContainer) {
-      this.visibleCategories.set(this.categories());
-      this.overflowCategories.set([]);
-      return;
-    }
+    if (!this.pillsContainer || !this.measureContainer) return;
+
+    const allCats = this.categories();
+    if (allCats.length === 0) return;
 
     const containerWidth = this.pillsContainer.nativeElement.clientWidth;
-    const allCats = this.categories();
+    if (!containerWidth) return;
 
-    if (!containerWidth || allCats.length === 0) {
-      this.visibleCategories.set(allCats);
-      this.overflowCategories.set([]);
+    // Measure actual widths from the hidden container
+    const measureBtns = Array.from(
+      this.measureContainer.nativeElement.querySelectorAll('.pill-btn-measure')
+    ) as HTMLElement[];
+
+    if (measureBtns.length !== allCats.length) {
+      // DOM not ready yet, retry
+      setTimeout(() => this.updateCategoriesOverflow(), 50);
       return;
     }
 
-    let totalEstWidth = 0;
-    for (const cat of allCats) {
-      totalEstWidth += (51 + cat.name.length * 9.5 + 6);
-    }
+    const GAP = 6;
+    const MORE_BTN_WIDTH = 96; // width reserved for the "More" button
+    const availableWidth = containerWidth - MORE_BTN_WIDTH;
 
-    if (totalEstWidth <= containerWidth) {
-      this.visibleCategories.set(allCats);
-      this.overflowCategories.set([]);
-      return;
-    }
-
-    const availableWidth = containerWidth - 96;
     let currentWidth = 0;
-    const visible: any[] = [];
-    const overflow: any[] = [];
+    let splitIndex = allCats.length; // assume all fit
 
-    for (const cat of allCats) {
-      const estWidth = 51 + cat.name.length * 9.5 + 6;
-      if (currentWidth + estWidth < availableWidth) {
-        visible.push(cat);
-        currentWidth += estWidth;
-      } else {
-        overflow.push(cat);
+    for (let i = 0; i < measureBtns.length; i++) {
+      currentWidth += measureBtns[i].offsetWidth + GAP;
+      if (currentWidth > availableWidth) {
+        splitIndex = i;
+        break;
       }
     }
 
-    if (visible.length === 0 && allCats.length > 0) {
-      visible.push(allCats[0]);
-      overflow.shift();
+    if (splitIndex === allCats.length) {
+      // All fit — no More button needed
+      this.visibleCategories.set(allCats);
+      this.overflowCategories.set([]);
+    } else {
+      this.visibleCategories.set(allCats.slice(0, splitIndex));
+      this.overflowCategories.set(allCats.slice(splitIndex));
     }
-
-    this.visibleCategories.set(visible);
-    this.overflowCategories.set(overflow);
   }
 
   onMenuSearch(event: Event) {
     const input = event.target as HTMLInputElement;
     this.menuSearchQuery.set(input.value);
+  }
+
+  clearMenuSearch() {
+    this.menuSearchQuery.set('');
+  }
+
+  stopPropagation(event: Event) {
+    event.stopPropagation();
   }
 
   selectCategory(name: string) {
@@ -276,13 +290,5 @@ export class ProductList implements OnInit, AfterViewInit {
   onPageChange(event: PageEvent) {
     this.currentPage.set(event.pageIndex + 1);
     this.pageSize.set(event.pageSize);
-  }
-
-  clearMenuSearch() {
-    this.menuSearchQuery.set('');
-  }
-
-  stopPropagation(event: Event) {
-    event.stopPropagation();
   }
 }

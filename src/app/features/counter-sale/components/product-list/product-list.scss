@@ -5,6 +5,18 @@
   background: transparent;
 }
 
+/* Hidden measurement container — off-screen, renders all buttons at full width for accurate measurement */
+.pills-measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+  display: flex;
+  gap: 6px;
+  top: -9999px;
+  left: 0;
+}
+
 /* Category Pills */
 .category-pills {
   display: flex;

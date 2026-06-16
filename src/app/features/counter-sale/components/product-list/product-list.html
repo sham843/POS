@@ -1,9 +1,16 @@
 <div class="custom-product-list">
 
-  <div class="category-pills" #pillsContainer>
-    <!-- Static 'All' Button -->
+  <!-- Hidden measurement container: renders all buttons invisibly to get their real widths -->
+  <div class="pills-measure" #measureContainer>
+    @for (cat of categories(); track cat.name) {
+    <button class="pill-btn pill-btn-measure">
+      <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
+    </button>
+    }
+  </div>
 
-    <!-- Dynamic Category Buttons from Backend -->
+  <!-- Visible category pills row -->
+  <div class="category-pills" #pillsContainer>
     @for (cat of visibleCategories(); track cat.name) {
     <button class="pill-btn" [class.active]="activeCategory() === cat.name" (click)="selectCategory(cat.name)">
       <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
@@ -14,16 +21,20 @@
     <button class="pill-btn more-btn" [class.active]="isOverflowActive()" [matMenuTriggerFor]="moreMenu">
       <lucide-icon [img]="Ellipsis" class="fa-icon"></lucide-icon> More
     </button>
-    <mat-menu #moreMenu="matMenu" xPosition="before" yPosition="below" class="custom-category-menu" (closed)="clearMenuSearch()">
+    <mat-menu #moreMenu="matMenu" xPosition="before" yPosition="below" class="custom-category-menu"
+      (closed)="clearMenuSearch()">
       <ng-template matMenuContent>
         <div class="menu-search-wrapper" (click)="stopPropagation($event)">
           <lucide-icon [img]="Search" class="search-icon"></lucide-icon>
-          <input type="text" class="menu-search-input" placeholder="Search category..." [value]="menuSearchQuery()" (input)="onMenuSearch($event)">
+          <input type="text" class="menu-search-input" placeholder="Search category..." [value]="menuSearchQuery()"
+            (input)="onMenuSearch($event)">
         </div>
         <div class="menu-items-scroll">
           @for (cat of filteredOverflowCategories(); track cat.name) {
-          <button mat-menu-item [class.active-menu-item]="activeCategory() === cat.name" (click)="selectCategory(cat.name)">
-            <lucide-icon [img]="Package" class="fa-icon me-2" style="display: inline-block; vertical-align: middle;"></lucide-icon>
+          <button mat-menu-item [class.active-menu-item]="activeCategory() === cat.name"
+            (click)="selectCategory(cat.name)">
+            <lucide-icon [img]="Package" class="fa-icon me-2"
+              style="display: inline-block; vertical-align: middle;"></lucide-icon>
             <span style="vertical-align: middle;">{{ cat.name }}</span>
           </button>
           } @empty {
@@ -50,27 +61,29 @@
       <div class="prod-info">
         <div class="prod-name">{{ p.productName || p.materialName || p.name }}</div>
         <div class="prod-price-row">
-          <div class="prod-price">₹{{ (p.salePrice || p.mrp || p.rate || p.price || p.saleRate || 0) | number:'1.2-2' }}
+          <div class="prod-price">₹{{ (p.salePrice || p.mrp || p.rate || p.price || p.saleRate || 0) | number:'1.2-2'
+            }}
           </div>
           <div class="prod-status" [class.in-stock]="p.stockQty === undefined || p.stockQty > 0"
             [class.low-stock]="p.stockQty !== undefined && p.stockQty <= 0">
-            <span class="dot"></span> {{ (p.stockQty !== undefined && p.stockQty <= 0) ? 'Out' : 'In' }} </div>
+            <span class="dot"></span> {{ (p.stockQty !== undefined && p.stockQty <= 0) ? 'Out' : 'In' }}
           </div>
         </div>
       </div>
-      }
     </div>
-    } @else {
-    <app-empty-state title="Product list not available" message="We couldn't find any products in this category."
-      icon="product">
-    </app-empty-state>
     }
-
-    <div class="pl-footer">
-      <mat-paginator [length]="totalFilteredProductsCount()" [pageSize]="pageSize()" hidePageSize="true"
-        showFirstLastButtons="true" [pageIndex]="currentPage() - 1" (page)="onPageChange($event)"
-        aria-label="Select page">
-      </mat-paginator>
-    </div>
-
   </div>
+  } @else {
+  <app-empty-state title="Product list not available" message="We couldn't find any products in this category."
+    icon="product">
+  </app-empty-state>
+  }
+
+  <div class="pl-footer">
+    <mat-paginator [length]="totalFilteredProductsCount()" [pageSize]="pageSize()" hidePageSize="true"
+      showFirstLastButtons="true" [pageIndex]="currentPage() - 1" (page)="onPageChange($event)"
+      aria-label="Select page">
+    </mat-paginator>
+  </div>
+
+</div>
