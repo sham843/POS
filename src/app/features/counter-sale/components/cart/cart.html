@@ -20,7 +20,7 @@
       </div>
       <div class="item-details">
         <div class="item-name">{{ item.details }}</div>
-        <div class="item-price">₹{{ item.rate | number:'1.2-2' }} / piece</div>
+        <div class="item-price">₹{{ item.rate | number:'1.2-2' }} / piece <span class="item-gst">(+ {{ item.gst }} GST)</span></div>
       </div>
       <div class="item-controls-row">
         <div class="item-qty-control">
