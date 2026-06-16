@@ -47,13 +47,7 @@ export class ProductList implements OnInit {
   pageSize = signal<number>(15);
 
   // Dynamic Categories (fallback to hardcoded if DB is empty)
-  categories = signal<{ name: string }[]>([
-    { name: 'Milk' },
-    { name: 'Paneer' },
-    { name: 'Ghee' },
-    { name: 'Khava' },
-    { name: 'Lassi' }
-  ]);
+  categories = signal<{ name: string }[]>([]);
 
   // Reactive filtered products computed signal
   filteredProducts = computed(() => {
@@ -63,6 +57,7 @@ export class ProductList implements OnInit {
 
     let filtered = products;
 
+    console.log(category)
     // Filter by Category
     if (category !== 'All') {
       filtered = filtered.filter(p => {
@@ -97,12 +92,25 @@ export class ProductList implements OnInit {
 
   async loadProducts() {
     try {
-      const products = await this.dbService.variantList.toArray();
+      const products = await this.dbService.products.toArray();
       const loadedProducts = products || [];
       this.allProducts.set(loadedProducts);
-      
-      // Dynamically extract categories if products exist
-      if (loadedProducts.length > 0) {
+
+      // Load categories from Db categories table, fallback to extraction if empty
+      const dbCategories = await this.dbService.categories.toArray();
+
+      if (dbCategories && dbCategories.length > 0) {
+        const uniqueCategories = Array.from(
+          new Set(
+            dbCategories
+              .map(cat => cat.categoryName || cat.category || cat.materialGroupName || cat.name)
+              .filter(Boolean)
+          )
+        );
+        if (uniqueCategories.length > 0) {
+          this.categories.set(uniqueCategories.map(name => ({ name: String(name) })));
+        }
+      } else if (loadedProducts.length > 0) {
         const uniqueCategories = Array.from(
           new Set(
             loadedProducts
@@ -114,6 +122,7 @@ export class ProductList implements OnInit {
           this.categories.set(uniqueCategories.map(name => ({ name: String(name) })));
         }
       }
+
     } catch (error) {
       console.error('Failed to load products from IndexedDB:', error);
     }

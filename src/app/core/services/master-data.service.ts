@@ -54,8 +54,8 @@ export class MasterDataService {
           this.dbService.companyLedgerList,
           this.dbService.customerList,
           this.dbService.saleLedgerList,
-          this.dbService.variantList,
-          this.dbService.products
+          this.dbService.products,
+          this.dbService.categories
         ],
         async () => {
           // Clear existing data before adding new (or you can use put for upsert if data has IDs)
@@ -64,16 +64,16 @@ export class MasterDataService {
           await this.dbService.companyLedgerList.clear();
           await this.dbService.customerList.clear();
           await this.dbService.saleLedgerList.clear();
-          await this.dbService.variantList.clear();
           await this.dbService.products.clear();
+          await this.dbService.categories.clear();
           // Add new data
           if (responses.bankAccounts?.data?.length) await this.dbService.bankAccounts.bulkAdd(responses.bankAccounts.data);
           if (responses.cashLedger?.data?.length) await this.dbService.cashLedger.bulkAdd(responses.cashLedger.data);
           if (responses.companyLedgers?.data?.length) await this.dbService.companyLedgerList.bulkAdd(responses.companyLedgers.data);
           if (responses.customers?.data?.length) await this.dbService.customerList.bulkAdd(responses.customers.data);
           if (responses.saleLedgers?.data?.length) await this.dbService.saleLedgerList.bulkAdd(responses.saleLedgers.data);
-          if (responses.variants?.data?.length) await this.dbService.variantList.bulkAdd(responses.variants.data);
-          if (responses.products?.data?.length) await this.dbService.products.bulkAdd(responses.products.data);
+          if (responses.variants?.data?.length) await this.dbService.products.bulkAdd(responses.variants.data);
+          if (responses.products?.data?.length) await this.dbService.categories.bulkAdd(responses.products.data);
         });
 
       console.log('All master data successfully loaded into IndexedDB.');

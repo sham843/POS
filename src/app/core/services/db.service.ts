@@ -11,8 +11,8 @@ export class DbService extends Dexie {
   companyLedgerList!: Table<any, number>;
   customerList!: Table<any, number>;
   saleLedgerList!: Table<any, number>;
-  variantList!: Table<any, number>;
   products!: Table<any, number>;
+  categories!: Table<any, number>;
 
   constructor() {
     super('POSDatabase');
@@ -24,8 +24,8 @@ export class DbService extends Dexie {
       companyLedgerList: 'id',
       customerList: 'id',
       saleLedgerList: 'id',
-      variantList: 'id, productId', // Indexing by id and productId
-      products: 'id'
+      products: 'id, productId', // Indexing by id and productId (was variantList)
+      categories: 'id' // Was products
     });
   }
 }
