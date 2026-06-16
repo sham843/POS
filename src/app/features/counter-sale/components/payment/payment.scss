@@ -261,3 +261,33 @@
     }
   }
 }
+
+/* --- RESPONSIVE DESIGN --- */
+
+@media (max-width: 768px) {
+  .custom-payment-section {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .payment-methods-grid {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    
+    .pay-card {
+      min-height: 60px;
+      flex: 1 1 40%;
+    }
+  }
+
+  .bottom-actions-row {
+    flex-direction: row;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    
+    .action-btn {
+      flex: 1 1 45%;
+    }
+  }
+}
