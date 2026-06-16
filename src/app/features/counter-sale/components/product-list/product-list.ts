@@ -1,10 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, AfterViewInit, inject, signal, computed, ViewChild, ElementRef, HostListener, ChangeDetectionStrategy, effect } from '@angular/core';
 import { LucideAngularModule, Package, Ellipsis, Star, Search } from 'lucide-angular';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -18,10 +14,6 @@ import { CounterSaleService } from '../../../../core/services/counter-sale.servi
   imports: [
     CommonModule,
     LucideAngularModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatChipsModule,
-    MatCardModule,
     MatButtonModule,
     MatMenuModule,
     MatPaginatorModule,
@@ -90,9 +82,13 @@ export class ProductList implements OnInit, AfterViewInit {
     }, { allowSignalWrites: true });
   }
 
+  // Debounce timer to avoid heavy DOM queries on every resize pixel
+  private resizeTimer: any;
+
   @HostListener('window:resize')
   onResize() {
-    this.updateCategoriesOverflow();
+    clearTimeout(this.resizeTimer);
+    this.resizeTimer = setTimeout(() => this.updateCategoriesOverflow(), 150);
   }
 
   ngAfterViewInit() {

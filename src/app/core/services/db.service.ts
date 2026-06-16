@@ -18,13 +18,13 @@ export class DbService extends Dexie {
     super('POSDatabase');
     
     // Define schema
-    this.version(1).stores({
+    this.version(2).stores({
       bankAccounts: 'id', // Assuming 'id' is the primary key
       cashLedger: 'id',
       companyLedgerList: 'id',
       customerList: 'id',
       saleLedgerList: 'id',
-      products: 'id, productId', // Indexing by id and productId (was variantList)
+      products: 'id, productId, categoryName, materialGroupName', // Indexed for fast category filtering
       categories: 'id' // Was products
     });
   }
