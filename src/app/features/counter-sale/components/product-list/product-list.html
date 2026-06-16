@@ -14,9 +14,9 @@
     <button class="pill-btn more-btn" [class.active]="isOverflowActive()" [matMenuTriggerFor]="moreMenu">
       <lucide-icon [img]="Ellipsis" class="fa-icon"></lucide-icon> More
     </button>
-    <mat-menu #moreMenu="matMenu" xPosition="before" yPosition="below" class="custom-category-menu" (closed)="menuSearchQuery.set('')">
+    <mat-menu #moreMenu="matMenu" xPosition="before" yPosition="below" class="custom-category-menu" (closed)="clearMenuSearch()">
       <ng-template matMenuContent>
-        <div class="menu-search-wrapper" (click)="$event.stopPropagation()">
+        <div class="menu-search-wrapper" (click)="stopPropagation($event)">
           <lucide-icon [img]="Search" class="search-icon"></lucide-icon>
           <input type="text" class="menu-search-input" placeholder="Search category..." [value]="menuSearchQuery()" (input)="onMenuSearch($event)">
         </div>
@@ -67,7 +67,7 @@
     }
 
     <div class="pl-footer">
-      <mat-paginator [length]="filteredProducts().length" [pageSize]="pageSize()" hidePageSize="true"
+      <mat-paginator [length]="totalFilteredProductsCount()" [pageSize]="pageSize()" hidePageSize="true"
         showFirstLastButtons="true" [pageIndex]="currentPage() - 1" (page)="onPageChange($event)"
         aria-label="Select page">
       </mat-paginator>
