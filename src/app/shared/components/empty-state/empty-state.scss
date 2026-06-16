@@ -1,0 +1,82 @@
+.empty-state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 380px;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
+
+  .empty-state-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin-bottom: 16px;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
+    /* Dynamic themed icon backgrounds */
+    &.product {
+      background-color: #EEF2F6;
+      color: #0052CC;
+    }
+
+    &.cart {
+      background-color: #FFFbeb;
+      color: #D97706;
+    }
+
+    &.search {
+      background-color: #FEF2F2;
+      color: #DC2626;
+    }
+
+    &.alert {
+      background-color: #FFF7ED;
+      color: #EA580C;
+    }
+
+    &.inbox {
+      background-color: #F3F4F6;
+      color: #4B5563;
+    }
+
+    .empty-state-icon {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .empty-state-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 6px 0;
+  }
+
+  .empty-state-message {
+    font-size: 13px;
+    color: #6B7280;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

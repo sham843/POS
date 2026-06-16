@@ -1,0 +1,7 @@
+<div class="empty-state-container">
+  <div class="empty-state-icon-wrapper" [ngClass]="icon">
+    <lucide-icon [img]="iconImage" class="empty-state-icon"></lucide-icon>
+  </div>
+  <h4 class="empty-state-title">{{ title }}</h4>
+  <p class="empty-state-message" *ngIf="message">{{ message }}</p>
+</div>

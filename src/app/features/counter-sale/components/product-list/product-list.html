@@ -5,54 +5,55 @@
     <button class="pill-btn" [class.active]="activeCategory() === 'All'" (click)="selectCategory('All')">
       <lucide-icon [img]="LayoutGrid" class="fa-icon"></lucide-icon> All
     </button>
-    
+
     <!-- Dynamic Category Buttons from Backend -->
     @for (cat of categories(); track cat.name) {
-      <button class="pill-btn" 
-              [class.active]="activeCategory() === cat.name"
-              (click)="selectCategory(cat.name)">
-        <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
-      </button>
+    <button class="pill-btn" [class.active]="activeCategory() === cat.name" (click)="selectCategory(cat.name)">
+      <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
+    </button>
     }
-    
+
     <button class="pill-btn more-btn">
       <lucide-icon [img]="Ellipsis" class="fa-icon"></lucide-icon> More
     </button>
   </div>
 
+  @if (paginatedProducts().length > 0) {
   <div class="products-grid">
     @for (p of paginatedProducts(); track p.id || p.productName || p.materialName || p.name) {
-      <div class="prod-card">
-        <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
-        <div class="prod-image">
-          <div class="img-placeholder">
-            <img [src]="p.image || p.imageUrl || 'https://placehold.co/100x100?text=No+Image'" 
-                 onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image'" 
-                 [alt]="p.productName || p.materialName || p.name">
+    <div class="prod-card">
+      <lucide-icon [img]="Star" class="fav-icon"></lucide-icon>
+      <div class="prod-image">
+        <div class="img-placeholder">
+          <img [src]="p.image || p.imageUrl || 'https://placehold.co/100x100?text=No+Image'"
+            onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image'"
+            [alt]="p.productName || p.materialName || p.name">
+        </div>
+      </div>
+      <div class="prod-info">
+        <div class="prod-name">{{ p.productName || p.materialName || p.name }}</div>
+        <div class="prod-price-row">
+          <div class="prod-price">₹{{ (p.salePrice || p.mrp || p.rate || p.price || p.saleRate || 0) | number:'1.2-2' }}
           </div>
-         </div>
-         <div class="prod-info">
-           <div class="prod-name">{{ p.productName || p.materialName || p.name }}</div>
-           <div class="prod-price-row">
-             <div class="prod-price">₹{{ (p.salePrice || p.mrp || p.rate || p.price || p.saleRate || 0) | number:'1.2-2' }}</div>
-             <div class="prod-status" [class.in-stock]="p.stockQty === undefined || p.stockQty > 0" [class.low-stock]="p.stockQty !== undefined && p.stockQty <= 0">
-               <span class="dot"></span> {{ (p.stockQty !== undefined && p.stockQty <= 0) ? 'Out' : 'In' }}
-             </div>
-           </div>
-         </div>
-       </div>
-     }
-   </div>
- 
-  <div class="pl-footer">
-    <mat-paginator [length]="filteredProducts().length"
-                  [pageSize]="pageSize()"
-                  hidePageSize="true"
-                  showFirstLastButtons="true"
-                  [pageIndex]="currentPage() - 1"
-                  (page)="onPageChange($event)"
-                  aria-label="Select page">
-    </mat-paginator>
-  </div>
+          <div class="prod-status" [class.in-stock]="p.stockQty === undefined || p.stockQty > 0"
+            [class.low-stock]="p.stockQty !== undefined && p.stockQty <= 0">
+            <span class="dot"></span> {{ (p.stockQty !== undefined && p.stockQty <= 0) ? 'Out' : 'In' }} </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    } @else {
+    <app-empty-state title="Product list not available" message="We couldn't find any products in this category."
+      icon="product">
+    </app-empty-state>
+    }
 
-</div>
+    <div class="pl-footer">
+      <mat-paginator [length]="filteredProducts().length" [pageSize]="pageSize()" hidePageSize="true"
+        showFirstLastButtons="true" [pageIndex]="currentPage() - 1" (page)="onPageChange($event)"
+        aria-label="Select page">
+      </mat-paginator>
+    </div>
+
+  </div>

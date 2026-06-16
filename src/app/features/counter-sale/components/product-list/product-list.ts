@@ -8,6 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { DbService } from '../../../../core/services/db.service';
+import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-product-list',
@@ -20,7 +21,8 @@ import { DbService } from '../../../../core/services/db.service';
     MatChipsModule,
     MatCardModule,
     MatButtonModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    EmptyState
   ],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
