@@ -17,7 +17,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px 0 32px; /* Added more left padding to balance with right side */
+  padding: 0 16px 0 16px;
+  /* Added more left padding to balance with right side */
   border-bottom: 1px solid #E5E7EB;
   gap: 24px;
 }
@@ -26,7 +27,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  
+
   .brand-icon {
     width: 36px;
     height: 36px;
@@ -36,14 +37,14 @@
     align-items: center;
     justify-content: center;
     color: white;
-    
+
     mat-icon {
       font-size: 20px;
       width: 20px;
       height: 20px;
     }
   }
-  
+
   .brand-name {
     font-size: 18px;
     font-weight: 700;
@@ -72,7 +73,8 @@
     font-size: 14px;
     gap: 6px;
 
-    mat-icon, i[class^="fa-"] {
+    mat-icon,
+    i[class^="fa-"] {
       font-size: 18px;
       width: 20px;
       height: 20px;
@@ -97,7 +99,7 @@
 .header-search {
   flex: 1;
   max-width: 400px;
-  
+
   .search-box {
     display: flex;
     align-items: center;
@@ -106,7 +108,7 @@
     border-radius: 8px;
     height: 40px;
     padding: 0 12px;
-    
+
     .search-icon {
       color: #0052CC;
       font-size: 20px;
@@ -114,7 +116,7 @@
       height: 20px;
       margin-right: 8px;
     }
-    
+
     input {
       flex: 1;
       border: none;
@@ -122,12 +124,12 @@
       font-size: 14px;
       background: transparent;
       color: #374151;
-      
+
       &::placeholder {
         color: #9CA3AF;
       }
     }
-    
+
     .shortcut-key {
       font-size: 11px;
       font-weight: 600;
@@ -144,7 +146,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  
+
   .action-block {
     display: flex;
     align-items: center;
@@ -155,22 +157,22 @@
     height: 40px;
     box-sizing: border-box;
     gap: 8px;
-    
+
     .block-icon {
       color: #6B7280;
       font-size: 20px;
       width: 20px;
       height: 20px;
     }
-    
+
     &.customer-block .block-icon {
       color: #0052CC;
     }
-    
+
     .block-details {
       display: flex;
       flex-direction: column;
-      
+
       .block-label {
         font-size: 10px;
         color: #6B7280;
@@ -178,7 +180,7 @@
         line-height: 1;
         margin-bottom: 2px;
       }
-      
+
       .block-value {
         font-size: 12px;
         font-weight: 600;
@@ -186,9 +188,11 @@
         line-height: 1;
         display: flex;
         align-items: center;
-        font-variant-numeric: tabular-nums; /* Prevents jumping width on time change */
-        min-width: 75px; /* Ensures container doesn't resize */
-        
+        font-variant-numeric: tabular-nums;
+        /* Prevents jumping width on time change */
+        min-width: 75px;
+        /* Ensures container doesn't resize */
+
         mat-icon {
           font-size: 14px;
           width: 14px;
@@ -197,7 +201,7 @@
         }
       }
     }
-    
+
     .shortcut-key {
       font-size: 11px;
       font-weight: 600;
@@ -208,7 +212,7 @@
       margin-left: 4px;
     }
   }
-  
+
   .icon-btn {
     width: 40px;
     height: 40px;
@@ -218,19 +222,19 @@
     justify-content: center;
     cursor: pointer;
     border: none;
-    
+
     mat-icon {
       font-size: 20px;
       width: 20px;
       height: 20px;
     }
-    
+
     &.outline-btn {
       background: #ffffff;
       border: 1px solid #E5E7EB;
       color: #374151;
     }
-    
+
     &.filled-btn {
       background: #0052CC;
       color: #ffffff;
@@ -247,7 +251,8 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #0052CC; /* Blue theme */
+    background: #0052CC;
+    /* Blue theme */
     color: #ffffff;
     font-weight: 600;
     font-size: 14px;
@@ -258,7 +263,7 @@
     cursor: pointer;
     transition: all 0.2s;
     letter-spacing: 0.5px;
-    
+
     &:hover {
       box-shadow: 0 4px 6px rgba(0, 82, 204, 0.2);
       transform: translateY(-1px);
@@ -286,13 +291,13 @@
     display: flex;
     flex-direction: column;
     background: #F9FAFB;
-    
+
     .user-name {
       font-size: 14px;
       font-weight: 600;
       color: #111827;
     }
-    
+
     .user-role {
       font-size: 12px;
       color: #6B7280;
@@ -319,23 +324,24 @@
     transition: background 0.2s;
     width: 100%;
     text-align: left;
-    
+
     mat-icon {
       font-size: 18px;
       width: 18px;
       height: 18px;
     }
-    
+
     &:hover {
       background: #F3F4F6;
     }
-    
+
     &.text-danger {
       color: #DC2626;
+
       mat-icon {
         color: #DC2626;
       }
-      
+
       &:hover {
         background: #FEF2F2;
       }
@@ -348,6 +354,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
