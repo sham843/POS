@@ -27,6 +27,7 @@ export class CounterSaleService {
   numpadMode = signal<'quantity' | 'amount' | 'discount'>('quantity');
   numpadValue = signal<string>('');
   numpadShouldReplace = false;
+  numpadHasQuickWeight = false;
 
   // Computed totals for bill summary
   subTotal = computed(() => this.cartItems().reduce((acc, item) => acc + item.amount, 0));
@@ -55,6 +56,7 @@ export class CounterSaleService {
   selectItem(index: number | null) {
     if (this.selectedItemIndex() !== index) {
       this.numpadShouldReplace = true;
+      this.numpadHasQuickWeight = false;
     }
     this.selectedItemIndex.set(index);
     this.syncNumpadFromCart();
@@ -63,6 +65,7 @@ export class CounterSaleService {
   setNumpadMode(mode: 'quantity' | 'amount' | 'discount') {
     this.numpadMode.set(mode);
     this.numpadShouldReplace = true;
+    this.numpadHasQuickWeight = false;
     this.syncNumpadFromCart();
   }
 
@@ -91,26 +94,68 @@ export class CounterSaleService {
     let oldVal = currentVal;
 
     if (this.numpadShouldReplace && val !== 'backspace' && val !== 'clear') {
-      currentVal = '0';
+      if (!val.startsWith('.')) {
+        currentVal = '0';
+        this.numpadHasQuickWeight = false;
+      }
     }
     this.numpadShouldReplace = false;
 
     if (val === 'backspace') {
-      currentVal = currentVal.slice(0, -1);
-      if (currentVal === '') currentVal = '0';
-    } else if (val === 'clear') {
-      currentVal = '0';
-    } else if (val.startsWith('.')) {
-      if (currentVal.includes('.')) {
-        currentVal = currentVal.split('.')[0] + val;
+      if (this.numpadMode() === 'quantity' && this.numpadHasQuickWeight && currentVal.includes('.')) {
+        const parts = currentVal.split('.');
+        if (parts[0].length > 1) {
+          currentVal = parts[0].slice(0, -1) + '.' + parts[1];
+        } else if (parts[0] !== '0') {
+          currentVal = '0.' + parts[1];
+        } else {
+          currentVal = '1';
+          this.numpadHasQuickWeight = false;
+          this.numpadShouldReplace = true;
+        }
       } else {
-        currentVal += val;
+        currentVal = currentVal.slice(0, -1);
+        if (currentVal === '' || (this.numpadMode() === 'quantity' && currentVal === '0')) {
+          if (this.numpadMode() === 'quantity') {
+            currentVal = '1';
+            this.numpadShouldReplace = true;
+          } else {
+            currentVal = '0';
+          }
+        }
       }
-    } else {
-      if (currentVal === '0') {
-        currentVal = val;
+    } else if (val === 'clear') {
+      if (this.numpadMode() === 'quantity') {
+        currentVal = '1';
+        this.numpadShouldReplace = true;
       } else {
-        currentVal += val;
+        currentVal = '0';
+      }
+      this.numpadHasQuickWeight = false;
+    } else if (val.startsWith('.')) {
+      if (val.length > 1) { // Quick weight (.125, .250, etc)
+        if (currentVal.includes('.')) {
+          currentVal = currentVal.split('.')[0] + val;
+        } else {
+          currentVal += val;
+        }
+        this.numpadHasQuickWeight = true;
+      } else { // Manual dot
+        if (!currentVal.includes('.')) {
+          currentVal += val;
+        }
+        this.numpadHasQuickWeight = false;
+      }
+    } else { // Numeric digit
+      if (this.numpadMode() === 'quantity' && this.numpadHasQuickWeight && currentVal.includes('.')) {
+        const parts = currentVal.split('.');
+        currentVal = (parts[0] === '0' ? val : parts[0] + val) + '.' + parts[1];
+      } else {
+        if (currentVal === '0') {
+          currentVal = val;
+        } else {
+          currentVal += val;
+        }
       }
     }
 
