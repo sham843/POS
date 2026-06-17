@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
-import { LucideAngularModule, Check, AlertCircle, X } from 'lucide-angular';
+import { LucideAngularModule, CheckCircle, AlertCircle, X } from 'lucide-angular';
 
 @Component({
   selector: 'app-custom-snackbar',
@@ -11,7 +11,7 @@ import { LucideAngularModule, Check, AlertCircle, X } from 'lucide-angular';
   styleUrl: './custom-snackbar.scss',
 })
 export class CustomSnackbar {
-  readonly Check = Check;
+  readonly CheckCircle = CheckCircle;
   readonly AlertCircle = AlertCircle;
   readonly X = X;
 

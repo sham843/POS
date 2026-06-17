@@ -77,7 +77,7 @@ export class NotificationService {
   private executeOpenSuccess(message: string, title: string): void {
     this.activeSnackBarRef = this.snackBar.openFromComponent(CustomSnackbar, {
       data: { title, message, type: 'success' },
-      duration: 1500,
+      duration: 1000,
       panelClass: ['transparent-snackbar'],
       horizontalPosition: 'right',
       verticalPosition: 'top'
@@ -99,7 +99,7 @@ export class NotificationService {
   private executeOpenError(message: string, title: string): void {
     this.activeSnackBarRef = this.snackBar.openFromComponent(CustomSnackbar, {
       data: { title, message, type: 'error' },
-      duration: 2500,
+      duration: 1800,
       panelClass: ['transparent-snackbar'],
       horizontalPosition: 'right',
       verticalPosition: 'top'

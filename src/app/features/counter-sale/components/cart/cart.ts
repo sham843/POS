@@ -81,10 +81,14 @@ export class Cart {
   }
 
   removeItem(index: number) {
+    const item = this.counterSaleService.cartItems()[index];
+    const itemName = item?.details || 'Item';
     this.counterSaleService.removeItem(index);
+    this.notificationService.showSuccess(`${itemName} removed from cart`);
   }
 
   clearCart() {
     this.counterSaleService.clearCart();
+    this.notificationService.showSuccess('Cart cleared successfully');
   }
 }
