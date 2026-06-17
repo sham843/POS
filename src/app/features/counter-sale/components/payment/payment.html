@@ -31,19 +31,19 @@
   </div>
 
   <div class="payment-methods-grid">
-    <button class="pay-card cash">
+    <button class="pay-card cash" (click)="openBillingDialog('cash')">
       <div class="card-content">
         <lucide-icon [img]="Banknote"></lucide-icon>
         <span class="label">Cash</span>
       </div>
     </button>
-    <button class="pay-card upi">
+    <button class="pay-card upi" (click)="openBillingDialog('online')">
       <div class="card-content">
         <lucide-icon [img]="Globe"></lucide-icon>
         <span class="label">Online</span>
       </div>
     </button>
-    <button class="pay-card card">
+    <button class="pay-card card" (click)="openBillingDialog('card')">
       <div class="card-content">
         <lucide-icon [img]="CreditCard"></lucide-icon>
         <span class="label"> Credit/Coupon </span>

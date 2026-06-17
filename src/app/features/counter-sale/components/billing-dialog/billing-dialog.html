@@ -1,0 +1,132 @@
+<div class="billing-dialog">
+
+  <!-- HEADER -->
+  <div class="dialog-header">
+    <div class="header-left">
+      <div class="payment-badge" [ngClass]="data.paymentMode">
+        <lucide-icon
+          [img]="data.paymentMode === 'cash' ? Banknote : data.paymentMode === 'online' ? Globe : CreditCard"></lucide-icon>
+      </div>
+      <div>
+        <h2 class="dialog-title">Bill Summary ({{ data.cartItems.length }} {{ data.cartItems.length === 1 ? 'Item' : 'Items' }})</h2>
+        <span class="payment-label">{{ paymentLabel }}</span>
+      </div>
+    </div>
+    <button class="close-btn" (click)="cancel()">
+      <lucide-icon [img]="X"></lucide-icon>
+    </button>
+  </div>
+
+  <!-- ITEMS TABLE -->
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="data.cartItems" class="billing-table">
+
+      <ng-container matColumnDef="item">
+        <th mat-header-cell *matHeaderCellDef>Item</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="item-name">{{ row.details }}</div>
+          <div class="item-unit" *ngIf="row.unit">{{ row.unit }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="rate">
+        <th mat-header-cell *matHeaderCellDef class="right">Rate (₹)</th>
+        <td mat-cell *matCellDef="let row" class="right">₹{{ row.rate | number:'1.2-2' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="qty">
+        <th mat-header-cell *matHeaderCellDef class="center">Qty</th>
+        <td mat-cell *matCellDef="let row" class="center">{{ row.quantity | number:'1.0-3' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="discount">
+        <th mat-header-cell *matHeaderCellDef class="center">Discount %</th>
+        <td mat-cell *matCellDef="let row" class="center">
+          <span class="disc-badge" *ngIf="row.discount > 0">{{ row.discount }}%</span>
+          <span class="no-disc" *ngIf="row.discount === 0">—</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="sgst">
+        <th mat-header-cell *matHeaderCellDef class="right">SGST</th>
+        <td mat-cell *matCellDef="let row" class="right">
+          <span *ngIf="row.gstAmount > 0">
+            ₹{{ (row.gstAmount / 2) | number:'1.2-2' }}
+            <span class="tax-pct" style="font-size: 10px; color: var(--pos-text-secondary); margin-left: 2px;">({{ (row.gst / 2) }}%)</span>
+          </span>
+          <span class="no-disc" *ngIf="row.gstAmount === 0">—</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cgst">
+        <th mat-header-cell *matHeaderCellDef class="right">CGST</th>
+        <td mat-cell *matCellDef="let row" class="right">
+          <span *ngIf="row.gstAmount > 0">
+            ₹{{ (row.gstAmount / 2) | number:'1.2-2' }}
+            <span class="tax-pct" style="font-size: 10px; color: var(--pos-text-secondary); margin-left: 2px;">({{ (row.gst / 2) }}%)</span>
+          </span>
+          <span class="no-disc" *ngIf="row.gstAmount === 0">—</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef class="right">Amount</th>
+        <td mat-cell *matCellDef="let row" class="right amount-cell">₹{{ row.total | number:'1.2-2' }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div class="empty-cart" *ngIf="data.cartItems.length === 0">
+      <p>No items in cart</p>
+    </div>
+  </div>
+
+  <!-- SUMMARY SECTION -->
+  <div class="summary-section">
+    <div class="summary-row">
+      <span>Taxable Amount</span>
+      <span>₹{{ data.taxableAmount | number:'1.2-2' }}</span>
+    </div>
+    <div class="summary-row">
+      <span>Discount</span>
+      <span [class.red]="data.totalDiscount > 0">₹{{ data.totalDiscount | number:'1.2-2' }}</span>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="summary-row tax-row" *ngIf="sgst > 0">
+      <span>SGST</span>
+      <span>₹{{ sgst | number:'1.2-2' }}</span>
+    </div>
+    <div class="summary-row tax-row" *ngIf="cgst > 0">
+      <span>CGST</span>
+      <span>₹{{ cgst | number:'1.2-2' }}</span>
+    </div>
+    <div class="summary-row tax-row" *ngIf="igst > 0">
+      <span>IGST</span>
+      <span>₹{{ igst | number:'1.2-2' }}</span>
+    </div>
+    <div class="summary-row" *ngIf="data.roundOff !== 0">
+      <span>Round Off</span>
+      <span>{{ data.roundOff > 0 ? '+' : '' }}₹{{ data.roundOff | number:'1.2-2' }}</span>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="summary-row total-row">
+      <span>Total Payable</span>
+      <span class="total-amount">₹{{ data.totalPayable | number:'1.2-2' }}</span>
+    </div>
+  </div>
+
+  <!-- FOOTER ACTIONS -->
+  <div class="dialog-footer">
+    <mat-checkbox class="print-checkbox" [(ngModel)]="printAutomatically">
+      Print Bill Automatically
+    </mat-checkbox>
+    <button class="btn-cancel" (click)="cancel()">Cancel</button>
+    <button class="btn-confirm" [ngClass]="data.paymentMode" (click)="confirm()">
+      <lucide-icon [img]="CheckCircle"></lucide-icon>
+      Confirm {{ paymentLabel }}
+    </button>
+  </div>
+
+</div>
