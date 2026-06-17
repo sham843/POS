@@ -1,7 +1,8 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface CartItem {
   product: any;
@@ -20,6 +21,7 @@ export interface CartItem {
   providedIn: 'root'
 })
 export class CounterSaleService {
+  snackBar = inject(MatSnackBar);
   searchQuery = signal<string>('');
   searchType = signal<'product' | 'bill' | 'customer'>('product');
 
@@ -179,6 +181,11 @@ export class CounterSaleService {
     if (this.numpadMode() === 'discount') {
       if (parseFloat(currentVal) > environment.maxDiscount) {
         currentVal = environment.maxDiscount.toString();
+        this.snackBar.open(`Discount cannot exceed ${environment.maxDiscount}%`, 'Close', { 
+          duration: 3000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top'
+        });
       }
     }
 
