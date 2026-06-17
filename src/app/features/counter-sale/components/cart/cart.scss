@@ -231,6 +231,13 @@
       text-align: center;
       background: #ffffff !important;
 
+      &:read-only {
+        background: #F3F4F6 !important;
+        color: #9CA3AF;
+        border-color: #E5E7EB;
+        cursor: not-allowed;
+      }
+
       &.amt-input {
         width: 75px;
         background: #fff !important;
@@ -244,7 +251,7 @@
         color: #9CA3AF;
       }
 
-      &:focus {
+      &:focus:not(:read-only) {
         border-color: #0052CC;
       }
 

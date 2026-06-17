@@ -239,9 +239,13 @@ export class CounterSaleService {
       item.quantity = valNum;
       item.amount = item.rate * item.quantity;
     } else if (mode === 'amount') {
+      if (item.product?.mensurationUnit === 'Nos') {
+        this.syncNumpadFromCart();
+        return;
+      }
       item.amount = valNum;
-      if (item.quantity > 0) {
-        item.rate = item.amount / item.quantity;
+      if (item.rate > 0) {
+        item.quantity = Math.round((item.amount / item.rate) * 1000) / 1000;
       }
     } else if (mode === 'discount') {
       item.discount = valNum;
@@ -310,9 +314,13 @@ export class CounterSaleService {
   updateAmount(index: number, amount: number) {
     const items = [...this.cartItems()];
     const item = items[index];
+    if (item.product?.mensurationUnit === 'Nos') {
+      this.syncNumpadFromCart();
+      return;
+    }
     item.amount = amount;
-    if (item.quantity > 0) {
-      item.rate = item.amount / item.quantity;
+    if (item.rate > 0) {
+      item.quantity = Math.round((item.amount / item.rate) * 1000) / 1000;
     }
     const discountedAmount = item.amount - (item.amount * item.discount / 100);
     item.gstAmount = discountedAmount * item.gst / 100;

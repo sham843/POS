@@ -34,7 +34,7 @@
             <button class="qty-btn plus" (click)="updateQuantity(i, item.quantity, 1)"><lucide-icon
                 [img]="Plus"></lucide-icon></button>
           </div>
-          <input type="text" inputmode="decimal" placeholder="Amt" class="tiny-input amt-input" [value]="(counterSaleService.selectedItemIndex() === i && counterSaleService.numpadMode() === 'amount') ? counterSaleService.numpadValue() : item.amount" (change)="onAmountChange(i, $event)" (focus)="counterSaleService.setNumpadMode('amount')" (click)="counterSaleService.setNumpadMode('amount')" />
+          <input type="text" inputmode="decimal" placeholder="Amt" class="tiny-input amt-input" [value]="(counterSaleService.selectedItemIndex() === i && counterSaleService.numpadMode() === 'amount') ? counterSaleService.numpadValue() : item.amount" (change)="onAmountChange(i, $event)" (focus)="counterSaleService.setNumpadMode('amount')" (click)="counterSaleService.setNumpadMode('amount')" [readonly]="item.product?.mensurationUnit === 'Nos'" />
           <input type="text" inputmode="decimal" placeholder="Disc %" class="tiny-input disc-input" [value]="(counterSaleService.selectedItemIndex() === i && counterSaleService.numpadMode() === 'discount') ? counterSaleService.numpadValue() : (item.discount > 0 ? item.discount : '')" (change)="onDiscountChange(i, $event)" (focus)="counterSaleService.setNumpadMode('discount')" (click)="counterSaleService.setNumpadMode('discount')" />
         </div>
         <div class="item-total">₹{{ item.total | number:'1.2-2' }}</div>
