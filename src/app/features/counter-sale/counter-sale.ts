@@ -82,14 +82,9 @@ export class CounterSale implements OnInit, OnDestroy {
       return;
     }
     
-    // Find the smallest available ID
-    const existingIds = this.bills().map(b => b.id);
-    let newId = 1;
-    while (existingIds.includes(newId)) {
-      newId++;
-    }
-
     const currentBills = this.bills().map(b => ({ ...b, active: false }));
+    const newId = currentBills.length + 1;
+
     const newBill: BillTab = {
       id: newId,
       name: `Bill ${newId}`,
@@ -116,12 +111,22 @@ export class CounterSale implements OnInit, OnDestroy {
     }
     
     const billToRemove = currentBills.find(b => b.id === id);
-    const updatedBills = currentBills.filter(b => b.id !== id);
+    let updatedBills = currentBills.filter(b => b.id !== id);
     
     // If we closed the active bill, make the last one active
     if (billToRemove?.active) {
       updatedBills[updatedBills.length - 1].active = true;
     }
+    
+    // Automatically renumber them without gaps
+    updatedBills = updatedBills.map((b, index) => {
+      const newId = index + 1;
+      return {
+        ...b,
+        id: newId,
+        name: `Bill ${newId}`
+      };
+    });
     
     this.bills.set(updatedBills);
   }
