@@ -7,11 +7,11 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
 import { CounterSaleService } from '../../../../core/services/counter-sale.service';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-cart',
@@ -33,7 +33,7 @@ import { environment } from '../../../../../environments/environment';
 })
 export class Cart {
   counterSaleService = inject(CounterSaleService);
-  snackBar = inject(MatSnackBar);
+  notificationService = inject(NotificationService);
 
   displayedColumns: string[] = ['details', 'quantity', 'rate', 'discount', 'amount', 'gst', 'total'];
 
@@ -60,11 +60,7 @@ export class Cart {
     if (val > environment.maxDiscount) {
       val = environment.maxDiscount;
       event.target.value = environment.maxDiscount.toString();
-      this.snackBar.open(`Discount cannot exceed ${environment.maxDiscount}%`, 'Close', { 
-        duration: 3000,
-        horizontalPosition: 'right',
-        verticalPosition: 'top'
-      });
+      this.notificationService.showError(`Discount cannot exceed ${environment.maxDiscount}%`);
     } else {
       event.target.value = val > 0 ? val.toString() : '';
     }
@@ -74,6 +70,12 @@ export class Cart {
   onAmountChange(index: number, event: any) {
     let val = parseFloat(event.target.value) || 0;
     val = parseFloat(val.toFixed(2));
+    if (val <= 0) {
+      this.notificationService.showError(`Amount cannot be zero.`);
+      const oldVal = this.counterSaleService.cartItems()[index].amount;
+      event.target.value = oldVal.toString();
+      return;
+    }
     event.target.value = val.toString();
     this.counterSaleService.updateAmount(index, val);
   }

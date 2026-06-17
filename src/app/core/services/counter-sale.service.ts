@@ -2,7 +2,7 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from './notification.service';
 
 export interface CartItem {
   product: any;
@@ -21,7 +21,7 @@ export interface CartItem {
   providedIn: 'root'
 })
 export class CounterSaleService {
-  snackBar = inject(MatSnackBar);
+  notificationService = inject(NotificationService);
   searchQuery = signal<string>('');
   searchType = signal<'product' | 'bill' | 'customer'>('product');
 
@@ -57,6 +57,21 @@ export class CounterSaleService {
   }
 
   selectItem(index: number | null) {
+    if (this.selectedItemIndex() !== null) {
+      const oldIdx = this.selectedItemIndex()!;
+      if (oldIdx < this.cartItems().length) {
+        const item = this.cartItems()[oldIdx];
+        if (this.numpadMode() === 'amount' && item.amount <= 0) {
+          this.notificationService.showError(`Amount cannot be zero.`);
+          // Revert amount to rate * quantity as a fallback
+          item.amount = item.rate * item.quantity;
+          const discountedAmount = item.amount - (item.amount * item.discount / 100);
+          item.gstAmount = discountedAmount * item.gst / 100;
+          item.total = discountedAmount + item.gstAmount;
+        }
+      }
+    }
+
     if (this.selectedItemIndex() !== index) {
       this.numpadShouldReplace = true;
       this.numpadHasQuickWeight = false;
@@ -66,6 +81,20 @@ export class CounterSaleService {
   }
 
   setNumpadMode(mode: 'quantity' | 'amount' | 'discount') {
+    if (this.selectedItemIndex() !== null && this.numpadMode() === 'amount' && mode !== 'amount') {
+      const idx = this.selectedItemIndex()!;
+      if (idx < this.cartItems().length) {
+        const item = this.cartItems()[idx];
+        if (item.amount <= 0) {
+          this.notificationService.showError(`Amount cannot be zero.`);
+          item.amount = item.rate * item.quantity;
+          const discountedAmount = item.amount - (item.amount * item.discount / 100);
+          item.gstAmount = discountedAmount * item.gst / 100;
+          item.total = discountedAmount + item.gstAmount;
+        }
+      }
+    }
+
     this.numpadMode.set(mode);
     this.numpadShouldReplace = true;
     this.numpadHasQuickWeight = false;
@@ -181,11 +210,7 @@ export class CounterSaleService {
     if (this.numpadMode() === 'discount') {
       if (parseFloat(currentVal) > environment.maxDiscount) {
         currentVal = environment.maxDiscount.toString();
-        this.snackBar.open(`Discount cannot exceed ${environment.maxDiscount}%`, 'Close', { 
-          duration: 3000,
-          horizontalPosition: 'right',
-          verticalPosition: 'top'
-        });
+        this.notificationService.showError(`Discount cannot exceed ${environment.maxDiscount}%`);
       }
     }
 
