@@ -58,10 +58,17 @@
     cursor: pointer;
     transition: all 0.2s;
     
-    &:hover {
+    &:hover:not(:disabled) {
       background: #EFF6FF;
       color: #0052CC;
       border-color: #BFDBFE;
+    }
+
+    &:disabled {
+      background: #F3F4F6;
+      color: #9CA3AF;
+      border-color: #E5E7EB;
+      cursor: not-allowed;
     }
   }
 }

@@ -76,6 +76,32 @@
   gap: 16px;
   padding-bottom: 8px;
   border-bottom: 1px solid #F3F4F6;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #F9FAFB;
+  }
+
+  &.selected {
+    background-color: #EFF6FF;
+    border-radius: 8px;
+    margin-left: -8px;
+    margin-right: -8px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-bottom-color: transparent;
+
+    .item-image {
+      background: transparent;
+      /* Blend with the active row background */
+
+      lucide-icon {
+        color: #0052CC !important;
+        /* Make the icon dark blue */
+      }
+    }
+  }
 
   &:last-child {
     border-bottom: none;
@@ -96,10 +122,21 @@
       width: 24px;
       height: 24px;
 
-      &.item-icon-milk { color: #93C5FD; }
-      &.item-icon-cheese { color: #FCD34D; }
-      &.item-icon-icecream { color: #F9A8D4; }
-      &.item-icon-ghee { color: #FDBA74; }
+      &.item-icon-milk {
+        color: #93C5FD;
+      }
+
+      &.item-icon-cheese {
+        color: #FCD34D;
+      }
+
+      &.item-icon-icecream {
+        color: #F9A8D4;
+      }
+
+      &.item-icon-ghee {
+        color: #FDBA74;
+      }
     }
   }
 
@@ -119,6 +156,7 @@
       font-size: 12px;
       color: #6B7280;
       font-weight: 500;
+      white-space: nowrap;
 
       .item-gst {
         font-size: 10px;
@@ -147,9 +185,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #F3F4F6; /* Light gray background */
+        background: #F3F4F6;
+        /* Light gray background */
         border: none;
-        color: #4B5563; /* Darker gray icon */
+        color: #4B5563;
+        /* Darker gray icon */
         cursor: pointer;
         transition: all 0.2s;
 
@@ -168,13 +208,18 @@
         font-size: 13px;
         font-weight: 600;
         color: #111827;
-        min-width: 20px;
+        min-width: 45px;
         text-align: center;
+        
+        .unit-text {
+          font-size: 11px;
+          color: #6B7280;
+          font-weight: 500;
+        }
       }
     }
 
     .tiny-input {
-      width: 60px;
       height: 32px;
       font-size: 12px;
       font-weight: 500;
@@ -183,6 +228,17 @@
       border-radius: 8px;
       outline: none;
       color: #111827;
+      text-align: center;
+      background: #ffffff !important;
+
+      &.amt-input {
+        width: 75px;
+        background: #fff !important;
+      }
+
+      &.disc-input {
+        width: 55px;
+      }
 
       &::placeholder {
         color: #9CA3AF;
@@ -205,7 +261,7 @@
     font-size: 14px;
     font-weight: 700;
     color: #111827;
-    width: 80px;
+    width: 75px;
     text-align: right;
   }
 

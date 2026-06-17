@@ -12,6 +12,7 @@ export interface CartItem {
   gst: number;
   gstAmount: number;
   total: number;
+  unit?: string;
 }
 
 @Injectable({
@@ -22,6 +23,10 @@ export class CounterSaleService {
   searchType = signal<'product' | 'bill' | 'customer'>('product');
 
   cartItems = signal<CartItem[]>([]);
+  selectedItemIndex = signal<number | null>(null);
+  numpadMode = signal<'quantity' | 'amount' | 'discount'>('quantity');
+  numpadValue = signal<string>('');
+  numpadShouldReplace = false;
 
   // Computed totals for bill summary
   subTotal = computed(() => this.cartItems().reduce((acc, item) => acc + item.amount, 0));
@@ -47,6 +52,120 @@ export class CounterSaleService {
     this.searchSubject.next(query);
   }
 
+  selectItem(index: number | null) {
+    if (this.selectedItemIndex() !== index) {
+      this.numpadShouldReplace = true;
+    }
+    this.selectedItemIndex.set(index);
+    this.syncNumpadFromCart();
+  }
+
+  setNumpadMode(mode: 'quantity' | 'amount' | 'discount') {
+    this.numpadMode.set(mode);
+    this.numpadShouldReplace = true;
+    this.syncNumpadFromCart();
+  }
+
+  syncNumpadFromCart() {
+    const idx = this.selectedItemIndex();
+    if (idx !== null && idx >= 0 && idx < this.cartItems().length) {
+      const item = this.cartItems()[idx];
+      const mode = this.numpadMode();
+      if (mode === 'quantity') {
+        this.numpadValue.set(item.quantity.toString());
+      } else if (mode === 'amount') {
+        this.numpadValue.set(item.amount.toString());
+      } else if (mode === 'discount') {
+        this.numpadValue.set(item.discount.toString());
+      }
+    } else {
+      this.numpadValue.set('');
+    }
+  }
+
+  handleNumpadInput(val: string) {
+    const idx = this.selectedItemIndex();
+    if (idx === null || idx < 0 || idx >= this.cartItems().length) return;
+
+    let currentVal = this.numpadValue();
+    let oldVal = currentVal;
+
+    if (this.numpadShouldReplace && val !== 'backspace' && val !== 'clear') {
+      currentVal = '0';
+    }
+    this.numpadShouldReplace = false;
+
+    if (val === 'backspace') {
+      currentVal = currentVal.slice(0, -1);
+      if (currentVal === '') currentVal = '0';
+    } else if (val === 'clear') {
+      currentVal = '0';
+    } else if (val.startsWith('.')) {
+      if (currentVal.includes('.')) {
+        currentVal = currentVal.split('.')[0] + val;
+      } else {
+        currentVal += val;
+      }
+    } else {
+      if (currentVal === '0') {
+        currentVal = val;
+      } else {
+        currentVal += val;
+      }
+    }
+
+    if (this.numpadMode() === 'discount') {
+      if (parseFloat(currentVal) > 99) {
+        // If it exceeds 99, ignore the keystroke and keep old value
+        // But if old value was already > 99 (e.g. from input), cap it to 99
+        currentVal = parseFloat(oldVal) <= 99 ? oldVal : '99';
+        // If the user was trying to replace, we should allow the single digit
+        if (currentVal === '0' && val !== '0') {
+          currentVal = val;
+        }
+      }
+    }
+
+    this.numpadValue.set(currentVal);
+    this.syncCartFromNumpad();
+  }
+  
+  setNumpadValueExplicit(val: string) {
+    const idx = this.selectedItemIndex();
+    if (idx === null || idx < 0 || idx >= this.cartItems().length) return;
+    this.numpadValue.set(val);
+    this.syncCartFromNumpad();
+  }
+
+  syncCartFromNumpad() {
+    const idx = this.selectedItemIndex();
+    if (idx === null) return;
+    const mode = this.numpadMode();
+    const valStr = this.numpadValue();
+    const valNum = parseFloat(valStr) || 0;
+
+    const items = [...this.cartItems()];
+    const item = items[idx];
+
+    if (mode === 'quantity') {
+      item.quantity = valNum;
+      item.amount = item.rate * item.quantity;
+    } else if (mode === 'amount') {
+      item.amount = valNum;
+      if (item.quantity > 0) {
+        item.rate = item.amount / item.quantity;
+      }
+    } else if (mode === 'discount') {
+      item.discount = valNum;
+    }
+
+    const discountedAmount = item.amount - (item.amount * item.discount / 100);
+    item.gstAmount = discountedAmount * item.gst / 100;
+    item.total = discountedAmount + item.gstAmount;
+
+    this.cartItems.set(items);
+  }
+
   addToCart(product: any) {
     const items = [...this.cartItems()];
     const existingItemIndex = items.findIndex(item => 
@@ -57,6 +176,7 @@ export class CounterSaleService {
 
     if (existingItemIndex > -1) {
       this.updateQuantity(existingItemIndex, items[existingItemIndex].quantity + 1);
+      this.selectItem(existingItemIndex);
     } else {
       const rate = product.salePrice || product.mrp || product.rate || product.price || product.saleRate || 0;
       const gst = product.gst || product.taxPercentage || 0;
@@ -71,10 +191,12 @@ export class CounterSaleService {
         amount: amount,
         gst: gst,
         gstAmount: gstAmount,
-        total: amount + gstAmount
+        total: amount + gstAmount,
+        unit: product.unit || product.uom || product.unitName || ''
       };
       items.push(newItem);
       this.cartItems.set(items);
+      this.selectItem(items.length - 1);
     }
   }
 
@@ -91,6 +213,27 @@ export class CounterSaleService {
     item.gstAmount = discountedAmount * item.gst / 100;
     item.total = discountedAmount + item.gstAmount;
     this.cartItems.set(items);
+    
+    if (this.selectedItemIndex() === index) {
+      this.syncNumpadFromCart();
+    }
+  }
+
+  updateAmount(index: number, amount: number) {
+    const items = [...this.cartItems()];
+    const item = items[index];
+    item.amount = amount;
+    if (item.quantity > 0) {
+      item.rate = item.amount / item.quantity;
+    }
+    const discountedAmount = item.amount - (item.amount * item.discount / 100);
+    item.gstAmount = discountedAmount * item.gst / 100;
+    item.total = discountedAmount + item.gstAmount;
+    this.cartItems.set(items);
+    
+    if (this.selectedItemIndex() === index) {
+      this.syncNumpadFromCart();
+    }
   }
 
   updateDiscount(index: number, discount: number) {
@@ -101,15 +244,26 @@ export class CounterSaleService {
     item.gstAmount = discountedAmount * item.gst / 100;
     item.total = discountedAmount + item.gstAmount;
     this.cartItems.set(items);
+    
+    if (this.selectedItemIndex() === index) {
+      this.syncNumpadFromCart();
+    }
   }
 
   removeItem(index: number) {
     const items = [...this.cartItems()];
     items.splice(index, 1);
     this.cartItems.set(items);
+    
+    if (this.selectedItemIndex() === index) {
+      this.selectItem(items.length > 0 ? items.length - 1 : null);
+    } else if (this.selectedItemIndex() !== null && this.selectedItemIndex()! > index) {
+      this.selectedItemIndex.set(this.selectedItemIndex()! - 1);
+    }
   }
 
   clearCart() {
     this.cartItems.set([]);
+    this.selectItem(null);
   }
 }

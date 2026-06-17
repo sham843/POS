@@ -2,31 +2,31 @@
 
   <div class="numpad-container">
     <div class="numpad-tabs">
-      <button class="n-tab active">Quantity</button>
-      <button class="n-tab">Amount</button>
-      <button class="n-tab">Discount</button>
+      <button class="n-tab" [class.active]="mode() === 'quantity'" (click)="setMode('quantity')">Quantity</button>
+      <button class="n-tab" [class.active]="mode() === 'amount'" (click)="setMode('amount')">Amount</button>
+      <button class="n-tab" [class.active]="mode() === 'discount'" (click)="setMode('discount')">Discount</button>
     </div>
 
     <div class="quick-weights">
-      <button class="qw-btn">0.125</button>
-      <button class="qw-btn">0.250</button>
-      <button class="qw-btn">0.500</button>
-      <button class="qw-btn">0.750</button>
+      <button class="qw-btn" (click)="handleInput('.125')" [disabled]="mode() !== 'quantity'">0.125</button>
+      <button class="qw-btn" (click)="handleInput('.250')" [disabled]="mode() !== 'quantity'">0.250</button>
+      <button class="qw-btn" (click)="handleInput('.500')" [disabled]="mode() !== 'quantity'">0.500</button>
+      <button class="qw-btn" (click)="handleInput('.750')" [disabled]="mode() !== 'quantity'">0.750</button>
     </div>
 
     <div class="numpad-grid">
-      <button class="num-btn">1</button>
-      <button class="num-btn">2</button>
-      <button class="num-btn">3</button>
-      <button class="num-btn">4</button>
-      <button class="num-btn">5</button>
-      <button class="num-btn">6</button>
-      <button class="num-btn">7</button>
-      <button class="num-btn">8</button>
-      <button class="num-btn">9</button>
-      <button class="num-btn">.</button>
-      <button class="num-btn">0</button>
-      <button class="num-btn backspace"><lucide-icon [img]="Delete"></lucide-icon></button>
+      <button class="num-btn" (click)="handleInput('1')">1</button>
+      <button class="num-btn" (click)="handleInput('2')">2</button>
+      <button class="num-btn" (click)="handleInput('3')">3</button>
+      <button class="num-btn" (click)="handleInput('4')">4</button>
+      <button class="num-btn" (click)="handleInput('5')">5</button>
+      <button class="num-btn" (click)="handleInput('6')">6</button>
+      <button class="num-btn" (click)="handleInput('7')">7</button>
+      <button class="num-btn" (click)="handleInput('8')">8</button>
+      <button class="num-btn" (click)="handleInput('9')">9</button>
+      <button class="num-btn" (click)="handleInput('.')">.</button>
+      <button class="num-btn" (click)="handleInput('0')">0</button>
+      <button class="num-btn backspace" (click)="handleInput('backspace')"><lucide-icon [img]="Delete"></lucide-icon></button>
     </div>
   </div>
 

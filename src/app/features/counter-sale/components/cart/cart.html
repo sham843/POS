@@ -3,7 +3,8 @@
   <div class="cart-header">
     <div class="cart-title">
       <h3>Cart</h3>
-      <span class="item-count" *ngIf="dataSource().length > 0">({{ dataSource().length }} {{ dataSource().length === 1 ? 'Item' : 'Items' }})</span>
+      <span class="item-count" *ngIf="dataSource().length > 0">({{ dataSource().length }} {{ dataSource().length === 1 ?
+        'Item' : 'Items' }})</span>
     </div>
     <button class="clear-cart-btn" *ngIf="dataSource().length > 0" (click)="clearCart()">
       <lucide-icon [img]="Trash2"></lucide-icon> Clear Cart
@@ -14,23 +15,32 @@
 
     <ng-container *ngIf="dataSource().length > 0; else emptyCart">
       <!-- Dynamic Cart Items from Backend/Store -->
-      <div class="cart-item" *ngFor="let item of dataSource(); let i = index">
+      <div class="cart-item" *ngFor="let item of dataSource(); let i = index; trackBy: trackByIdx"
+        [class.selected]="counterSaleService.selectedItemIndex() === i" (click)="counterSaleService.selectItem(i)">
         <div class="item-image">
           <!-- Generic Package icon for all items -->
           <lucide-icon [img]="Package" class="item-icon-milk"></lucide-icon>
         </div>
         <div class="item-details">
           <div class="item-name">{{ item.details }}</div>
-          <div class="item-price">₹{{ item.rate | number:'1.2-2' }} / piece <span class="item-gst" *ngIf="item.gst">(+ {{ item.gst }}% GST: ₹{{ item.gstAmount | number:'1.2-2' }})</span></div>
+          <div class="item-price">₹{{ item.rate | number:'1.2-2' }} <span class="item-gst" *ngIf="item.gst">(+ {{
+              item.gst }}% GST: ₹{{ item.gstAmount | number:'1.2-2' }})</span></div>
         </div>
         <div class="item-controls-row">
-          <div class="item-qty-control">
-            <button class="qty-btn minus" (click)="updateQuantity(i, item.quantity, -1)"><lucide-icon [img]="Minus"></lucide-icon></button>
+          <div class="item-qty-control" (click)="counterSaleService.setNumpadMode('quantity')">
+            <button class="qty-btn minus" (click)="updateQuantity(i, item.quantity, -1)"><lucide-icon
+                [img]="Minus"></lucide-icon></button>
             <span class="qty-val">{{ item.quantity }}</span>
-            <button class="qty-btn plus" (click)="updateQuantity(i, item.quantity, 1)"><lucide-icon [img]="Plus"></lucide-icon></button>
+            <button class="qty-btn plus" (click)="updateQuantity(i, item.quantity, 1)"><lucide-icon
+                [img]="Plus"></lucide-icon></button>
           </div>
-          <input type="number" placeholder="Amt" class="tiny-input" [value]="item.amount" readonly style="background: #f3f4f6; cursor: not-allowed;" />
-          <input type="number" placeholder="Disc %" class="tiny-input" [value]="item.discount" (change)="onDiscountChange(i, $event)" />
+          <input type="number" placeholder="Amt" class="tiny-input amt-input" [value]="item.amount"
+            (change)="onAmountChange(i, $event)" (focus)="counterSaleService.setNumpadMode('amount')"
+            (click)="counterSaleService.setNumpadMode('amount')" />
+          <input type="number" placeholder="Disc %" class="tiny-input disc-input"
+            [value]="item.discount > 0 ? item.discount : ''" (change)="onDiscountChange(i, $event)"
+            (focus)="counterSaleService.setNumpadMode('discount')"
+            (click)="counterSaleService.setNumpadMode('discount')" />
         </div>
         <div class="item-total">₹{{ item.total | number:'1.2-2' }}</div>
         <button class="delete-btn" (click)="removeItem(i)"><lucide-icon [img]="Trash2"></lucide-icon></button>
@@ -38,10 +48,7 @@
     </ng-container>
 
     <ng-template #emptyCart>
-      <app-empty-state
-        title="Cart is empty"
-        message="Add products to start checkout."
-        icon="cart">
+      <app-empty-state title="Cart is empty" message="Add products to start checkout." icon="cart">
       </app-empty-state>
     </ng-template>
 

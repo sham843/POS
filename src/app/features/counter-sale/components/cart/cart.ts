@@ -15,7 +15,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-cart',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     LucideAngularModule,
     MatTabsModule,
     MatButtonModule,
@@ -31,9 +31,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class Cart {
   counterSaleService = inject(CounterSaleService);
-  
+
   displayedColumns: string[] = ['details', 'quantity', 'rate', 'discount', 'amount', 'gst', 'total'];
-  
+
   // Data source for the table uses the shared cart state
   dataSource = this.counterSaleService.cartItems;
 
@@ -43,13 +43,26 @@ export class Cart {
   readonly Minus = Minus;
   readonly Plus = Plus;
 
+  trackByIdx(index: number, _item: any): number {
+    return index;
+  }
+
   updateQuantity(index: number, currentQty: number, change: number) {
     this.counterSaleService.updateQuantity(index, currentQty + change);
   }
 
   onDiscountChange(index: number, event: any) {
-    const val = parseFloat(event.target.value) || 0;
+    let val = parseFloat(event.target.value) || 0;
+    if (val > 99) {
+      val = 99;
+      event.target.value = '99';
+    }
     this.counterSaleService.updateDiscount(index, val);
+  }
+
+  onAmountChange(index: number, event: any) {
+    const val = parseFloat(event.target.value) || 0;
+    this.counterSaleService.updateAmount(index, val);
   }
 
   removeItem(index: number) {
