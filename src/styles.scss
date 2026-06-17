@@ -39,6 +39,13 @@ body {
   // Reset the user agent margin.
   margin: 0;
   height: 100%;
+  overflow: hidden; /* Prevent body scroll completely */
+}
+
+app-root, app-main-layout {
+  display: block;
+  height: 100%;
+  width: 100%;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');

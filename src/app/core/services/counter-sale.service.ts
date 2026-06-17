@@ -1,6 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 export interface CartItem {
   product: any;
@@ -79,7 +80,7 @@ export class CounterSaleService {
       } else if (mode === 'amount') {
         this.numpadValue.set(item.amount.toString());
       } else if (mode === 'discount') {
-        this.numpadValue.set(item.discount.toString());
+        this.numpadValue.set(item.discount === 0 ? '' : item.discount.toString());
       }
     } else {
       this.numpadValue.set('');
@@ -91,11 +92,11 @@ export class CounterSaleService {
     if (idx === null || idx < 0 || idx >= this.cartItems().length) return;
 
     let currentVal = this.numpadValue();
-    let oldVal = currentVal;
+    // let oldVal = currentVal;
 
     if (this.numpadShouldReplace && val !== 'backspace' && val !== 'clear') {
       if (!val.startsWith('.')) {
-        currentVal = '0';
+        currentVal = this.numpadMode() === 'discount' ? '' : '0';
         this.numpadHasQuickWeight = false;
       }
     }
@@ -119,8 +120,10 @@ export class CounterSaleService {
           if (this.numpadMode() === 'quantity') {
             currentVal = '1';
             this.numpadShouldReplace = true;
-          } else {
+          } else if (this.numpadMode() === 'amount') {
             currentVal = '0';
+          } else {
+            currentVal = '';
           }
         }
       }
@@ -128,8 +131,10 @@ export class CounterSaleService {
       if (this.numpadMode() === 'quantity') {
         currentVal = '1';
         this.numpadShouldReplace = true;
-      } else {
+      } else if (this.numpadMode() === 'amount') {
         currentVal = '0';
+      } else {
+        currentVal = '';
       }
       this.numpadHasQuickWeight = false;
     } else if (val.startsWith('.')) {
@@ -137,12 +142,12 @@ export class CounterSaleService {
         if (currentVal.includes('.')) {
           currentVal = currentVal.split('.')[0] + val;
         } else {
-          currentVal += val;
+          currentVal = (currentVal || '0') + val;
         }
         this.numpadHasQuickWeight = true;
       } else { // Manual dot
         if (!currentVal.includes('.')) {
-          currentVal += val;
+          currentVal = (currentVal || '0') + val;
         }
         this.numpadHasQuickWeight = false;
       }
@@ -150,8 +155,20 @@ export class CounterSaleService {
       if (this.numpadMode() === 'quantity' && this.numpadHasQuickWeight && currentVal.includes('.')) {
         const parts = currentVal.split('.');
         currentVal = (parts[0] === '0' ? val : parts[0] + val) + '.' + parts[1];
+      } else if (currentVal.includes('.')) {
+        const parts = currentVal.split('.');
+        let maxDecimals = 0;
+        if (this.numpadMode() === 'discount' || this.numpadMode() === 'amount') {
+          maxDecimals = 2;
+        } else if (this.numpadMode() === 'quantity') {
+          maxDecimals = 3;
+        }
+
+        if (parts[1].length < maxDecimals) {
+          currentVal += val;
+        }
       } else {
-        if (currentVal === '0') {
+        if (currentVal === '0' || currentVal === '') {
           currentVal = val;
         } else {
           currentVal += val;
@@ -160,21 +177,15 @@ export class CounterSaleService {
     }
 
     if (this.numpadMode() === 'discount') {
-      if (parseFloat(currentVal) > 99) {
-        // If it exceeds 99, ignore the keystroke and keep old value
-        // But if old value was already > 99 (e.g. from input), cap it to 99
-        currentVal = parseFloat(oldVal) <= 99 ? oldVal : '99';
-        // If the user was trying to replace, we should allow the single digit
-        if (currentVal === '0' && val !== '0') {
-          currentVal = val;
-        }
+      if (parseFloat(currentVal) > environment.maxDiscount) {
+        currentVal = environment.maxDiscount.toString();
       }
     }
 
     this.numpadValue.set(currentVal);
     this.syncCartFromNumpad();
   }
-  
+
   setNumpadValueExplicit(val: string) {
     const idx = this.selectedItemIndex();
     if (idx === null || idx < 0 || idx >= this.cartItems().length) return;
@@ -213,8 +224,8 @@ export class CounterSaleService {
 
   addToCart(product: any) {
     const items = [...this.cartItems()];
-    const existingItemIndex = items.findIndex(item => 
-      (item.product.id && item.product.id === product.id) || 
+    const existingItemIndex = items.findIndex(item =>
+      (item.product.id && item.product.id === product.id) ||
       (item.product.productCode && item.product.productCode === product.productCode) ||
       (item.details === (product.productName || product.materialName || product.name))
     );
@@ -258,7 +269,7 @@ export class CounterSaleService {
     item.gstAmount = discountedAmount * item.gst / 100;
     item.total = discountedAmount + item.gstAmount;
     this.cartItems.set(items);
-    
+
     if (this.selectedItemIndex() === index) {
       this.syncNumpadFromCart();
     }
@@ -275,7 +286,7 @@ export class CounterSaleService {
     item.gstAmount = discountedAmount * item.gst / 100;
     item.total = discountedAmount + item.gstAmount;
     this.cartItems.set(items);
-    
+
     if (this.selectedItemIndex() === index) {
       this.syncNumpadFromCart();
     }
@@ -289,7 +300,7 @@ export class CounterSaleService {
     item.gstAmount = discountedAmount * item.gst / 100;
     item.total = discountedAmount + item.gstAmount;
     this.cartItems.set(items);
-    
+
     if (this.selectedItemIndex() === index) {
       this.syncNumpadFromCart();
     }
@@ -299,7 +310,7 @@ export class CounterSaleService {
     const items = [...this.cartItems()];
     items.splice(index, 1);
     this.cartItems.set(items);
-    
+
     if (this.selectedItemIndex() === index) {
       this.selectItem(items.length > 0 ? items.length - 1 : null);
     } else if (this.selectedItemIndex() !== null && this.selectedItemIndex()! > index) {

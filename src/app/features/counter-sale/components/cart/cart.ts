@@ -10,6 +10,7 @@ import { MatTableModule } from '@angular/material/table';
 import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
 import { CounterSaleService } from '../../../../core/services/counter-sale.service';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-cart',
@@ -53,15 +54,20 @@ export class Cart {
 
   onDiscountChange(index: number, event: any) {
     let val = parseFloat(event.target.value) || 0;
-    if (val > 99) {
-      val = 99;
-      event.target.value = '99';
+    val = parseFloat(val.toFixed(2));
+    if (val > environment.maxDiscount) {
+      val = environment.maxDiscount;
+      event.target.value = environment.maxDiscount.toString();
+    } else {
+      event.target.value = val > 0 ? val.toString() : '';
     }
     this.counterSaleService.updateDiscount(index, val);
   }
 
   onAmountChange(index: number, event: any) {
-    const val = parseFloat(event.target.value) || 0;
+    let val = parseFloat(event.target.value) || 0;
+    val = parseFloat(val.toFixed(2));
+    event.target.value = val.toString();
     this.counterSaleService.updateAmount(index, val);
   }
 
