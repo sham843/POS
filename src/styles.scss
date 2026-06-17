@@ -234,3 +234,50 @@ lucide-icon {
 lucide-icon svg {
   stroke-width: 1.5px !important;
 }
+
+/* --- Premium Snackbar Notifications --- */
+.success-snackbar {
+  --mdc-snackbar-container-color: #ECFDF5;
+  --mdc-snackbar-supporting-text-color: #047857;
+  --mat-mdc-snack-bar-button-color: #059669;
+}
+
+.error-snackbar {
+  --mdc-snackbar-container-color: #FEF2F2;
+  --mdc-snackbar-supporting-text-color: #B91C1C;
+  --mat-mdc-snack-bar-button-color: #DC2626;
+}
+
+.success-snackbar .mdc-snackbar__surface,
+.error-snackbar .mdc-snackbar__surface {
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  border-left: 6px solid;
+  padding-left: 8px;
+}
+
+.success-snackbar .mdc-snackbar__surface {
+  border-left-color: #10B981;
+}
+
+.error-snackbar .mdc-snackbar__surface {
+  border-left-color: #EF4444;
+}
+
+.mdc-snackbar__label {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+.mat-mdc-snack-bar-action {
+  font-weight: 700 !important;
+}
+
+/* Custom Component Snackbar Container */
+.transparent-snackbar .mdc-snackbar__surface {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+}

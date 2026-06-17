@@ -1,0 +1,13 @@
+<div class="custom-snackbar-wrapper" [ngClass]="data.type">
+  <div class="snackbar-icon-container">
+    <lucide-icon *ngIf="data.type === 'success'" [img]="Check"></lucide-icon>
+    <lucide-icon *ngIf="data.type === 'error'" [img]="AlertCircle"></lucide-icon>
+  </div>
+  <div class="snackbar-content">
+    <span class="snackbar-title">{{ data.title }}</span>
+    <span class="snackbar-message">{{ data.message }}</span>
+  </div>
+  <button class="snackbar-close" (click)="snackBarRef.dismiss()">
+    <lucide-icon [img]="X"></lucide-icon>
+  </button>
+</div>
