@@ -239,7 +239,7 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   }
 
-  .fav-icon {
+  .cart-icon {
     position: absolute;
     top: 12px;
     right: 12px;
@@ -248,9 +248,15 @@
     height: 20px;
     color: #9CA3AF;
     cursor: pointer;
+    transition: all 0.2s ease;
 
     &:hover {
-      color: #F59E0B;
+      color: #0052CC;
+    }
+
+    &.active {
+      color: #0052CC;
+      fill: #E6F0FF;
     }
   }
 

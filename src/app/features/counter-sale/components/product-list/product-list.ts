@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, AfterViewInit, inject, signal, computed, ViewChild, ElementRef, HostListener, ChangeDetectionStrategy, effect } from '@angular/core';
-import { LucideAngularModule, Package, Ellipsis, Star, Search } from 'lucide-angular';
+import { LucideAngularModule, Package, Ellipsis, Star, Search, PlusCircle, CheckCircle } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -37,6 +37,8 @@ export class ProductList implements OnInit, AfterViewInit {
   readonly Ellipsis = Ellipsis;
   readonly Star = Star;
   readonly Search = Search;
+  readonly PlusCircle = PlusCircle;
+  readonly CheckCircle = CheckCircle;
 
   // Paginated products and count signals
   paginatedProducts = signal<any[]>([]);
@@ -286,5 +288,18 @@ export class ProductList implements OnInit, AfterViewInit {
   onPageChange(event: PageEvent) {
     this.currentPage.set(event.pageIndex + 1);
     this.pageSize.set(event.pageSize);
+  }
+
+  addToCart(product: any) {
+    this.counterSaleService.addToCart(product);
+  }
+
+  isInCart(product: any): boolean {
+    const items = this.counterSaleService.cartItems();
+    return items.some(item => 
+      (item.product.id && item.product.id === product.id) || 
+      (item.product.productCode && item.product.productCode === product.productCode) ||
+      (item.details === (product.productName || product.materialName || product.name))
+    );
   }
 }
