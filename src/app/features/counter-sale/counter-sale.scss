@@ -7,8 +7,7 @@
 .custom-pos-layout {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px);
-  /* Subtract main-layout header height */
+  height: calc(100vh - 100px);
   width: 100%;
   max-width: 100%;
   background-color: #F8F9FA;
@@ -290,7 +289,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  gap: 16px;
+  gap: 8px;
 
   .cart-section-container {
     flex: 1;
@@ -314,10 +313,10 @@
     border: 1px solid #E5E7EB;
     border-radius: 12px;
     overflow: hidden;
+    height: 235px;
 
     .checkout-left-pane {
       flex: 2;
-      /* 70% */
       display: flex;
       flex-direction: column;
 
@@ -339,8 +338,7 @@
 
       app-payment {
         display: block;
-        padding: 16px;
-        /* Increased top padding for alignment and breathing room */
+        padding: 12px;
         background: #ffffff;
         height: 100%;
       }
@@ -541,7 +539,7 @@
         flex-wrap: wrap;
       }
     }
-    
+
     .prev-bill-btn {
       margin-top: 8px;
       justify-content: center;
