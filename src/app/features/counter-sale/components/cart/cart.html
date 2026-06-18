@@ -11,7 +11,7 @@
     </button>
   </div>
 
-  <div class="cart-items-list" [class.empty]="dataSource().length === 0">
+  <div class="cart-items-list">
 
     <ng-container *ngIf="dataSource().length > 0; else emptyCart">
       <!-- Dynamic Cart Items from Backend/Store -->

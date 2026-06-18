@@ -202,16 +202,15 @@
 
 // ─── SUMMARY ──────────────────────────────────────────────────────
 .summary-section {
-  padding: 16px 22px;
-  background: var(--pos-bg, #f8fafc);
-  border-top: 1px solid var(--pos-card-border, #e2e8f0);
+  padding: 14px 22px;
+  background: var(--pos-card-bg);
+  // border-bottom: 1px solid var(--pos-card-border);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 
   mat-divider {
-    margin: 6px 0;
-    opacity: 0.6;
+    margin: 4px 0;
   }
 }
 
@@ -220,45 +219,32 @@
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
-  color: var(--pos-text-secondary, #64748b);
-  font-weight: 500;
+  color: var(--pos-text-primary);
 
-  span:first-child {
-    font-weight: 500;
-  }
-
-  span:last-child {
-    color: var(--pos-text-primary, #0f172a);
-    font-weight: 600;
+  &.discount span:first-child {
+    color: var(--pos-text-secondary);
   }
 
   .red {
-    color: var(--pos-danger, #ef4444) !important;
-    font-weight: 600;
+    color: var(--pos-danger);
+    font-weight: 500;
   }
 
   &.tax-row {
     font-size: 12px;
-    color: var(--pos-text-secondary, #64748b);
+    color: var(--pos-text-secondary);
   }
 
   &.total-row {
     font-size: 15px;
     font-weight: 700;
-    color: var(--pos-text-primary, #0f172a);
-    padding-top: 10px;
-    margin-top: 4px;
-    border-top: 1px dashed var(--pos-card-border, #cbd5e1);
-
-    span:first-child {
-      font-weight: 700;
-      color: var(--pos-text-primary, #0f172a);
-    }
+    color: var(--pos-text-primary);
+    padding-top: 4px;
 
     .total-amount {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 800;
-      color: var(--pos-accent, #0052cc);
+      color: var(--pos-text-primary);
     }
   }
 }
