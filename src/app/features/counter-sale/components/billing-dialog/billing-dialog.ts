@@ -44,7 +44,7 @@ export class BillingDialog {
   readonly X = X;
   readonly CheckCircle = CheckCircle;
 
-  displayedColumns = ['item', 'rate', 'qty', 'discount', 'sgst', 'cgst', 'amount'];
+  displayedColumns = ['item', 'rate', 'qty', 'discount', 'sgst', 'cgst', 'amount', 'total'];
   printAutomatically = true;
 
   // Split GST equally as SGST/CGST (intra-state), or full IGST (inter-state)

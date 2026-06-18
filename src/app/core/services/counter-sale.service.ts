@@ -11,6 +11,7 @@ export interface CartItem {
   rate: number;
   discount: number;
   amount: number;
+  netAmount: number;
   gst: number;
   gstAmount: number;
   total: number;
@@ -61,13 +62,16 @@ export class CounterSaleService {
       const oldIdx = this.selectedItemIndex()!;
       if (oldIdx < this.cartItems().length) {
         const item = this.cartItems()[oldIdx];
-        if (this.numpadMode() === 'amount' && item.amount <= 0) {
+        if (this.numpadMode() === 'amount' && item.netAmount <= 0) {
           this.notificationService.showError(`Amount cannot be zero.`);
           // Revert amount to rate * quantity as a fallback
-          item.amount = item.rate * item.quantity;
-          const discountedAmount = item.amount - (item.amount * item.discount / 100);
-          item.gstAmount = discountedAmount * item.gst / 100;
-          item.total = discountedAmount + item.gstAmount;
+          const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
+          item.amount = isExcluded 
+            ? Math.round((item.rate * item.quantity) * 100) / 100 
+            : Math.round(((item.rate * item.quantity) / (1 + item.gst / 100)) * 100) / 100;
+          item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
+          item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
+          item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
         }
       }
     }
@@ -85,12 +89,15 @@ export class CounterSaleService {
       const idx = this.selectedItemIndex()!;
       if (idx < this.cartItems().length) {
         const item = this.cartItems()[idx];
-        if (item.amount <= 0) {
+        if (item.netAmount <= 0) {
           this.notificationService.showError(`Amount cannot be zero.`);
-          item.amount = item.rate * item.quantity;
-          const discountedAmount = item.amount - (item.amount * item.discount / 100);
-          item.gstAmount = discountedAmount * item.gst / 100;
-          item.total = discountedAmount + item.gstAmount;
+          const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
+          item.amount = isExcluded 
+            ? Math.round((item.rate * item.quantity) * 100) / 100 
+            : Math.round(((item.rate * item.quantity) / (1 + item.gst / 100)) * 100) / 100;
+          item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
+          item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
+          item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
         }
       }
     }
@@ -109,7 +116,7 @@ export class CounterSaleService {
       if (mode === 'quantity') {
         this.numpadValue.set(item.quantity.toString());
       } else if (mode === 'amount') {
-        this.numpadValue.set(item.amount.toString());
+        this.numpadValue.set(item.netAmount.toString());
       } else if (mode === 'discount') {
         this.numpadValue.set(item.discount === 0 ? '' : item.discount.toString());
       }
@@ -246,17 +253,28 @@ export class CounterSaleService {
         this.syncNumpadFromCart();
         return;
       }
-      item.amount = Math.round(valNum * 100) / 100;
+      const netAmount = Math.round(valNum * 100) / 100;
+      const discountFactor = 1 - (item.discount / 100);
+      if (discountFactor > 0) {
+        item.amount = Math.round((netAmount / discountFactor) * 100) / 100;
+      } else {
+        item.amount = netAmount;
+      }
       if (item.rate > 0) {
-        item.quantity = Math.round((item.amount / item.rate) * 1000) / 1000;
+        const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
+        if (isExcluded) {
+          item.quantity = Math.round((item.amount / item.rate) * 1000) / 1000;
+        } else {
+          item.quantity = Math.round(((item.amount * (1 + item.gst / 100)) / item.rate) * 1000) / 1000;
+        }
       }
     } else if (mode === 'discount') {
       item.discount = valNum;
     }
 
-    const discountedAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
-    item.gstAmount = Math.round((discountedAmount * item.gst / 100) * 100) / 100;
-    item.total = Math.round((discountedAmount + item.gstAmount) * 100) / 100;
+    item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
+    item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
+    item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
 
     this.cartItems.set(items);
   }
@@ -279,8 +297,8 @@ export class CounterSaleService {
       const amount = isExcluded 
         ? Math.round((rate * 1) * 100) / 100 
         : Math.round(((rate * 1) / (1 + gst / 100)) * 100) / 100;
-      const discountedAmount = amount;
-      const gstAmount = Math.round((discountedAmount * gst / 100) * 100) / 100;
+      const netAmount = amount;
+      const gstAmount = Math.round((netAmount * gst / 100) * 100) / 100;
       const newItem: CartItem = {
         product: product,
         details: product.productName || product.materialName || product.name || 'Unknown Product',
@@ -288,9 +306,10 @@ export class CounterSaleService {
         rate: rate,
         discount: 0,
         amount: amount,
+        netAmount: netAmount,
         gst: gst,
         gstAmount: gstAmount,
-        total: Math.round((amount + gstAmount) * 100) / 100,
+        total: Math.round((netAmount + gstAmount) * 100) / 100,
         unit: product.unit || product.uom || product.unitName || ''
       };
       items.push(newItem);
@@ -311,9 +330,9 @@ export class CounterSaleService {
     item.amount = isExcluded 
       ? Math.round((item.rate * item.quantity) * 100) / 100 
       : Math.round(((item.rate * item.quantity) / (1 + item.gst / 100)) * 100) / 100;
-    const discountedAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
-    item.gstAmount = Math.round((discountedAmount * item.gst / 100) * 100) / 100;
-    item.total = Math.round((discountedAmount + item.gstAmount) * 100) / 100;
+    item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
+    item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
+    item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
     this.cartItems.set(items);
 
     if (this.selectedItemIndex() === index) {
@@ -328,13 +347,24 @@ export class CounterSaleService {
       this.syncNumpadFromCart();
       return;
     }
-    item.amount = Math.round(amount * 100) / 100;
-    if (item.rate > 0) {
-      item.quantity = Math.round((item.amount / item.rate) * 1000) / 1000;
+    const netAmount = Math.round(amount * 100) / 100;
+    const discountFactor = 1 - (item.discount / 100);
+    if (discountFactor > 0) {
+      item.amount = Math.round((netAmount / discountFactor) * 100) / 100;
+    } else {
+      item.amount = netAmount;
     }
-    const discountedAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
-    item.gstAmount = Math.round((discountedAmount * item.gst / 100) * 100) / 100;
-    item.total = Math.round((discountedAmount + item.gstAmount) * 100) / 100;
+    if (item.rate > 0) {
+      const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
+      if (isExcluded) {
+        item.quantity = Math.round((item.amount / item.rate) * 1000) / 1000;
+      } else {
+        item.quantity = Math.round(((item.amount * (1 + item.gst / 100)) / item.rate) * 1000) / 1000;
+      }
+    }
+    item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
+    item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
+    item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
     this.cartItems.set(items);
 
     if (this.selectedItemIndex() === index) {
@@ -346,9 +376,9 @@ export class CounterSaleService {
     const items = [...this.cartItems()];
     const item = items[index];
     item.discount = discount || 0;
-    const discountedAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
-    item.gstAmount = Math.round((discountedAmount * item.gst / 100) * 100) / 100;
-    item.total = Math.round((discountedAmount + item.gstAmount) * 100) / 100;
+    item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
+    item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
+    item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
     this.cartItems.set(items);
 
     if (this.selectedItemIndex() === index) {

@@ -70,14 +70,14 @@ export class Cart {
   onAmountChange(index: number, event: any) {
     const item = this.counterSaleService.cartItems()[index];
     if (item.product?.mensurationUnit === 'Nos') {
-      event.target.value = item.amount.toString();
+      event.target.value = item.netAmount.toString();
       return;
     }
     let val = parseFloat(event.target.value) || 0;
     val = parseFloat(val.toFixed(2));
     if (val <= 0) {
       this.notificationService.showError(`Amount cannot be zero.`);
-      const oldVal = item.amount;
+      const oldVal = item.netAmount;
       event.target.value = oldVal.toString();
       return;
     }
