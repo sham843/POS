@@ -10,7 +10,7 @@ import { CounterSaleService } from '../../core/services/counter-sale.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { DbService } from '../../core/services/db.service';
 import { Subject, Subscription, timer } from 'rxjs';
-import { debounce, distinctUntilChanged } from 'rxjs/operators';
+import { debounce } from 'rxjs/operators';
 
 interface BillTab {
   id: number;
@@ -66,8 +66,7 @@ export class CounterSale implements OnInit, OnDestroy {
     }, 1000);
 
     this.searchSubscription = this.searchSubject.pipe(
-      debounce(() => timer(this.searchType() === 'product' ? 300 : 800)),
-      distinctUntilChanged()
+      debounce(() => timer(this.searchType() === 'product' ? 800 : 800))
     ).subscribe(value => {
       if (this.searchType() === 'customer' && value.trim().length > 0) {
         this.onSearchEnter(false); // pass false to avoid spamming snackbars while typing
@@ -87,7 +86,7 @@ export class CounterSale implements OnInit, OnDestroy {
   bills = signal<BillTab[]>([
     { id: 1, name: 'Bill 1', active: true }
   ]);
-  
+
   searchType = this.counterSaleService.searchType;
   searchQuery = this.counterSaleService.searchQuery;
   nextBillId = 2;
@@ -98,6 +97,7 @@ export class CounterSale implements OnInit, OnDestroy {
     if (this.searchInput?.nativeElement) {
       this.searchInput.nativeElement.value = '';
     }
+    this.searchSubject.next('');
   }
 
   openCustomerDrawer() {
@@ -110,6 +110,7 @@ export class CounterSale implements OnInit, OnDestroy {
 
   clearSelectedCustomer() {
     this.counterSaleService.selectedCustomer.set(null);
+    this.searchSubject.next('');
   }
 
   openAddBalance() {
@@ -147,13 +148,14 @@ export class CounterSale implements OnInit, OnDestroy {
   clearSearch(inputEl: HTMLInputElement) {
     this.counterSaleService.updateSearchQuery('');
     inputEl.value = '';
+    this.searchSubject.next('');
   }
 
   addBill() {
     if (this.bills().length >= 5) {
       return;
     }
-    
+
     const currentBills = this.bills().map(b => ({ ...b, active: false }));
     const newId = currentBills.length + 1;
 
@@ -175,21 +177,21 @@ export class CounterSale implements OnInit, OnDestroy {
 
   removeBill(id: number, event: Event) {
     event.stopPropagation();
-    
+
     let currentBills = this.bills();
     if (currentBills.length === 1) {
       // Don't close the last bill, or you can clear it instead.
       return;
     }
-    
+
     const billToRemove = currentBills.find(b => b.id === id);
     let updatedBills = currentBills.filter(b => b.id !== id);
-    
+
     // If we closed the active bill, make the last one active
     if (billToRemove?.active) {
       updatedBills[updatedBills.length - 1].active = true;
     }
-    
+
     // Automatically renumber them without gaps
     updatedBills = updatedBills.map((b, index) => {
       const newId = index + 1;
@@ -199,7 +201,7 @@ export class CounterSale implements OnInit, OnDestroy {
         name: `Bill ${newId}`
       };
     });
-    
+
     this.bills.set(updatedBills);
   }
 }
