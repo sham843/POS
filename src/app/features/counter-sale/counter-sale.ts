@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
 import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp, CheckCircle, List } from 'lucide-angular';
 import { ProductList } from './components/product-list/product-list';
 import { Cart } from './components/cart/cart';
@@ -7,6 +7,10 @@ import { BillSummary } from './components/bill-summary/bill-summary';
 import { Payment } from './components/payment/payment';
 import { CustomerDrawer } from './components/customer-drawer/customer-drawer';
 import { CounterSaleService } from '../../core/services/counter-sale.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { DbService } from '../../core/services/db.service';
+import { Subject, Subscription, timer } from 'rxjs';
+import { debounce, distinctUntilChanged } from 'rxjs/operators';
 
 interface BillTab {
   id: number;
@@ -31,12 +35,18 @@ interface BillTab {
 })
 export class CounterSale implements OnInit, OnDestroy {
   private counterSaleService = inject(CounterSaleService);
+  private notificationService = inject(NotificationService);
+  private dbService = inject(DbService);
 
   isCustomerDrawerOpen = signal<boolean>(false);
   selectedCustomer = this.counterSaleService.selectedCustomer;
 
+  @ViewChild('searchInput', { static: false }) searchInput?: ElementRef<HTMLInputElement>;
+
   currentTime = signal(new Date());
   private timer: any;
+  private searchSubject = new Subject<string>();
+  private searchSubscription?: Subscription;
 
   // Expose icons to the template
   readonly Package = Package;
@@ -54,11 +64,23 @@ export class CounterSale implements OnInit, OnDestroy {
     this.timer = setInterval(() => {
       this.currentTime.set(new Date());
     }, 1000);
+
+    this.searchSubscription = this.searchSubject.pipe(
+      debounce(() => timer(this.searchType() === 'product' ? 300 : 800)),
+      distinctUntilChanged()
+    ).subscribe(value => {
+      if (this.searchType() === 'customer' && value.trim().length > 0) {
+        this.onSearchEnter(false); // pass false to avoid spamming snackbars while typing
+      }
+    });
   }
 
   ngOnDestroy() {
     if (this.timer) {
       clearInterval(this.timer);
+    }
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
     }
   }
 
@@ -72,6 +94,10 @@ export class CounterSale implements OnInit, OnDestroy {
 
   setSearchType(type: 'product' | 'bill' | 'customer') {
     this.searchType.set(type);
+    this.counterSaleService.updateSearchQuery('');
+    if (this.searchInput?.nativeElement) {
+      this.searchInput.nativeElement.value = '';
+    }
   }
 
   openCustomerDrawer() {
@@ -93,7 +119,29 @@ export class CounterSale implements OnInit, OnDestroy {
 
   onSearchChange(event: Event) {
     const value = (event.target as HTMLInputElement).value;
-    this.counterSaleService.updateSearchQuery(value);
+    this.counterSaleService.updateSearchQuery(value); // Update instantly so input text doesn't reset
+    this.searchSubject.next(value); // Trigger debounced search
+  }
+
+  async onSearchEnter(showSnackbar: boolean = true) {
+    if (this.searchType() === 'customer') {
+      const query = this.searchQuery().toLowerCase().trim();
+      if (!query) return;
+
+      const customers = await this.dbService.customerList.toArray();
+      const found = customers.find(c => {
+        const name = (c.customerName || c.name || '').toLowerCase();
+        const phone = (c.mobileNo || c.phone || '').toLowerCase();
+        return name.includes(query) || phone.includes(query);
+      });
+
+      if (found) {
+        this.counterSaleService.selectedCustomer.set(found);
+        this.counterSaleService.updateSearchQuery('');
+      } else if (showSnackbar) {
+        this.notificationService.showError('Customer not found matching "' + query + '"');
+      }
+    }
   }
 
   clearSearch(inputEl: HTMLInputElement) {

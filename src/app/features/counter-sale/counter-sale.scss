@@ -31,8 +31,7 @@
 }
 
 .sub-header-search {
-  flex: 1;
-  max-width: 480px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -40,6 +39,7 @@
   .search-box {
     display: flex;
     flex: 1;
+    min-width: 220px;
     align-items: center;
     background: #ffffff;
     border: 1px solid #D1D5DB;
@@ -200,6 +200,7 @@
 .search-type-chips {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   background: #E5EDF6;
   /* Slightly darker than sub-header to stand out */
   padding: 4px;
@@ -253,6 +254,7 @@
 /* BILL TABS CONTAINER */
 .bill-tabs-container {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -643,85 +645,78 @@
 }
 
 /* CUSTOMER INFO BADGES (outside search input) */
+/* CUSTOMER INFO BADGES (outside search input) */
 .customer-info-badges {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   flex-shrink: 0;
 
-  .balance-group {
-    display: flex;
+  .info-pill {
+    display: inline-flex;
     align-items: center;
     gap: 4px;
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid transparent;
+
+    strong {
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+
+    &.credit-pill {
+      background: #F0FDF4;
+      border-color: #BBF7D0;
+      color: #166534;
+
+      strong { color: #15803D; }
+    }
+
+    &.balance-pill {
+      background: #F3F4F6;
+      border-color: #E5E7EB;
+      color: #6B7280;
+
+      strong { color: #374151; }
+
+      &.has-balance {
+        background: #FFF7ED;
+        border-color: #FED7AA;
+        color: #92400E;
+
+        strong { color: #C2410C; }
+      }
+    }
   }
 
   .add-balance-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     border-radius: 6px;
-    background: #DCFCE7;
-    border: 1px solid #BBF7D0;
-    color: #15803D;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #0052CC;
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
 
     lucide-icon {
-      width: 13px;
-      height: 13px;
+      width: 14px;
+      height: 14px;
     }
 
     &:hover {
-      background: #15803D;
-      border-color: #15803D;
+      background: #0052CC;
+      border-color: #0052CC;
       color: #ffffff;
     }
   }
-
-  .info-badge {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 3px 10px;
-    border-radius: 7px;
-    border: 1px solid transparent;
-    line-height: 1.2;
-
-    .badge-label {
-      font-size: 9.5px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      opacity: 0.7;
-    }
-
-    .badge-value {
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    &.credit-badge {
-      background: #F0FDF4;
-      border-color: #BBF7D0;
-      .badge-label { color: #166534; }
-      .badge-value { color: #15803D; }
-    }
-
-    &.balance-badge {
-      background: #F3F4F6;
-      border-color: #E5E7EB;
-      .badge-label { color: #6B7280; }
-      .badge-value { color: #374151; }
-
-      &.has-balance {
-        background: #FFF7ED;
-        border-color: #FED7AA;
-        .badge-label { color: #9A3412; }
-        .badge-value { color: #C2410C; }
-      }
-    }
-  }
-}
+}
+

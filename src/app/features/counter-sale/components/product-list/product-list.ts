@@ -75,7 +75,8 @@ export class ProductList implements OnInit, AfterViewInit {
     // Reactively fetch products from IndexedDB whenever query, page, size, or category changes.
     effect(() => {
       const category = this.activeCategory();
-      const query = this.counterSaleService.searchQuery();
+      const searchType = this.counterSaleService.searchType();
+      const query = searchType === 'product' ? this.counterSaleService.searchQuery() : '';
       const page = this.currentPage();
       const size = this.pageSize();
       const activeCats = this.allCategories();

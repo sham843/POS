@@ -20,7 +20,7 @@
     </div>
 
     <!-- SEARCH -->
-    <div class="sub-header-search">
+    <div class="sub-header-search" [class.has-customer]="searchType() === 'customer' && selectedCustomer()">
       <div class="search-box" [class.customer-mode]="searchType() === 'customer'">
         <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
 
@@ -41,7 +41,8 @@
             #searchInput
             [value]="searchQuery()"
             [placeholder]="searchType() === 'product' ? 'Search by Product Name' : (searchType() === 'bill' ? 'Search by Bill №.' : 'Search by Customer Name')"
-            (input)="onSearchChange($event)">
+            (input)="onSearchChange($event)"
+            (keydown.enter)="onSearchEnter()">
           <button class="clear-search-btn" *ngIf="searchQuery()" (click)="clearSearch(searchInput)">
             <lucide-icon [img]="X" class="clear-icon"></lucide-icon>
           </button>
@@ -54,20 +55,16 @@
 
       <!-- Customer Credit & Balance badges (outside the input box) -->
       <div class="customer-info-badges" *ngIf="searchType() === 'customer' && selectedCustomer()">
-        <span class="info-badge credit-badge">
-          <span class="badge-label">Credit</span>
-          <span class="badge-value">₹{{ selectedCustomer()?.creditLimit || 0 | number:'1.0-2' }}</span>
+        <span class="info-pill credit-pill">
+          Credit: <strong>₹{{ selectedCustomer()?.creditLimit || 0 | number:'1.0-2' }}</strong>
         </span>
-        <div class="balance-group">
-          <span class="info-badge balance-badge"
-                [class.has-balance]="(selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) !== 0">
-            <span class="badge-label">Balance</span>
-            <span class="badge-value">₹{{ (selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) | number:'1.0-2' }}</span>
-          </span>
-          <button class="add-balance-btn" (click)="openAddBalance()" title="Add Balance">
-            <lucide-icon [img]="Plus"></lucide-icon>
-          </button>
-        </div>
+        <span class="info-pill balance-pill"
+              [class.has-balance]="(selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) !== 0">
+          Balance: <strong>₹{{ (selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) | number:'1.0-2' }}</strong>
+        </span>
+        <button class="add-balance-btn" (click)="openAddBalance()" title="Add Balance">
+          <lucide-icon [img]="Plus"></lucide-icon>
+        </button>
       </div>
     </div>
     <!-- MULTIPLE BILL TABS -->
