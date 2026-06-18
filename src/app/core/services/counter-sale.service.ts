@@ -25,6 +25,7 @@ export class CounterSaleService {
   notificationService = inject(NotificationService);
   searchQuery = signal<string>('');
   searchType = signal<'product' | 'bill' | 'customer'>('product');
+  selectedCustomer = signal<any | null>(null);
 
   cartItems = signal<CartItem[]>([]);
   selectedItemIndex = signal<number | null>(null);
@@ -401,5 +402,6 @@ export class CounterSaleService {
   clearCart() {
     this.cartItems.set([]);
     this.selectItem(null);
+    this.selectedCustomer.set(null);
   }
 }

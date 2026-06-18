@@ -21,19 +21,55 @@
 
     <!-- SEARCH -->
     <div class="sub-header-search">
-      <div class="search-box">
+      <div class="search-box" [class.customer-mode]="searchType() === 'customer'">
         <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
-        <input type="text"
-          #searchInput
-          [value]="searchQuery()"
-          [placeholder]="searchType() === 'product' ? 'Search by Product Name' : (searchType() === 'bill' ? 'Search by Bill №.' : 'Search by Customer Name')"
-          (input)="onSearchChange($event)">
-        <button class="clear-search-btn" *ngIf="searchQuery()" (click)="clearSearch(searchInput)">
-          <lucide-icon [img]="X" class="clear-icon"></lucide-icon>
+
+        <!-- Customer selected chip -->
+        <ng-container *ngIf="searchType() === 'customer' && selectedCustomer(); else normalInput">
+          <div class="selected-customer-chip">
+            <div class="chip-avatar">{{ (selectedCustomer()?.customerName || selectedCustomer()?.name || '?')[0].toUpperCase() }}</div>
+            <span class="chip-name">{{ selectedCustomer()?.customerName || selectedCustomer()?.name }}</span>
+            <button class="chip-clear" (click)="clearSelectedCustomer()" title="Remove customer">
+              <lucide-icon [img]="X"></lucide-icon>
+            </button>
+          </div>
+        </ng-container>
+
+        <!-- Normal search input -->
+        <ng-template #normalInput>
+          <input type="text"
+            #searchInput
+            [value]="searchQuery()"
+            [placeholder]="searchType() === 'product' ? 'Search by Product Name' : (searchType() === 'bill' ? 'Search by Bill №.' : 'Search by Customer Name')"
+            (input)="onSearchChange($event)">
+          <button class="clear-search-btn" *ngIf="searchQuery()" (click)="clearSearch(searchInput)">
+            <lucide-icon [img]="X" class="clear-icon"></lucide-icon>
+          </button>
+        </ng-template>
+
+        <button class="customer-list-btn" *ngIf="searchType() === 'customer'" (click)="openCustomerDrawer()" title="Open Customer List">
+          <lucide-icon [img]="ListIcon"></lucide-icon>
         </button>
       </div>
-    </div>
 
+      <!-- Customer Credit & Balance badges (outside the input box) -->
+      <div class="customer-info-badges" *ngIf="searchType() === 'customer' && selectedCustomer()">
+        <span class="info-badge credit-badge">
+          <span class="badge-label">Credit</span>
+          <span class="badge-value">₹{{ selectedCustomer()?.creditLimit || 0 | number:'1.0-2' }}</span>
+        </span>
+        <div class="balance-group">
+          <span class="info-badge balance-badge"
+                [class.has-balance]="(selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) !== 0">
+            <span class="badge-label">Balance</span>
+            <span class="badge-value">₹{{ (selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) | number:'1.0-2' }}</span>
+          </span>
+          <button class="add-balance-btn" (click)="openAddBalance()" title="Add Balance">
+            <lucide-icon [img]="Plus"></lucide-icon>
+          </button>
+        </div>
+      </div>
+    </div>
     <!-- MULTIPLE BILL TABS -->
     <div class="bill-tabs-container">
       <div class="bill-tabs-scroll">
@@ -89,5 +125,8 @@
 
     </div>
   </div>
+
+  <!-- CUSTOMER SELECTION DRAWER OVERLAY -->
+  <app-customer-drawer [isOpen]="isCustomerDrawerOpen()" (close)="closeCustomerDrawer()"></app-customer-drawer>
 
 </div>

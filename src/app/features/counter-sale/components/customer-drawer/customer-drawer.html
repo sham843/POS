@@ -1,0 +1,89 @@
+<div class="customer-drawer-overlay" *ngIf="isOpen" (click)="closeDrawer()">
+  <div class="customer-drawer" (click)="$event.stopPropagation()">
+
+    <!-- HEADER -->
+    <div class="drawer-header">
+      <div class="header-left">
+        <lucide-icon [img]="UsersIcon" class="header-icon"></lucide-icon>
+        <div>
+          <h3>Select Customer</h3>
+          <span class="header-count">{{ filteredCustomers().length }} customers</span>
+        </div>
+      </div>
+      <button class="close-btn" (click)="closeDrawer()">
+        <lucide-icon [img]="XIcon"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="drawer-search">
+      <div class="search-box">
+        <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
+        <input type="text" placeholder="Search by name, ID or mobile..." [value]="customerSearchQuery()" (input)="onCustomerSearch($event)" autofocus>
+        <button class="clear-btn" *ngIf="customerSearchQuery()" (click)="clearSearch()">
+          <lucide-icon [img]="XIcon"></lucide-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="drawer-content">
+      <div class="table-wrapper">
+        <table class="customer-table">
+          <thead>
+            <tr>
+              <th class="col-name">Customer Name</th>
+              <th class="col-credit">Credit Limit</th>
+              <th class="col-balance">Balance</th>
+              <th class="col-action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of filteredCustomers()"
+                [class.selected-row]="selectedCustomer()?.id === c.id">
+              <td class="col-name">
+                <div class="name-cell">
+                  <div class="avatar">{{ (c.customerName || c.name || '?')[0].toUpperCase() }}</div>
+                  <div class="name-info">
+                    <span class="name-text">{{ c.customerName || c.name || '—' }}</span>
+                    <span class="mobile-sub" *ngIf="c.mobileNo || c.phone">{{ c.mobileNo || c.phone }}</span>
+                  </div>
+                  <lucide-icon [img]="CheckCircleIcon" class="selected-icon" *ngIf="selectedCustomer()?.id === c.id"></lucide-icon>
+                </div>
+              </td>
+              <td class="col-credit">
+                <span class="credit-badge" *ngIf="c.creditLimit; else noCredit">
+                  ₹{{ c.creditLimit | number:'1.0-2' }}
+                </span>
+                <ng-template #noCredit><span class="na-text">—</span></ng-template>
+              </td>
+              <td class="col-balance">
+                <span class="balance-badge"
+                      [class.balance-due]="(c.balanceAtDairy || c.balance || 0) > 0"
+                      [class.balance-zero]="(c.balanceAtDairy || c.balance || 0) === 0">
+                  ₹{{ (c.balanceAtDairy || c.balance || 0) | number:'1.0-2' }}
+                </span>
+              </td>
+              <td class="col-action">
+                <button class="select-btn"
+                        [class.selected]="selectedCustomer()?.id === c.id"
+                        (click)="selectCustomer(c)">
+                  <lucide-icon [img]="selectedCustomer()?.id === c.id ? CheckCircleIcon : UserCheckIcon"></lucide-icon>
+                  <span>{{ selectedCustomer()?.id === c.id ? 'Selected' : 'Select' }}</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" *ngIf="filteredCustomers().length === 0">
+          <lucide-icon [img]="UsersIcon" class="empty-icon"></lucide-icon>
+          <p *ngIf="customerSearchQuery()">No customers found matching "{{ customerSearchQuery() }}"</p>
+          <p *ngIf="!customerSearchQuery()">No customers available</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

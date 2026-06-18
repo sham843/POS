@@ -32,10 +32,14 @@
 
 .sub-header-search {
   flex: 1;
-  max-width: 300px;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
   .search-box {
     display: flex;
+    flex: 1;
     align-items: center;
     background: #ffffff;
     border: 1px solid #D1D5DB;
@@ -87,6 +91,97 @@
       &:hover {
         background-color: #F3F4F6;
         color: #374151;
+      }
+    }
+
+    .selected-customer-chip {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #EFF6FF;
+      border-radius: 20px;
+      padding: 3px 6px 3px 4px;
+      min-width: 0;
+
+      .chip-avatar {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #0052CC;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .chip-name {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #0052CC;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+      }
+
+      .chip-clear {
+        background: transparent;
+        border: none;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #93C5FD;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        transition: all 0.2s;
+
+        lucide-icon {
+          width: 12px;
+          height: 12px;
+        }
+
+        &:hover {
+          background: #BFDBFE;
+          color: #1D4ED8;
+        }
+      }
+    }
+
+    .customer-list-btn {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #0052CC;
+      border-radius: 6px;
+      width: 26px;
+      height: 26px;
+      margin-left: 4px;
+      transition: all 0.2s ease;
+
+      lucide-icon {
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      &:hover {
+        background-color: #DBEAFE;
+        color: #1D4ED8;
+        border-color: #93C5FD;
       }
     }
 
@@ -546,3 +641,87 @@
     }
   }
 }
+
+/* CUSTOMER INFO BADGES (outside search input) */
+.customer-info-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+
+  .balance-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .add-balance-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #DCFCE7;
+    border: 1px solid #BBF7D0;
+    color: #15803D;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+
+    lucide-icon {
+      width: 13px;
+      height: 13px;
+    }
+
+    &:hover {
+      background: #15803D;
+      border-color: #15803D;
+      color: #ffffff;
+    }
+  }
+
+  .info-badge {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 3px 10px;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    line-height: 1.2;
+
+    .badge-label {
+      font-size: 9.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      opacity: 0.7;
+    }
+
+    .badge-value {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    &.credit-badge {
+      background: #F0FDF4;
+      border-color: #BBF7D0;
+      .badge-label { color: #166534; }
+      .badge-value { color: #15803D; }
+    }
+
+    &.balance-badge {
+      background: #F3F4F6;
+      border-color: #E5E7EB;
+      .badge-label { color: #6B7280; }
+      .badge-value { color: #374151; }
+
+      &.has-balance {
+        background: #FFF7ED;
+        border-color: #FED7AA;
+        .badge-label { color: #9A3412; }
+        .badge-value { color: #C2410C; }
+      }
+    }
+  }
+}

@@ -78,11 +78,11 @@
     </app-empty-state>
     }
 
-    <div class="pl-footer">
-      <mat-paginator [length]="totalFilteredProductsCount()" [pageSize]="pageSize()" hidePageSize="true"
-        showFirstLastButtons="true" [pageIndex]="currentPage() - 1" (page)="onPageChange($event)"
-        aria-label="Select page">
-      </mat-paginator>
-    </div>
-
+  <div class="pl-footer">
+    <mat-paginator [length]="totalFilteredProductsCount()" [pageSize]="pageSize()" hidePageSize="true"
+      showFirstLastButtons="true" [pageIndex]="currentPage() - 1" (page)="onPageChange($event)"
+      aria-label="Select page">
+    </mat-paginator>
   </div>
+
+</div>

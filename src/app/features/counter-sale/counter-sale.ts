@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal, OnInit, OnDestroy, inject } from '@angular/core';
-import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp } from 'lucide-angular';
+import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp, CheckCircle, List } from 'lucide-angular';
 import { ProductList } from './components/product-list/product-list';
 import { Cart } from './components/cart/cart';
 import { BillSummary } from './components/bill-summary/bill-summary';
 import { Payment } from './components/payment/payment';
+import { CustomerDrawer } from './components/customer-drawer/customer-drawer';
 import { CounterSaleService } from '../../core/services/counter-sale.service';
 
 interface BillTab {
@@ -22,13 +23,17 @@ interface BillTab {
     ProductList,
     Cart,
     BillSummary,
-    Payment
+    Payment,
+    CustomerDrawer
   ],
   templateUrl: './counter-sale.html',
   styleUrl: './counter-sale.scss',
 })
 export class CounterSale implements OnInit, OnDestroy {
   private counterSaleService = inject(CounterSaleService);
+
+  isCustomerDrawerOpen = signal<boolean>(false);
+  selectedCustomer = this.counterSaleService.selectedCustomer;
 
   currentTime = signal(new Date());
   private timer: any;
@@ -42,6 +47,8 @@ export class CounterSale implements OnInit, OnDestroy {
   readonly Plus = Plus;
   readonly Calendar = Calendar;
   readonly ArrowUp = ArrowUp;
+  readonly CheckCircle = CheckCircle;
+  readonly ListIcon = List;
 
   ngOnInit() {
     this.timer = setInterval(() => {
@@ -65,6 +72,23 @@ export class CounterSale implements OnInit, OnDestroy {
 
   setSearchType(type: 'product' | 'bill' | 'customer') {
     this.searchType.set(type);
+  }
+
+  openCustomerDrawer() {
+    this.isCustomerDrawerOpen.set(true);
+  }
+
+  closeCustomerDrawer() {
+    this.isCustomerDrawerOpen.set(false);
+  }
+
+  clearSelectedCustomer() {
+    this.counterSaleService.selectedCustomer.set(null);
+  }
+
+  openAddBalance() {
+    // TODO: open add-balance dialog for selectedCustomer
+    console.log('Add balance for:', this.selectedCustomer());
   }
 
   onSearchChange(event: Event) {
