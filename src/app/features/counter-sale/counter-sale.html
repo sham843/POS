@@ -25,7 +25,7 @@
         <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
 
         <!-- Customer selected chip -->
-        <ng-container *ngIf="searchType() === 'customer' && selectedCustomer(); else normalInput">
+        @if (searchType() === 'customer' && selectedCustomer()) {
           <div class="selected-customer-chip">
             <div class="chip-avatar">{{ (selectedCustomer()?.customerName || selectedCustomer()?.name || '?')[0].toUpperCase() }}</div>
             <span class="chip-name">{{ selectedCustomer()?.customerName || selectedCustomer()?.name }}</span>
@@ -33,28 +33,31 @@
               <lucide-icon [img]="X"></lucide-icon>
             </button>
           </div>
-        </ng-container>
-
+        } @else {
         <!-- Normal search input -->
-        <ng-template #normalInput>
           <input type="text"
             #searchInput
             [value]="searchQuery()"
             [placeholder]="searchType() === 'product' ? 'Search by Product Name' : (searchType() === 'bill' ? 'Search by Bill №.' : 'Search by Customer Name')"
             (input)="onSearchChange($event)"
             (keydown.enter)="onSearchEnter()">
-          <button class="clear-search-btn" *ngIf="searchQuery()" (click)="clearSearch(searchInput)">
+          @if (searchQuery()) {
+          <button class="clear-search-btn" (click)="clearSearch(searchInput)">
             <lucide-icon [img]="X" class="clear-icon"></lucide-icon>
           </button>
-        </ng-template>
+          }
+        }
 
-        <button class="customer-list-btn" *ngIf="searchType() === 'customer'" (click)="openCustomerDrawer()" title="Open Customer List">
+        @if (searchType() === 'customer') {
+        <button class="customer-list-btn" (click)="openCustomerDrawer()" title="Open Customer List">
           <lucide-icon [img]="ListIcon"></lucide-icon>
         </button>
+        }
       </div>
 
       <!-- Customer Credit & Balance badges (outside the input box) -->
-      <div class="customer-info-badges" *ngIf="searchType() === 'customer' && selectedCustomer()">
+      @if (searchType() === 'customer' && selectedCustomer()) {
+      <div class="customer-info-badges">
         <span class="info-pill credit-pill">
           Credit: <strong>₹{{ selectedCustomer()?.creditLimit || 0 | number:'1.0-2' }}</strong>
         </span>
@@ -66,14 +69,17 @@
           <lucide-icon [img]="Plus"></lucide-icon>
         </button>
       </div>
+      }
     </div>
     <!-- MULTIPLE BILL TABS -->
     <div class="bill-tabs-container">
       <div class="bill-tabs-scroll">
-        <div class="bill-tab" *ngFor="let bill of bills()" [class.active]="bill.id === activeBillId()" (click)="selectBill(bill.id)">
+        @for (bill of bills(); track bill.id) {
+        <div class="bill-tab" [class.active]="bill.id === activeBillId()" (click)="selectBill(bill.id)">
           <span class="bill-name">{{ bill.name }}</span>
           <lucide-icon [img]="X" class="close-icon" (click)="removeBill(bill.id, $event)"></lucide-icon>
         </div>
+        }
       </div>
       <button class="add-bill-btn" (click)="addBill()" [disabled]="bills().length >= 5" title="Maximum 5 bills allowed">
         <lucide-icon [img]="Plus"></lucide-icon>
