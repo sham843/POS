@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, Delete, Banknote, Globe, CreditCard, Eraser } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,6 +18,7 @@ import { DialogService } from '../../../../core/services/dialog.service';
   ],
   templateUrl: './payment.html',
   styleUrl: './payment.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Payment {
   counterSaleService = inject(CounterSaleService);

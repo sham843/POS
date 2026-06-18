@@ -2,7 +2,7 @@
 
   <!-- Hidden measurement container: renders all buttons invisibly to get their real widths -->
   <div class="pills-measure" #measureContainer>
-    @for (cat of categories(); track cat.name) {
+    @for (cat of categories(); track $index) {
     <button class="pill-btn pill-btn-measure">
       <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
     </button>
@@ -11,7 +11,7 @@
 
   <!-- Visible category pills row -->
   <div class="category-pills" #pillsContainer>
-    @for (cat of visibleCategories(); track cat.name) {
+    @for (cat of visibleCategories(); track $index) {
     <button class="pill-btn" [class.active]="activeCategory() === cat.name" (click)="selectCategory(cat.name)">
       <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
     </button>
@@ -30,7 +30,7 @@
             (input)="onMenuSearch($event)">
         </div>
         <div class="menu-items-scroll">
-          @for (cat of filteredOverflowCategories(); track cat.name) {
+          @for (cat of filteredOverflowCategories(); track $index) {
           <button mat-menu-item [class.active-menu-item]="activeCategory() === cat.name"
             (click)="selectCategory(cat.name)">
             <lucide-icon [img]="Package" class="fa-icon me-2"
@@ -48,7 +48,7 @@
 
   @if (paginatedProducts().length > 0) {
   <div class="products-grid">
-    @for (p of paginatedProducts(); track p.id || p.productName || p.materialName || p.name) {
+    @for (p of paginatedProducts(); track p.id || $index) {
     <div class="prod-card" (click)="addToCart(p)" style="cursor: pointer;" [class.in-cart]="isInCart(p)">
       <lucide-icon [img]="isInCart(p) ? CheckCircle : PlusCircle" class="cart-icon" [class.active]="isInCart(p)"></lucide-icon>
       <div class="prod-image">

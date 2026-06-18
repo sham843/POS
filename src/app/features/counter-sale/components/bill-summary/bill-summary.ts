@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { CounterSaleService } from '../../../../core/services/counter-sale.service';
 
@@ -9,6 +9,7 @@ import { CounterSaleService } from '../../../../core/services/counter-sale.servi
   imports: [CommonModule, MatListModule],
   templateUrl: './bill-summary.html',
   styleUrl: './bill-summary.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BillSummary {
   counterSaleService = inject(CounterSaleService);

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Search, X, CheckCircle, Users, UserCheck } from 'lucide-angular';
 import { DbService } from '../../../../core/services/db.service';
@@ -9,7 +9,8 @@ import { CounterSaleService } from '../../../../core/services/counter-sale.servi
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './customer-drawer.html',
-  styleUrl: './customer-drawer.scss'
+  styleUrl: './customer-drawer.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CustomerDrawer implements OnInit {
   private dbService = inject(DbService);

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, Trash2, Package, Minus, Plus } from 'lucide-angular';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,6 +30,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Cart {
   counterSaleService = inject(CounterSaleService);

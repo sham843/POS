@@ -295,12 +295,23 @@ export class ProductList implements OnInit, AfterViewInit {
     this.counterSaleService.addToCart(product);
   }
 
-  isInCart(product: any): boolean {
+  cartProductIds = computed(() => {
     const items = this.counterSaleService.cartItems();
-    return items.some(item => 
-      (item.product.id && item.product.id === product.id) || 
-      (item.product.productCode && item.product.productCode === product.productCode) ||
-      (item.details === (product.productName || product.materialName || product.name))
+    const ids = new Set<string | number>();
+    for (const item of items) {
+      if (item.product?.id) ids.add(item.product.id);
+      if (item.product?.productCode) ids.add(item.product.productCode);
+      if (item.details) ids.add(item.details);
+    }
+    return ids;
+  });
+
+  isInCart(product: any): boolean {
+    const ids = this.cartProductIds();
+    return (
+      (product.id && ids.has(product.id)) ||
+      (product.productCode && ids.has(product.productCode)) ||
+      ids.has(product.productName || product.materialName || product.name)
     );
   }
 }

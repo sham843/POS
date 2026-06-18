@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, inject, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp, CheckCircle, List } from 'lucide-angular';
 import { ProductList } from './components/product-list/product-list';
 import { Cart } from './components/cart/cart';
@@ -28,6 +28,7 @@ import { debounce } from 'rxjs/operators';
   ],
   templateUrl: './counter-sale.html',
   styleUrl: './counter-sale.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CounterSale implements OnInit, OnDestroy {
   private counterSaleService = inject(CounterSaleService);
