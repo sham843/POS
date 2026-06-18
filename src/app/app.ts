@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { LanguageService } from './core/services/language.service';
@@ -8,7 +8,8 @@ import { ThemeService } from './core/services/theme.service';
   selector: 'app-root',
   imports: [RouterOutlet, NgxSpinnerModule],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class App implements OnInit {
   public languageService = inject(LanguageService);

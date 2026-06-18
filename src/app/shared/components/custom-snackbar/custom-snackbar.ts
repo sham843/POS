@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
 import { LucideAngularModule, CheckCircle, AlertCircle, X } from 'lucide-angular';
@@ -9,6 +9,7 @@ import { LucideAngularModule, CheckCircle, AlertCircle, X } from 'lucide-angular
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './custom-snackbar.html',
   styleUrl: './custom-snackbar.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CustomSnackbar {
   readonly CheckCircle = CheckCircle;

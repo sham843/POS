@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,6 +19,7 @@ export interface ConfirmDialogData {
   imports: [CommonModule, MatDialogModule, MatButtonModule, LucideAngularModule],
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfirmDialog {
   readonly AlertTriangle = AlertTriangle;

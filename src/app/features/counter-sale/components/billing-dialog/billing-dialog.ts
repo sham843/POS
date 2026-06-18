@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -37,6 +37,7 @@ export interface BillingDialogData {
   ],
   templateUrl: './billing-dialog.html',
   styleUrl: './billing-dialog.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BillingDialog {
   readonly Banknote = Banknote;

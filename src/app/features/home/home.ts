@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule, Store, Globe, Sun, Moon, SunMoon } from 'lucide-angular';
@@ -23,6 +23,7 @@ import { LanguageService } from '../../core/services/language.service';
   standalone: true,
   templateUrl: './home.html',
   styleUrl: './home.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Home implements OnInit {
   public themeService = inject(ThemeService);

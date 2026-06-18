@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, ShoppingCart, Package, Search, Inbox, AlertCircle } from 'lucide-angular';
 
@@ -7,7 +7,8 @@ import { LucideAngularModule, ShoppingCart, Package, Search, Inbox, AlertCircle 
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './empty-state.html',
-  styleUrl: './empty-state.scss'
+  styleUrl: './empty-state.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmptyState {
   @Input() title: string = 'No Data Found';
