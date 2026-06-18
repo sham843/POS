@@ -7,7 +7,7 @@
 .custom-pos-layout {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 100px);
+  height: 100%;
   width: 100%;
   max-width: 100%;
   background-color: #F8F9FA;
@@ -313,7 +313,7 @@
     border: 1px solid #E5E7EB;
     border-radius: 12px;
     overflow: hidden;
-    height: 235px;
+    height: 236px;
 
     .checkout-left-pane {
       flex: 2;
