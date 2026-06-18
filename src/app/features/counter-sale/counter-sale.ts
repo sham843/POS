@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal, OnInit, OnDestroy, inject, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp, CheckCircle, List } from 'lucide-angular';
 import { ProductList } from './components/product-list/product-list';
 import { Cart } from './components/cart/cart';
@@ -24,7 +25,8 @@ import { debounce } from 'rxjs/operators';
     Cart,
     BillSummary,
     Payment,
-    CustomerDrawer
+    CustomerDrawer,
+    MatTooltipModule
   ],
   templateUrl: './counter-sale.html',
   styleUrl: './counter-sale.scss',

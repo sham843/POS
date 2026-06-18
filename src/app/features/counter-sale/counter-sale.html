@@ -29,7 +29,7 @@
           <div class="selected-customer-chip">
             <div class="chip-avatar">{{ (selectedCustomer()?.customerName || selectedCustomer()?.name || '?')[0].toUpperCase() }}</div>
             <span class="chip-name">{{ selectedCustomer()?.customerName || selectedCustomer()?.name }}</span>
-            <button class="chip-clear" (click)="clearSelectedCustomer()" title="Remove customer">
+            <button class="chip-clear" (click)="clearSelectedCustomer()" matTooltip="Remove customer">
               <lucide-icon [img]="X"></lucide-icon>
             </button>
           </div>
@@ -49,7 +49,7 @@
         }
 
         @if (searchType() === 'customer') {
-        <button class="customer-list-btn" (click)="openCustomerDrawer()" title="Open Customer List">
+        <button class="customer-list-btn" (click)="openCustomerDrawer()" matTooltip="Open Customer List">
           <lucide-icon [img]="ListIcon"></lucide-icon>
         </button>
         }
@@ -65,7 +65,7 @@
               [class.has-balance]="(selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) !== 0">
           Balance: <strong>₹{{ (selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) | number:'1.0-2' }}</strong>
         </span>
-        <button class="add-balance-btn" (click)="openAddBalance()" title="Add Balance">
+        <button class="add-balance-btn" (click)="openAddBalance()" matTooltip="Add Balance">
           <lucide-icon [img]="Plus"></lucide-icon>
         </button>
       </div>
@@ -81,7 +81,7 @@
         </div>
         }
       </div>
-      <button class="add-bill-btn" (click)="addBill()" [disabled]="bills().length >= 5" title="Maximum 5 bills allowed">
+      <button class="add-bill-btn" (click)="addBill()" [disabled]="bills().length >= 5" matTooltip="Maximum 5 bills allowed">
         <lucide-icon [img]="Plus"></lucide-icon>
       </button>
     </div>
