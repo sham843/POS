@@ -20,6 +20,18 @@ export interface CartItem {
   unit?: string;
 }
 
+export interface BillState {
+  id: number;
+  name: string;
+  cartItems: CartItem[];
+  selectedCustomer: any | null;
+  selectedItemIndex: number | null;
+  numpadMode: 'quantity' | 'amount' | 'discount';
+  numpadValue: string;
+  numpadShouldReplace: boolean;
+  numpadHasQuickWeight: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -30,14 +42,23 @@ export class CounterSaleService {
 
   searchQuery = signal<string>('');
   searchType = signal<'product' | 'bill' | 'customer'>('product');
-  selectedCustomer = signal<any | null>(null);
 
-  cartItems = signal<CartItem[]>([]);
-  selectedItemIndex = signal<number | null>(null);
-  numpadMode = signal<'quantity' | 'amount' | 'discount'>('quantity');
-  numpadValue = signal<string>('');
-  numpadShouldReplace = false;
-  numpadHasQuickWeight = false;
+  bills = signal<BillState[]>([]);
+  activeBillId = signal<number>(1);
+
+  activeBill = computed(() => this.bills().find(b => b.id === this.activeBillId()) || this.bills()[0]);
+  
+  cartItems = computed(() => this.activeBill()?.cartItems || []);
+  selectedItemIndex = computed(() => this.activeBill()?.selectedItemIndex ?? null);
+  numpadMode = computed(() => this.activeBill()?.numpadMode || 'quantity');
+  numpadValue = computed(() => this.activeBill()?.numpadValue || '');
+  selectedCustomer = computed(() => this.activeBill()?.selectedCustomer || null);
+
+  get numpadShouldReplace() { return this.activeBill()?.numpadShouldReplace || false; }
+  set numpadShouldReplace(val: boolean) { this.updateActiveBill({ numpadShouldReplace: val }); }
+
+  get numpadHasQuickWeight() { return this.activeBill()?.numpadHasQuickWeight || false; }
+  set numpadHasQuickWeight(val: boolean) { this.updateActiveBill({ numpadHasQuickWeight: val }); }
 
   // Computed totals for bill summary
   subTotal = computed(() => this.cartItems().reduce((acc, item) => acc + item.amount, 0));
@@ -51,12 +72,67 @@ export class CounterSaleService {
   private searchSubject = new Subject<string>();
 
   constructor() {
+    this.bills.set([this.createEmptyBill(1)]);
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged()
     ).subscribe(query => {
       this.searchQuery.set(query);
     });
+  }
+
+  createEmptyBill(id: number): BillState {
+    return {
+      id,
+      name: `Bill ${id}`,
+      cartItems: [],
+      selectedCustomer: null,
+      selectedItemIndex: null,
+      numpadMode: 'quantity',
+      numpadValue: '',
+      numpadShouldReplace: false,
+      numpadHasQuickWeight: false
+    };
+  }
+
+  updateActiveBill(updates: Partial<BillState>) {
+    this.bills.update(bills => bills.map(b => 
+      b.id === this.activeBillId() ? { ...b, ...updates } : b
+    ));
+  }
+
+  addBill() {
+    if (this.bills().length >= 5) return;
+    const newId = (this.bills()[this.bills().length - 1]?.id || 0) + 1;
+    this.bills.update(bills => [...bills, this.createEmptyBill(newId)]);
+    this.activeBillId.set(newId);
+  }
+
+  selectBill(id: number) {
+    this.activeBillId.set(id);
+  }
+
+  removeBill(id: number) {
+    const currentBills = this.bills();
+    if (currentBills.length === 1) return;
+    
+    const activeWasRemoved = this.activeBillId() === id;
+    let nextActiveId = this.activeBillId();
+    if (activeWasRemoved) {
+       const idx = currentBills.findIndex(b => b.id === id);
+       nextActiveId = currentBills[idx === currentBills.length - 1 ? idx - 1 : idx + 1].id;
+    }
+
+    const remainingBills = currentBills.filter(b => b.id !== id);
+    let newActiveId = 1;
+    const renumbered = remainingBills.map((b, i) => {
+      const newId = i + 1;
+      if (b.id === nextActiveId) newActiveId = newId;
+      return { ...b, id: newId, name: `Bill ${newId}` };
+    });
+
+    this.bills.set(renumbered);
+    this.activeBillId.set(newActiveId);
   }
 
   updateSearchQuery(query: string) {
@@ -86,7 +162,7 @@ export class CounterSaleService {
       this.numpadShouldReplace = true;
       this.numpadHasQuickWeight = false;
     }
-    this.selectedItemIndex.set(index);
+    this.updateActiveBill({ selectedItemIndex: index });
     this.syncNumpadFromCart();
   }
 
@@ -108,7 +184,7 @@ export class CounterSaleService {
       }
     }
 
-    this.numpadMode.set(mode);
+    this.updateActiveBill({ numpadMode: mode });
     this.numpadShouldReplace = true;
     this.numpadHasQuickWeight = false;
     this.syncNumpadFromCart();
@@ -120,14 +196,14 @@ export class CounterSaleService {
       const item = this.cartItems()[idx];
       const mode = this.numpadMode();
       if (mode === 'quantity') {
-        this.numpadValue.set(item.quantity.toString());
+        this.updateActiveBill({ numpadValue: item.quantity.toString() });
       } else if (mode === 'amount') {
-        this.numpadValue.set(item.netAmount.toString());
+        this.updateActiveBill({ numpadValue: item.netAmount.toString() });
       } else if (mode === 'discount') {
-        this.numpadValue.set(item.discount === 0 ? '' : item.discount.toString());
+        this.updateActiveBill({ numpadValue: item.discount === 0 ? '' : item.discount.toString() });
       }
     } else {
-      this.numpadValue.set('');
+      this.updateActiveBill({ numpadValue: '' });
     }
   }
 
@@ -227,14 +303,14 @@ export class CounterSaleService {
       }
     }
 
-    this.numpadValue.set(currentVal);
+    this.updateActiveBill({ numpadValue: currentVal });
     this.syncCartFromNumpad();
   }
 
   setNumpadValueExplicit(val: string) {
     const idx = this.selectedItemIndex();
     if (idx === null || idx < 0 || idx >= this.cartItems().length) return;
-    this.numpadValue.set(val);
+    this.updateActiveBill({ numpadValue: val });
     this.syncCartFromNumpad();
   }
 
@@ -282,7 +358,7 @@ export class CounterSaleService {
     item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
     item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
 
-    this.cartItems.set(items);
+    this.updateActiveBill({ cartItems: items });
   }
 
   addToCart(product: any) {
@@ -319,7 +395,7 @@ export class CounterSaleService {
         unit: product.unit || product.uom || product.unitName || product.mensurationUnit || ''
       };
       items.push(newItem);
-      this.cartItems.set(items);
+      this.updateActiveBill({ cartItems: items });
       this.selectItem(items.length - 1);
     }
   }
@@ -339,7 +415,7 @@ export class CounterSaleService {
     item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
     item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
     item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
-    this.cartItems.set(items);
+    this.updateActiveBill({ cartItems: items });
 
     if (this.selectedItemIndex() === index) {
       this.syncNumpadFromCart();
@@ -371,7 +447,7 @@ export class CounterSaleService {
     item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
     item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
     item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
-    this.cartItems.set(items);
+    this.updateActiveBill({ cartItems: items });
 
     if (this.selectedItemIndex() === index) {
       this.syncNumpadFromCart();
@@ -385,7 +461,7 @@ export class CounterSaleService {
     item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
     item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
     item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
-    this.cartItems.set(items);
+    this.updateActiveBill({ cartItems: items });
 
     if (this.selectedItemIndex() === index) {
       this.syncNumpadFromCart();
@@ -395,19 +471,25 @@ export class CounterSaleService {
   removeItem(index: number) {
     const items = [...this.cartItems()];
     items.splice(index, 1);
-    this.cartItems.set(items);
+    this.updateActiveBill({ cartItems: items });
 
     if (this.selectedItemIndex() === index) {
       this.selectItem(items.length > 0 ? items.length - 1 : null);
     } else if (this.selectedItemIndex() !== null && this.selectedItemIndex()! > index) {
-      this.selectedItemIndex.set(this.selectedItemIndex()! - 1);
+      this.updateActiveBill({ selectedItemIndex: this.selectedItemIndex()! - 1 });
     }
   }
 
   clearCart() {
-    this.cartItems.set([]);
-    this.selectItem(null);
-    this.selectedCustomer.set(null);
+    this.updateActiveBill({
+      cartItems: [],
+      selectedCustomer: null,
+      selectedItemIndex: null,
+      numpadMode: 'quantity',
+      numpadValue: '',
+      numpadShouldReplace: false,
+      numpadHasQuickWeight: false
+    });
   }
 
   saveInvoice(paymentMode: 'cash' | 'online' | 'card', printAutomatically: boolean) {

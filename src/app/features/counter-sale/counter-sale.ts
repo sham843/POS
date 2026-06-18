@@ -12,11 +12,7 @@ import { DbService } from '../../core/services/db.service';
 import { Subject, Subscription, timer } from 'rxjs';
 import { debounce } from 'rxjs/operators';
 
-interface BillTab {
-  id: number;
-  name: string;
-  active: boolean;
-}
+
 
 @Component({
   selector: 'app-counter-sale',
@@ -83,13 +79,11 @@ export class CounterSale implements OnInit, OnDestroy {
     }
   }
 
-  bills = signal<BillTab[]>([
-    { id: 1, name: 'Bill 1', active: true }
-  ]);
+  bills = this.counterSaleService.bills;
+  activeBillId = this.counterSaleService.activeBillId;
 
   searchType = this.counterSaleService.searchType;
   searchQuery = this.counterSaleService.searchQuery;
-  nextBillId = 2;
 
   setSearchType(type: 'product' | 'bill' | 'customer') {
     this.searchType.set(type);
@@ -109,7 +103,7 @@ export class CounterSale implements OnInit, OnDestroy {
   }
 
   clearSelectedCustomer() {
-    this.counterSaleService.selectedCustomer.set(null);
+    this.counterSaleService.updateActiveBill({ selectedCustomer: null });
     this.searchSubject.next('');
   }
 
@@ -137,7 +131,7 @@ export class CounterSale implements OnInit, OnDestroy {
       });
 
       if (found) {
-        this.counterSaleService.selectedCustomer.set(found);
+        this.counterSaleService.updateActiveBill({ selectedCustomer: found });
         this.counterSaleService.updateSearchQuery('');
       } else if (showSnackbar) {
         this.notificationService.showError('Customer not found matching "' + query + '"');
@@ -152,56 +146,15 @@ export class CounterSale implements OnInit, OnDestroy {
   }
 
   addBill() {
-    if (this.bills().length >= 5) {
-      return;
-    }
-
-    const currentBills = this.bills().map(b => ({ ...b, active: false }));
-    const newId = currentBills.length + 1;
-
-    const newBill: BillTab = {
-      id: newId,
-      name: `Bill ${newId}`,
-      active: true
-    };
-    this.bills.set([...currentBills, newBill]);
+    this.counterSaleService.addBill();
   }
 
   selectBill(id: number) {
-    const updatedBills = this.bills().map(b => ({
-      ...b,
-      active: b.id === id
-    }));
-    this.bills.set(updatedBills);
+    this.counterSaleService.selectBill(id);
   }
 
   removeBill(id: number, event: Event) {
     event.stopPropagation();
-
-    let currentBills = this.bills();
-    if (currentBills.length === 1) {
-      // Don't close the last bill, or you can clear it instead.
-      return;
-    }
-
-    const billToRemove = currentBills.find(b => b.id === id);
-    let updatedBills = currentBills.filter(b => b.id !== id);
-
-    // If we closed the active bill, make the last one active
-    if (billToRemove?.active) {
-      updatedBills[updatedBills.length - 1].active = true;
-    }
-
-    // Automatically renumber them without gaps
-    updatedBills = updatedBills.map((b, index) => {
-      const newId = index + 1;
-      return {
-        ...b,
-        id: newId,
-        name: `Bill ${newId}`
-      };
-    });
-
-    this.bills.set(updatedBills);
+    this.counterSaleService.removeBill(id);
   }
 }

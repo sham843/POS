@@ -65,9 +65,9 @@ export class CustomerDrawer implements OnInit {
   selectCustomer(c: any) {
     const current = this.selectedCustomer();
     if (current?.id === c.id) {
-      this.counterSaleService.selectedCustomer.set(null);
+      this.counterSaleService.updateActiveBill({ selectedCustomer: null });
     } else {
-      this.counterSaleService.selectedCustomer.set(c);
+      this.counterSaleService.updateActiveBill({ selectedCustomer: c });
     }
     this.closeDrawer();
   }
