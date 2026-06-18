@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, NgZone, DestroyRef } from '@angular/core';
+import { Injectable, inject, signal, NgZone } from '@angular/core';
 import { ApiService } from './api.service';
 import { Subscription, catchError, of, timeout, switchMap, timer } from 'rxjs';
 
@@ -9,7 +9,6 @@ export class HealthService {
   private apiService = inject(ApiService);
   private ngZone = inject(NgZone);
   private healthSubscription?: Subscription;
-  private isChecking = false; // Prevent overlapping requests
 
   /** true = internet + server both reachable, false = either is down */
   isOnline = signal<boolean>(navigator.onLine);
