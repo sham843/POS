@@ -32,10 +32,14 @@
     </div>
 
     <div class="header-actions">
-      <!-- Online Status -->
-      <div class="status-indicator">
+      <!-- Online/Offline Status -->
+      <div class="status-indicator" [class.offline]="!healthService.isOnline()">
         <span class="status-dot"></span>
-        <span class="status-text">Online</span>
+        @switch (healthService.status()) {
+          @case ('online') { <span class="status-text">Online</span> }
+          @case ('no-internet') { <span class="status-text">No Internet</span> }
+          @case ('server-down') { <span class="status-text">Server Down</span> }
+        }
       </div>
 
       <button class="icon-btn outline-btn"><lucide-icon [img]="Sun"></lucide-icon></button>

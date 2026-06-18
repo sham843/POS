@@ -218,6 +218,7 @@
     background: #F0FDF4;
     border: 1px solid #BBF7D0;
     border-radius: 16px;
+    transition: all 0.3s ease;
 
     .status-dot {
       width: 8px;
@@ -225,6 +226,7 @@
       border-radius: 50%;
       background: #22C55E;
       position: relative;
+      transition: background 0.3s ease;
       
       &::after {
         content: '';
@@ -244,6 +246,25 @@
       font-size: 12px;
       font-weight: 600;
       color: #166534;
+      transition: color 0.3s ease;
+    }
+
+    // Offline state
+    &.offline {
+      background: #FEF2F2;
+      border-color: #FECACA;
+
+      .status-dot {
+        background: #EF4444;
+
+        &::after {
+          background: #EF4444;
+        }
+      }
+
+      .status-text {
+        color: #991B1B;
+      }
     }
   }
 

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { LucideAngularModule, Droplets, PieChart, Monitor, LineChart, Settings, Sun, LogOut } from 'lucide-angular';
+import { HealthService } from '../core/services/health.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -21,6 +22,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   readonly Sun = Sun;
   readonly LogOut = LogOut;
   router = inject(Router);
+  healthService = inject(HealthService);
   currentTime = signal(new Date());
   showProfileMenu = signal(false);
   private timerInterval: any;
@@ -28,13 +30,18 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.timerInterval = setInterval(() => {
       this.currentTime.set(new Date());
-    }, 1000); // Update every second
+    }, 1000);
+
+    // Start health check polling (every 30 seconds)
+    this.healthService.startHealthCheck();
   }
 
   ngOnDestroy() {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
+    // Stop health check polling
+    this.healthService.stopHealthCheck();
   }
 
   toggleProfileMenu() {
