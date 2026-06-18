@@ -82,4 +82,10 @@ export class Payment {
       }
     });
   }
+
+  clearAll() {
+    this.counterSaleService.clearCart();
+    this.counterSaleService.updateSearchQuery('');
+    this.notificationService.showSuccess('All fields and cart cleared');
+  }
 }

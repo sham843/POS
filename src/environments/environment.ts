@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  maxDiscount: 5,
+  maxDiscount: 99,
 };
