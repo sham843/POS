@@ -109,7 +109,7 @@
         color: #9CA3AF !important;
         display: flex !important;
         align-items: center !important;
-        
+
         svg {
           width: 18px !important;
           height: 18px !important;
@@ -252,10 +252,13 @@
 
     &:hover {
       color: #0052CC;
+      transform: scale(1.1);
     }
 
     &.active {
-      color: #1E3A8A;
+      color: #10B981;
+      /* Vibrant Green for selected state */
+      filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3));
     }
   }
 
@@ -424,7 +427,8 @@
 
 @media (max-width: 1200px) {
   .products-grid {
-    grid-template-columns: repeat(4, 1fr); /* 4 columns when stacked horizontally across full width */
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 columns when stacked horizontally across full width */
   }
 }
 
@@ -444,7 +448,7 @@
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .pl-footer {
     flex-direction: column;
     gap: 12px;

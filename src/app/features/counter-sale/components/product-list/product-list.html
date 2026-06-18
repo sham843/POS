@@ -50,7 +50,7 @@
   <div class="products-grid">
     @for (p of paginatedProducts(); track p.id || $index) {
     <div class="prod-card" (click)="addToCart(p)" style="cursor: pointer;" [class.in-cart]="isInCart(p)">
-      <lucide-icon [img]="isInCart(p) ? CheckCircle : PlusCircle" class="cart-icon" [class.active]="isInCart(p)"></lucide-icon>
+      <lucide-icon [img]="isInCart(p) ? CheckCircle : PlusCircle" [strokeWidth]="isInCart(p) ? 3 : 2" class="cart-icon" [class.active]="isInCart(p)"></lucide-icon>
       <div class="prod-image">
         <div class="img-placeholder">
           <img [src]="p.image || p.imageUrl || 'https://placehold.co/100x100?text=No+Image'"
@@ -64,9 +64,9 @@
           <div class="prod-price">₹{{ (p.salePrice || p.mrp || p.rate || p.price || p.saleRate || 0) | number:'1.2-2'
             }}
           </div>
-          <div class="prod-status" [class.in-stock]="p.stockQty === undefined || p.stockQty > 0"
-            [class.low-stock]="p.stockQty !== undefined && p.stockQty <= 0">
-            <span class="dot"></span> {{ (p.stockQty !== undefined && p.stockQty <= 0) ? 'Out' : 'In' }} </div>
+          <div class="prod-status" [class.in-stock]="getStockStatus(p) === 'in-stock'"
+            [class.low-stock]="getStockStatus(p) === 'out-of-stock'">
+            <span class="dot"></span> {{ getStockStatus(p) === 'in-stock' ? 'In' : 'Out' }} 
           </div>
         </div>
       </div>

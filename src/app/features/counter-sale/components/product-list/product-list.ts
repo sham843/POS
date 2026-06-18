@@ -314,4 +314,27 @@ export class ProductList implements OnInit, AfterViewInit {
       ids.has(product.productName || product.materialName || product.name)
     );
   }
+
+  getStockStatus(p: any): 'in-stock' | 'out-of-stock' {
+    debugger
+    let stock = p.availableStock;
+
+    // Fallback to stockQty if availableStock is missing or null
+    if (stock === undefined || stock === null || stock === '') {
+      stock = p.stockQty;
+    }
+
+    // If both are missing/null, assume in-stock (default behavior)
+    if (stock === undefined || stock === null || stock === '') {
+      return 'in-stock';
+    }
+
+    const isAvailable = Number(stock) > 0;
+    // Temporary debug log to trace the exact object and stock value
+    if (p.productId === 968 || p.productId === '968' || String(stock) === '-5') {
+      console.log('Product Check:', p.materialName || p.productName, 'availableStock:', p.availableStock, 'stockQty:', p.stockQty, 'evaluates to > 0:', isAvailable);
+    }
+
+    return isAvailable ? 'in-stock' : 'out-of-stock';
+  }
 }
