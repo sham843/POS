@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, APP_INITIALIZER } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, APP_INITIALIZER, isDevMode } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -10,6 +10,7 @@ import { routes } from './app.routes';
 import { ConfigService } from './core/services/config.service';
 import { cookieInterceptor } from './core/interceptors/cookie.interceptor';
 import { apiInterceptor } from './core/interceptors/api.interceptor';
+import { provideServiceWorker } from '@angular/service-worker';
 
 export function initializeApp(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -38,6 +39,9 @@ export const appConfig: ApplicationConfig = {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useFactory: formFieldOptionsFactory,
       deps: [ConfigService]
-    }
+    }, provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+          })
   ]
 };
