@@ -11,6 +11,8 @@
         <h2 class="dialog-title">Bill Summary ({{ data.cartItems.length }} {{ data.cartItems.length === 1 ? 'Item' :
           'Items' }})</h2>
         <span class="payment-label">{{ paymentLabel }}</span>
+        <span class="customer-name-label" *ngIf="data.customerName"> | Customer: <strong>{{ data.customerName
+            }}</strong></span>
       </div>
     </div>
     <button class="close-btn" (click)="cancel()">
@@ -26,31 +28,31 @@
         <th mat-header-cell *matHeaderCellDef>Item</th>
         <td mat-cell *matCellDef="let row">
           <div class="item-name">{{ row.details }}</div>
-          <div class="item-unit" *ngIf="row.unit">{{ row.unit }}</div>
+          <!-- <div class="item-unit" *ngIf="row.unit">{{ row.unit }}</div> -->
         </td>
       </ng-container>
 
       <ng-container matColumnDef="rate">
-        <th mat-header-cell *matHeaderCellDef class="right">Rate</th>
-        <td mat-cell *matCellDef="let row" class="right">₹{{ row.rate | number:'1.2-2' }}</td>
+        <th mat-header-cell *matHeaderCellDef>Rate</th>
+        <td mat-cell *matCellDef="let row">₹{{ row.rate | number:'1.2-2' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="qty">
-        <th mat-header-cell *matHeaderCellDef class="center">Qty</th>
-        <td mat-cell *matCellDef="let row" class="center">{{ row?.quantity | number:'1.0-3' }} {{row?.unit}}</td>
+        <th mat-header-cell *matHeaderCellDef>Qty</th>
+        <td mat-cell *matCellDef="let row">{{ row?.quantity | number:'1.0-3' }} {{row?.unit}}</td>
       </ng-container>
 
       <ng-container matColumnDef="discount">
-        <th mat-header-cell *matHeaderCellDef class="center">Discount</th>
-        <td mat-cell *matCellDef="let row" class="center">
+        <th mat-header-cell *matHeaderCellDef>Discount</th>
+        <td mat-cell *matCellDef="let row">
           <span class="disc-badge" *ngIf="row.discount > 0">{{ row.discount }}%</span>
           <span class="no-disc" *ngIf="row.discount === 0">—</span>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="sgst">
-        <th mat-header-cell *matHeaderCellDef class="right">SGST</th>
-        <td mat-cell *matCellDef="let row" class="right">
+        <th mat-header-cell *matHeaderCellDef>SGST</th>
+        <td mat-cell *matCellDef="let row">
           <span *ngIf="row.gstAmount > 0">
             ₹{{ (row.gstAmount / 2) | number:'1.2-2' }}
             <span class="tax-pct" style="font-size: 10px; color: var(--pos-text-secondary); margin-left: 2px;">({{
@@ -61,8 +63,8 @@
       </ng-container>
 
       <ng-container matColumnDef="cgst">
-        <th mat-header-cell *matHeaderCellDef class="right">CGST</th>
-        <td mat-cell *matCellDef="let row" class="right">
+        <th mat-header-cell *matHeaderCellDef>CGST</th>
+        <td mat-cell *matCellDef="let row">
           <span *ngIf="row.gstAmount > 0">
             ₹{{ (row.gstAmount / 2) | number:'1.2-2' }}
             <span class="tax-pct" style="font-size: 10px; color: var(--pos-text-secondary); margin-left: 2px;">({{
@@ -73,13 +75,13 @@
       </ng-container>
 
       <ng-container matColumnDef="amount">
-        <th mat-header-cell *matHeaderCellDef class="right">Amount</th>
-        <td mat-cell *matCellDef="let row" class="right">₹{{ row.netAmount | number:'1.2-2' }}</td>
+        <th mat-header-cell *matHeaderCellDef>Amount</th>
+        <td mat-cell *matCellDef="let row">₹{{ row.netAmount | number:'1.2-2' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="total">
-        <th mat-header-cell *matHeaderCellDef class="right">Total</th>
-        <td mat-cell *matCellDef="let row" class="right amount-cell">₹{{ row.total | number:'1.2-2' }}</td>
+        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <td mat-cell *matCellDef="let row"><strong>₹{{ row.total | number:'1.2-2' }}</strong></td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>

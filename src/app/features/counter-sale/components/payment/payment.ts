@@ -59,6 +59,7 @@ export class Payment {
     const ref = this.dialog.open(BillingDialog, {
       data: {
         paymentMode,
+        customerName: this.counterSaleService.selectedCustomer()?.customerName || this.counterSaleService.selectedCustomer()?.name || 'Daily Cash Counter Party',
         cartItems: this.counterSaleService.cartItems(),
         subTotal: this.counterSaleService.subTotal(),
         totalDiscount: this.counterSaleService.totalDiscount(),
