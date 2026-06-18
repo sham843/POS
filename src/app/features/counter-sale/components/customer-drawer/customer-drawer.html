@@ -46,7 +46,7 @@
             <tr [class.selected-row]="selectedCustomer()?.id === c.id">
               <td class="col-name">
                 <div class="name-cell">
-                  <div class="avatar">{{ (c.customerName || c.name || '?')[0].toUpperCase() }}</div>
+                  <div class="avatar">{{ getAvatarInitial(c) }}</div>
                   <div class="name-info">
                     <span class="name-text">{{ c.customerName || c.name || '—' }}</span>
                     @if (c.mobileNo || c.phone) {

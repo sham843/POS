@@ -1,8 +1,10 @@
-import { Component, Input, Output, EventEmitter, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Search, X, CheckCircle, Users, UserCheck } from 'lucide-angular';
 import { DbService } from '../../../../core/services/db.service';
 import { CounterSaleService } from '../../../../core/services/counter-sale.service';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customer-drawer',
@@ -12,7 +14,7 @@ import { CounterSaleService } from '../../../../core/services/counter-sale.servi
   styleUrl: './customer-drawer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CustomerDrawer implements OnInit {
+export class CustomerDrawer implements OnInit, OnDestroy {
   private dbService = inject(DbService);
   private counterSaleService = inject(CounterSaleService);
 
@@ -22,6 +24,9 @@ export class CustomerDrawer implements OnInit {
   allCustomers = signal<any[]>([]);
   customerSearchQuery = signal<string>('');
   selectedCustomer = this.counterSaleService.selectedCustomer;
+
+  private searchSubject = new Subject<string>();
+  private searchSubscription?: Subscription;
 
   // Icons
   readonly SearchIcon = Search;
@@ -34,15 +39,28 @@ export class CustomerDrawer implements OnInit {
     const query = this.customerSearchQuery().toLowerCase().trim();
     const list = this.allCustomers();
     if (!query) return list;
-    return list.filter(c => {
+    const result = list.filter(c => {
       const name = (c.customerName || c.name || '').toLowerCase();
       const phone = (c.mobileNo || c.phone || '').toLowerCase();
       return name.includes(query) || phone.includes(query);
     });
+    // DOM Limiting: Slice to 100 rows to prevent lag
+    return result.slice(0, 100);
   });
 
   ngOnInit() {
     this.loadCustomers();
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(300)
+    ).subscribe(value => {
+      this.customerSearchQuery.set(value);
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
   }
 
   async loadCustomers() {
@@ -56,11 +74,17 @@ export class CustomerDrawer implements OnInit {
 
   onCustomerSearch(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.customerSearchQuery.set(input.value);
+    this.searchSubject.next(input.value);
   }
 
   clearSearch() {
     this.customerSearchQuery.set('');
+    this.searchSubject.next('');
+  }
+
+  getAvatarInitial(c: any): string {
+    const name = c.customerName || c.name || '?';
+    return name[0].toUpperCase();
   }
 
   selectCustomer(c: any) {
