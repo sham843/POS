@@ -138,6 +138,12 @@
     transition: transform 0.1s;
     position: relative;
     flex: 1;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(100%);
+    }
     
     .card-content {
       display: flex;
