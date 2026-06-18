@@ -310,7 +310,7 @@ export class CounterSaleService {
         gst: gst,
         gstAmount: gstAmount,
         total: Math.round((netAmount + gstAmount) * 100) / 100,
-        unit: product.unit || product.uom || product.unitName || ''
+        unit: product.unit || product.uom || product.unitName || product.mensurationUnit || ''
       };
       items.push(newItem);
       this.cartItems.set(items);

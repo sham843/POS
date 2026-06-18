@@ -5,7 +5,7 @@
 .billing-dialog {
   display: flex;
   flex-direction: column;
-  width: 580px;
+  width: 760px;
   max-width: 95vw;
   max-height: 90vh;
   background: var(--pos-card-bg);
@@ -116,10 +116,6 @@
     z-index: 2;
   }
 
-  .mat-mdc-row {
-    height: 30px;
-    min-height: 30px;
-  }
 
   th.mat-mdc-header-cell {
     font-size: 11px;
@@ -133,6 +129,7 @@
     &:first-child {
       padding-left: 22px;
     }
+
     &:last-child {
       padding-right: 22px;
     }
@@ -147,13 +144,10 @@
     &:first-child {
       padding-left: 22px;
     }
+
     &:last-child {
       padding-right: 22px;
     }
-  }
-
-  .right {
-    text-align: right;
   }
 
   .center {
@@ -200,14 +194,17 @@
   font-size: 13px;
 }
 
-// ─── SUMMARY ──────────────────────────────────────────────────────
 .summary-section {
-  padding: 14px 22px;
+  padding: 14px 0;
   background: var(--pos-card-bg);
-  // border-bottom: 1px solid var(--pos-card-border);
   display: flex;
   flex-direction: column;
   gap: 6px;
+  align-self: flex-end;
+  width: 320px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  margin-right: 22px;
 
   mat-divider {
     margin: 4px 0;

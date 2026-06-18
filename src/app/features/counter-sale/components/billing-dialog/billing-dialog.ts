@@ -45,7 +45,7 @@ export class BillingDialog {
   readonly CheckCircle = CheckCircle;
 
   displayedColumns = ['item', 'rate', 'qty', 'discount', 'sgst', 'cgst', 'amount', 'total'];
-  printAutomatically = true;
+  printAutomatically = false;
 
   // Split GST equally as SGST/CGST (intra-state), or full IGST (inter-state)
   // Defaulting to intra-state split
@@ -62,7 +62,7 @@ export class BillingDialog {
   constructor(
     public dialogRef: MatDialogRef<BillingDialog>,
     @Inject(MAT_DIALOG_DATA) public data: BillingDialogData
-  ) {}
+  ) { }
 
   confirm() {
     this.dialogRef.close({
