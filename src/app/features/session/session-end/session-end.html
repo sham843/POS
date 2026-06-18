@@ -12,67 +12,75 @@
       </div>
     </mat-card-header>
 
-    <mat-card-content>
-      <!-- User Info -->
-      <div class="info-section">
-        <div class="info-row">
-          <span class="label">Cashier</span>
-          <span class="value">{{ sessionData.userName }}</span>
+    <mat-card-content class="horizontal-content">
+      <!-- Left Column -->
+      <div class="left-col">
+        <!-- User Info -->
+        <div class="info-section">
+          <div class="info-row">
+            <span class="label">Cashier</span>
+            <span class="value">{{ sessionData.userName }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Shift Started</span>
+            <span class="value">{{ sessionData.startTime | date:'dd-MM-yyyy, hh:mm a' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Shift Ended</span>
+            <span class="value">{{ sessionData.endTime | date:'dd-MM-yyyy, hh:mm a' }}</span>
+          </div>
         </div>
-        <div class="info-row">
-          <span class="label">Shift Started</span>
-          <span class="value">{{ sessionData.startTime | date:'short' }}</span>
-        </div>
-        <div class="info-row">
-          <span class="label">Shift Ended</span>
-          <span class="value">{{ sessionData.endTime | date:'short' }}</span>
+
+        <mat-divider></mat-divider>
+
+        <!-- Sales Summary -->
+        <div class="summary-section">
+          <h3>Sales Summary</h3>
+          <div class="summary-grid">
+            <div class="summary-box box-blue">
+              <lucide-icon [img]="ReceiptText" class="text-blue"></lucide-icon>
+              <div class="s-label">Total Bills</div>
+              <div class="s-value">{{ sessionData.totalBills }}</div>
+            </div>
+            <div class="summary-box box-green">
+              <lucide-icon [img]="Banknote" class="text-green"></lucide-icon>
+              <div class="s-label">Total Sales</div>
+              <div class="s-value">₹{{ sessionData.totalSales | number:'1.2-2' }}</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <mat-divider></mat-divider>
-
-      <!-- Sales Summary -->
-      <div class="summary-section">
-        <h3>Sales Summary</h3>
-        <div class="summary-grid">
-          <div class="summary-box">
-            <lucide-icon [img]="ReceiptText" class="text-blue"></lucide-icon>
-            <div class="s-label">Total Bills</div>
-            <div class="s-value">{{ sessionData.totalBills }}</div>
-          </div>
-          <div class="summary-box">
-            <lucide-icon [img]="Banknote" class="text-green"></lucide-icon>
-            <div class="s-label">Total Sales</div>
-            <div class="s-value">₹{{ sessionData.totalSales | number:'1.2-2' }}</div>
-          </div>
-        </div>
+      <div class="divider-col">
+        <mat-divider [vertical]="true"></mat-divider>
       </div>
 
-      <mat-divider></mat-divider>
-
-      <!-- Payment Breakdown -->
-      <div class="payment-breakdown">
-        <h3>Payment Breakdown</h3>
-        <div class="pay-row">
-          <div class="pay-type">
-            <lucide-icon [img]="Banknote" class="cash-icon"></lucide-icon>
-            <span>Cash</span>
+      <!-- Right Column -->
+      <div class="right-col">
+        <!-- Payment Breakdown -->
+        <div class="payment-breakdown">
+          <h3>Payment Breakdown</h3>
+          <div class="pay-row">
+            <div class="pay-type">
+              <lucide-icon [img]="Banknote" class="cash-icon"></lucide-icon>
+              <span>Cash</span>
+            </div>
+            <div class="pay-amount">₹{{ sessionData.payments.cash | number:'1.2-2' }}</div>
           </div>
-          <div class="pay-amount">₹{{ sessionData.payments.cash | number:'1.2-2' }}</div>
-        </div>
-        <div class="pay-row">
-          <div class="pay-type">
-            <lucide-icon [img]="ScanBarcode" class="collection-icon icon-purple"></lucide-icon>
-            <span>UPI</span>
+          <div class="pay-row">
+            <div class="pay-type">
+              <lucide-icon [img]="ScanBarcode" class="collection-icon icon-purple"></lucide-icon>
+              <span>Online</span>
+            </div>
+            <div class="pay-amount">₹{{ sessionData.payments.upi | number:'1.2-2' }}</div>
           </div>
-          <div class="pay-amount">₹{{ sessionData.payments.upi | number:'1.2-2' }}</div>
-        </div>
-        <div class="pay-row">
-          <div class="pay-type">
-            <lucide-icon [img]="CreditCard" class="card-icon"></lucide-icon>
-            <span>Card</span>
+          <div class="pay-row">
+            <div class="pay-type">
+              <lucide-icon [img]="CreditCard" class="card-icon"></lucide-icon>
+              <span>Credit/Coupon </span>
+            </div>
+            <div class="pay-amount">₹{{ sessionData.payments.card | number:'1.2-2' }}</div>
           </div>
-          <div class="pay-amount">₹{{ sessionData.payments.card | number:'1.2-2' }}</div>
         </div>
       </div>
     </mat-card-content>

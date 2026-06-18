@@ -44,7 +44,11 @@ export class SessionEnd {
   }
 
   confirmEndSession() {
-    // Perform logout logic and navigate to login
+    // Clear all storage
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Navigate to login
     this.router.navigate(['/login']);
   }
 }

@@ -10,7 +10,7 @@
 
 .session-card {
   width: 100%;
-  max-width: 480px;
+  max-width: 800px;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -62,6 +62,24 @@
 
   mat-card-content {
     padding: 0 24px;
+
+    &.horizontal-content {
+      display: flex;
+      flex-direction: row;
+      gap: 32px;
+      padding: 16px 24px;
+
+      .left-col, .right-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .divider-col {
+        display: flex;
+        align-items: stretch;
+      }
+    }
 
     .info-section {
       padding: 16px 0;
@@ -118,6 +136,16 @@
           align-items: flex-start;
           gap: 8px;
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+          &.box-blue {
+            background-color: #EFF6FF;
+            border-color: #BFDBFE;
+          }
+
+          &.box-green {
+            background-color: #ECFDF5;
+            border-color: #A7F3D0;
+          }
 
           lucide-icon {
             width: 24px;
@@ -224,7 +252,7 @@
 }
 
 /* Responsiveness */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .session-card {
     border-radius: 12px;
     
@@ -234,6 +262,15 @@
 
     mat-card-content {
       padding: 0 20px;
+
+      &.horizontal-content {
+        flex-direction: column;
+        gap: 16px;
+
+        .divider-col {
+          display: none; /* hide vertical divider on mobile */
+        }
+      }
 
       .summary-section .summary-grid {
         grid-template-columns: 1fr;
