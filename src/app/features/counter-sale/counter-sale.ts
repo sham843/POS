@@ -69,7 +69,7 @@ export class CounterSale implements OnInit, OnDestroy {
       debounce(() => timer(this.searchType() === 'product' ? 800 : 800))
     ).subscribe(value => {
       if (this.searchType() === 'customer' && value.trim().length > 0) {
-        this.onSearchEnter(false); // pass false to avoid spamming snackbars while typing
+        this.onSearchEnter(true); // show snackbar after debounce if not found
       }
     });
   }

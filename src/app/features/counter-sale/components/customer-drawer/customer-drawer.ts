@@ -73,6 +73,7 @@ export class CustomerDrawer implements OnInit {
   }
 
   closeDrawer() {
+    this.clearSearch();
     this.close.emit();
   }
 }

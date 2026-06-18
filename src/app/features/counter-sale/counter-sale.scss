@@ -39,7 +39,9 @@
   .search-box {
     display: flex;
     flex: 1;
-    min-width: 220px;
+    min-width: 260px;
+    max-width: 400px;
+    width: fit-content;
     align-items: center;
     background: #ffffff;
     border: 1px solid #D1D5DB;
