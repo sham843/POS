@@ -1,0 +1,23 @@
+<div class="confirm-dialog">
+  <div class="dialog-icon-container" [ngClass]="data.type">
+    <lucide-icon [img]="CheckCircle" *ngIf="data.type === 'success'"></lucide-icon>
+    <lucide-icon [img]="AlertTriangle" *ngIf="data.type === 'warning'"></lucide-icon>
+    <lucide-icon [img]="XCircle" *ngIf="data.type === 'error'"></lucide-icon>
+    <lucide-icon [img]="Info" *ngIf="data.type === 'info'"></lucide-icon>
+  </div>
+
+  <h2 class="dialog-title" mat-dialog-title>{{ data.title }}</h2>
+  
+  <div class="dialog-message" mat-dialog-content>
+    {{ data.message }}
+  </div>
+
+  <div class="dialog-actions" mat-dialog-actions>
+    <button class="action-btn cancel-btn" mat-button *ngIf="!data.hideCancel" (click)="cancel()">
+      {{ data.cancelText }}
+    </button>
+    <button class="action-btn confirm-btn" [ngClass]="data.type" mat-flat-button (click)="confirm()">
+      {{ data.confirmText }}
+    </button>
+  </div>
+</div>

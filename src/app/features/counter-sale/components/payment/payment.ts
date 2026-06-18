@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CounterSaleService } from '../../../../core/services/counter-sale.service';
 import { BillingDialog } from '../billing-dialog/billing-dialog';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { DialogService } from '../../../../core/services/dialog.service';
 
 @Component({
   selector: 'app-payment',
@@ -21,6 +22,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 export class Payment {
   counterSaleService = inject(CounterSaleService);
   notificationService = inject(NotificationService);
+  dialogService = inject(DialogService);
   private dialog = inject(MatDialog);
 
   // Expose icons to template
@@ -78,8 +80,18 @@ export class Payment {
       if (result?.confirmed) {
         const mode = result.paymentMode === 'cash' ? 'Cash' :
                      result.paymentMode === 'online' ? 'Online' : 'Card';
-        this.notificationService.showSuccess(`Payment of ₹${this.counterSaleService.totalPayable()} received via ${mode}`);
+        
+        const amount = this.counterSaleService.totalPayable();
         this.counterSaleService.clearCart();
+        
+        // Show success dialog
+        this.dialogService.openConfirmDialog({
+          title: 'Bill Generated Successfully!',
+          message: `Payment of ₹${amount} received via ${mode}.`,
+          type: 'success',
+          confirmText: 'OK',
+          hideCancel: true
+        });
       }
     });
   }

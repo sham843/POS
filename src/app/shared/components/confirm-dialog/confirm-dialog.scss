@@ -1,0 +1,94 @@
+.confirm-dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 24px;
+  background: var(--pos-card-bg);
+
+  .dialog-icon-container {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+
+    lucide-icon {
+      width: 32px;
+      height: 32px;
+    }
+
+    &.success {
+      background: #D1FAE5;
+      color: #059669;
+    }
+    &.warning {
+      background: #FEF3C7;
+      color: #D97706;
+    }
+    &.error {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+    &.info {
+      background: #DBEAFE;
+      color: #2563EB;
+    }
+  }
+
+  .dialog-title {
+    margin: 0 0 12px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--pos-text-primary);
+  }
+
+  .dialog-message {
+    font-size: 15px;
+    color: var(--pos-text-secondary);
+    line-height: 1.5;
+    margin: 0 0 32px;
+    padding: 0;
+  }
+
+  .dialog-actions {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+
+    .action-btn {
+      flex: 1;
+      height: 48px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .cancel-btn {
+      background: var(--pos-bg);
+      color: var(--pos-text-secondary);
+      &:hover {
+        background: #E5E7EB;
+        color: var(--pos-text-primary);
+      }
+    }
+
+    .confirm-btn {
+      color: #fff;
+      &.success { background: #10B981; }
+      &.warning { background: #F59E0B; }
+      &.error { background: #EF4444; }
+      &.info { background: var(--pos-accent); }
+
+      &:hover {
+        filter: brightness(0.9);
+      }
+    }
+  }
+}
