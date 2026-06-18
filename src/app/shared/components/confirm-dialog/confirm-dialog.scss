@@ -3,21 +3,21 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 32px 24px;
+  padding: 24px 20px;
   background: var(--pos-card-bg);
 
   .dialog-icon-container {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 
     lucide-icon {
-      width: 32px;
-      height: 32px;
+      width: 24px;
+      height: 24px;
     }
 
     &.success {
@@ -39,17 +39,17 @@
   }
 
   .dialog-title {
-    margin: 0 0 12px;
-    font-size: 22px;
+    margin: 0 0 8px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--pos-text-primary);
   }
 
   .dialog-message {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--pos-text-secondary);
     line-height: 1.5;
-    margin: 0 0 32px;
+    margin: 0 0 24px;
     padding: 0;
   }
 
@@ -63,9 +63,9 @@
 
     .action-btn {
       flex: 1;
-      height: 48px;
-      border-radius: 12px;
-      font-size: 15px;
+      height: 40px;
+      border-radius: 8px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.5px;
     }

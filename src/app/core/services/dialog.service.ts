@@ -12,7 +12,7 @@ export class DialogService {
     return this.dialog.open(ConfirmDialog, {
       data,
       panelClass: 'confirm-dialog-panel',
-      width: '400px',
+      width: '320px',
       disableClose: true
     }).afterClosed();
   }

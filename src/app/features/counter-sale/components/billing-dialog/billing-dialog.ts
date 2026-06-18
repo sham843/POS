@@ -66,6 +66,8 @@ export class BillingDialog {
   ) { }
 
   confirm() {
+    this.processPayment(this.data.paymentMode);
+
     this.dialogRef.close({
       confirmed: true,
       paymentMode: this.data.paymentMode,
@@ -75,5 +77,15 @@ export class BillingDialog {
 
   cancel() {
     this.dialogRef.close(null);
+  }
+
+  private processPayment(mode: 'cash' | 'online' | 'card') {
+    if (mode === 'cash') {
+      // Handle cash
+    } else if (mode === 'online') {
+      // Handle online
+    } else if (mode === 'card') {
+      // Handle card
+    }
   }
 }
