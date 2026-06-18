@@ -16,9 +16,11 @@
       </div>
 
       <!-- API Error Message -->
-      <div *ngIf="errorMessage" class="alert alert-danger py-2 mb-4 d-flex align-items-center" role="alert">
-        <span class="fs-sm">{{ errorMessage }}</span>
+      @if (errorMessage()) {
+      <div class="alert alert-danger py-2 mb-4 d-flex align-items-center" role="alert">
+        <span class="fs-sm">{{ errorMessage() }}</span>
       </div>
+      }
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="d-flex flex-column">
 
@@ -26,9 +28,11 @@
         <mat-form-field [appearance]="appearance" class="w-100">
           <mat-label>{{ 'LOGIN.USERNAME' | translate }}</mat-label>
           <input matInput type="text" formControlName="username">
-          <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
+          @if (loginForm.get('username')?.hasError('required')) {
+          <mat-error>
             Username is required
           </mat-error>
+          }
         </mat-form-field>
 
         <!-- Password Input -->
@@ -38,12 +42,16 @@
           <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button" tabindex="-1">
             <lucide-icon [img]="hidePassword ? EyeOff : Eye"></lucide-icon>
           </button>
-          <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+          @if (loginForm.get('password')?.hasError('required')) {
+          <mat-error>
             Password is required
           </mat-error>
-          <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+          }
+          @if (loginForm.get('password')?.hasError('minlength')) {
+          <mat-error>
             Password must be at least 6 characters
           </mat-error>
+          }
         </mat-form-field>
 
         <!-- Remember Me & Forgot Password -->

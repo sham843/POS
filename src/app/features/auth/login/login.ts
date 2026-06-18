@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -29,12 +29,13 @@ import { LoaderService } from '../../../core/services/loader.service';
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Login implements OnInit {
   loginForm: FormGroup;
   appearance: any = 'outline';
   hidePassword = true;
-  errorMessage = '';
+  errorMessage = signal('');
 
   publickey: string = '';
 
@@ -86,7 +87,7 @@ export class Login implements OnInit {
 
   async onSubmit() {
     if (this.loginForm.valid) {
-      this.errorMessage = '';
+      this.errorMessage.set('');
       this.loaderService.show(); // Show loader during encryption and login
 
       try {
@@ -103,19 +104,19 @@ export class Login implements OnInit {
 
             localStorage.setItem('tk_9xf1BzX', token);
             localStorage.setItem('UserDetails', data);
-            this.errorMessage = '';
+            this.errorMessage.set('');
             this.router.navigate(['/session-start']);
 
             this.loaderService.hide(); // Hide loader on success
           },
           error: (error) => {
             this.loaderService.hide(); // Hide loader on error
-            this.errorMessage = error?.error?.message || 'Login failed. Please check your credentials and try again.';
+            this.errorMessage.set(error?.error?.message || 'Login failed. Please check your credentials and try again.');
           }
         });
       } catch (e) {
         this.loaderService.hide(); // Ensure loader is hidden on unexpected encryption error
-        this.errorMessage = 'An error occurred while encrypting credentials.';
+        this.errorMessage.set('An error occurred while encrypting credentials.');
       }
     } else {
       this.loginForm.markAllAsTouched();

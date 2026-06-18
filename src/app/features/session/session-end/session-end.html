@@ -19,15 +19,15 @@
         <div class="info-section">
           <div class="info-row">
             <span class="label">Cashier</span>
-            <span class="value">{{ sessionData.userName }}</span>
+            <span class="value">{{ sessionData().userName }}</span>
           </div>
           <div class="info-row">
             <span class="label">Shift Started</span>
-            <span class="value">{{ sessionData.startTime | date:'dd-MM-yyyy, hh:mm a' }}</span>
+            <span class="value">{{ sessionData().startTime | date:'dd-MM-yyyy, hh:mm a' }}</span>
           </div>
           <div class="info-row">
             <span class="label">Shift Ended</span>
-            <span class="value">{{ sessionData.endTime | date:'dd-MM-yyyy, hh:mm a' }}</span>
+            <span class="value">{{ sessionData().endTime | date:'dd-MM-yyyy, hh:mm a' }}</span>
           </div>
         </div>
 
@@ -40,12 +40,12 @@
             <div class="summary-box box-blue">
               <lucide-icon [img]="ReceiptText" class="text-blue"></lucide-icon>
               <div class="s-label">Total Bills</div>
-              <div class="s-value">{{ sessionData.totalBills }}</div>
+              <div class="s-value">{{ sessionData().totalBills }}</div>
             </div>
             <div class="summary-box box-green">
               <lucide-icon [img]="Banknote" class="text-green"></lucide-icon>
               <div class="s-label">Total Sales</div>
-              <div class="s-value">₹{{ sessionData.totalSales | number:'1.2-2' }}</div>
+              <div class="s-value">₹{{ sessionData().totalSales | number:'1.2-2' }}</div>
             </div>
           </div>
         </div>
@@ -65,21 +65,21 @@
               <lucide-icon [img]="Banknote" class="cash-icon"></lucide-icon>
               <span>Cash</span>
             </div>
-            <div class="pay-amount">₹{{ sessionData.payments.cash | number:'1.2-2' }}</div>
+            <div class="pay-amount">₹{{ sessionData().payments.cash | number:'1.2-2' }}</div>
           </div>
           <div class="pay-row">
             <div class="pay-type">
               <lucide-icon [img]="ScanBarcode" class="collection-icon icon-purple"></lucide-icon>
               <span>Online</span>
             </div>
-            <div class="pay-amount">₹{{ sessionData.payments.upi | number:'1.2-2' }}</div>
+            <div class="pay-amount">₹{{ sessionData().payments.upi | number:'1.2-2' }}</div>
           </div>
           <div class="pay-row">
             <div class="pay-type">
               <lucide-icon [img]="CreditCard" class="card-icon"></lucide-icon>
               <span>Credit/Coupon </span>
             </div>
-            <div class="pay-amount">₹{{ sessionData.payments.card | number:'1.2-2' }}</div>
+            <div class="pay-amount">₹{{ sessionData().payments.card | number:'1.2-2' }}</div>
           </div>
         </div>
       </div>

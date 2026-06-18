@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule, LogOut, Phone, Wallet, Receipt, Banknote, Calendar, Clock } from 'lucide-angular';
 import { Router } from '@angular/router';
@@ -12,6 +12,7 @@ import { MasterDataService } from '../../../core/services/master-data.service';
   standalone: true,
   templateUrl: './session-start.html',
   styleUrl: './session-start.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SessionStart {
   private masterDataService = inject(MasterDataService);

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,6 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
   standalone: true,
   templateUrl: './session-end.html',
   styleUrl: './session-end.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SessionEnd {
   router = inject(Router);
@@ -26,7 +27,7 @@ export class SessionEnd {
   readonly LogOut = LogOut;
 
   // Mock data for the session summary
-  sessionData = {
+  sessionData = signal({
     userName: 'Prashant Varma',
     startTime: new Date(new Date().setHours(new Date().getHours() - 8)), // 8 hours ago
     endTime: new Date(),
@@ -37,7 +38,7 @@ export class SessionEnd {
       upi: 2500.00,
       card: 220.00
     }
-  };
+  });
 
   goBack() {
     this.router.navigate(['/counter-sale']);
