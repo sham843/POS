@@ -3,6 +3,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { NotificationService } from './notification.service';
+import { ApiService } from './api.service';
+import { DialogService } from './dialog.service';
 
 export interface CartItem {
   product: any;
@@ -23,6 +25,9 @@ export interface CartItem {
 })
 export class CounterSaleService {
   notificationService = inject(NotificationService);
+  apiService = inject(ApiService);
+  dialogService = inject(DialogService);
+
   searchQuery = signal<string>('');
   searchType = signal<'product' | 'bill' | 'customer'>('product');
   selectedCustomer = signal<any | null>(null);
@@ -67,8 +72,8 @@ export class CounterSaleService {
           this.notificationService.showError(`Amount cannot be zero.`);
           // Revert amount to rate * quantity as a fallback
           const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
-          item.amount = isExcluded 
-            ? Math.round((item.rate * item.quantity) * 100) / 100 
+          item.amount = isExcluded
+            ? Math.round((item.rate * item.quantity) * 100) / 100
             : Math.round(((item.rate * item.quantity) / (1 + item.gst / 100)) * 100) / 100;
           item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
           item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
@@ -93,8 +98,8 @@ export class CounterSaleService {
         if (item.netAmount <= 0) {
           this.notificationService.showError(`Amount cannot be zero.`);
           const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
-          item.amount = isExcluded 
-            ? Math.round((item.rate * item.quantity) * 100) / 100 
+          item.amount = isExcluded
+            ? Math.round((item.rate * item.quantity) * 100) / 100
             : Math.round(((item.rate * item.quantity) / (1 + item.gst / 100)) * 100) / 100;
           item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
           item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
@@ -246,8 +251,8 @@ export class CounterSaleService {
     if (mode === 'quantity') {
       item.quantity = valNum;
       const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
-      item.amount = isExcluded 
-        ? Math.round((item.rate * item.quantity) * 100) / 100 
+      item.amount = isExcluded
+        ? Math.round((item.rate * item.quantity) * 100) / 100
         : Math.round(((item.rate * item.quantity) / (1 + item.gst / 100)) * 100) / 100;
     } else if (mode === 'amount') {
       if (item.product?.mensurationUnit === 'Nos') {
@@ -295,8 +300,8 @@ export class CounterSaleService {
       const rate = product.salePrice || product.mrp || product.rate || product.price || product.saleRate || 0;
       const gst = product.gst || product.taxPercentage || 0;
       const isExcluded = (product.computationMethod || '').toUpperCase().includes('EXCLUDED');
-      const amount = isExcluded 
-        ? Math.round((rate * 1) * 100) / 100 
+      const amount = isExcluded
+        ? Math.round((rate * 1) * 100) / 100
         : Math.round(((rate * 1) / (1 + gst / 100)) * 100) / 100;
       const netAmount = amount;
       const gstAmount = Math.round((netAmount * gst / 100) * 100) / 100;
@@ -328,8 +333,8 @@ export class CounterSaleService {
     const item = items[index];
     item.quantity = quantity;
     const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
-    item.amount = isExcluded 
-      ? Math.round((item.rate * item.quantity) * 100) / 100 
+    item.amount = isExcluded
+      ? Math.round((item.rate * item.quantity) * 100) / 100
       : Math.round(((item.rate * item.quantity) / (1 + item.gst / 100)) * 100) / 100;
     item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
     item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
@@ -403,5 +408,192 @@ export class CounterSaleService {
     this.cartItems.set([]);
     this.selectItem(null);
     this.selectedCustomer.set(null);
+  }
+
+  saveInvoice(paymentMode: 'cash' | 'online' | 'card', printAutomatically: boolean) {
+    if (this.cartItems().length === 0 || this.totalPayable() === 0) {
+      this.notificationService.showError("The invoice total is ₹0. Please select a product before payment.");
+      return;
+    }
+
+    const invalidItems = this.cartItems().filter(item => item.quantity <= 0);
+    if (invalidItems.length > 0) {
+      this.notificationService.showError("One or more items have quantity 0. Please correct them before proceeding.");
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const userDetailsStr = localStorage.getItem('UserDetails');
+    let userDetails: any = null;
+    try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) { }
+
+    const unitId = userDetails?.unitid || userDetails?.unitId || 0;
+    const userId = userDetails?.id || 0;
+    const organizationId = userDetails?.organizationId || 0;
+
+    // Determine counterSaleTypeId and Mode properties
+    let counterSaleTypeId = 1; // 1=Cash
+    let modeOfPaymentId = 1;
+    let modeString = "Cash";
+    let isPaymentReceived = 1;
+
+    if (paymentMode === 'online') {
+      counterSaleTypeId = 2;
+      modeOfPaymentId = 4;
+      modeString = "Online";
+    } else if (paymentMode === 'card') {
+      const billingType = this.selectedCustomer()?.billingType?.toLowerCase();
+      counterSaleTypeId = billingType === 'prepaid' ? 4 : 3;
+      modeOfPaymentId = 0;
+      modeString = "Credit/Coupon";
+      isPaymentReceived = 0;
+    }
+
+    const customer = this.selectedCustomer();
+    const partyId = customer ? (customer.id || 0) : 0;
+    const companyLedgerId = 0; // Should map properly if exists
+    const bankCashLedger = paymentMode === 'cash' ? 0 : 0; // Or whatever selected bank
+
+    const invoiceDetails = this.cartItems().map(item => {
+      // Assuming item.discount is a percentage. For flat rupee amount logic, you'd adapt here.
+      const discountAmount = parseFloat((item.amount * item.discount / 100).toFixed(2));
+      const gstonAmount = parseFloat(((item.quantity * item.rate) - (discountAmount + item.gstAmount)).toFixed(2));
+
+      return {
+        id: 0,
+        dcDetailsId: 0,
+        invoiceId: 0,
+        materialId: item.product?.id || item.product?.code || 0,
+        materialUnitId: item.product?.unitId || item.product?.materialUnitId || 0,
+        quantity: item.quantity,
+        rate: item.rate,
+        discount: item.discount,
+        total: item.total,
+        purchaseOrderId: 0,
+        discountAmount: discountAmount,
+        gstonAmount: gstonAmount,
+        igst: "0.00", // Ignoring IGST for now as per ref default MH state
+        cgst: (item.gstAmount / 2).toFixed(2),
+        sgst: (item.gstAmount / 2).toFixed(2),
+        subTotal: item.amount.toFixed(2),
+        unitId: unitId,
+        serverId: 0,
+        StockHistoryLocalId: 0
+      };
+    });
+
+    const payload = {
+      sessionId: null,
+      createdDate: now,
+      modifiedDate: now,
+      isDeleted: false,
+      id: 0,
+      invoiceDate: now,
+      partyId: partyId,
+      companyLedgerId: companyLedgerId,
+      createdBy: userId,
+      modifiedBy: userId,
+      voucherTypeId: 1,
+      discountAmount: this.totalDiscount().toFixed(2),
+      totalAmount: this.subTotal().toFixed(2),
+      roundOff: this.roundOff().toFixed(2),
+      paymentNote: "",
+      deliveryNote: "",
+      deliveryNoteDate: "",
+      supplierBillNo: "",
+      supplierBillDate: "",
+      supplerRefNo: "",
+      otherRefNo: "",
+      buyerPONumber: "",
+      buyerPODate: "",
+      dispatchDetails: "",
+      termsOfDelivery: "",
+      purchaseOrderNo: "",
+      purchaseOrderDate: "",
+      isBillPaid: 1,
+      invoiceType: 1,
+      purchaseOrderId: 0,
+      isTallyExport: 0,
+      returnInvoiceId: 0,
+      counterNo: 0,
+      counterSaleTypeId: counterSaleTypeId,
+      isCounterSale: 1,
+      unitId: unitId,
+      serverId: 0,
+      chalanNo: 0,
+      invoiceNo: "",
+      fYearId: 0,
+      igst: "0.00",
+      cgst: (this.totalGst() / 2).toFixed(2),
+      sgst: (this.totalGst() / 2).toFixed(2),
+      stateFlag: 1,
+      isPaymentReceived: isPaymentReceived,
+      isPrint: printAutomatically,
+      spinvoicedetailsModel: invoiceDetails,
+      ledgerTransaction: {
+        id: 0,
+        ledger1: partyId,
+        ledger2: companyLedgerId,
+        bankCashLedger: bankCashLedger,
+        credit: this.totalPayable(),
+        debit: this.totalPayable(),
+        ledgerAmount: this.subTotal().toFixed(2),
+        transactionDate: now,
+        modeOfPaymentId: modeOfPaymentId,
+        modeOfPayment: modeString,
+        transactionTypeId: 0,
+        transactionType: "",
+        transactionId: 0,
+        transactionNo: "",
+        narration: modeString + " Payment",
+        referenceId: 0,
+        groupId: 0,
+        chequeDate: now,
+        isTallyExport: 0,
+        tallyReferenceId: 0,
+        particularsText: modeString + " Payment",
+        voucherTypeId: 1,
+        voucherSubTypeId: 0,
+        voucherSubType: "",
+        fYearId: 0,
+        unitId: unitId,
+        organizationId: organizationId,
+        serverId: 0,
+        createdBy: userId,
+        createdDate: now,
+        modifiedBy: userId,
+        isOpeningBalance: 0,
+        showDate: now,
+        isDeleted: 0,
+        billNumber: "",
+        fBillId: 0,
+        selectedPartyName: customer ? (customer.customerName || customer.name) : 'Daily Cash Counter Party',
+        selectedBankName: paymentMode === 'cash' ? 'Cash Sale' : modeString,
+        remarks: "",
+        inFavorPartyId: 0,
+        inFavorPartyName: "",
+        groupIdForBulk: 0,
+        upiId: ""
+      }
+    };
+
+    const amountPaid = this.totalPayable();
+
+    this.apiService.post('api/v1/invoice/sale', payload).subscribe({
+      next: (_res) => {
+        this.clearCart();
+        this.dialogService.openConfirmDialog({
+          title: 'Bill Generated Successfully!',
+          message: `Payment of ₹${amountPaid} received via ${modeString}.`,
+          type: 'success',
+          confirmText: 'OK',
+          hideCancel: true
+        });
+      },
+      error: (err) => {
+        console.error('Failed to generate bill:', err);
+        this.notificationService.showError('Failed to generate bill');
+      }
+    });
   }
 }

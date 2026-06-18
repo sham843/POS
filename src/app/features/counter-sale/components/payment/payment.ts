@@ -78,20 +78,7 @@ export class Payment {
 
     ref.afterClosed().subscribe(result => {
       if (result?.confirmed) {
-        const mode = result.paymentMode === 'cash' ? 'Cash' :
-                     result.paymentMode === 'online' ? 'Online' : 'Card';
-        
-        const amount = this.counterSaleService.totalPayable();
-        this.counterSaleService.clearCart();
-        
-        // Show success dialog
-        this.dialogService.openConfirmDialog({
-          title: 'Bill Generated Successfully!',
-          message: `Payment of ₹${amount} received via ${mode}.`,
-          type: 'success',
-          confirmText: 'OK',
-          hideCancel: true
-        });
+        this.counterSaleService.saveInvoice(result.paymentMode, result.printAutomatically);
       }
     });
   }
