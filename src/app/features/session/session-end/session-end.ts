@@ -9,6 +9,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { HealthService } from '../../../core/services/health.service';
 import { NetworkStatusComponent } from '../../../shared/components/network-status/network-status';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../../core/services/api.service';
+import { SessionService } from '../../../core/services/session.service';
 
 @Component({
   selector: 'app-session-end',
@@ -21,6 +23,8 @@ import { FormsModule } from '@angular/forms';
 export class SessionEnd {
   router = inject(Router);
   public healthService = inject(HealthService);
+  apiService = inject(ApiService);
+  sessionService = inject(SessionService);
 
   // Expose icons to the template
   readonly Store = Store;
@@ -47,29 +51,17 @@ export class SessionEnd {
 
   userDetails = signal<any>(null);
 
-  ngOnInit() {
-    const userStr = localStorage.getItem('UserDetails');
-    if (userStr) {
-      try {
-        this.userDetails.set(JSON.parse(userStr));
-      } catch (e) {
-        console.error('Failed to parse UserDetails', e);
-      }
-    }
-  }
-
-  // Mock data for the session summary
-  sessionData = signal({
-    userName: 'Prashant Varma',
-    date: '19-06-2026',
-    startTime: '11:43 AM',
+  sessionData = signal<any>({
+    userName: '',
+    date: '',
+    startTime: '',
     saleOverview: {
       creditSale: 0,
       couponSale: 0,
       onlineSale: 0,
-      cashSale: 135,
-      totalSale: 135,
-      totalBills: 1
+      cashSale: 0,
+      totalSale: 0,
+      totalBills: 0
     },
     online: {
       onlineSale: 0,
@@ -82,6 +74,56 @@ export class SessionEnd {
       actualCashReceived: 0
     }
   });
+
+  ngOnInit() {
+    const userStr = localStorage.getItem('UserDetails');
+    let userId = 0;
+    if (userStr) {
+      try {
+        const parsed = JSON.parse(userStr);
+        this.userDetails.set(parsed);
+        userId = parsed?.id || 0;
+      } catch (e) {
+        console.error('Failed to parse UserDetails', e);
+      }
+    }
+
+    if (userId) {
+      this.apiService.get<any>(`api/v1/session/today-summery/${userId}`).subscribe({
+        next: (response) => {
+          const data = response?.data;
+          if (data) {
+            this.sessionData.set({
+              userName: this.userDetails()?.name || 'User',
+              date: data.date || data.Date || new Date().toLocaleDateString(),
+              startTime: data.startTime || data.StartTime || '-',
+              saleOverview: {
+                creditSale: data.creditSale || data.CreditSale || 0,
+                couponSale: data.couponSale || data.CouponSale || 0,
+                onlineSale: data.onlineSale || data.OnlineSale || 0,
+                cashSale: data.cashSale || data.CashSale || 0,
+                totalSale: data.totalSale || data.TotalSale || 0,
+                totalBills: data.totalBills || data.TotalBills || 0
+              },
+              online: {
+                onlineSale: data.onlineSale || data.OnlineSale || 0,
+                customerDepositOnline: data.customerDepositOnline || data.CustomerDepositOnline || 0
+              },
+              cash: {
+                cashSale: data.cashSale || data.CashSale || 0,
+                openingBalance: data.openingBalance || data.OpeningBalance || 0,
+                couponCustomerAdvReceived: data.couponCustomerAdvReceived || data.couponCustAdvReceived || data.CouponCustomerAdvReceived || 0,
+                actualCashReceived: data.actualCashReceived || data.ActualCashReceived || 0
+              }
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Failed to fetch session summary:', err);
+        }
+      });
+    }
+  }
 
   goBack() {
     this.router.navigate(['/counter-sale']);
@@ -149,21 +191,32 @@ export class SessionEnd {
   }
 
   confirmEndSession() {
-    console.log('Saving cash report...', {
-      counts: this.cashCounts(),
-      total: this.totalCollection(),
-      remark: this.remark(),
-      otherCash: this.otherCash(),
-      expense: this.expense(),
-      nextShiftOpeningBalance: this.nextShiftOpeningBalance(),
-      onlineDifference: this.onlineDifference()
-    });
-    
-    // Clear all storage
-    localStorage.clear();
-    sessionStorage.clear();
+    const user = this.userDetails();
+    const localSessionId = this.sessionService.getSessionId();
+    const sessionId = localSessionId ? parseInt(localSessionId, 10) : 0;
 
-    // Navigate to login
-    this.router.navigate(['/login']);
+    const payload = {
+      UserId: user?.id || 0,
+      SessionId: sessionId,
+      ClosingBalance: this.totalCollection(),
+      otherCash: this.otherCash() || 0,
+      openingBalanceforNextShift: this.nextShiftOpeningBalance() || 0
+    };
+
+    this.apiService.post<any>('api/v1/session/end', payload).subscribe({
+      next: () => {
+        // Clear all storage
+        this.sessionService.clearSessionId();
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Navigate to login
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Failed to end session:', err);
+        alert('Failed to end session. Check console for details.');
+      }
+    });
   }
 }
