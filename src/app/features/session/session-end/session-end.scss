@@ -1,289 +1,93 @@
 .session-end-container {
+  height: 100vh;
+  overflow: hidden; // Prevent scrolling globally if user asked not to have it
   display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #EFF6FF 0%, #BFDBFE 100%);
+  flex-direction: column;
+  background-color: #EFF6FF;
   padding: 24px;
-  font-family: 'Inter', 'Roboto', sans-serif;
 }
 
 .session-card {
   width: 100%;
-  max-width: 800px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  border: none;
-
-  mat-card-header {
-    padding: 24px 24px 16px;
-    
-    .header-content {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-
-      .icon-circle {
-        width: 48px;
-        height: 48px;
-        background-color: #EFF6FF;
-        color: #0052CC;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        lucide-icon {
-          width: 24px;
-          height: 24px;
-        }
-      }
-
-      .header-titles {
-        display: flex;
-        flex-direction: column;
-
-        mat-card-title {
-          font-size: 18px;
-          font-weight: 700;
-          color: #111827;
-          margin-bottom: 4px;
-        }
-
-        mat-card-subtitle {
-          font-size: 13px;
-          color: #6B7280;
-          margin: 0;
-        }
-      }
-    }
-  }
-
-  mat-card-content {
-    padding: 0 24px;
-
-    &.horizontal-content {
-      display: flex;
-      flex-direction: row;
-      gap: 32px;
-      padding: 16px 24px;
-
-      .left-col, .right-col {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .divider-col {
-        display: flex;
-        align-items: stretch;
-      }
-    }
-
-    .info-section {
-      padding: 16px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-
-      .info-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .label {
-          font-size: 14px;
-          color: #6B7280;
-          font-weight: 500;
-        }
-
-        .value {
-          font-size: 14px;
-          color: #111827;
-          font-weight: 600;
-        }
-      }
-    }
-
-    mat-divider {
-      margin: 0;
-    }
-
-    .summary-section {
-      padding: 20px 0;
-
-      h3 {
-        font-size: 15px;
-        font-weight: 600;
-        color: #374151;
-        margin-top: 0;
-        margin-bottom: 16px;
-      }
-
-      .summary-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-
-        .summary-box {
-          background-color: #ffffff;
-          border: 1px solid #E5E7EB;
-          border-radius: 12px;
-          padding: 16px;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 8px;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
-          &.box-blue {
-            background-color: #EFF6FF;
-            border-color: #BFDBFE;
-          }
-
-          &.box-green {
-            background-color: #ECFDF5;
-            border-color: #A7F3D0;
-          }
-
-          lucide-icon {
-            width: 24px;
-            height: 24px;
-
-            &.text-blue { color: #0052CC; }
-            &.text-green { color: #059669; }
-          }
-
-          .s-label {
-            font-size: 12px;
-            color: #6B7280;
-            font-weight: 500;
-          }
-
-          .s-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #111827;
-          }
-        }
-      }
-    }
-
-    .payment-breakdown {
-      padding: 20px 0 8px;
-
-      h3 {
-        font-size: 15px;
-        font-weight: 600;
-        color: #374151;
-        margin-top: 0;
-        margin-bottom: 16px;
-      }
-
-      .pay-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 16px;
-        background-color: #ffffff;
-        border: 1px solid #E5E7EB;
-        border-radius: 8px;
-        margin-bottom: 8px;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-
-        .pay-type {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-
-          lucide-icon {
-            width: 20px;
-            height: 20px;
-
-            &.cash-icon { color: #059669; }
-            &.upi-icon { color: #6D28D9; }
-            &.card-icon { color: #1D4ED8; }
-          }
-
-          span {
-            font-size: 14px;
-            font-weight: 600;
-            color: #374151;
-          }
-        }
-
-        .pay-amount {
-          font-size: 15px;
-          font-weight: 700;
-          color: #111827;
-        }
-      }
-    }
-  }
-
-  .action-buttons {
-    padding: 24px;
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-
-    button {
-      flex: 1;
-      height: 44px;
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      border-radius: 8px;
-
-      lucide-icon {
-        margin: 0;
-        width: 18px;
-        height: 18px;
-      }
-    }
-  }
+  max-width: 900px;
+  background-color: var(--form-bg);
+  border-radius: 24px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+  border: none !important;
+  margin: auto;
 }
 
-/* Responsiveness */
-@media (max-width: 768px) {
-  .session-card {
-    border-radius: 12px;
-    
-    mat-card-header {
-      padding: 20px 20px 16px;
-    }
+.border-bottom-dashed {
+  border-bottom: 1px dashed #dee2e6;
+}
 
-    mat-card-content {
-      padding: 0 20px;
+.bg-success {
+  background-color: #198754 !important;
+}
 
-      &.horizontal-content {
-        flex-direction: column;
-        gap: 16px;
+.text-muted {
+  color: #6c757d !important;
+}
 
-        .divider-col {
-          display: none; /* hide vertical divider on mobile */
+.text-secondary {
+  color: #495057 !important;
+}
+
+.section-header-bg {
+  background-color: #F8FAFC !important; /* Very light slate */
+  color: #475569 !important;
+}
+
+.card-header-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 75px;
+    background: linear-gradient(135deg, rgba(0, 82, 204, 0.2) 0%, rgba(0, 82, 204, 0.05) 100%);
+    border-bottom: none;
+    z-index: 0;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+}
+
+.profile-section {
+    margin-top: 25px;
+
+    .profile-avatar img {
+        border: 4px solid var(--form-bg);
+        background: var(--form-bg);
+        transition: transform 0.3s ease;
+
+        &:hover {
+            transform: scale(1.05);
         }
-      }
-
-      .summary-section .summary-grid {
-        grid-template-columns: 1fr;
-      }
     }
 
-    .action-buttons {
-      padding: 20px;
-      flex-direction: column;
-
-      button {
-        width: 100%;
-      }
+    .user-name {
+        color: var(--text-primary);
+        font-size: 1.4rem;
     }
-  }
+
+    .role-badge {
+        background: rgba(0, 82, 204, 0.1);
+        color: var(--pos-accent);
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .contact-info {
+        font-size: 0.9rem;
+
+        lucide-icon {
+            width: 16px !important;
+            height: 16px !important;
+            min-width: 16px;
+            flex-shrink: 0;
+        }
+    }
 }
