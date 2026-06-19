@@ -58,11 +58,6 @@ export class SessionEnd {
     }
   }
 
-  onAvatarError(event: any) {
-    const name = this.userDetails()?.name || 'User';
-    event.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0052CC&color=fff&rounded=true&size=90`;
-  }
-
   // Mock data for the session summary
   sessionData = signal({
     userName: 'Prashant Varma',
@@ -101,19 +96,6 @@ export class SessionEnd {
   otherCash = signal<number | null>(null);
   expense = signal<number | null>(null);
   nextShiftOpeningBalance = signal<number | null>(null);
-
-  // Cash Report Drawer State
-  isCashReportOpen = signal(false);
-
-  openCashReport() {
-    this.isCashReportOpen.set(true);
-  }
-
-  closeCashReport() {
-    this.isCashReportOpen.set(false);
-  }
-
-  // --- Merged from CashReportDrawerComponent ---
 
   // Keypad
   keypadNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, '⌫'];
@@ -155,7 +137,7 @@ export class SessionEnd {
     return name.substring(0, 2).toUpperCase();
   }
 
-  saveReport() {
+  confirmEndSession() {
     console.log('Saving cash report...', {
       counts: this.cashCounts(),
       total: this.totalCollection(),
@@ -165,10 +147,7 @@ export class SessionEnd {
       nextShiftOpeningBalance: this.nextShiftOpeningBalance(),
       onlineDifference: this.onlineDifference()
     });
-    this.closeCashReport();
-  }
-
-  confirmEndSession() {
+    
     // Clear all storage
     localStorage.clear();
     sessionStorage.clear();
