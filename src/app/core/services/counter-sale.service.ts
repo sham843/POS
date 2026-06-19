@@ -6,6 +6,7 @@ import { NotificationService } from './notification.service';
 import { ApiService } from './api.service';
 import { DialogService } from './dialog.service';
 import { DbService } from './db.service';
+import { SessionService } from './session.service';
 
 export interface CartItem {
   product: any;
@@ -41,6 +42,7 @@ export class CounterSaleService {
   apiService = inject(ApiService);
   dialogService = inject(DialogService);
   dbService = inject(DbService);
+  sessionService = inject(SessionService);
 
   get Userdetails() {
     const userStr = localStorage.getItem('UserDetails');
@@ -614,7 +616,7 @@ export class CounterSaleService {
     });
 
     const payload = {
-      sessionId: userDetails?.sessionId || userDetails?.sessionid || null,
+      sessionId: this.sessionService.getSessionId() ? parseInt(this.sessionService.getSessionId() || '0', 10) : null,
       createdDate: now,
       modifiedDate: now,
       isDeleted: false,

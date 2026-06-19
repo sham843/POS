@@ -6,7 +6,10 @@ import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MasterDataService } from '../../../core/services/master-data.service';
 import { HealthService } from '../../../core/services/health.service';
+import { ApiService } from '../../../core/services/api.service';
 import { NetworkStatusComponent } from '../../../shared/components/network-status/network-status';
+
+import { SessionService } from '../../../core/services/session.service';
 
 @Component({
   selector: 'app-session-start',
@@ -20,6 +23,8 @@ export class SessionStart {
   private masterDataService = inject(MasterDataService);
   private router = inject(Router);
   public healthService = inject(HealthService);
+  private apiService = inject(ApiService);
+  private sessionService = inject(SessionService);
 
   userDetails = signal<any>(null);
   currentDate = signal<Date>(new Date());
@@ -54,9 +59,28 @@ export class SessionStart {
   }
 
   startSession() {
-    // Master data is already loaded in ngOnInit
-    // Just navigate to next screen
-    this.router.navigate(['/counter-sale']);
+    const user = this.userDetails();
+    const params = {
+      userId: user?.id || 0,
+      username: user?.name || '',
+      openingBalance: user?.openingBalance || 0
+    };
+
+    this.apiService.post<any>('api/v1/session/start', params).subscribe({
+      next: (response) => {
+        const session = response?.data;
+        if (session) {
+          this.sessionService.setSessionId(session);
+          this.router.navigate(['/counter-sale']);
+        } else {
+          alert('Failed to get session ID from server.');
+        }
+      },
+      error: (err) => {
+        console.error('Error starting session', err);
+        alert('Error starting session. Check console for details.');
+      }
+    });
   }
 
   onAvatarError(event: any) {
@@ -65,7 +89,9 @@ export class SessionStart {
   }
 
   logout() {
+    this.sessionService.clearSessionId();
     localStorage.removeItem('UserDetails');
+    localStorage.removeItem('tk_9xf1BzX');
     this.router.navigate(['/login']);
   }
 }

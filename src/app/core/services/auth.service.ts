@@ -29,6 +29,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('tk_9xf1BzX');
     localStorage.removeItem('UserDetails');
+    localStorage.removeItem('sessionId');
   }
 
   getToken(): string | null {
