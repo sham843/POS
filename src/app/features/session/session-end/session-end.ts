@@ -91,6 +91,17 @@ export class SessionEnd {
     window.print();
   }
 
+  clearAllFields() {
+    this.onlineDifference.set(null);
+    this.otherCash.set(null);
+    this.expense.set(null);
+    this.nextShiftOpeningBalance.set(null);
+    this.remark.set('');
+    this.cashCounts.set({
+      500: 0, 200: 0, 100: 0, 50: 0, 20: 0, 10: 0, 5: 0, 2: 0, 1: 0
+    });
+  }
+
   // Additional Input Fields
   onlineDifference = signal<number | null>(null);
   otherCash = signal<number | null>(null);

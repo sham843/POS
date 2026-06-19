@@ -116,6 +116,8 @@
     color: var(--text-primary);
     transition: all 0.25s;
     font-size: 0.95rem;
+    width: 100%;
+    min-width: 0;
 
     &:focus {
         outline: none;
@@ -197,6 +199,24 @@ textarea.modern-input {
 }
 
 /* Buttons */
+.btn-clear {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    background: #ffffff;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #fef2f2;
+        border-color: #ef4444;
+        color: #b91c1c;
+    }
+}
+
 .btn-cancel {
     padding: 8px 20px;
     border-radius: 8px;
@@ -253,3 +273,17 @@ textarea.modern-input {
         border: none !important;
     }
 }
+
+/* Hide spin buttons in Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide spin buttons in Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
