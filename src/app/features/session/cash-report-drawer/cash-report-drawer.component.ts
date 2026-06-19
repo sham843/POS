@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Calculator, X, Wallet, Globe, Ticket, Banknote, Receipt, Bot, Calendar, Clock, Phone } from 'lucide-angular';
+import { LucideAngularModule, Calculator, X, Wallet, Globe, Ticket, Banknote, Receipt, Bot, Calendar, Clock, Phone, CheckCircle } from 'lucide-angular';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -31,6 +31,7 @@ export class CashReportDrawerComponent {
   readonly Calendar = Calendar;
   readonly Clock = Clock;
   readonly Phone = Phone;
+  readonly CheckCircle = CheckCircle;
 
   // Keypad
   keypadNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, '⌫'];
@@ -65,6 +66,15 @@ export class CashReportDrawerComponent {
 
   onKeypadPress(key: number | string) {
     console.log('Keypad pressed:', key);
+  }
+
+  getAvatarInitial(name: string): string {
+    if (!name) return 'PV';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   }
 
   closeDrawer() {
