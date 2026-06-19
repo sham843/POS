@@ -596,7 +596,7 @@ export class CounterSaleService {
         purchaseOrderId: 0,
         discountAmount: discountAmount,
         gstonAmount: gstonAmount,
-        igst: "", // Ignoring IGST for now as per ref default MH state
+        igst: "0.00", // Ignoring IGST for now as per ref default MH state
         cgst: (item.gstAmount / 2).toFixed(2),
         sgst: (item.gstAmount / 2).toFixed(2),
         subTotal: item.amount.toFixed(2),
@@ -611,7 +611,7 @@ export class CounterSaleService {
       createdDate: now,
       modifiedDate: now,
       isDeleted: false,
-      id: 0,
+      id: userId,
       invoiceDate: now,
       partyId: partyId,
       companyLedgerId: companyLedgerId,
@@ -661,7 +661,7 @@ export class CounterSaleService {
         bankCashLedger: bankCashLedger,
         credit: this.totalPayable(),
         debit: this.totalPayable(),
-        ledgerAmount: parseFloat(this.subTotal().toFixed(2)),
+        ledgerAmount: parseFloat(this.totalPayable().toFixed(2)),
         transactionDate: now,
         modeOfPaymentId: modeOfPaymentId,
         modeOfPayment: modeString,
