@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -122,7 +122,7 @@ export class SessionEnd {
     // Clear all storage
     localStorage.clear();
     sessionStorage.clear();
-    
+
     // Navigate to login
     this.router.navigate(['/login']);
   }
