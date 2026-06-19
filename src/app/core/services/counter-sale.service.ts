@@ -763,13 +763,7 @@ export class CounterSaleService {
         }
 
         this.clearCart();
-        this.dialogService.openConfirmDialog({
-          title: 'Bill Generated Successfully!',
-          message: `Payment of ₹${amountPaid} received via ${modeString}.`,
-          type: 'success',
-          confirmText: 'OK',
-          hideCancel: true
-        });
+        this.notificationService.showSuccess(`Payment of ₹${amountPaid} received via ${modeString}.`, 'Bill Generated Successfully!');
       },
       error: (err) => {
         console.error('Failed to generate bill:', err);
