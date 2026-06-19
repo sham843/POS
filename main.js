@@ -39,6 +39,7 @@ async function createWindow() {
   win.webContents.session.clearCache();
   
   win.loadURL(`file://${path.join(__dirname, 'dist/POS/browser/index.html')}`);
+  win.webContents.openDevTools();
 
   win.on('closed', () => {
     win = null;

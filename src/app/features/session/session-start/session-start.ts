@@ -73,12 +73,12 @@ export class SessionStart {
           this.sessionService.setSessionId(session);
           this.router.navigate(['/counter-sale']);
         } else {
-          alert('Failed to get session ID from server.');
+          // alert('Failed to get session ID from server.');
         }
       },
       error: (err) => {
         console.error('Error starting session', err);
-        alert('Error starting session. Check console for details.');
+        // alert('Error starting session. Check console for details.');
       }
     });
   }
