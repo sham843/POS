@@ -17,7 +17,7 @@
                 <img src="assets/images/avatar.png" alt="Profile" class="rounded-circle shadow" width="75" height="75"
                     (error)="onAvatarError($event)">
             </div>
-            <span class="role-badge mb-2">{{ 'SESSION_SUMMARY.COUNTER_SALE' | translate }}</span>
+            <span class="role-badge mb-2">{{ userDetails()?.userType | translate | titlecase }}</span>
             <h3 class="fw-bold mb-1 user-name d-flex align-items-center justify-content-center gap-2">
                 {{ userDetails()?.name || 'User Name' }}
                 <span
@@ -32,6 +32,11 @@
 
         <!-- Main Content -->
         <div class="details-section px-3 pb-4 pt-0 d-flex flex-column flex-grow-1">
+
+            <div class="text-center mb-3">
+                <span class="text-muted fw-bold"
+                    style="font-size: 14px; letter-spacing: 0.5px;">Your Last Session Summary</span>
+            </div>
 
             <!-- Key Metrics (3 columns) -->
             <div class="metrics-grid mb-3">
