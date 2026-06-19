@@ -6,13 +6,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { LucideAngularModule, Eye, EyeOff } from 'lucide-angular';
+import { LucideAngularModule, Eye, EyeOff, Wifi, WifiOff } from 'lucide-angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CryptoSessionService } from '../../../core/services/crypto-session.service';
 import { RsaService } from '../../../core/services/rsa.service';
 import { LoaderService } from '../../../core/services/loader.service';
+import { HealthService } from '../../../core/services/health.service';
+import { NetworkStatusComponent } from '../../../shared/components/network-status/network-status';
 
 @Component({
   selector: 'app-login',
@@ -25,7 +27,8 @@ import { LoaderService } from '../../../core/services/loader.service';
     MatButtonModule,
     MatCheckboxModule,
     LucideAngularModule,
-    TranslatePipe
+    TranslatePipe,
+    NetworkStatusComponent
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -42,6 +45,10 @@ export class Login implements OnInit {
   // Expose icons
   readonly Eye = Eye;
   readonly EyeOff = EyeOff;
+  readonly Wifi = Wifi;
+  readonly WifiOff = WifiOff;
+
+  public healthService = inject(HealthService);
 
   private fb = inject(FormBuilder);
   private configService = inject(ConfigService);

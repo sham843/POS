@@ -5,11 +5,12 @@ import { LucideAngularModule, Droplets, PieChart, Monitor, LineChart, Settings, 
 import { HealthService } from '../core/services/health.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
+import { NetworkStatusComponent } from '../shared/components/network-status/network-status';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, RouterModule],
+  imports: [CommonModule, LucideAngularModule, RouterModule, NetworkStatusComponent],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -44,17 +45,12 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     this.timerInterval = setInterval(() => {
       this.currentTime.set(new Date());
     }, 1000);
-
-    // Start health check polling (every 30 seconds)
-    this.healthService.startHealthCheck();
   }
 
   ngOnDestroy() {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
-    // Stop health check polling
-    this.healthService.stopHealthCheck();
   }
 
   toggleProfileMenu() {

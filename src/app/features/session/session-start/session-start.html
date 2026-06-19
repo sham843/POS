@@ -1,11 +1,18 @@
 <div class="session-container min-vh-100 d-flex justify-content-center align-items-center p-3">
     <div class="session-card vertical-layout d-flex flex-column overflow-hidden w-100 position-relative">
 
-        <!-- Logout Button -->
-        <button class="logout-btn position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center"
-            (click)="logout()" title="{{ 'HEADER.LOGOUT' | translate }}">
-            <lucide-icon [img]="LogOut"></lucide-icon>
-        </button>
+        <!-- Status Badge -->
+        <!-- Top Right Controls -->
+        <div class="position-absolute top-0 end-0 m-3 z-3 d-flex align-items-center gap-2">
+            <!-- Status Badge -->
+            <app-network-status cssClass="shadow-sm bg-white"></app-network-status>
+
+            <!-- Logout Button -->
+            <button class="logout-btn d-flex align-items-center justify-content-center m-0"
+                (click)="logout()" title="{{ 'HEADER.LOGOUT' | translate }}">
+                <lucide-icon [img]="LogOut"></lucide-icon>
+            </button>
+        </div>
 
         <!-- Top Decorative Header -->
         <div class="card-header-bg"></div>
@@ -20,9 +27,6 @@
             <span class="role-badge mb-2">{{ userDetails()?.userType | translate | titlecase }}</span>
             <h3 class="fw-bold mb-1 user-name d-flex align-items-center justify-content-center gap-2">
                 {{ userDetails()?.name || 'User Name' }}
-                <span
-                    style="width: 10px; height: 10px; background-color: #198754; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(25, 135, 84, 0.3);"
-                    title="Online"></span>
             </h3>
             <div class="contact-info d-flex align-items-center justify-content-center text-muted mb-2">
                 <lucide-icon [img]="Phone" class="me-1"></lucide-icon>
@@ -34,8 +38,8 @@
         <div class="details-section px-3 pb-4 pt-0 d-flex flex-column flex-grow-1">
 
             <div class="text-center mb-3">
-                <span class="text-muted fw-bold"
-                    style="font-size: 14px; letter-spacing: 0.5px;">Your Last Session Summary</span>
+                <span class="text-muted fw-bold" style="font-size: 14px; letter-spacing: 0.5px;">Your Last Session
+                    Summary</span>
             </div>
 
             <!-- Key Metrics (3 columns) -->

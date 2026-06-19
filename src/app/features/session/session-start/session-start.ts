@@ -1,14 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { LucideAngularModule, LogOut, Phone, Wallet, Receipt, Banknote, Calendar, Clock } from 'lucide-angular';
+import { LucideAngularModule, LogOut, Phone, Wallet, Receipt, Banknote, Calendar, Clock, Wifi, WifiOff } from 'lucide-angular';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MasterDataService } from '../../../core/services/master-data.service';
+import { HealthService } from '../../../core/services/health.service';
+import { NetworkStatusComponent } from '../../../shared/components/network-status/network-status';
 
 @Component({
   selector: 'app-session-start',
-  imports: [CommonModule, MatButtonModule, LucideAngularModule, TranslatePipe],
+  imports: [CommonModule, MatButtonModule, LucideAngularModule, TranslatePipe, NetworkStatusComponent],
   standalone: true,
   templateUrl: './session-start.html',
   styleUrl: './session-start.scss',
@@ -17,6 +19,7 @@ import { MasterDataService } from '../../../core/services/master-data.service';
 export class SessionStart {
   private masterDataService = inject(MasterDataService);
   private router = inject(Router);
+  public healthService = inject(HealthService);
 
   userDetails = signal<any>(null);
   currentDate = signal<Date>(new Date());
@@ -29,6 +32,8 @@ export class SessionStart {
   readonly Banknote = Banknote;
   readonly Calendar = Calendar;
   readonly Clock = Clock;
+  readonly Wifi = Wifi;
+  readonly WifiOff = WifiOff;
 
   async ngOnInit() {
     const userStr = localStorage.getItem('UserDetails');

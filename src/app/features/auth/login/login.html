@@ -1,5 +1,9 @@
 <div class="login-container">
-  <div class="login-wrapper shadow-lg">
+  <div class="login-wrapper shadow-lg position-relative">
+    <!-- Online/Offline Indicator -->
+    <div class="position-absolute top-0 end-0 m-3 z-3">
+      <app-network-status cssClass="shadow-sm bg-white"></app-network-status>
+    </div>
 
     <!-- Left side Branding Image -->
     <div class="login-branding d-none d-md-flex align-items-center justify-content-center p-5">

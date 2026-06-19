@@ -1,5 +1,9 @@
 <div class="session-end-container">
-  <mat-card class="session-card">
+  <mat-card class="session-card position-relative">
+    <!-- Status Badge -->
+    <div class="position-absolute top-0 end-0 m-3 z-3">
+      <app-network-status cssClass="shadow-sm bg-white"></app-network-status>
+    </div>
     <mat-card-header>
       <div class="header-content">
         <div class="icon-circle">

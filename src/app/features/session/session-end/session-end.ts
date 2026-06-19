@@ -3,12 +3,14 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { LucideAngularModule, Store, ReceiptText, Banknote, ScanBarcode, CreditCard, ArrowLeft, LogOut } from 'lucide-angular';
+import { LucideAngularModule, Store, ReceiptText, Banknote, ScanBarcode, CreditCard, ArrowLeft, LogOut, Wifi, WifiOff } from 'lucide-angular';
 import { MatDividerModule } from '@angular/material/divider';
+import { HealthService } from '../../../core/services/health.service';
+import { NetworkStatusComponent } from '../../../shared/components/network-status/network-status';
 
 @Component({
   selector: 'app-session-end',
-  imports: [CommonModule, MatCardModule, MatButtonModule, LucideAngularModule, MatDividerModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, LucideAngularModule, MatDividerModule, NetworkStatusComponent],
   standalone: true,
   templateUrl: './session-end.html',
   styleUrl: './session-end.scss',
@@ -16,6 +18,7 @@ import { MatDividerModule } from '@angular/material/divider';
 })
 export class SessionEnd {
   router = inject(Router);
+  public healthService = inject(HealthService);
 
   // Expose icons to the template
   readonly Store = Store;
@@ -25,6 +28,8 @@ export class SessionEnd {
   readonly CreditCard = CreditCard;
   readonly ArrowLeft = ArrowLeft;
   readonly LogOut = LogOut;
+  readonly Wifi = Wifi;
+  readonly WifiOff = WifiOff;
 
   // Mock data for the session summary
   sessionData = signal({
