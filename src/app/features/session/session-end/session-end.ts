@@ -1,19 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { LucideAngularModule, Store, ReceiptText, Banknote, ScanBarcode, CreditCard, ArrowLeft, LogOut, Wifi, WifiOff, Calendar, Clock, Receipt, Ticket, Globe, Calculator, Bot, Phone, Printer, Wallet, X } from 'lucide-angular';
+import { LucideAngularModule, Store, ReceiptText, Banknote, ScanBarcode, CreditCard, ArrowLeft, LogOut, Wifi, WifiOff, Calendar, Clock, Receipt, Ticket, Globe, Calculator, Bot, Phone, Printer, Wallet, X, CheckCircle } from 'lucide-angular';
 import { MatDividerModule } from '@angular/material/divider';
 import { TranslatePipe } from '@ngx-translate/core';
 import { HealthService } from '../../../core/services/health.service';
 import { NetworkStatusComponent } from '../../../shared/components/network-status/network-status';
 import { FormsModule } from '@angular/forms';
-import { CashReportDrawerComponent } from '../cash-report-drawer/cash-report-drawer.component';
 
 @Component({
   selector: 'app-session-end',
-  imports: [CommonModule, MatCardModule, MatButtonModule, LucideAngularModule, MatDividerModule, NetworkStatusComponent, TranslatePipe, FormsModule, CashReportDrawerComponent],
+  imports: [CommonModule, MatCardModule, MatButtonModule, LucideAngularModule, MatDividerModule, NetworkStatusComponent, TranslatePipe, FormsModule],
   standalone: true,
   templateUrl: './session-end.html',
   styleUrl: './session-end.scss',
@@ -44,6 +43,7 @@ export class SessionEnd {
   readonly Printer = Printer;
   readonly Wallet = Wallet;
   readonly X = X;
+  readonly CheckCircle = CheckCircle;
 
   userDetails = signal<any>(null);
 
@@ -113,8 +113,58 @@ export class SessionEnd {
     this.isCashReportOpen.set(false);
   }
 
-  saveCashReport(reportData: any) {
-    console.log('Saving cash report from drawer...', reportData);
+  // --- Merged from CashReportDrawerComponent ---
+
+  // Keypad
+  keypadNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, '⌫'];
+
+  // Remark
+  remark = signal('');
+
+  // Denominations
+  denominations = [500, 200, 100, 50, 20, 10, 5, 2, 1];
+  cashCounts = signal<Record<number, number>>({
+    500: 0, 200: 0, 100: 0, 50: 0, 20: 0, 10: 0, 5: 0, 2: 0, 1: 0
+  });
+
+  totalCollection = computed(() => {
+    const counts = this.cashCounts();
+    return this.denominations.reduce((sum, den) => sum + (den * (counts[den] || 0)), 0);
+  });
+
+  cashDifference = computed(() => {
+    const actualReceived = this.sessionData()?.cash?.actualCashReceived || 0;
+    return this.totalCollection() - actualReceived;
+  });
+
+  updateCashCount(den: number, value: string) {
+    const parsed = parseInt(value, 10) || 0;
+    this.cashCounts.update(counts => ({ ...counts, [den]: parsed }));
+  }
+
+  onKeypadPress(key: number | string) {
+    console.log('Keypad pressed:', key);
+  }
+
+  getAvatarInitial(name: string): string {
+    if (!name) return 'PV';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  }
+
+  saveReport() {
+    console.log('Saving cash report...', {
+      counts: this.cashCounts(),
+      total: this.totalCollection(),
+      remark: this.remark(),
+      otherCash: this.otherCash(),
+      expense: this.expense(),
+      nextShiftOpeningBalance: this.nextShiftOpeningBalance(),
+      onlineDifference: this.onlineDifference()
+    });
     this.closeCashReport();
   }
 
