@@ -343,11 +343,6 @@ export class ProductList implements OnInit, AfterViewInit {
     }
 
     const isAvailable = Number(stock) > 0;
-    // Temporary debug log to trace the exact object and stock value
-    if (p.productId === 968 || p.productId === '968' || String(stock) === '-5') {
-      console.log('Product Check:', p.materialName || p.productName, 'availableStock:', p.availableStock, 'stockQty:', p.stockQty, 'evaluates to > 0:', isAvailable);
-    }
-
     return isAvailable ? 'in-stock' : 'out-of-stock';
   }
 

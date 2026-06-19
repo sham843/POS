@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { NotificationService } from './notification.service';
 import { ApiService } from './api.service';
 import { DialogService } from './dialog.service';
+import { DbService } from './db.service';
 
 export interface CartItem {
   product: any;
@@ -39,6 +40,22 @@ export class CounterSaleService {
   notificationService = inject(NotificationService);
   apiService = inject(ApiService);
   dialogService = inject(DialogService);
+  dbService = inject(DbService);
+
+  get Userdetails() {
+    const userStr = localStorage.getItem('UserDetails');
+    if (userStr) {
+      try {
+        const parsed = JSON.parse(userStr);
+        console.log('Userdetails ID:', parsed?.id);
+        return parsed;
+      } catch (e) {
+        console.error('Failed to parse UserDetails', e);
+      }
+    }
+    console.log('Userdetails ID not found, defaulting to 0');
+    return { id: 0 };
+  }
 
   searchQuery = signal<string>('');
   searchType = signal<'product' | 'bill' | 'customer'>('product');
@@ -47,7 +64,7 @@ export class CounterSaleService {
   activeBillId = signal<number>(1);
 
   activeBill = computed(() => this.bills().find(b => b.id === this.activeBillId()) || this.bills()[0]);
-  
+
   cartItems = computed(() => this.activeBill()?.cartItems || []);
   selectedItemIndex = computed(() => this.activeBill()?.selectedItemIndex ?? null);
   numpadMode = computed(() => this.activeBill()?.numpadMode || 'quantity');
@@ -96,7 +113,7 @@ export class CounterSaleService {
   }
 
   updateActiveBill(updates: Partial<BillState>) {
-    this.bills.update(bills => bills.map(b => 
+    this.bills.update(bills => bills.map(b =>
       b.id === this.activeBillId() ? { ...b, ...updates } : b
     ));
   }
@@ -115,12 +132,12 @@ export class CounterSaleService {
   removeBill(id: number) {
     const currentBills = this.bills();
     if (currentBills.length === 1) return;
-    
+
     const activeWasRemoved = this.activeBillId() === id;
     let nextActiveId = this.activeBillId();
     if (activeWasRemoved) {
-       const idx = currentBills.findIndex(b => b.id === id);
-       nextActiveId = currentBills[idx === currentBills.length - 1 ? idx - 1 : idx + 1].id;
+      const idx = currentBills.findIndex(b => b.id === id);
+      nextActiveId = currentBills[idx === currentBills.length - 1 ? idx - 1 : idx + 1].id;
     }
 
     const remainingBills = currentBills.filter(b => b.id !== id);
@@ -492,7 +509,7 @@ export class CounterSaleService {
     });
   }
 
-  saveInvoice(paymentMode: 'cash' | 'online' | 'card', printAutomatically: boolean) {
+  async saveInvoice(paymentMode: 'cash' | 'online' | 'card', printAutomatically: boolean) {
     if (this.cartItems().length === 0 || this.totalPayable() === 0) {
       this.notificationService.showError("The invoice total is ₹0. Please select a product before payment.");
       return;
@@ -531,9 +548,26 @@ export class CounterSaleService {
       isPaymentReceived = 0;
     }
 
+    let partyId = 0;
+    try {
+      const saleLedgers = await this.dbService.saleLedgerList.toArray();
+      if (saleLedgers && saleLedgers.length > 0) {
+        partyId = saleLedgers[0].id || 0;
+      }
+    } catch (e) {
+      console.error('Failed to load SaleLedgerList from indexedDB', e);
+    }
+
     const customer = this.selectedCustomer();
-    const partyId = customer ? (customer.id || 0) : 0;
-    const companyLedgerId = 0; // Should map properly if exists
+    let companyLedgerId = 0;
+    try {
+      const companyLedgers = await this.dbService.companyLedgerList.toArray();
+      if (companyLedgers && companyLedgers.length > 0) {
+        companyLedgerId = companyLedgers[0].id || 0;
+      }
+    } catch (e) {
+      console.error('Failed to load CompanyLedgerList from indexedDB', e);
+    }
     const bankCashLedger = paymentMode === 'cash' ? 0 : 0; // Or whatever selected bank
 
     const invoiceDetails = this.cartItems().map(item => {
@@ -542,7 +576,7 @@ export class CounterSaleService {
       const gstonAmount = parseFloat(((item.quantity * item.rate) - (discountAmount + item.gstAmount)).toFixed(2));
 
       return {
-        id: 0,
+        id: userId,
         dcDetailsId: 0,
         invoiceId: 0,
         materialId: item.product?.id || item.product?.code || 0,
@@ -554,7 +588,7 @@ export class CounterSaleService {
         purchaseOrderId: 0,
         discountAmount: discountAmount,
         gstonAmount: gstonAmount,
-        igst: "0.00", // Ignoring IGST for now as per ref default MH state
+        igst: 0, // Ignoring IGST for now as per ref default MH state
         cgst: (item.gstAmount / 2).toFixed(2),
         sgst: (item.gstAmount / 2).toFixed(2),
         subTotal: item.amount.toFixed(2),
@@ -605,7 +639,7 @@ export class CounterSaleService {
       chalanNo: 0,
       invoiceNo: "",
       fYearId: 0,
-      igst: "0.00",
+      igst: 0,
       cgst: (this.totalGst() / 2).toFixed(2),
       sgst: (this.totalGst() / 2).toFixed(2),
       stateFlag: 1,
@@ -619,7 +653,7 @@ export class CounterSaleService {
         bankCashLedger: bankCashLedger,
         credit: this.totalPayable(),
         debit: this.totalPayable(),
-        ledgerAmount: this.subTotal().toFixed(2),
+        ledgerAmount: parseFloat(this.subTotal().toFixed(2)),
         transactionDate: now,
         modeOfPaymentId: modeOfPaymentId,
         modeOfPayment: modeString,
@@ -627,13 +661,13 @@ export class CounterSaleService {
         transactionType: "",
         transactionId: 0,
         transactionNo: "",
-        narration: modeString + " Payment",
+        narration: modeString + " Entry",
         referenceId: 0,
         groupId: 0,
         chequeDate: now,
         isTallyExport: 0,
         tallyReferenceId: 0,
-        particularsText: modeString + " Payment",
+        particularsText: modeString + " Entry",
         voucherTypeId: 1,
         voucherSubTypeId: 0,
         voucherSubType: "",
