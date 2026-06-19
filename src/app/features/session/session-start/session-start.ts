@@ -61,9 +61,11 @@ export class SessionStart {
   startSession() {
     const user = this.userDetails();
     const params = {
-      userId: user?.id || 0,
-      username: user?.name || '',
-      openingBalance: user?.openingBalance || 0
+      request: {
+        userId: user?.id || 0,
+        username: user?.name || '',
+        openingBalance: user?.openingBalance ? Math.round(Number(user.openingBalance)) : 0
+      }
     };
 
     this.apiService.post<any>('api/v1/session/start', params).subscribe({

@@ -38,6 +38,10 @@ async function createWindow() {
   // Clear cache and load the Angular build URL
   win.webContents.session.clearCache();
   
+  win.webContents.on('console-message', (event, level, message, line, sourceId) => {
+    console.log(`[RENDERER CONSOLE] Level:${level} | ${message} | ${sourceId}:${line}`);
+  });
+
   win.loadURL(`file://${path.join(__dirname, 'dist/POS/browser/index.html')}`);
   win.webContents.openDevTools();
 
