@@ -12,11 +12,12 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   const skipLoader = req.headers.has('X-Skip-Loader');
+  const customFallbackError = req.headers.get('X-Custom-Error');
   
   // Remove the custom header so it doesn't go to the server
   let modifiedReq = req;
-  if (skipLoader) {
-    modifiedReq = req.clone({ headers: req.headers.delete('X-Skip-Loader') });
+  if (skipLoader || customFallbackError) {
+    modifiedReq = req.clone({ headers: req.headers.delete('X-Skip-Loader').delete('X-Custom-Error') });
   }
 
   // Show loader on request start for non-GET requests unless skipped
@@ -35,6 +36,8 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
       } else if (error instanceof HttpErrorResponse) {
         if (error.error && error.error.message) {
           errorMsg = error.error.message;
+        } else if (customFallbackError) {
+          errorMsg = customFallbackError;
         } else {
           switch (error.status) {
             case 400:
@@ -79,7 +82,7 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
       // Show global error notification
       notificationService.showError(errorMsg);
 
-      return throwError(() => error);
+      return throwError(() => new Error(errorMsg));
     }),
     finalize(() => {
       // Hide loader when request completes (success or error)

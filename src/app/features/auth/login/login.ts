@@ -109,14 +109,14 @@ export class Login implements OnInit {
 
             this.loaderService.hide(); // Hide loader on success
           },
-          error: (error) => {
+          error: (_err) => {
             this.loaderService.hide(); // Hide loader on error
-            this.errorMessage.set(error?.error?.message || 'Login failed. Please check your credentials and try again.');
+            this.errorMessage.set('Invalid username or password.');
           }
         });
       } catch (e) {
         this.loaderService.hide(); // Ensure loader is hidden on unexpected encryption error
-        this.errorMessage.set('An error occurred while encrypting credentials.');
+        this.errorMessage.set('Invalid username or password.');
       }
     } else {
       this.loginForm.markAllAsTouched();

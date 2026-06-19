@@ -359,6 +359,7 @@ export class ProductList implements OnInit, AfterViewInit {
     if (stock === undefined || stock === null || stock === '') {
       return null;
     }
-    return Number(stock);
+    const stockNum = Number(stock);
+    return stockNum < 0 ? 0 : stockNum;
   }
 }

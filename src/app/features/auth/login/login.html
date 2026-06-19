@@ -15,13 +15,6 @@
         <p style="color: var(--text-secondary)">{{ 'LOGIN.ENTER_DETAILS' | translate }}</p>
       </div>
 
-      <!-- API Error Message -->
-      @if (errorMessage()) {
-      <div class="alert alert-danger py-2 mb-4 d-flex align-items-center" role="alert">
-        <span class="fs-sm">{{ errorMessage() }}</span>
-      </div>
-      }
-
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="d-flex flex-column">
 
         <!-- Username Input -->

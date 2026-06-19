@@ -19,7 +19,10 @@ export class AuthService {
   }
 
   login(credentials: string): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 
+      'Content-Type': 'application/json',
+      'X-Custom-Error': 'Invalid username or password.'
+    });
     return this.apiService.post<any>('api/v1/auth/login', JSON.stringify({ data: credentials }), headers, 'main');
   }
 
