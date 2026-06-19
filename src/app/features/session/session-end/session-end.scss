@@ -91,3 +91,58 @@
         }
     }
 }
+
+/* Animations & Effects */
+.fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hover-elevate {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    will-change: transform;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+    }
+}
+
+/* Color-coded Icons */
+.icon-cash {
+    color: #10b981 !important; /* Emerald 500 */
+}
+
+.icon-online {
+    color: #3b82f6 !important; /* Blue 500 */
+}
+
+.icon-coupon {
+    color: #f59e0b !important; /* Amber 500 */
+}
+
+.icon-bill {
+    color: #8b5cf6 !important; /* Violet 500 */
+}
+
+@media print {
+    .session-end-container {
+        height: auto;
+        background: white !important;
+        padding: 0;
+    }
+    
+    button {
+        display: none !important;
+    }
+}

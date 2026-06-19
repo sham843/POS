@@ -3,7 +3,7 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { LucideAngularModule, Store, ReceiptText, Banknote, ScanBarcode, CreditCard, ArrowLeft, LogOut, Wifi, WifiOff, Calendar, Clock, Receipt, Ticket, Globe, Calculator, Bot, Phone } from 'lucide-angular';
+import { LucideAngularModule, Store, ReceiptText, Banknote, ScanBarcode, CreditCard, ArrowLeft, LogOut, Wifi, WifiOff, Calendar, Clock, Receipt, Ticket, Globe, Calculator, Bot, Phone, Printer, Wallet } from 'lucide-angular';
 import { MatDividerModule } from '@angular/material/divider';
 import { TranslatePipe } from '@ngx-translate/core';
 import { HealthService } from '../../../core/services/health.service';
@@ -39,6 +39,8 @@ export class SessionEnd {
   readonly Calculator = Calculator;
   readonly Bot = Bot;
   readonly Phone = Phone;
+  readonly Printer = Printer;
+  readonly Wallet = Wallet;
 
   userDetails = signal<any>(null);
 
@@ -85,6 +87,10 @@ export class SessionEnd {
 
   goBack() {
     this.router.navigate(['/counter-sale']);
+  }
+
+  printSummary() {
+    window.print();
   }
 
   confirmEndSession() {
