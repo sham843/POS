@@ -7,6 +7,7 @@ import { ApiService } from './api.service';
 import { DialogService } from './dialog.service';
 import { DbService } from './db.service';
 import { SessionService } from './session.service';
+import { ElectronService } from './electron.service';
 
 export interface CartItem {
   product: any;
@@ -43,6 +44,7 @@ export class CounterSaleService {
   dialogService = inject(DialogService);
   dbService = inject(DbService);
   sessionService = inject(SessionService);
+  electronService = inject(ElectronService);
 
   get Userdetails() {
     const userStr = localStorage.getItem('UserDetails');
@@ -713,7 +715,53 @@ export class CounterSaleService {
     const amountPaid = this.totalPayable();
 
     this.apiService.post('api/v1/invoice/sale', payload).subscribe({
-      next: (_res) => {
+      next: (_res: any) => {
+        const invoiceData = _res?.data;
+        if (printAutomatically && invoiceData) {
+          const itemsToPrint = this.cartItems().map(item => ({
+            name: (item.product?.name || item.product?.code || 'Product') + " (" + (item.product?.mensurationUnit || item.product?.unit || '') + ")",
+            rate: item.rate,
+            quantity: item.quantity,
+            discount: (item.rate * item.quantity * item.discount / 100).toFixed(2),
+            price: item.total
+          }));
+
+          const subTotalVal = this.subTotal();
+          const totalDiscountVal = this.totalDiscount();
+          const totalGstVal = this.totalGst();
+          const billAmountVal = this.billAmount();
+          const roundOffVal = this.roundOff();
+          const totalPayableVal = this.totalPayable();
+
+          const totalSum = this.cartItems().reduce((sum, item) => sum + (item.rate || 0), 0);
+
+          const printPayload = {
+            UnitName: invoiceData.unitName || userDetails?.unitName || 'Hi-Tech Dairy',
+            UnitAdd: invoiceData.unitAddress || userDetails?.unitAddress || '',
+            UnitMobile: invoiceData.unitMobileNo || userDetails?.unitMobileNo || '',
+            FssaiLicNo: userDetails?.fssailicNo || '',
+            GSTNo: invoiceData.gstNo || userDetails?.gstNo || '',
+            invoiceId: (invoiceData.id || '') + "/" + (invoiceData.invoiceNo || ''),
+            title: 'Sales Receipt',
+            timestamp: invoiceData.invoiceDate || now,
+            items: itemsToPrint,
+            totals: {
+              total: totalSum.toFixed(2),
+              subTotal: subTotalVal.toFixed(2),
+              discountPercent: '',
+              discount: totalDiscountVal.toFixed(2),
+              sgst: (totalGstVal / 2).toFixed(2),
+              cgst: (totalGstVal / 2).toFixed(2),
+              igst: '0.00',
+              billAmount: billAmountVal.toFixed(2),
+              roundOff: roundOffVal.toFixed(2),
+              totalPayable: totalPayableVal.toFixed(2)
+            }
+          };
+
+          this.electronService.sendPrintData(printPayload);
+        }
+
         this.clearCart();
         this.dialogService.openConfirmDialog({
           title: 'Bill Generated Successfully!',
