@@ -7,6 +7,26 @@
   --border-color: #e2e8f0;
 }
 
+/* Icon Colors */
+.icon-phone { color: #3b82f6 !important; }
+.icon-role { color: #0052cc !important; }
+.icon-calendar { color: #f59e0b !important; }
+.icon-clock { color: #10b981 !important; }
+
+.icon-credit { color: #3b82f6 !important; }       /* Blue */
+.icon-coupon { color: #f97316 !important; }       /* Orange */
+.icon-online { color: #06b6d4 !important; }       /* Cyan */
+.icon-cash { color: #10b981 !important; }         /* Green */
+.icon-total { color: #8b5cf6 !important; }        /* Purple */
+.icon-bills { color: #d946ef !important; }        /* Magenta/Pink */
+
+.icon-opening { color: #6366f1 !important; }      /* Indigo */
+.icon-other { color: #14b8a6 !important; }        /* Teal */
+.icon-expense { color: #ef4444 !important; }      /* Red */
+.icon-wallet { color: #f97316 !important; }       /* Orange */
+.icon-actual { color: #0052cc !important; }       /* Primary Blue */
+
+
 .session-end-container {
   height: 100vh;
   overflow: hidden;
@@ -95,7 +115,7 @@
     font-weight: 500;
     color: var(--text-primary);
     transition: all 0.25s;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
 
     &:focus {
         outline: none;
@@ -128,23 +148,23 @@ textarea.modern-input {
 
     .block-header {
         background: #f8fafc;
-        padding: 6px 12px;
+        padding: 8px 12px;
         font-weight: 700;
         color: var(--text-secondary);
         border-bottom: 1px solid var(--border-color);
-        text-transform: uppercase;
+        text-transform: capitalize;
         letter-spacing: 0.5px;
-        font-size: 0.75rem;
+        font-size: 0.85rem;
     }
 
     .block-row {
-        padding: 4px 12px;
+        padding: 6px 12px;
         border-bottom: 1px solid #f1f5f9;
         display: flex;
         justify-content: space-between;
         align-items: center;
         transition: background 0.2s;
-        font-size: 0.85rem;
+        font-size: 0.95rem;
 
         &:hover {
             background: #f8fafc;
@@ -164,7 +184,8 @@ textarea.modern-input {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    padding: 7px 10px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.02);
     transition: all 0.2s;
 

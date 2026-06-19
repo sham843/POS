@@ -1,32 +1,41 @@
 <div class="session-end-container bg-light h-100 d-flex flex-column">
-  
-  <!-- HEADER -->
-  <div class="page-header d-flex justify-content-between align-items-center bg-white px-4 py-2 border-bottom z-1 shadow-sm">
-    <div class="d-flex align-items-center gap-2">
-      <lucide-icon [img]="Calculator" [size]="18" class="text-primary"></lucide-icon>
-      <h6 class="mb-0 fw-bold text-dark">Session End & Cash Report</h6>
+
+  <!-- PAGE HEADING -->
+  <div class="d-flex justify-content-between align-items-center px-4 py-2 bg-white border-bottom">
+    <div class="d-flex align-items-center gap-3">
+      <div class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-3 text-primary" style="width: 36px; height: 36px;">
+        <lucide-icon [img]="Calculator" [size]="20"></lucide-icon>
+      </div>
+      <div>
+        <h5 class="mb-0 fw-bold text-dark" style="letter-spacing: 0.3px; font-size: 1.15rem;">Session End & Cash Report</h5>
+        <span class="text-secondary" style="font-size: 0.75rem;">Verify today's collections and close the session</span>
+      </div>
     </div>
     <div class="d-flex align-items-center gap-3">
-        <app-network-status cssClass="shadow-sm bg-white"></app-network-status>
+      <app-network-status cssClass="bg-light"></app-network-status>
     </div>
   </div>
 
   <!-- BODY -->
-  <div class="flex-grow-1 overflow-hidden p-2 d-flex gap-2">
-    
+  <div class="flex-grow-1 overflow-hidden px-3 pb-3 pt-2 d-flex gap-2">
+
     <!-- Left: Profile & Keypad -->
     <div class="col-profile d-flex flex-column gap-2" style="width: 280px; flex-shrink: 0;">
       <div class="modern-card profile-card p-2">
         <div class="drawer-profile-avatar mx-auto mb-2">{{ getAvatarInitial(userDetails()?.name || 'User') }}</div>
         <h6 class="fw-bold mb-1 text-dark">{{ userDetails()?.name || 'User Name' }}</h6>
         <div class="text-secondary small mb-1 d-flex justify-content-center align-items-center gap-1">
-            <lucide-icon [img]="Phone" [size]="12"></lucide-icon> {{ userDetails()?.mobileNumber || 'N/A' }}
+          <lucide-icon [img]="Phone" [size]="12" class="icon-phone"></lucide-icon> {{ userDetails()?.mobileNumber ||
+          'N/A' }}
         </div>
-        <div class="d-inline-flex align-items-center gap-1 bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-pill fw-bold" style="font-size: 0.7rem;">
-            <lucide-icon [img]="Bot" [size]="12"></lucide-icon>{{ (userDetails()?.userType || 'Admin') | translate | titlecase }}
+        <div
+          class="d-inline-flex align-items-center gap-1 bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-pill fw-bold"
+          style="font-size: 0.7rem;">
+          <lucide-icon [img]="Bot" [size]="12" class="icon-role"></lucide-icon>{{ (userDetails()?.userType || 'Admin') |
+          translate | titlecase }}
         </div>
       </div>
-      
+
       <!-- Keypad -->
       <div class="modern-card p-2 flex-grow-1 d-flex flex-column justify-content-center">
         <div class="keypad-grid">
@@ -39,11 +48,13 @@
     <div class="col-summary flex-grow-1 modern-card p-2 d-flex flex-column overflow-auto">
       <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
         <div class="d-flex align-items-center gap-2">
-            <h6 class="m-0 fw-bold text-dark">Today's Summary</h6>
+          <h6 class="m-0 fw-bold text-dark">Today's Summary</h6>
         </div>
         <div class="d-flex gap-2 text-secondary fw-semibold" style="font-size: 0.75rem;">
-          <span class="d-flex align-items-center gap-1 bg-light px-2 py-1 rounded-2"><lucide-icon [img]="Calendar" [size]="14"></lucide-icon> {{ sessionData()?.date }}</span>
-          <span class="d-flex align-items-center gap-1 bg-light px-2 py-1 rounded-2"><lucide-icon [img]="Clock" [size]="14"></lucide-icon> {{ sessionData()?.startTime }}</span>
+          <span class="d-flex align-items-center gap-1 bg-light px-2 py-1 rounded-2"><lucide-icon [img]="Calendar"
+              [size]="14" class="icon-calendar"></lucide-icon> {{ sessionData()?.date }}</span>
+          <span class="d-flex align-items-center gap-1 bg-light px-2 py-1 rounded-2"><lucide-icon [img]="Clock"
+              [size]="14" class="icon-clock"></lucide-icon> {{ sessionData()?.startTime }}</span>
         </div>
       </div>
 
@@ -53,127 +64,161 @@
           <div class="summary-block">
             <div class="block-header">Sale Overview</div>
             <div class="block-body">
-               <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Receipt" [size]="14"></lucide-icon> Credit Sale</span> <span class="fw-semibold">₹{{ sessionData()?.saleOverview?.creditSale }}</span></div>
-               <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Ticket" [size]="14"></lucide-icon> Coupon Sale</span> <span class="fw-semibold">₹{{ sessionData()?.saleOverview?.couponSale }}</span></div>
-               <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Globe" [size]="14"></lucide-icon> Online Sale</span> <span class="fw-semibold">₹{{ sessionData()?.saleOverview?.onlineSale }}</span></div>
-               <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Banknote" [size]="14"></lucide-icon> Cash Sale</span> <span class="fw-semibold">₹{{ sessionData()?.saleOverview?.cashSale }}</span></div>
-               <div class="block-row bg-light"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Calculator" [size]="14"></lucide-icon> Total Sale</span> <span class="fw-bold text-primary">₹{{ sessionData()?.saleOverview?.totalSale }}</span></div>
-               <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Bot" [size]="14"></lucide-icon> Total Bills</span> <span class="fw-semibold">{{ sessionData()?.saleOverview?.totalBills }}</span></div>
+              <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon
+                    [img]="Receipt" [size]="14" class="icon-credit"></lucide-icon> Credit Sale</span> <span
+                  class="fw-semibold">₹{{ sessionData()?.saleOverview?.creditSale }}</span></div>
+              <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon
+                    [img]="Ticket" [size]="14" class="icon-coupon"></lucide-icon> Coupon Sale</span> <span
+                  class="fw-semibold">₹{{ sessionData()?.saleOverview?.couponSale }}</span></div>
+              <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon
+                    [img]="Globe" [size]="14" class="icon-online"></lucide-icon> Online Sale</span> <span
+                  class="fw-semibold">₹{{ sessionData()?.saleOverview?.onlineSale }}</span></div>
+              <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon
+                    [img]="Banknote" [size]="14" class="icon-cash"></lucide-icon> Cash Sale</span> <span
+                  class="fw-semibold">₹{{ sessionData()?.saleOverview?.cashSale }}</span></div>
+              <div class="block-row bg-light"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon
+                    [img]="Calculator" [size]="14" class="icon-total"></lucide-icon> Total Sale</span> <span
+                  class="fw-bold text-primary">₹{{ sessionData()?.saleOverview?.totalSale }}</span></div>
+              <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon
+                    [img]="Bot" [size]="14" class="icon-bills"></lucide-icon> Total Bills</span> <span
+                  class="fw-semibold">{{ sessionData()?.saleOverview?.totalBills }}</span></div>
             </div>
           </div>
-          
+
           <div class="summary-block">
             <div class="block-header">Online</div>
             <div class="block-body">
-               <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Globe" [size]="14"></lucide-icon> Online Sale</span> <span class="fw-semibold">₹{{ sessionData()?.online?.onlineSale }}</span></div>
-               <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Ticket" [size]="14"></lucide-icon> Customer Deposit Online</span> <span class="fw-semibold">₹{{ sessionData()?.online?.customerDepositOnline }}</span></div>
-               <div class="block-row py-1">
-                 <span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Globe" [size]="14"></lucide-icon> Online Difference <span class="text-danger">*</span></span> 
-                 <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
-                   <span class="text-secondary fw-semibold small">₹</span>
-                   <input type="number" class="modern-input flex-grow-1 text-end" [(ngModel)]="onlineDifference" placeholder="0">
-                 </div>
-               </div>
+              <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon
+                    [img]="Globe" [size]="14" class="icon-online"></lucide-icon> Online Sale</span> <span
+                  class="fw-semibold">₹{{ sessionData()?.online?.onlineSale }}</span></div>
+              <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon
+                    [img]="Ticket" [size]="14" class="icon-coupon"></lucide-icon> Customer Deposit Online</span> <span
+                  class="fw-semibold">₹{{ sessionData()?.online?.customerDepositOnline }}</span></div>
+              <div class="block-row py-1">
+                <span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Globe" [size]="14"
+                    class="icon-expense"></lucide-icon> Online Difference <span class="text-danger">*</span></span>
+                <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
+                  <span class="text-secondary fw-semibold small">₹</span>
+                  <input type="number" class="modern-input flex-grow-1 text-end" [(ngModel)]="onlineDifference"
+                    placeholder="0">
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Cash -->
         <div class="col-md-6 d-flex flex-column">
-          <div class="summary-block h-100 d-flex flex-column">
+          <div class="summary-block">
             <div class="block-header">Cash</div>
-            <div class="block-body flex-grow-1">
-               <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Banknote" [size]="14"></lucide-icon> Cash Sale</span> <span class="fw-semibold">₹{{ sessionData()?.cash?.cashSale }}</span></div>
-               <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Receipt" [size]="14"></lucide-icon> Shift Opening</span> <span class="fw-semibold">₹{{ sessionData()?.cash?.openingBalance }}</span></div>
-               <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Ticket" [size]="14"></lucide-icon> Coupon Adv Rec.</span> <span class="fw-semibold">₹{{ sessionData()?.cash?.couponCustomerAdvReceived }}</span></div>
-               
-               <div class="block-row bg-light py-1">
-                 <span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Banknote" [size]="14"></lucide-icon> Other Cash <span class="text-danger">*</span></span> 
-                 <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
-                   <span class="text-secondary fw-semibold small">₹</span>
-                   <input type="number" class="modern-input flex-grow-1 text-end" [(ngModel)]="otherCash" placeholder="0">
-                 </div>
-               </div>
-               
-               <div class="block-row bg-light py-1">
-                 <span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Receipt" [size]="14"></lucide-icon> Expense <span class="text-danger">*</span></span> 
-                 <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
-                   <span class="text-secondary fw-semibold small">₹</span>
-                   <input type="number" class="modern-input flex-grow-1 text-end" [(ngModel)]="expense" placeholder="0">
-                 </div>
-               </div>
-               
-               <div class="block-row bg-light py-1">
-                 <span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Wallet" [size]="14"></lucide-icon> Next Shift Opening <span class="text-danger">*</span></span> 
-                 <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
-                   <span class="text-secondary fw-semibold small">₹</span>
-                   <input type="number" class="modern-input flex-grow-1 text-end" [(ngModel)]="nextShiftOpeningBalance" placeholder="0">
-                 </div>
-               </div>
-            </div>
-            <div class="block-header bg-primary bg-opacity-10 border-top mt-auto p-1 px-2">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-primary fw-bold d-flex align-items-center gap-2"><lucide-icon [img]="Receipt" [size]="16"></lucide-icon> Actual Cash Rec.</span> 
-                    <span class="fw-bold text-primary">₹{{ sessionData()?.cash?.actualCashReceived }}</span>
+            <div class="block-body">
+              <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon
+                    [img]="Banknote" [size]="14" class="icon-cash"></lucide-icon> Cash Sale</span> <span
+                  class="fw-semibold">₹{{ sessionData()?.cash?.cashSale }}</span></div>
+              <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon
+                    [img]="Receipt" [size]="14" class="icon-opening"></lucide-icon> Shift Opening</span> <span
+                  class="fw-semibold">₹{{ sessionData()?.cash?.openingBalance }}</span></div>
+              <div class="block-row"><span class="text-secondary d-flex align-items-center gap-2"><lucide-icon
+                    [img]="Ticket" [size]="14" class="icon-coupon"></lucide-icon> Coupon Adv Rec.</span> <span
+                  class="fw-semibold">₹{{ sessionData()?.cash?.couponCustomerAdvReceived }}</span></div>
+
+              <div class="block-row bg-light py-1">
+                <span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Banknote" [size]="14"
+                    class="icon-other"></lucide-icon> Other Cash <span class="text-danger">*</span></span>
+                <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
+                  <span class="text-secondary fw-semibold small">₹</span>
+                  <input type="number" class="modern-input flex-grow-1 text-end" [(ngModel)]="otherCash"
+                    placeholder="0">
                 </div>
+              </div>
+
+              <div class="block-row bg-light py-1">
+                <span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Receipt" [size]="14"
+                    class="icon-expense"></lucide-icon> Expense <span class="text-danger">*</span></span>
+                <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
+                  <span class="text-secondary fw-semibold small">₹</span>
+                  <input type="number" class="modern-input flex-grow-1 text-end" [(ngModel)]="expense" placeholder="0">
+                </div>
+              </div>
+
+              <div class="block-row bg-light py-1">
+                <span class="text-secondary d-flex align-items-center gap-2"><lucide-icon [img]="Wallet" [size]="14"
+                    class="icon-wallet"></lucide-icon> Next Shift Opening <span class="text-danger">*</span></span>
+                <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
+                  <span class="text-secondary fw-semibold small">₹</span>
+                  <input type="number" class="modern-input flex-grow-1 text-end" [(ngModel)]="nextShiftOpeningBalance"
+                    placeholder="0">
+                </div>
+              </div>
+            </div>
+            <div class="block-header bg-primary bg-opacity-10 border-top p-2 px-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-primary fw-bold d-flex align-items-center gap-2"><lucide-icon [img]="Receipt"
+                    [size]="16" class="icon-actual"></lucide-icon> Actual Cash Rec.</span>
+                <span class="fw-bold text-primary">₹{{ sessionData()?.cash?.actualCashReceived }}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Remark Textarea -->
-      <div class="mt-1">
-        <textarea class="modern-input w-100" rows="1" placeholder="Remark (Optional)" [(ngModel)]="remark" style="resize: none;"></textarea>
+      <div class="mt-2 d-flex flex-column">
+        <label class="fw-bold text-secondary mb-1 text-capitalize" style="letter-spacing: 0.5px; font-size: 0.85rem;">Remark (Optional)</label>
+        <textarea class="modern-input w-100" rows="3" placeholder="Enter session remarks here..." [(ngModel)]="remark"
+          style="resize: none;"></textarea>
       </div>
     </div>
 
     <!-- Right: Denominations -->
     <div class="col-denominations d-flex flex-column gap-2" style="width: 300px; flex-shrink: 0;">
       <div class="modern-card p-2 flex-grow-1 d-flex flex-column">
-          <h6 class="fw-bold text-secondary mb-1 text-uppercase border-bottom pb-1" style="letter-spacing: 1px; font-size: 0.75rem;">Denominations</h6>
-          
-          <div class="flex-grow-1 overflow-auto pe-1">
-              <div class="den-row py-1 px-2" *ngFor="let den of denominations">
-                <div class="fw-bold text-primary small" style="width: 35px;">{{ den }}</div>
-                <div class="text-secondary small">×</div>
-                <input type="number" class="modern-input text-center" style="width: 60px; padding: 1px 2px;" min="0" [value]="cashCounts()[den] || ''" (input)="updateCashCount(den, $any($event.target).value)" placeholder="0">
-                <div class="text-secondary small">=</div>
-                <div class="fw-bold text-end small" style="width: 60px;">₹{{ den * (cashCounts()[den] || 0) }}</div>
-              </div>
-          </div>
+        <h6 class="fw-bold text-secondary mb-1 text-capitalize border-bottom pb-1"
+          style="letter-spacing: 1px; font-size: 0.85rem;">Denominations</h6>
 
-          <!-- Total Collection -->
-          <div class="d-flex justify-content-between align-items-center px-2 py-1 border-top mt-1 bg-light rounded-2">
-            <span class="text-dark fw-semibold small">Total Collection</span>
-            <span class="fw-bold text-dark fs-6">₹{{ totalCollection() }}</span>
+        <div class="flex-grow-1 overflow-auto pe-1">
+          <div class="den-row py-1 px-3" *ngFor="let den of denominations">
+            <div class="fw-bold text-primary" style="width: 42px; font-size: 0.95rem;">{{ den }}</div>
+            <div class="text-secondary fw-semibold" style="font-size: 0.9rem;">×</div>
+            <input type="number" class="modern-input text-center fw-semibold" style="width: 60px; padding: 2px 4px; font-size: 0.95rem;" min="0"
+              [value]="cashCounts()[den] || ''" (input)="updateCashCount(den, $any($event.target).value)"
+              placeholder="0">
+            <div class="text-secondary fw-semibold" style="font-size: 0.9rem;">=</div>
+            <div class="fw-bold text-end text-dark" style="width: 75px; font-size: 0.95rem;">₹{{ den * (cashCounts()[den] || 0) }}</div>
           </div>
+        </div>
 
-          <!-- Difference -->
-          <div class="d-flex justify-content-between align-items-center px-2 py-1 mt-1 rounded-2 border" 
-               [ngClass]="{'bg-danger bg-opacity-10 border-danger border-opacity-25': cashDifference() !== 0, 'bg-success bg-opacity-10 border-success border-opacity-25': cashDifference() === 0}">
-            <span class="fw-semibold small" [ngClass]="{'text-danger': cashDifference() !== 0, 'text-success': cashDifference() === 0}">Difference</span>
-            <span class="fw-bold fs-6" [ngClass]="{'text-danger': cashDifference() !== 0, 'text-success': cashDifference() === 0}">₹{{ cashDifference() }}</span>
-          </div>
+        <!-- Total Collection -->
+        <div class="d-flex justify-content-between align-items-center px-2 py-2 border mt-1 bg-success bg-opacity-10 border-success border-opacity-25 rounded-2">
+          <span class="text-success fw-bold small">Total Collection</span>
+          <span class="fw-bold text-success fs-6">₹{{ totalCollection() }}</span>
+        </div>
+
+        <!-- Difference -->
+        <div class="d-flex justify-content-between align-items-center px-2 py-2 mt-1 rounded-2 border bg-danger bg-opacity-10 border-danger border-opacity-25">
+          <span class="text-danger fw-bold small">Difference</span>
+          <span class="fw-bold text-danger fs-6">₹{{ cashDifference() }}</span>
+        </div>
       </div>
     </div>
-    
+
   </div>
 
   <!-- FOOTER -->
-  <div class="page-footer bg-white px-4 py-2 border-top d-flex justify-content-end gap-3 shadow-sm z-1">
+  <div class="d-flex justify-content-end gap-3 px-3 pb-2 pt-1">
     <button class="btn-cancel" (click)="printSummary()">
       <div class="d-flex align-items-center gap-2">
-        <lucide-icon [img]="Printer" [size]="16"></lucide-icon> Print
+        <lucide-icon [img]="Printer" [size]="16" class="text-primary"></lucide-icon> Print
       </div>
     </button>
     <button class="btn-cancel" (click)="goBack()">
       <div class="d-flex align-items-center gap-2">
-        <lucide-icon [img]="ArrowLeft" [size]="16"></lucide-icon> Back
+        <lucide-icon [img]="ArrowLeft" [size]="16" class="text-secondary"></lucide-icon> Back
       </div>
     </button>
     <button class="btn-confirm" (click)="confirmEndSession()">
       <div class="d-flex align-items-center gap-2">
-        <lucide-icon [img]="LogOut" [size]="16"></lucide-icon> Confirm & Logout
+        <lucide-icon [img]="LogOut" [size]="16" class="text-white"></lucide-icon> Confirm & Logout
       </div>
     </button>
   </div>
