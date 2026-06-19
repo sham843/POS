@@ -10,23 +10,26 @@
 
     <!-- Profile Info (Overlapping) -->
     <div class="profile-section d-flex flex-column align-items-center text-center px-3 pt-0 pb-2 position-relative z-1">
-        <div class="profile-avatar mb-2">
-            <img src="assets/images/avatar.png" alt="Profile" class="rounded-circle shadow" width="55" height="55"
-                (error)="onAvatarError($event)">
-        </div>
-        <span class="role-badge mb-1" style="font-size: 0.65rem; padding: 2px 8px;">{{ userDetails()?.userType | translate | titlecase }}</span>
-        <h3 class="fw-bold mb-1 user-name d-flex align-items-center justify-content-center gap-2" style="font-size: 1.1rem;">
-            {{ userDetails()?.name || 'User Name' }}
-        </h3>
-        <div class="contact-info d-flex align-items-center justify-content-center text-muted mb-0" style="font-size: 0.8rem;">
-            <lucide-icon [img]="Phone" class="me-1"></lucide-icon>
-            <span>{{ userDetails()?.mobileNumber || 'N/A' }}</span>
-        </div>
+      <div class="profile-avatar mb-2">
+        <img src="assets/images/avatar.png" alt="Profile" class="rounded-circle shadow" width="55" height="55"
+          (error)="onAvatarError($event)">
+      </div>
+      <span class="role-badge mb-1" style="font-size: 0.65rem; padding: 2px 8px;">{{ userDetails()?.userType | translate
+        | titlecase }}</span>
+      <h3 class="fw-bold mb-1 user-name d-flex align-items-center justify-content-center gap-2"
+        style="font-size: 1.1rem;">
+        {{ userDetails()?.name || 'User Name' }}
+      </h3>
+      <div class="contact-info d-flex align-items-center justify-content-center text-muted mb-0"
+        style="font-size: 0.8rem;">
+        <lucide-icon [img]="Phone" class="me-1"></lucide-icon>
+        <span>{{ userDetails()?.mobileNumber || 'N/A' }}</span>
+      </div>
     </div>
 
     <!-- Title for Summary -->
     <div class="text-center mb-2 mt-0 position-relative z-1">
-        <span class="text-muted fw-bold" style="font-size: 13px; letter-spacing: 0.5px;">Current Session Summary</span>
+      <span class="text-muted fw-bold" style="font-size: 13px; letter-spacing: 0.5px;">Current Session Summary</span>
     </div>
 
     <!-- Date & Time Row -->
@@ -45,10 +48,10 @@
 
     <!-- Main Content Columns -->
     <div class="row px-4 m-0 w-100">
-      
+
       <!-- Left Column (Sale Overview & Online) -->
       <div class="col-md-6 pe-md-4 mb-3 mb-md-0 ps-0">
-        
+
         <!-- Sale Overview Box -->
         <div class="border rounded-2 mb-3 overflow-hidden">
           <div class="section-header-bg p-1 px-2 border-bottom fw-semibold" style="font-size: 0.9rem;">
@@ -56,27 +59,33 @@
           </div>
           <div class="px-3" style="font-size: 0.85rem;">
             <div class="d-flex justify-content-between py-1 border-bottom-dashed">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Receipt" [size]="14"></lucide-icon> Credit Sale</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Receipt"
+                  [size]="14"></lucide-icon> Credit Sale</span>
               <span class="fw-bold">₹{{ sessionData().saleOverview.creditSale }}</span>
             </div>
             <div class="d-flex justify-content-between py-1 border-bottom-dashed">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Ticket" [size]="14"></lucide-icon> Coupon Sale</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Ticket"
+                  [size]="14"></lucide-icon> Coupon Sale</span>
               <span class="fw-bold">₹{{ sessionData().saleOverview.couponSale }}</span>
             </div>
             <div class="d-flex justify-content-between py-1 border-bottom-dashed">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Globe" [size]="14"></lucide-icon> Online Sale</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Globe"
+                  [size]="14"></lucide-icon> Online Sale</span>
               <span class="fw-bold">₹{{ sessionData().saleOverview.onlineSale }}</span>
             </div>
             <div class="d-flex justify-content-between py-1 border-bottom-dashed">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Banknote" [size]="14"></lucide-icon> Cash Sale</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Banknote"
+                  [size]="14"></lucide-icon> Cash Sale</span>
               <span class="fw-bold">₹{{ sessionData().saleOverview.cashSale }}</span>
             </div>
             <div class="d-flex justify-content-between py-1 border-bottom-dashed">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Calculator" [size]="14"></lucide-icon> Total Sale</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Calculator"
+                  [size]="14"></lucide-icon> Total Sale</span>
               <span class="fw-bold">₹{{ sessionData().saleOverview.totalSale }}</span>
             </div>
             <div class="d-flex justify-content-between py-1">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Bot" [size]="14"></lucide-icon> Total Bills</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Bot"
+                  [size]="14"></lucide-icon> Total Bills</span>
               <span class="fw-bold">{{ sessionData().saleOverview.totalBills }}</span>
             </div>
           </div>
@@ -94,16 +103,18 @@
           </div>
           <div class="px-3" style="font-size: 0.85rem;">
             <div class="d-flex justify-content-between py-1 border-bottom-dashed">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Globe" [size]="14"></lucide-icon> Online Sale</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Globe"
+                  [size]="14"></lucide-icon> Online Sale</span>
               <span class="fw-bold">₹{{ sessionData().online.onlineSale }}</span>
             </div>
             <div class="d-flex justify-content-between py-1">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Ticket" [size]="14"></lucide-icon> Customer Deposit Online</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Ticket"
+                  [size]="14"></lucide-icon> Customer Deposit Online</span>
               <span class="fw-bold">₹{{ sessionData().online.customerDepositOnline }}</span>
             </div>
           </div>
         </div>
-        
+
         <!-- Cash Box -->
         <div class="border rounded-2 overflow-hidden">
           <div class="section-header-bg p-1 px-2 border-bottom fw-semibold" style="font-size: 0.9rem;">
@@ -111,19 +122,23 @@
           </div>
           <div class="px-3" style="font-size: 0.85rem;">
             <div class="d-flex justify-content-between py-1 border-bottom-dashed">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Banknote" [size]="14"></lucide-icon> Cash Sale</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Banknote"
+                  [size]="14"></lucide-icon> Cash Sale</span>
               <span class="fw-bold">₹{{ sessionData().cash.cashSale }}</span>
             </div>
             <div class="d-flex justify-content-between py-1 border-bottom-dashed">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Receipt" [size]="14"></lucide-icon> Opening Balance of Current Shift</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Receipt"
+                  [size]="14"></lucide-icon> Opening Balance of Current Shift</span>
               <span class="fw-bold">₹{{ sessionData().cash.openingBalance }}</span>
             </div>
             <div class="d-flex justify-content-between py-1 border-bottom-dashed">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Ticket" [size]="14"></lucide-icon> Coupon Customer Adv Received</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Ticket"
+                  [size]="14"></lucide-icon> Coupon Customer Adv Received</span>
               <span class="fw-bold">₹{{ sessionData().cash.couponCustomerAdvReceived }}</span>
             </div>
             <div class="d-flex justify-content-between py-1">
-              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Receipt" [size]="14"></lucide-icon> Actual Cash Received</span>
+              <span class="d-flex align-items-center gap-2 text-muted"><lucide-icon [img]="Receipt"
+                  [size]="14"></lucide-icon> Actual Cash Received</span>
               <span class="fw-bold">₹{{ sessionData().cash.actualCashReceived }}</span>
             </div>
           </div>
@@ -133,7 +148,7 @@
     </div>
 
     <!-- Actions -->
-    <div class="d-flex justify-content-end p-3 mt-1 border-top">
+    <div class="d-flex justify-content-end p-3 mt-3 border-top">
       <button mat-stroked-button class="me-3" (click)="goBack()">
         <lucide-icon [img]="ArrowLeft" class="me-2"></lucide-icon>
         Back
