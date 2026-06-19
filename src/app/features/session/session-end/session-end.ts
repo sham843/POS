@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { LucideAngularModule, Store, ReceiptText, Banknote, ScanBarcode, CreditCard, ArrowLeft, LogOut, Wifi, WifiOff, Calendar, Clock, Receipt, Ticket, Globe, Calculator, Bot, Phone, Printer, Wallet } from 'lucide-angular';
+import { LucideAngularModule, Store, ReceiptText, Banknote, ScanBarcode, CreditCard, ArrowLeft, LogOut, Wifi, WifiOff, Calendar, Clock, Receipt, Ticket, Globe, Calculator, Bot, Phone, Printer, Wallet, X } from 'lucide-angular';
 import { MatDividerModule } from '@angular/material/divider';
 import { TranslatePipe } from '@ngx-translate/core';
 import { HealthService } from '../../../core/services/health.service';
 import { NetworkStatusComponent } from '../../../shared/components/network-status/network-status';
+import { FormsModule } from '@angular/forms';
+import { CashReportDrawerComponent } from '../cash-report-drawer/cash-report-drawer.component';
 
 @Component({
   selector: 'app-session-end',
-  imports: [CommonModule, MatCardModule, MatButtonModule, LucideAngularModule, MatDividerModule, NetworkStatusComponent, TranslatePipe],
+  imports: [CommonModule, MatCardModule, MatButtonModule, LucideAngularModule, MatDividerModule, NetworkStatusComponent, TranslatePipe, FormsModule, CashReportDrawerComponent],
   standalone: true,
   templateUrl: './session-end.html',
   styleUrl: './session-end.scss',
@@ -41,6 +43,7 @@ export class SessionEnd {
   readonly Phone = Phone;
   readonly Printer = Printer;
   readonly Wallet = Wallet;
+  readonly X = X;
 
   userDetails = signal<any>(null);
 
@@ -91,6 +94,28 @@ export class SessionEnd {
 
   printSummary() {
     window.print();
+  }
+
+  // Additional Input Fields
+  onlineDifference = signal<number | null>(null);
+  otherCash = signal<number | null>(null);
+  expense = signal<number | null>(null);
+  nextShiftOpeningBalance = signal<number | null>(null);
+
+  // Cash Report Drawer State
+  isCashReportOpen = signal(false);
+
+  openCashReport() {
+    this.isCashReportOpen.set(true);
+  }
+
+  closeCashReport() {
+    this.isCashReportOpen.set(false);
+  }
+
+  saveCashReport(reportData: any) {
+    console.log('Saving cash report from drawer...', reportData);
+    this.closeCashReport();
   }
 
   confirmEndSession() {

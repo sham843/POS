@@ -139,7 +139,7 @@
 
     <!-- Actions -->
     <div class="d-flex justify-content-end p-3 mt-3 border-top bg-light" style="border-bottom-left-radius: 24px; border-bottom-right-radius: 24px;">
-      <button mat-stroked-button class="me-3" (click)="printSummary()">
+      <button mat-stroked-button class="me-3" (click)="openCashReport()">
         <lucide-icon [img]="Printer" class="me-2"></lucide-icon>
         Cash Report
       </button>
@@ -154,3 +154,12 @@
     </div>
   </mat-card>
 </div>
+
+<!-- Use the New Dedicated Component for Cash Report -->
+<app-cash-report-drawer 
+  [isOpen]="isCashReportOpen()" 
+  [sessionData]="sessionData()" 
+  [userDetails]="userDetails()"
+  (closeEvent)="closeCashReport()"
+  (saveEvent)="saveCashReport($event)">
+</app-cash-report-drawer>

@@ -1,0 +1,134 @@
+<div class="drawer-backdrop" *ngIf="isOpen" (click)="closeDrawer()"></div>
+<div class="cash-report-drawer" [class.open]="isOpen">
+  <!-- Header -->
+  <div class="drawer-header p-3 text-white d-flex justify-content-between align-items-center">
+    <h5 class="m-0 fw-bold d-flex align-items-center gap-2">
+      <lucide-icon [img]="Calculator" [size]="20"></lucide-icon> Cash Report
+    </h5>
+    <button class="btn btn-sm btn-icon text-white" (click)="closeDrawer()">
+      <lucide-icon [img]="X" [size]="20"></lucide-icon>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="drawer-body p-4 d-flex gap-4">
+    
+    <!-- Left: Profile & Keypad -->
+    <div class="col-profile d-flex flex-column gap-4" style="width: 250px;">
+      <div class="profile-card text-center p-4 border rounded bg-white shadow-sm">
+        <img src="assets/images/avatar.png" alt="Profile" class="rounded-circle mb-3 border border-3" width="80" height="80">
+        <h5 class="fw-bold mb-1">{{ userDetails?.name || 'Pravin Varpe' }}</h5>
+        <div class="text-muted small mb-3"><lucide-icon [img]="Phone" [size]="14"></lucide-icon> {{ userDetails?.mobileNumber || '8888882881' }}</div>
+        <div class="badge bg-light text-dark px-3 py-2 border fw-bold"><lucide-icon [img]="Bot" [size]="14" class="me-1"></lucide-icon>{{ userDetails?.userType || 'Admin' }}</div>
+      </div>
+      
+      <!-- Keypad -->
+      <div class="keypad-card p-3 border rounded bg-white shadow-sm">
+        <div class="row g-2">
+          <div class="col-4" *ngFor="let key of keypadNumbers">
+            <button class="btn btn-white border w-100 fw-bold fs-5 shadow-sm py-2" (click)="onKeypadPress(key)">{{ key }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle: Session Summary -->
+    <div class="col-summary flex-grow-1 border rounded p-4 bg-white shadow-sm">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="badge bg-success px-3 py-2 fs-6 shadow-sm">Today's Summary</div>
+        <div class="d-flex gap-4 text-muted small fw-semibold">
+          <span class="d-flex align-items-center gap-2"><lucide-icon [img]="Calendar" [size]="16"></lucide-icon> Date {{ sessionData?.date }}</span>
+          <span class="d-flex align-items-center gap-2"><lucide-icon [img]="Clock" [size]="16"></lucide-icon> Start Time {{ sessionData?.startTime }}</span>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Sale Overview & Online -->
+        <div class="col-md-6">
+          <div class="card mb-4 shadow-sm border-0 bg-light">
+            <div class="card-header bg-white border-bottom fw-bold text-muted py-2">Sale Overview</div>
+            <div class="card-body p-0 bg-white">
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom"><span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Receipt" [size]="14"></lucide-icon> Credit Sale</span> <span>₹{{ sessionData?.saleOverview?.creditSale }}</span></div>
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom"><span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Ticket" [size]="14"></lucide-icon> Coupon Sale</span> <span>₹{{ sessionData?.saleOverview?.couponSale }}</span></div>
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom"><span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Globe" [size]="14"></lucide-icon> Online Sale</span> <span>₹{{ sessionData?.saleOverview?.onlineSale }}</span></div>
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom"><span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Banknote" [size]="14"></lucide-icon> Cash Sale</span> <span>₹{{ sessionData?.saleOverview?.cashSale }}</span></div>
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom"><span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Calculator" [size]="14"></lucide-icon> Total Sale</span> <span>₹{{ sessionData?.saleOverview?.totalSale }}</span></div>
+               <div class="d-flex justify-content-between py-2 px-3"><span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Bot" [size]="14"></lucide-icon> Total Bills</span> <span>{{ sessionData?.saleOverview?.totalBills }}</span></div>
+            </div>
+          </div>
+          
+          <div class="card shadow-sm border-0 bg-light">
+            <div class="card-header bg-white border-bottom fw-bold text-muted py-2">Online</div>
+            <div class="card-body p-0 bg-white">
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom"><span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Globe" [size]="14"></lucide-icon> Online Sale</span> <span>₹{{ sessionData?.online?.onlineSale }}</span></div>
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom"><span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Ticket" [size]="14"></lucide-icon> Customer Deposit Online</span> <span>₹{{ sessionData?.online?.customerDepositOnline }}</span></div>
+               <div class="d-flex justify-content-between py-2 px-3 align-items-center">
+                 <span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Globe" [size]="14"></lucide-icon> Online Difference <span class="text-danger">*</span></span> 
+                 <input type="number" class="form-control form-control-sm w-50" [(ngModel)]="onlineDifference">
+               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cash -->
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm border-0 bg-light">
+            <div class="card-header bg-white border-bottom fw-bold text-muted py-2">Cash</div>
+            <div class="card-body p-0 bg-white">
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom"><span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Banknote" [size]="14"></lucide-icon> Cash Sale</span> <span>₹{{ sessionData?.cash?.cashSale }}</span></div>
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom"><span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Receipt" [size]="14"></lucide-icon> Opening Balance of Current Shift</span> <span>₹{{ sessionData?.cash?.openingBalance }}</span></div>
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom"><span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Ticket" [size]="14"></lucide-icon> Coupon Customer Adv Received</span> <span>₹{{ sessionData?.cash?.couponCustomerAdvReceived }}</span></div>
+               
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom align-items-center">
+                 <span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Banknote" [size]="14"></lucide-icon> Other Cash <span class="text-danger">*</span></span> 
+                 <input type="number" class="form-control form-control-sm w-50" [(ngModel)]="otherCash">
+               </div>
+               
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom align-items-center">
+                 <span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Receipt" [size]="14"></lucide-icon> Expense <span class="text-danger">*</span></span> 
+                 <input type="number" class="form-control form-control-sm w-50" [(ngModel)]="expense">
+               </div>
+               
+               <div class="d-flex justify-content-between py-2 px-3 border-bottom align-items-center">
+                 <span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Wallet" [size]="14"></lucide-icon> Opening Balance for Next Shift <span class="text-danger">*</span></span> 
+                 <input type="number" class="form-control form-control-sm w-50" [(ngModel)]="nextShiftOpeningBalance">
+               </div>
+
+               <div class="d-flex justify-content-between py-3 px-3 border-top">
+                 <span class="text-muted d-flex align-items-center gap-2"><lucide-icon [img]="Receipt" [size]="14"></lucide-icon> Actual Cash Received</span> 
+                 <span class="fw-bold fs-6">₹{{ sessionData?.cash?.actualCashReceived }}</span>
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Denominations -->
+    <div class="col-denominations d-flex flex-column gap-3" style="width: 320px;">
+      <div class="denomination-row d-flex align-items-center justify-content-between border rounded p-2 bg-white shadow-sm" *ngFor="let den of denominations">
+        <div class="fw-bold" style="width: 40px;">{{ den }}</div>
+        <div class="text-muted">×</div>
+        <input type="number" class="form-control text-center mx-1 py-1" style="width: 100px;" min="0" [value]="cashCounts()[den] || ''" (input)="updateCashCount(den, $any($event.target).value)">
+        <div class="text-muted">=</div>
+        <div class="fw-bold text-end" style="width: 60px;">₹{{ den * (cashCounts()[den] || 0) }}</div>
+      </div>
+
+      <div class="mt-2 p-3 bg-success bg-opacity-25 rounded border border-success d-flex justify-content-between align-items-center shadow-sm">
+        <span class="d-flex align-items-center gap-2 text-success fw-semibold"><lucide-icon [img]="Wallet" [size]="16"></lucide-icon> Total Collection</span>
+        <span class="fw-bold text-success fs-5">₹{{ totalCollection() }}</span>
+      </div>
+
+      <input type="text" class="form-control mt-2 shadow-sm" placeholder="Remark" [(ngModel)]="remark">
+
+      <div class="fw-bold mt-2 ps-1" style="color: #e83e8c; font-size: 1.1rem;">
+        Difference : ₹{{ cashDifference() }}
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-footer p-3 border-top d-flex justify-content-end gap-3 bg-white shadow-lg">
+    <button class="btn btn-primary px-4 fw-bold shadow-sm" (click)="closeDrawer()">Close</button>
+    <button class="btn btn-danger px-4 fw-bold shadow-sm" (click)="saveReport()">Save</button>
+  </div>
+</div>
