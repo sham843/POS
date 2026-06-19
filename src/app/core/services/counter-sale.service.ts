@@ -591,7 +591,7 @@ export class CounterSaleService {
       const gstonAmount = parseFloat(((item.quantity * item.rate) - (discountAmount + item.gstAmount)).toFixed(2));
 
       return {
-        id: userId,
+        id: 0,
         dcDetailsId: 0,
         invoiceId: 0,
         materialId: item.product?.id || item.product?.code || 0,
@@ -614,7 +614,7 @@ export class CounterSaleService {
     });
 
     const payload = {
-      sessionId: null,
+      sessionId: userDetails?.sessionId || userDetails?.sessionid || null,
       createdDate: now,
       modifiedDate: now,
       isDeleted: false,
