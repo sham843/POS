@@ -570,12 +570,19 @@ export class CounterSaleService {
     }
     let bankCashLedger = 0;
     try {
-      const cashLedgers = await this.dbService.cashLedger.toArray();
-      if (cashLedgers && cashLedgers.length > 0) {
-        bankCashLedger = cashLedgers[0].id || 0;
+      if (paymentMode === 'cash') {
+        const cashLedgers = await this.dbService.cashLedger.toArray();
+        if (cashLedgers && cashLedgers.length > 0) {
+          bankCashLedger = cashLedgers[0].id || 0;
+        }
+      } else {
+        const bankAccountsList = await this.dbService.bankAccounts.toArray();
+        if (bankAccountsList && bankAccountsList.length > 0) {
+          bankCashLedger = bankAccountsList[0].id || 0;
+        }
       }
     } catch (e) {
-      console.error('Failed to load CashLedger from indexedDB', e);
+      console.error('Failed to load bank/cash ledger from indexedDB', e);
     }
 
     const invoiceDetails = this.cartItems().map(item => {
