@@ -29,6 +29,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private swUpdate = inject(SwUpdate);
   currentTime = signal(new Date());
   showProfileMenu = signal(false);
+  userDetails = signal<any>(null);
   private timerInterval: any;
 
   ngOnInit() {
@@ -42,9 +43,27 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
         });
     }
 
+    const userStr = localStorage.getItem('UserDetails');
+    if (userStr) {
+      try {
+        this.userDetails.set(JSON.parse(userStr));
+      } catch (e) {
+        console.error('Failed to parse UserDetails', e);
+      }
+    }
+
     this.timerInterval = setInterval(() => {
       this.currentTime.set(new Date());
     }, 1000);
+  }
+
+  getAvatarInitial(name: string): string {
+    if (!name) return 'PV';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   }
 
   ngOnDestroy() {

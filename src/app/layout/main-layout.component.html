@@ -40,14 +40,14 @@
       <!-- Profile Dropdown Container -->
       <div class="profile-menu-container">
         <button class="profile-avatar" (click)="toggleProfileMenu()">
-          PV
+          {{ getAvatarInitial(userDetails()?.name || 'User') }}
         </button>
         
         <!-- Dropdown Menu -->
         <div class="profile-dropdown" *ngIf="showProfileMenu()">
           <div class="dropdown-header">
-            <span class="user-name">Prashant Varma</span>
-            <span class="user-role">Admin</span>
+            <span class="user-name">{{ userDetails()?.name || 'User Name' }}</span>
+            <span class="user-role">{{ userDetails()?.userType || 'Admin' }}</span>
           </div>
           <div class="dropdown-divider"></div>
           <button class="dropdown-item text-danger" (click)="endSession()">
