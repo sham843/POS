@@ -568,7 +568,15 @@ export class CounterSaleService {
     } catch (e) {
       console.error('Failed to load CompanyLedgerList from indexedDB', e);
     }
-    const bankCashLedger = paymentMode === 'cash' ? 0 : 0; // Or whatever selected bank
+    let bankCashLedger = 0;
+    try {
+      const cashLedgers = await this.dbService.cashLedger.toArray();
+      if (cashLedgers && cashLedgers.length > 0) {
+        bankCashLedger = cashLedgers[0].id || 0;
+      }
+    } catch (e) {
+      console.error('Failed to load CashLedger from indexedDB', e);
+    }
 
     const invoiceDetails = this.cartItems().map(item => {
       // Assuming item.discount is a percentage. For flat rupee amount logic, you'd adapt here.
@@ -588,7 +596,7 @@ export class CounterSaleService {
         purchaseOrderId: 0,
         discountAmount: discountAmount,
         gstonAmount: gstonAmount,
-        igst: 0, // Ignoring IGST for now as per ref default MH state
+        igst: "", // Ignoring IGST for now as per ref default MH state
         cgst: (item.gstAmount / 2).toFixed(2),
         sgst: (item.gstAmount / 2).toFixed(2),
         subTotal: item.amount.toFixed(2),
