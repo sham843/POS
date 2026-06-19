@@ -215,7 +215,7 @@ export class SessionEnd {
       },
       error: (err) => {
         console.error('Failed to end session:', err);
-        alert('Failed to end session. Check console for details.');
+        // alert('Failed to end session. Check console for details.');
       }
     });
   }
