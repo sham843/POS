@@ -58,6 +58,8 @@ export class ProductList implements OnInit, AfterViewInit {
   // Search inside More menu
   menuSearchQuery = signal<string>('');
 
+  stockFilter = signal<'all' | 'in-stock' | 'out-of-stock'>('all');
+
   filteredOverflowCategories = computed(() => {
     const query = this.menuSearchQuery().toLowerCase().trim();
     const overflow = this.overflowCategories();
@@ -315,8 +317,19 @@ export class ProductList implements OnInit, AfterViewInit {
     );
   }
 
+  getStockFilterLabel(): string {
+    const filter = this.stockFilter();
+    if (filter === 'in-stock') return 'In';
+    if (filter === 'out-of-stock') return 'Out';
+    return 'In/Out';
+  }
+
+  setStockFilter(filter: 'all' | 'in-stock' | 'out-of-stock') {
+    this.stockFilter.set(filter);
+    this.currentPage.set(1);
+  }
+
   getStockStatus(p: any): 'in-stock' | 'out-of-stock' {
-    debugger
     let stock = p.availableStock;
 
     // Fallback to stockQty if availableStock is missing or null
@@ -336,5 +349,16 @@ export class ProductList implements OnInit, AfterViewInit {
     }
 
     return isAvailable ? 'in-stock' : 'out-of-stock';
+  }
+
+  getAvailableStock(p: any): number | null {
+    let stock = p.availableStock;
+    if (stock === undefined || stock === null || stock === '') {
+      stock = p.stockQty;
+    }
+    if (stock === undefined || stock === null || stock === '') {
+      return null;
+    }
+    return Number(stock);
   }
 }

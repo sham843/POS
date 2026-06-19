@@ -9,41 +9,48 @@
     }
   </div>
 
-  <!-- Visible category pills row -->
-  <div class="category-pills" #pillsContainer>
-    @for (cat of visibleCategories(); track $index) {
-    <button class="pill-btn" [class.active]="activeCategory() === cat.name" (click)="selectCategory(cat.name)">
-      <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
-    </button>
-    }
+  <!-- Header with Categories and Stock Filter -->
+  <div class="pl-top-bar" style="display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start;">
+    
+    <!-- Visible category pills row -->
+    <div class="category-pills" #pillsContainer style="flex: 1; margin-bottom: 0;">
+      @for (cat of visibleCategories(); track $index) {
+      <button class="pill-btn" [class.active]="activeCategory() === cat.name" (click)="selectCategory(cat.name)">
+        <lucide-icon [img]="Package" class="fa-icon"></lucide-icon> {{ cat.name }}
+      </button>
+      }
 
-    @if (overflowCategories().length > 0) {
-    <button class="pill-btn more-btn" [class.active]="isOverflowActive()" [matMenuTriggerFor]="moreMenu">
-      <lucide-icon [img]="Ellipsis" class="fa-icon"></lucide-icon> More
-    </button>
-    <mat-menu #moreMenu="matMenu" xPosition="before" yPosition="below" class="custom-category-menu"
-      (closed)="clearMenuSearch()">
-      <ng-template matMenuContent>
-        <div class="menu-search-wrapper" (click)="stopPropagation($event)">
-          <lucide-icon [img]="Search" class="search-icon"></lucide-icon>
-          <input type="text" class="menu-search-input" placeholder="Search category..." [value]="menuSearchQuery()"
-            (input)="onMenuSearch($event)">
-        </div>
-        <div class="menu-items-scroll">
-          @for (cat of filteredOverflowCategories(); track $index) {
-          <button mat-menu-item [class.active-menu-item]="activeCategory() === cat.name"
-            (click)="selectCategory(cat.name)">
-            <lucide-icon [img]="Package" class="fa-icon me-2"
-              style="display: inline-block; vertical-align: middle;"></lucide-icon>
-            <span style="vertical-align: middle;">{{ cat.name }}</span>
-          </button>
-          } @empty {
-          <div class="no-results">No categories found</div>
-          }
-        </div>
-      </ng-template>
-    </mat-menu>
-    }
+      @if (overflowCategories().length > 0) {
+      <button class="pill-btn more-btn" [class.active]="isOverflowActive()" [matMenuTriggerFor]="moreMenu">
+        <lucide-icon [img]="Ellipsis" class="fa-icon"></lucide-icon> More
+      </button>
+      <mat-menu #moreMenu="matMenu" xPosition="before" yPosition="below" class="custom-category-menu"
+        (closed)="clearMenuSearch()">
+        <ng-template matMenuContent>
+          <div class="menu-search-wrapper" (click)="stopPropagation($event)">
+            <lucide-icon [img]="Search" class="search-icon"></lucide-icon>
+            <input type="text" class="menu-search-input" placeholder="Search category..." [value]="menuSearchQuery()"
+              (input)="onMenuSearch($event)">
+          </div>
+          <div class="menu-items-scroll">
+            @for (cat of filteredOverflowCategories(); track $index) {
+            <button mat-menu-item [class.active-menu-item]="activeCategory() === cat.name"
+              (click)="selectCategory(cat.name)">
+              <lucide-icon [img]="Package" class="fa-icon me-2"
+                style="display: inline-block; vertical-align: middle;"></lucide-icon>
+              <span style="vertical-align: middle;">{{ cat.name }}</span>
+            </button>
+            } @empty {
+            <div class="no-results">No categories found</div>
+            }
+          </div>
+        </ng-template>
+      </mat-menu>
+      }
+    </div>
+
+
+
   </div>
 
   @if (paginatedProducts().length > 0) {
@@ -66,17 +73,21 @@
           </div>
           <div class="prod-status" [class.in-stock]="getStockStatus(p) === 'in-stock'"
             [class.low-stock]="getStockStatus(p) === 'out-of-stock'">
-            <span class="dot"></span> {{ getStockStatus(p) === 'in-stock' ? 'In' : 'Out' }} 
+            <span class="dot"></span> {{ getStockStatus(p) === 'in-stock' ? 'In' : 'Out' }}
+            @if (getAvailableStock(p) !== null) {
+              - {{ getAvailableStock(p) }}
+            }
           </div>
         </div>
       </div>
-      }
     </div>
-    } @else {
-    <app-empty-state title="Product list not available" message="We couldn't find any products in this category."
-      icon="product">
-    </app-empty-state>
     }
+  </div>
+  } @else {
+  <app-empty-state title="Product list not available" message="We couldn't find any products in this category."
+    icon="product">
+  </app-empty-state>
+  }
 
   <div class="pl-footer">
     <mat-paginator [length]="totalFilteredProductsCount()" [pageSize]="pageSize()" hidePageSize="true"
