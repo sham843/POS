@@ -2,9 +2,103 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 const { app, BrowserWindow, ipcMain, Menu, session, screen, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
 
 let win;
 let defaultPrinterName = null;
+let server = null;
+let serverPort = null;
+
+function startLocalServer() {
+  return new Promise((resolve, reject) => {
+    server = http.createServer((req, res) => {
+      const urlPath = decodeURIComponent(req.url.split('?')[0]);
+
+      // Handle Proxy request (starts with /api)
+      if (urlPath.startsWith('/api/')) {
+        const targetUrlStr = 'http://demoposapi.hitechdairy.in';
+        const parsedTarget = new URL(targetUrlStr);
+        const options = {
+          hostname: parsedTarget.hostname,
+          port: parsedTarget.port || 80,
+          path: req.url,
+          method: req.method,
+          headers: {
+            ...req.headers,
+            host: parsedTarget.hostname,
+          }
+        };
+
+        const proxyReq = http.request(options, (proxyRes) => {
+          res.writeHead(proxyRes.statusCode, proxyRes.headers);
+          proxyRes.pipe(res, { end: true });
+        });
+
+        proxyReq.on('error', (err) => {
+          console.error('[Proxy Error]:', err);
+          res.writeHead(502);
+          res.end('Bad Gateway');
+        });
+
+        req.pipe(proxyReq, { end: true });
+        return;
+      }
+
+      // Serve static files from dist/POS/browser
+      let filePath = path.join(__dirname, 'dist/POS/browser', urlPath);
+
+      // If directory, append index.html
+      if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+        filePath = path.join(filePath, 'index.html');
+      }
+
+      // Fallback to index.html for Angular routing
+      if (!fs.existsSync(filePath)) {
+        filePath = path.join(__dirname, 'dist/POS/browser/index.html');
+      }
+
+      const ext = path.extname(filePath).toLowerCase();
+      const mimeTypes = {
+        '.html': 'text/html',
+        '.css': 'text/css',
+        '.js': 'application/javascript',
+        '.json': 'application/json',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.gif': 'image/gif',
+        '.svg': 'image/svg+xml',
+        '.ico': 'image/x-icon',
+        '.woff': 'font/woff',
+        '.woff2': 'font/woff2',
+        '.ttf': 'font/ttf',
+        '.otf': 'font/otf',
+        '.eot': 'application/vnd.ms-fontobject',
+        '.webmanifest': 'application/manifest+json',
+      };
+      const contentType = mimeTypes[ext] || 'application/octet-stream';
+
+      fs.readFile(filePath, (err, content) => {
+        if (err) {
+          res.writeHead(500);
+          res.end('Error loading file');
+        } else {
+          res.writeHead(200, { 'Content-Type': contentType });
+          res.end(content, 'utf-8');
+        }
+      });
+    });
+
+    server.listen(0, '127.0.0.1', () => {
+      serverPort = server.address().port;
+      console.log(`[Local Server] Running at http://127.0.0.1:${serverPort}`);
+      resolve(serverPort);
+    });
+
+    server.on('error', (err) => {
+      reject(err);
+    });
+  });
+}
 
 async function createWindow() {
   const { width, height } = screen.getPrimaryDisplay().size;
@@ -39,57 +133,31 @@ async function createWindow() {
 
   // Clear cache and load the Angular build URL
   win.webContents.session.clearCache();
-  
-  win.webContents.session.webRequest.onBeforeRequest((details, callback) => {
-    console.log('[webRequest Requesting]:', details.url);
-    callback({});
-  });
-
-  win.webContents.session.webRequest.onErrorOccurred((details) => {
-    console.error('[webRequest ERROR]:', details.url, details.error);
-  });
 
   win.webContents.on('console-message', (event, level, message, line, sourceId) => {
     console.log(`[RENDERER CONSOLE] Level:${level} | ${message} | ${sourceId}:${line}`);
   });
 
-  win.webContents.on('did-start-loading', () => {
-    console.log('[webContents] Started loading');
-  });
-
-  win.webContents.on('did-finish-load', () => {
-    console.log('[webContents] Finished load successfully. Current URL:', win.webContents.getURL());
-    win.webContents.executeJavaScript('document.documentElement.outerHTML')
-      .then((html) => {
-        console.log('[webContents LOG HTML]: length =', html.length);
-        console.log('[webContents LOG HTML]:', html.slice(0, 1000));
-      })
-      .catch(err => {
-        console.error('[webContents EXECUTE JS ERROR]:', err);
-      });
-  });
-
-  win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
-    console.error(`[webContents LOAD FAILED] Code: ${errorCode} | Desc: ${errorDescription} | URL: ${validatedURL}`);
-  });
-
-  win.webContents.on('dom-ready', () => {
-    console.log('[webContents] DOM ready. Current URL:', win.webContents.getURL());
-  });
-
-  const indexPath = path.join(__dirname, 'dist/POS/browser/index.html');
-  console.log('Loading file path:', indexPath);
-  console.log('File exists:', fs.existsSync(indexPath));
-
-  win.loadFile(indexPath);
-  win.webContents.openDevTools();
+  if (serverPort) {
+    win.loadURL(`http://127.0.0.1:${serverPort}`);
+  } else {
+    console.error('Local server port is not set. Unable to load URL.');
+  }
 
   win.on('closed', () => {
     win = null;
   });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(async () => {
+  try {
+    await startLocalServer();
+    createWindow();
+  } catch (err) {
+    console.error('Failed to start local server:', err);
+    app.quit();
+  }
+});
 
 // IPC: Get Printers
 ipcMain.on('get-printers', async (event) => {
@@ -104,7 +172,7 @@ ipcMain.on('get-printers', async (event) => {
 // Handle print request
 ipcMain.on('print-data', (event, printOptions) => {
   console.log('Received print request:', JSON.stringify(printOptions, null, 2));
-  
+
   let printWindow = new BrowserWindow({
     show: false, // Hidden window
     webPreferences: {
@@ -254,6 +322,9 @@ ipcMain.on('print-data', (event, printOptions) => {
 });
 
 app.on('window-all-closed', () => {
+  if (server) {
+    server.close();
+  }
   if (process.platform !== 'darwin') app.quit();
 });
 
