@@ -42,6 +42,8 @@ export class Cart {
   dataSource = this.counterSaleService.cartItems;
   loadedInvoiceDate = this.counterSaleService.invoiceHeader.loadedInvoiceDate;
 
+
+
   // Expose icons to template
   readonly Trash2 = Trash2;
   readonly Package = Package;

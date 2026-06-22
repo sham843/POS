@@ -361,15 +361,4 @@ export class ProductList implements OnInit, AfterViewInit {
     return isAvailable ? 'in-stock' : 'out-of-stock';
   }
 
-  getAvailableStock(p: any): number | null {
-    let stock = p.availableStock;
-    if (stock === undefined || stock === null || stock === '') {
-      stock = p.stockQty;
-    }
-    if (stock === undefined || stock === null || stock === '') {
-      return null;
-    }
-    const stockNum = Number(stock);
-    return stockNum < 0 ? 0 : stockNum;
-  }
 }

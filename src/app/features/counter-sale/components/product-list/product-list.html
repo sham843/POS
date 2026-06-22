@@ -75,9 +75,8 @@
           <div class="prod-status" [class.in-stock]="getStockStatus(p) === 'in-stock'"
             [class.low-stock]="getStockStatus(p) === 'out-of-stock'">
             <span class="dot"></span> {{ getStockStatus(p) === 'in-stock' ? 'In' : 'Out' }}
-            @if (getAvailableStock(p) !== null) {
-            - {{ getAvailableStock(p) }}
-            }
+            {{p?.availableStock }}
+
           </div>
         </div>
       </div>

@@ -539,12 +539,11 @@ export class CounterSaleService {
     this.apiService.get<any>(`api/v1/invoice/byId?billNo=${billNo}`).subscribe({
       next: async (res) => {
         const data = res?.data || res || {};
-        const header = data.invoiceHeader || data;
-        let invoiceDate = header.invoiceDate || header.createdDate || header.showDate || header.transactionDate || null;
+        let invoiceDate = data.invoiceDate || data.createdDate || data.showDate || data.transactionDate || null;
         if (!invoiceDate) {
-          for (const key of Object.keys(header)) {
-            if (key.toLowerCase().includes('date') && header[key]) {
-              invoiceDate = header[key];
+          for (const key of Object.keys(data)) {
+            if (key.toLowerCase().includes('date') && data[key]) {
+              invoiceDate = data[key];
               break;
             }
           }
