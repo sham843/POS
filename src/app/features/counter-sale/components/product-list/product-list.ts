@@ -357,7 +357,7 @@ export class ProductList implements OnInit, AfterViewInit {
       return 'in-stock';
     }
 
-    const isAvailable = Number(stock) > 0;
+    const isAvailable = Number(stock) >= 0;
     return isAvailable ? 'in-stock' : 'out-of-stock';
   }
 

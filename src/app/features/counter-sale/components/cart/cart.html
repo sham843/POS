@@ -38,7 +38,7 @@
           <button class="qty-btn minus" (click)="updateQuantity($index, item.quantity, -1)"><lucide-icon
               [img]="Minus"></lucide-icon></button>
           <span class="qty-val">{{ (counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode()
-            === 'quantity') ? counterSaleService.numpadValue() : item.quantity }}
+            === 'quantity') ? counterSaleService.numpadValue() : (item.quantity | number:'1.0-2') }}
           </span>
           <button class="qty-btn plus" (click)="updateQuantity($index, item.quantity, 1)"><lucide-icon
               [img]="Plus"></lucide-icon></button>
