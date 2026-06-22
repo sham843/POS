@@ -5,12 +5,7 @@
       @if (dataSource().length > 0) {
       <span class="item-count">({{ dataSource().length }} {{ dataSource().length === 1 ? 'Item' : 'Items' }})</span>
       }
-      @if (loadedInvoiceDate) {
-      <span class="invoice-date-badge"
-        style="font-size: 12px; color: #1D4ED8; background: #EFF6FF; border: 1px solid #BFDBFE; padding: 2px 8px; border-radius: 4px; font-weight: 500; margin-left: 8px;">
-        Date: {{loadedInvoiceDate}}
-      </span>
-      }
+
     </div>
     @if (dataSource().length > 0) {
     <button class="clear-cart-btn" (click)="clearCart()">

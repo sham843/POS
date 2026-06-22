@@ -97,6 +97,7 @@ export class CounterSale implements OnInit, OnDestroy {
 
   searchType = this.counterSaleService.searchType;
   searchQuery = this.counterSaleService.searchQuery;
+  invoiceSummary = this.counterSaleService.invoiceHeader;
 
   setSearchType(type: 'product' | 'bill' | 'customer') {
     this.searchType.set(type);

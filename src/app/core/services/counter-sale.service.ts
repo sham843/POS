@@ -69,7 +69,10 @@ export class CounterSaleService {
 
   sessionBillStats = signal<{ bills: number, totalAmount: number, previousBillNo: string }>({ bills: 0, totalAmount: 0, previousBillNo: '' });
   invoiceHeader = {
-    loadedInvoiceDate: signal<string | null>(null)
+    loadedInvoiceDate: signal<string | null>(null),
+    invoiceDate: signal<string | null>(null),
+    invoiceNo: signal<string | null>(null),
+    invoiceId: signal<number | null>(null)
   };
 
   fetchSessionBillStats() {
@@ -524,6 +527,9 @@ export class CounterSaleService {
 
   clearCart() {
     this.invoiceHeader.loadedInvoiceDate.set(null);
+    this.invoiceHeader.invoiceDate.set(null);
+    this.invoiceHeader.invoiceNo.set(null);
+    this.invoiceHeader.invoiceId.set(null);
     this.updateActiveBill({
       cartItems: [],
       selectedCustomer: null,
@@ -539,19 +545,24 @@ export class CounterSaleService {
     this.apiService.get<any>(`api/v1/invoice/byId?billNo=${billNo}`).subscribe({
       next: async (res) => {
         const data = res?.data || res || {};
-        let invoiceDate = data.invoiceDate || data.createdDate || data.showDate || data.transactionDate || null;
+        const rawItems = data.invoiceDetails || data.spinvoicedetailsModel || data.details || [];
+        const invoiceHeaderData = data.invoiceHeader || {};
+        let invoiceDate = invoiceHeaderData.invoiceDate
+          || data.invoiceDate || data.createdDate || data.showDate || data.transactionDate || null;
         if (!invoiceDate) {
-          for (const key of Object.keys(data)) {
-            if (key.toLowerCase().includes('date') && data[key]) {
-              invoiceDate = data[key];
+          for (const key of Object.keys(invoiceHeaderData)) {
+            if (key.toLowerCase().includes('date') && invoiceHeaderData[key]) {
+              invoiceDate = invoiceHeaderData[key];
               break;
             }
           }
         }
         this.invoiceHeader.loadedInvoiceDate.set(invoiceDate);
-        console.log('Invoice data fetched:', data);
+        this.invoiceHeader.invoiceDate.set(invoiceDate);
+        this.invoiceHeader.invoiceNo.set(invoiceHeaderData.invoiceNo || data.invoiceNo || null);
+        this.invoiceHeader.invoiceId.set(invoiceHeaderData.id || data.id || null);
+        console.log('invoiceDate extracted:', invoiceDate, '| invoiceNo:', invoiceHeaderData.invoiceNo, '| id:', invoiceHeaderData.id);
 
-        const rawItems = data.spinvoicedetailsModel || data.invoiceDetails || data.details || [];
         const cartItems: CartItem[] = [];
 
         for (const item of rawItems) {
