@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, ChangeDetectionStrategy, computed } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, } from '@angular/core';
 import { LucideAngularModule, Trash2, Package, Minus, Plus } from 'lucide-angular';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
@@ -40,35 +40,7 @@ export class Cart {
 
   // Data source for the table uses the shared cart state
   dataSource = this.counterSaleService.cartItems;
-  loadedInvoiceDate = this.counterSaleService.invoiceHeader.loadedInvoiceDate;
-  invoiceNo = this.counterSaleService.invoiceHeader.invoiceNo;
-  invoiceId = this.counterSaleService.invoiceHeader.invoiceId;
 
-  // Combines id + invoiceNo + formatted date into one display string
-  invoiceSummary = computed(() => {
-    const raw = this.loadedInvoiceDate();
-    const no = this.invoiceNo();
-    const id = this.invoiceId();
-    if (!raw && !no && !id) return null;
-    let datePart = '';
-    if (raw) {
-      const d = new Date(raw);
-      if (!isNaN(d.getTime())) {
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const day = String(d.getDate()).padStart(2, '0');
-        const mon = months[d.getMonth()];
-        const yr = d.getFullYear();
-        datePart = `${day} ${mon} ${yr}`;
-      } else {
-        datePart = raw;
-      }
-    }
-    const parts: string[] = [];
-    if (id) parts.push(`${id}`);
-    if (no) parts.push(no);
-    if (datePart) parts.push(datePart);
-    return parts.join('/');
-  });
 
   // Expose icons to template
   readonly Trash2 = Trash2;

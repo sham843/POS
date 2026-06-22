@@ -197,6 +197,42 @@
       margin-left: 8px;
     }
   }
+
+  .bill-loaded-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    .bill-info-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 6px;
+      color: #1D4ED8;
+      font-size: 12px;
+      font-weight: 500;
+      height: 28px;
+      box-sizing: border-box;
+      white-space: nowrap;
+
+      lucide-icon {
+        width: 14px;
+        height: 14px;
+        color: #1D4ED8;
+        display: flex;
+        align-items: center;
+      }
+
+      strong {
+        font-weight: 600;
+        color: #1E3A8A;
+      }
+    }
+  }
 }
 
 .search-type-chips {

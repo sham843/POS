@@ -54,11 +54,11 @@
       </div>
 
       @if (searchType() === 'bill' && invoiceSummary.invoiceId()) {
-      <div class="bill-loaded-info"
-        style="display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
-        <span style="font-size: 14px; color: #1D4ED8; background: #EFF6FF; border: 1px solid #BFDBFE; padding: 4px 14px; border-radius: 999px; font-weight: 600; white-space: nowrap;">
-          #{{ invoiceSummary.invoiceId() }} &nbsp;·&nbsp; {{ invoiceSummary.invoiceNo() }} &nbsp;·&nbsp; {{ invoiceSummary.invoiceDate() | date:'dd MMM yyyy' }}
-        </span>
+      <div class="bill-loaded-info">
+        <div class="bill-info-pill">
+          <lucide-icon [img]="ReceiptText"></lucide-icon>
+          <strong>#{{ invoiceSummary.invoiceId() }}</strong> &nbsp;·&nbsp; <strong>{{ invoiceSummary.invoiceNo() }}</strong> &nbsp;·&nbsp; <span>{{ invoiceSummary.invoiceDate() | date:'dd MMM yyyy' }}</span>
+        </div>
       </div>
       }
 
