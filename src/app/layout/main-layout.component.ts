@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
-import { LucideAngularModule, Droplets, PieChart, Monitor, LineChart, Settings, Sun, LogOut } from 'lucide-angular';
+import { LucideAngularModule, Droplets, PieChart, Monitor, LineChart, Settings, Sun, LogOut, Calendar } from 'lucide-angular';
 import { HealthService } from '../core/services/health.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
@@ -24,6 +24,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   readonly Settings = Settings;
   readonly Sun = Sun;
   readonly LogOut = LogOut;
+  readonly Calendar = Calendar;
   router = inject(Router);
   healthService = inject(HealthService);
   private swUpdate = inject(SwUpdate);

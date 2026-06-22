@@ -377,6 +377,91 @@
 .pl-footer {
   margin-top: 16px;
   border-top: 1px solid #E5E7EB;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+
+  .stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+
+    .stat {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid transparent;
+
+      strong {
+        font-weight: 700;
+      }
+    }
+
+    .bill-stat {
+      background-color: #F3F4F6;
+      border-color: #E5E7EB;
+      color: #4B5563;
+
+      strong {
+        color: #111827;
+      }
+    }
+
+    .sales-stat {
+      background-color: #ECFDF5;
+      border-color: #D1FAE5;
+      color: #047857;
+
+      strong {
+        color: #065F46;
+      }
+    }
+
+    .prev-bill-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+
+      lucide-icon {
+        width: 16px;
+        height: 16px;
+        color: #0052CC;
+      }
+
+      .highlight {
+        color: #0052CC;
+        font-weight: 600;
+        font-size: 13px;
+      }
+
+      &:hover {
+        background: #DBEAFE;
+      }
+    }
+
+    .highlight-stat {
+      background-color: #FFF7ED;
+      border-color: #FED7AA;
+      color: #C2410C;
+
+      strong {
+        color: #9A3412;
+      }
+    }
+  }
 
   ::ng-deep {
     .mat-mdc-paginator {

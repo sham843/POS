@@ -59,7 +59,11 @@ export class CounterSale implements OnInit, OnDestroy {
   readonly CheckCircle = CheckCircle;
   readonly ListIcon = List;
 
+  sessionBillStats = this.counterSaleService.sessionBillStats;
+
   ngOnInit() {
+    this.counterSaleService.fetchSessionBillStats();
+
     this.timer = setInterval(() => {
       this.currentTime.set(new Date());
     }, 1000);

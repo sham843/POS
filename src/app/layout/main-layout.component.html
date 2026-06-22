@@ -32,6 +32,12 @@
     </div>
 
     <div class="header-actions">
+      <!-- Date Display -->
+      <div class="header-date">
+        <lucide-icon [img]="Calendar"></lucide-icon>
+        <strong>{{ currentTime() | date:'dd MMM yyyy, hh:mm:ss a' }}</strong>
+      </div>
+
       <!-- Online/Offline Status -->
       <app-network-status></app-network-status>
 

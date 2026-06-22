@@ -67,6 +67,24 @@ export class CounterSaleService {
   bills = signal<BillState[]>([]);
   activeBillId = signal<number>(1);
 
+  sessionBillStats = signal<{ bills: number, totalAmount: number, previousBillNo: string }>({ bills: 0, totalAmount: 0, previousBillNo: '' });
+
+  fetchSessionBillStats() {
+    const sessionId = this.Userdetails.id;
+    this.apiService.get<any>(`api/v1/session/bill/${sessionId}`).subscribe({
+      next: (res) => {
+        const data = res?.data || res || {};
+        console.log('Session Bill Stats API response:', data); // Log the response
+        this.sessionBillStats.set({
+          bills: data.billsCount ?? data.totalBills ?? data.bills ?? 0,
+          totalAmount: data.totalAmount ?? data.totalSales ?? data.salesAmount ?? data.sales ?? 0,
+          previousBillNo: data.previousBillNo ?? data.lastBillNo ?? data.previousBill ?? data.lastInvoiceNo ?? ''
+        });
+      },
+      error: (err) => console.error('Failed to fetch session bill stats', err)
+    });
+  }
+
   activeBill = computed(() => this.bills().find(b => b.id === this.activeBillId()) || this.bills()[0]);
 
   cartItems = computed(() => this.activeBill()?.cartItems || []);
@@ -548,7 +566,7 @@ export class CounterSaleService {
       const billingType = this.selectedCustomer()?.billingType?.toLowerCase();
       counterSaleTypeId = billingType === 'prepaid' ? 4 : 3;
       modeOfPaymentId = 0;
-      modeString = "Credit/Coupon";
+      modeString = billingType === 'prepaid' ? "Coupon" : "Credit";
       isPaymentReceived = 0;
     }
 

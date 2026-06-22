@@ -12,6 +12,7 @@ import { CartItem } from '../../../../core/services/counter-sale.service';
 export interface BillingDialogData {
   paymentMode: 'cash' | 'online' | 'card';
   customerName?: string;
+  billingType?: string;
   cartItems: CartItem[];
   subTotal: number;
   totalDiscount: number;
@@ -58,6 +59,9 @@ export class BillingDialog {
   get paymentLabel(): string {
     if (this.data.paymentMode === 'cash') return 'Cash';
     if (this.data.paymentMode === 'online') return 'Online / UPI';
+    const bType = this.data.billingType?.toLowerCase();
+    if (bType === 'prepaid') return 'Coupon';
+    if (bType) return 'Credit';
     return 'Credit / Coupon';
   }
 

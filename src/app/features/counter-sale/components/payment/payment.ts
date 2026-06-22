@@ -59,10 +59,22 @@ export class Payment {
       return;
     }
 
+    if (paymentMode === 'card') {
+      const customer = this.counterSaleService.selectedCustomer();
+      if (customer?.billingType?.toLowerCase() === 'prepaid') {
+        const balance = customer.balanceAtDairy || customer.balance || 0;
+        if (balance < 0) {
+          this.notificationService.showError('Prepaid customer balance is less than 0. Payment cannot be processed.');
+          return;
+        }
+      }
+    }
+
     const ref = this.dialog.open(BillingDialog, {
       data: {
         paymentMode,
         customerName: this.counterSaleService.selectedCustomer()?.customerName || this.counterSaleService.selectedCustomer()?.name || 'Daily Cash Counter Party',
+        billingType: this.counterSaleService.selectedCustomer()?.billingType,
         cartItems: this.counterSaleService.cartItems(),
         subTotal: this.counterSaleService.subTotal(),
         totalDiscount: this.counterSaleService.totalDiscount(),

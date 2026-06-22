@@ -26,26 +26,24 @@
 
         <!-- Customer selected chip -->
         @if (searchType() === 'customer' && selectedCustomer()) {
-          <div class="selected-customer-chip">
-            <div class="chip-avatar">{{ (selectedCustomer()?.customerName || selectedCustomer()?.name || '?')[0].toUpperCase() }}</div>
-            <span class="chip-name">{{ selectedCustomer()?.customerName || selectedCustomer()?.name }}</span>
-            <button class="chip-clear" (click)="clearSelectedCustomer()" matTooltip="Remove customer">
-              <lucide-icon [img]="X"></lucide-icon>
-            </button>
-          </div>
+        <div class="selected-customer-chip">
+          <div class="chip-avatar">{{ (selectedCustomer()?.customerName || selectedCustomer()?.name ||
+            '?')[0].toUpperCase() }}</div>
+          <span class="chip-name">{{ selectedCustomer()?.customerName || selectedCustomer()?.name }}</span>
+          <button class="chip-clear" (click)="clearSelectedCustomer()" matTooltip="Remove customer">
+            <lucide-icon [img]="X"></lucide-icon>
+          </button>
+        </div>
         } @else {
         <!-- Normal search input -->
-          <input type="text"
-            #searchInput
-            [value]="searchQuery()"
-            [placeholder]="searchType() === 'product' ? 'Search by Product Name' : (searchType() === 'bill' ? 'Search by Bill №.' : 'Search by Customer Name')"
-            (input)="onSearchChange($event)"
-            (keydown.enter)="onSearchEnter()">
-          @if (searchQuery()) {
-          <button class="clear-search-btn" (click)="clearSearch(searchInput)">
-            <lucide-icon [img]="X" class="clear-icon"></lucide-icon>
-          </button>
-          }
+        <input type="text" #searchInput [value]="searchQuery()"
+          [placeholder]="searchType() === 'product' ? 'Search by Product Name' : (searchType() === 'bill' ? 'Search by Bill №.' : 'Search by Customer Name')"
+          (input)="onSearchChange($event)" (keydown.enter)="onSearchEnter()">
+        @if (searchQuery()) {
+        <button class="clear-search-btn" (click)="clearSearch(searchInput)">
+          <lucide-icon [img]="X" class="clear-icon"></lucide-icon>
+        </button>
+        }
         }
 
         @if (searchType() === 'customer') {
@@ -62,8 +60,9 @@
           Credit: <strong>₹{{ selectedCustomer()?.creditLimit || 0 | number:'1.0-2' }}</strong>
         </span>
         <span class="info-pill balance-pill"
-              [class.has-balance]="(selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) !== 0">
-          Balance: <strong>₹{{ (selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) | number:'1.0-2' }}</strong>
+          [class.has-balance]="(selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) !== 0">
+          Balance: <strong>₹{{ (selectedCustomer()?.balanceAtDairy || selectedCustomer()?.balance || 0) | number:'1.0-2'
+            }}</strong>
         </span>
         <button class="add-balance-btn" (click)="openAddBalance()" matTooltip="Add Balance">
           <lucide-icon [img]="Plus"></lucide-icon>
@@ -81,7 +80,8 @@
         </div>
         }
       </div>
-      <button class="add-bill-btn" (click)="addBill()" [disabled]="bills().length >= 5" matTooltip="Maximum 5 bills allowed">
+      <button class="add-bill-btn" (click)="addBill()" [disabled]="bills().length >= 5"
+        matTooltip="Maximum 5 bills allowed">
         <lucide-icon [img]="Plus"></lucide-icon>
       </button>
     </div>
@@ -107,25 +107,6 @@
           <app-payment></app-payment>
         </div>
       </div>
-
-      <!-- RECENT BILLS STRIP -->
-      <div class="recent-bills-strip">
-        <div class="strip-left">
-          <div class="stats">
-            <span class="stat date-stat">
-              <lucide-icon [img]="Calendar"></lucide-icon>
-              <strong>{{ currentTime() | date:'dd MMM yyyy, hh:mm:ss a' }}</strong>
-            </span>
-            <span class="stat bill-stat">Bills: <strong>18</strong></span>
-            <span class="stat sales-stat">Sales: <strong>₹3,920</strong></span>
-          </div>
-        </div>
-        <button class="prev-bill-btn">
-          <lucide-icon [img]="ArrowUp"></lucide-icon>
-          <span class="highlight">Previous Bill #0001</span>
-        </button>
-      </div>
-
     </div>
   </div>
 

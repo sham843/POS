@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, AfterViewInit, inject, signal, computed, ViewChild, ElementRef, HostListener, ChangeDetectionStrategy, effect } from '@angular/core';
-import { LucideAngularModule, Package, Ellipsis, Star, Search, PlusCircle, CheckCircle } from 'lucide-angular';
+import { LucideAngularModule, Package, Ellipsis, Star, Search, PlusCircle, CheckCircle, ArrowUp } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -39,6 +39,9 @@ export class ProductList implements OnInit, AfterViewInit {
   readonly Search = Search;
   readonly PlusCircle = PlusCircle;
   readonly CheckCircle = CheckCircle;
+  readonly ArrowUp = ArrowUp;
+
+  sessionBillStats = this.counterSaleService.sessionBillStats;
 
   // Paginated products and count signals
   paginatedProducts = signal<any[]>([]);

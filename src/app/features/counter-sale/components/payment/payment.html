@@ -46,7 +46,9 @@
     <button class="pay-card card" [disabled]="!counterSaleService.selectedCustomer()" (click)="openBillingDialog('card')">
       <div class="card-content">
         <lucide-icon [img]="CreditCard"></lucide-icon>
-        <span class="label"> Credit/Coupon </span>
+        <span class="label">
+          {{ counterSaleService.selectedCustomer() ? (counterSaleService.selectedCustomer()?.billingType?.toLowerCase() === 'prepaid' ? 'Coupon' : 'Credit') : 'Credit/Coupon' }}
+        </span>
       </div>
     </button>
     <button class="pay-card clear-btn" (click)="clearAll()">
