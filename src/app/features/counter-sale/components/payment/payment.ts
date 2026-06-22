@@ -101,4 +101,20 @@ export class Payment {
     this.counterSaleService.updateSearchQuery('');
     this.notificationService.showSuccess('All fields and cart cleared');
   }
+
+  isCreditInsufficient(): boolean {
+    const customer = this.counterSaleService.selectedCustomer();
+    if (!customer) return false;
+
+    const billingType = (customer.billingType || '').toLowerCase();
+    const totalPayable = this.counterSaleService.totalPayable();
+
+    if (billingType === 'prepaid') {
+      const balance = customer.balanceAtDairy || customer.balance || 0;
+      return balance <= 0 || balance < totalPayable;
+    } else {
+      const creditLimit = customer.creditLimit || 0;
+      return creditLimit <= 0 || creditLimit < totalPayable;
+    }
+  }
 }
