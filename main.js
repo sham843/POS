@@ -1,3 +1,4 @@
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 const { app, BrowserWindow, ipcMain, Menu, session, screen, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
@@ -42,7 +43,7 @@ async function createWindow() {
     console.log(`[RENDERER CONSOLE] Level:${level} | ${message} | ${sourceId}:${line}`);
   });
 
-  win.loadURL(`file://${path.join(__dirname, 'dist/POS/browser/index.html')}`);
+  win.loadFile(path.join(__dirname, 'dist/POS/browser/index.html'));
   win.webContents.openDevTools();
 
   win.on('closed', () => {
