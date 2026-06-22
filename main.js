@@ -17,6 +17,7 @@ async function createWindow() {
       enableRemoteModule: false,
       nodeIntegration: false,
       webSecurity: false,
+      sandbox: false,
       preload: path.join(__dirname, 'preload.js')
     },
   });
@@ -39,11 +40,48 @@ async function createWindow() {
   // Clear cache and load the Angular build URL
   win.webContents.session.clearCache();
   
+  win.webContents.session.webRequest.onBeforeRequest((details, callback) => {
+    console.log('[webRequest Requesting]:', details.url);
+    callback({});
+  });
+
+  win.webContents.session.webRequest.onErrorOccurred((details) => {
+    console.error('[webRequest ERROR]:', details.url, details.error);
+  });
+
   win.webContents.on('console-message', (event, level, message, line, sourceId) => {
     console.log(`[RENDERER CONSOLE] Level:${level} | ${message} | ${sourceId}:${line}`);
   });
 
-  win.loadFile(path.join(__dirname, 'dist/POS/browser/index.html'));
+  win.webContents.on('did-start-loading', () => {
+    console.log('[webContents] Started loading');
+  });
+
+  win.webContents.on('did-finish-load', () => {
+    console.log('[webContents] Finished load successfully. Current URL:', win.webContents.getURL());
+    win.webContents.executeJavaScript('document.documentElement.outerHTML')
+      .then((html) => {
+        console.log('[webContents LOG HTML]: length =', html.length);
+        console.log('[webContents LOG HTML]:', html.slice(0, 1000));
+      })
+      .catch(err => {
+        console.error('[webContents EXECUTE JS ERROR]:', err);
+      });
+  });
+
+  win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+    console.error(`[webContents LOAD FAILED] Code: ${errorCode} | Desc: ${errorDescription} | URL: ${validatedURL}`);
+  });
+
+  win.webContents.on('dom-ready', () => {
+    console.log('[webContents] DOM ready. Current URL:', win.webContents.getURL());
+  });
+
+  const indexPath = path.join(__dirname, 'dist/POS/browser/index.html');
+  console.log('Loading file path:', indexPath);
+  console.log('File exists:', fs.existsSync(indexPath));
+
+  win.loadFile(indexPath);
   win.webContents.openDevTools();
 
   win.on('closed', () => {
