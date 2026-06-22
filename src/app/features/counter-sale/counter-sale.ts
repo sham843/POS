@@ -62,6 +62,7 @@ export class CounterSale implements OnInit, OnDestroy {
   sessionBillStats = this.counterSaleService.sessionBillStats;
 
   ngOnInit() {
+    this.counterSaleService.resetState();
     this.counterSaleService.fetchSessionBillStats();
 
     this.timer = setInterval(() => {

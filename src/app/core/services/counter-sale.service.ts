@@ -572,6 +572,17 @@ export class CounterSaleService {
     });
   }
 
+  resetState() {
+    this.invoiceHeader.loadedInvoiceDate.set(null);
+    this.invoiceHeader.invoiceDate.set(null);
+    this.invoiceHeader.invoiceNo.set(null);
+    this.invoiceHeader.invoiceId.set(null);
+    this.bills.set([this.createEmptyBill(1)]);
+    this.activeBillId.set(1);
+    this.searchQuery.set('');
+    this.searchType.set('product');
+  }
+
   loadInvoiceByBillNo(billNo: string) {
     this.apiService.get<any>(`api/v1/invoice/byId?billNo=${billNo}`).subscribe({
       next: async (res) => {
