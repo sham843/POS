@@ -11,6 +11,7 @@ import { NetworkStatusComponent } from '../../../shared/components/network-statu
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
 import { SessionService } from '../../../core/services/session.service';
+import { DbService } from '../../../core/services/db.service';
 
 @Component({
   selector: 'app-session-end',
@@ -25,6 +26,7 @@ export class SessionEnd {
   public healthService = inject(HealthService);
   apiService = inject(ApiService);
   sessionService = inject(SessionService);
+  dbService = inject(DbService);
 
   // Expose icons to the template
   readonly Store = Store;
@@ -204,7 +206,10 @@ export class SessionEnd {
     };
 
     this.apiService.post<any>('api/v1/session/end', payload).subscribe({
-      next: () => {
+      next: async () => {
+        // Clear IndexedDB
+        await this.dbService.clearAllData();
+
         // Clear all storage
         this.sessionService.clearSessionId();
         localStorage.clear();

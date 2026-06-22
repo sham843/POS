@@ -28,4 +28,13 @@ export class DbService extends Dexie {
       categories: 'id' // Was products
     });
   }
+
+  async clearAllData() {
+    try {
+      await Promise.all(this.tables.map(table => table.clear()));
+      console.log('IndexedDB cleared successfully');
+    } catch (e) {
+      console.error('Failed to clear IndexedDB tables:', e);
+    }
+  }
 }
