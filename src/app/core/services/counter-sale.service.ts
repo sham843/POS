@@ -876,9 +876,6 @@ export class CounterSaleService {
 
     const amountPaid = this.totalPayable();
 
-    console.log(payload)
-
-    return
 
     this.apiService.post('api/v1/invoice/sale', payload).subscribe({
       next: (_res: any) => {
