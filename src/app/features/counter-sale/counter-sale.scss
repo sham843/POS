@@ -363,11 +363,10 @@
 }
 
 
-/* MAIN LAYOUT SPLIT */
 .pos-main-content {
   flex: 1;
   display: flex;
-  padding: 16px;
+  padding: 16px 16px 0 16px;
   /* 32px padding on the left to balance right side */
   gap: 16px;
   overflow: hidden;
@@ -387,11 +386,13 @@
   /* Approx 45% width */
   display: flex;
   flex-direction: column;
+  // justify-content: space-between;
   overflow: hidden;
-  gap: 8px;
+  gap: 12px;
 
   .cart-section-container {
     flex: 1;
+    max-height: 290px;
     background: #ffffff;
     border-radius: 12px;
     border: 1px solid #E5E7EB;
@@ -412,7 +413,7 @@
     border: 1px solid #E5E7EB;
     border-radius: 12px;
     overflow: hidden;
-    height: 236px;
+    height: 270px;
 
     .checkout-left-pane {
       flex: 2;
@@ -444,66 +445,66 @@
     }
   }
 
-/* --- RESPONSIVE DESIGN --- */
+  /* --- RESPONSIVE DESIGN --- */
 
-@media (max-width: 1200px) {
-  .pos-main-content {
-    flex-direction: column;
-    overflow-y: auto;
-  }
+  @media (max-width: 1200px) {
+    .pos-main-content {
+      flex-direction: column;
+      overflow-y: auto;
+    }
 
-  .pos-left-side {
-    flex: none;
-    min-height: 500px;
-    height: 50vh;
-  }
+    .pos-left-side {
+      flex: none;
+      min-height: 500px;
+      height: 50vh;
+    }
 
-  .pos-right-side {
-    flex: none;
-    height: auto;
-  }
+    .pos-right-side {
+      flex: none;
+      height: auto;
+    }
 
-  .custom-pos-layout {
-    overflow-y: auto;
-  }
-}
-
-@media (max-width: 768px) {
-  .pos-sub-header {
-    height: auto;
-    flex-wrap: wrap;
-    padding: 12px;
-    gap: 12px;
-  }
-
-  .search-type-chips {
-    flex: 1;
-    min-width: 100%;
-    justify-content: flex-start;
-    overflow-x: auto;
-  }
-
-  .sub-header-search {
-    max-width: 100%;
-    min-width: 100%;
-    order: 2;
-  }
-
-  .bill-tabs-container {
-    width: 100%;
-    justify-content: flex-start;
-    order: 3;
-    overflow-x: auto;
-  }
-
-  .checkout-unified-card {
-    flex-direction: column;
-
-    .payment-divider-vertical {
-      width: 100%;
-      height: 1px;
+    .custom-pos-layout {
+      overflow-y: auto;
     }
   }
+
+  @media (max-width: 768px) {
+    .pos-sub-header {
+      height: auto;
+      flex-wrap: wrap;
+      padding: 12px;
+      gap: 12px;
+    }
+
+    .search-type-chips {
+      flex: 1;
+      min-width: 100%;
+      justify-content: flex-start;
+      overflow-x: auto;
+    }
+
+    .sub-header-search {
+      max-width: 100%;
+      min-width: 100%;
+      order: 2;
+    }
+
+    .bill-tabs-container {
+      width: 100%;
+      justify-content: flex-start;
+      order: 3;
+      overflow-x: auto;
+    }
+
+    .checkout-unified-card {
+      flex-direction: column;
+
+      .payment-divider-vertical {
+        width: 100%;
+        height: 1px;
+      }
+    }
   }
 }
 
@@ -536,7 +537,9 @@
       border-color: #BBF7D0;
       color: #166534;
 
-      strong { color: #15803D; }
+      strong {
+        color: #15803D;
+      }
     }
 
     &.balance-pill {
@@ -544,14 +547,18 @@
       border-color: #E5E7EB;
       color: #6B7280;
 
-      strong { color: #374151; }
+      strong {
+        color: #374151;
+      }
 
       &.has-balance {
         background: #FFF7ED;
         border-color: #FED7AA;
         color: #92400E;
 
-        strong { color: #C2410C; }
+        strong {
+          color: #C2410C;
+        }
       }
     }
   }
@@ -582,4 +589,3 @@
     }
   }
 }
-
