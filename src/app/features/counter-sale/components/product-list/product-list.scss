@@ -375,12 +375,12 @@
 
 /* Footer / Pagination */
 .pl-footer {
-  margin-top: 16px;
+  margin-top: 14px;
   border-top: 1px solid #E5E7EB;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 8px;
+  padding-top: 1px;
 
   .stats {
     display: flex;
@@ -472,7 +472,8 @@
     .mat-mdc-paginator-container {
       justify-content: flex-end !important;
       padding: 0 !important;
-      min-height: 48px !important;
+      min-height: 32px !important;
+      height: 32px !important;
     }
 
     .mat-mdc-paginator-range-label {

@@ -11,7 +11,7 @@
 
   <!-- Header with Categories and Stock Filter -->
   <div class="pl-top-bar" style="display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start;">
-    
+
     <!-- Visible category pills row -->
     <div class="category-pills" #pillsContainer style="flex: 1; margin-bottom: 0;">
       @for (cat of visibleCategories(); track $index) {
@@ -57,7 +57,8 @@
   <div class="products-grid">
     @for (p of paginatedProducts(); track p.id || $index) {
     <div class="prod-card" (click)="addToCart(p)" style="cursor: pointer;" [class.in-cart]="isInCart(p)">
-      <lucide-icon [img]="isInCart(p) ? CheckCircle : PlusCircle" [strokeWidth]="isInCart(p) ? 3 : 2" class="cart-icon" [class.active]="isInCart(p)"></lucide-icon>
+      <lucide-icon [img]="isInCart(p) ? CheckCircle : PlusCircle" [strokeWidth]="isInCart(p) ? 3 : 2" class="cart-icon"
+        [class.active]="isInCart(p)"></lucide-icon>
       <div class="prod-image">
         <div class="img-placeholder">
           <img [src]="p.image || p.imageUrl || 'https://placehold.co/100x100?text=No+Image'"
@@ -75,7 +76,7 @@
             [class.low-stock]="getStockStatus(p) === 'out-of-stock'">
             <span class="dot"></span> {{ getStockStatus(p) === 'in-stock' ? 'In' : 'Out' }}
             @if (getAvailableStock(p) !== null) {
-              - {{ getAvailableStock(p) }}
+            - {{ getAvailableStock(p) }}
             }
           </div>
         </div>
@@ -90,9 +91,10 @@
   }
 
   <div class="pl-footer">
-    <div class="stats">
+    <div class="stats pt-2">
       <span class="stat bill-stat">Bills: <strong>{{ sessionBillStats().bills }}</strong></span>
-      <span class="stat sales-stat">Sales: <strong>₹{{ sessionBillStats().totalAmount | number:'1.0-2' }}</strong></span>
+      <span class="stat sales-stat">Sales: <strong>₹{{ sessionBillStats().totalAmount | number:'1.0-2'
+          }}</strong></span>
       @if (sessionBillStats().previousBillNo) {
       <button class="prev-bill-btn">
         <lucide-icon [img]="ArrowUp"></lucide-icon>

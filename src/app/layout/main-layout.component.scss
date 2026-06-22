@@ -139,38 +139,39 @@
   }
 }
 
+.header-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-radius: 6px;
+  color: #1D4ED8;
+  font-size: 12px;
+  font-weight: 500;
+  height: 28px;
+  box-sizing: border-box;
+  margin-left: 16px;
+
+  lucide-icon {
+    width: 14px;
+    height: 14px;
+    color: #1D4ED8;
+    display: flex;
+    align-items: center;
+  }
+
+  strong {
+    font-weight: 600;
+    color: #1E3A8A;
+  }
+}
+
 .header-actions {
   display: flex;
   align-items: center;
   gap: 16px;
-
-  .header-date {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    background: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    color: #4B5563;
-    font-size: 13px;
-    font-weight: 500;
-    height: 40px;
-    box-sizing: border-box;
-
-    lucide-icon {
-      width: 16px;
-      height: 16px;
-      color: #6B7280;
-      display: flex;
-      align-items: center;
-    }
-
-    strong {
-      font-weight: 600;
-      color: #111827;
-    }
-  }
 
   .action-block {
     display: flex;

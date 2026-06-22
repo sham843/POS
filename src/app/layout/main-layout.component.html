@@ -8,6 +8,12 @@
       <div class="brand-name">Dairy Shop POS</div>
     </div>
 
+    <!-- Date Display -->
+    <div class="header-date">
+      <lucide-icon [img]="Calendar"></lucide-icon>
+      <strong>{{ currentTime() | date:'dd MMM yyyy, hh:mm:ss a' }}</strong>
+    </div>
+
     <!-- Push items to the right -->
     <div style="flex: 1"></div>
 
@@ -32,12 +38,6 @@
     </div>
 
     <div class="header-actions">
-      <!-- Date Display -->
-      <div class="header-date">
-        <lucide-icon [img]="Calendar"></lucide-icon>
-        <strong>{{ currentTime() | date:'dd MMM yyyy, hh:mm:ss a' }}</strong>
-      </div>
-
       <!-- Online/Offline Status -->
       <app-network-status></app-network-status>
 
