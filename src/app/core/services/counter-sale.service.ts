@@ -68,6 +68,9 @@ export class CounterSaleService {
   activeBillId = signal<number>(1);
 
   sessionBillStats = signal<{ bills: number, totalAmount: number, previousBillNo: string }>({ bills: 0, totalAmount: 0, previousBillNo: '' });
+  invoiceHeader = {
+    loadedInvoiceDate: signal<string | null>(null)
+  };
 
   fetchSessionBillStats() {
     const sessionId = this.Userdetails.id;
@@ -520,6 +523,7 @@ export class CounterSaleService {
   }
 
   clearCart() {
+    this.invoiceHeader.loadedInvoiceDate.set(null);
     this.updateActiveBill({
       cartItems: [],
       selectedCustomer: null,
@@ -528,6 +532,94 @@ export class CounterSaleService {
       numpadValue: '',
       numpadShouldReplace: false,
       numpadHasQuickWeight: false
+    });
+  }
+
+  loadInvoiceByBillNo(billNo: string) {
+    this.apiService.get<any>(`api/v1/invoice/byId?billNo=${billNo}`).subscribe({
+      next: async (res) => {
+        const data = res?.data || res || {};
+        const header = data.invoiceHeader || data;
+        let invoiceDate = header.invoiceDate || header.createdDate || header.showDate || header.transactionDate || null;
+        if (!invoiceDate) {
+          for (const key of Object.keys(header)) {
+            if (key.toLowerCase().includes('date') && header[key]) {
+              invoiceDate = header[key];
+              break;
+            }
+          }
+        }
+        this.invoiceHeader.loadedInvoiceDate.set(invoiceDate);
+        console.log('Invoice data fetched:', data);
+
+        const rawItems = data.spinvoicedetailsModel || data.invoiceDetails || data.details || [];
+        const cartItems: CartItem[] = [];
+
+        for (const item of rawItems) {
+          const materialId = item.materialId || item.productId || 0;
+          let product = null;
+          if (materialId) {
+            product = await this.dbService.products.get(materialId);
+          }
+
+          if (!product) {
+            product = {
+              id: materialId,
+              productName: item.materialName || item.productName || 'Unknown Product',
+              salePrice: item.rate || 0,
+              gst: (item.cgst + item.sgst) || item.gst || 0
+            };
+          }
+
+          const rate = item.rate || product.salePrice || 0;
+          const gst = item.gst || product.gst || 0;
+          const qty = item.quantity || 1;
+          const discount = item.discount || 0;
+
+          const isExcluded = (product.computationMethod || '').toUpperCase().includes('EXCLUDED');
+          const amount = isExcluded
+            ? Math.round((rate * qty) * 100) / 100
+            : Math.round(((rate * qty) / (1 + gst / 100)) * 100) / 100;
+          const netAmount = Math.round((amount - (amount * discount / 100)) * 100) / 100;
+          const gstAmount = Math.round((netAmount * gst / 100) * 100) / 100;
+
+          cartItems.push({
+            product: product,
+            details: product.productName || product.materialName || product.name || 'Unknown Product',
+            quantity: qty,
+            rate: rate,
+            discount: discount,
+            amount: amount,
+            netAmount: netAmount,
+            gst: gst,
+            gstAmount: gstAmount,
+            total: Math.round((netAmount + gstAmount) * 100) / 100,
+            unit: product.unit || product.uom || product.unitName || product.mensurationUnit || ''
+          });
+        }
+
+        const partyId = data.partyId || data.customerId || 0;
+        let selectedCustomer = null;
+        if (partyId) {
+          selectedCustomer = await this.dbService.customerList.get(partyId);
+        }
+
+        this.updateActiveBill({
+          cartItems: cartItems,
+          selectedCustomer: selectedCustomer,
+          selectedItemIndex: cartItems.length > 0 ? 0 : null,
+          numpadMode: 'quantity',
+          numpadValue: cartItems.length > 0 ? cartItems[0].quantity.toString() : '',
+          numpadShouldReplace: true,
+          numpadHasQuickWeight: false
+        });
+
+        this.notificationService.showSuccess(`Invoice #${billNo} loaded into cart.`);
+      },
+      error: (err) => {
+        console.error('Failed to load invoice:', err);
+        this.notificationService.showError(`Failed to load Invoice #${billNo}`);
+      }
     });
   }
 

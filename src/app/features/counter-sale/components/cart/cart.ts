@@ -40,6 +40,7 @@ export class Cart {
 
   // Data source for the table uses the shared cart state
   dataSource = this.counterSaleService.cartItems;
+  loadedInvoiceDate = this.counterSaleService.invoiceHeader.loadedInvoiceDate;
 
   // Expose icons to template
   readonly Trash2 = Trash2;

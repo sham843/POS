@@ -96,9 +96,9 @@
       <span class="stat sales-stat">Sales: <strong>₹{{ sessionBillStats().totalAmount | number:'1.0-2'
           }}</strong></span>
       @if (sessionBillStats().previousBillNo) {
-      <button class="prev-bill-btn">
+      <button class="prev-bill-btn" (click)="loadPreviousBill(sessionBillStats().previousBillNo)">
         <lucide-icon [img]="ArrowUp"></lucide-icon>
-        <span class="highlight">Previous Bill : {{ sessionBillStats().previousBillNo }}</span>
+        <span class="highlight">{{sessionBillStats().previousBillNo}}</span>
       </button>
       }
     </div>

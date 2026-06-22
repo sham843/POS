@@ -1,10 +1,15 @@
 <div class="custom-cart">
-
   <div class="cart-header">
     <div class="cart-title">
       <h3>Cart</h3>
       @if (dataSource().length > 0) {
       <span class="item-count">({{ dataSource().length }} {{ dataSource().length === 1 ? 'Item' : 'Items' }})</span>
+      }
+      @if (loadedInvoiceDate()) {
+      <span class="invoice-date-badge"
+        style="font-size: 12px; color: #1D4ED8; background: #EFF6FF; border: 1px solid #BFDBFE; padding: 2px 8px; border-radius: 4px; font-weight: 500; margin-left: 8px;">
+        Date: {{ loadedInvoiceDate() | date:'dd MMM yyyy, hh:mm a' }}
+      </span>
       }
     </div>
     @if (dataSource().length > 0) {
@@ -17,48 +22,48 @@
   <div class="cart-items-list">
 
     @if (dataSource().length > 0) {
-      <!-- Dynamic Cart Items from Backend/Store -->
-      @for (item of dataSource(); track $index) {
-      <div class="cart-item"
-        [class.selected]="counterSaleService.selectedItemIndex() === $index" (click)="counterSaleService.selectItem($index)">
-        <div class="item-image">
-          <!-- Generic Package icon for all items -->
-          <lucide-icon [img]="Package" class="item-icon-milk"></lucide-icon>
-        </div>
-        <div class="item-details">
-          <div class="item-name">{{ item.details }}</div>
-          <div class="item-price">₹{{ item.rate | number:'1.2-2' }}
-            @if (item.gst) {
-            <span class="item-gst">(+ {{ item.gst }}% GST: ₹{{ item.gstAmount | number:'1.2-2' }})</span>
-            }
-          </div>
-        </div>
-        <div class="item-controls-row">
-          <div class="item-qty-control" (click)="counterSaleService.setNumpadMode('quantity')">
-            <button class="qty-btn minus" (click)="updateQuantity($index, item.quantity, -1)"><lucide-icon
-                [img]="Minus"></lucide-icon></button>
-            <span class="qty-val">{{ (counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode()
-              === 'quantity') ? counterSaleService.numpadValue() : item.quantity }}
-            </span>
-            <button class="qty-btn plus" (click)="updateQuantity($index, item.quantity, 1)"><lucide-icon
-                [img]="Plus"></lucide-icon></button>
-          </div>
-          <input type="text" inputmode="decimal" placeholder="Amt" class="tiny-input amt-input"
-            [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'amount') ? counterSaleService.numpadValue() : item.netAmount"
-            (change)="onAmountChange($index, $event)" (focus)="counterSaleService.setNumpadMode('amount')"
-            (click)="counterSaleService.setNumpadMode('amount')" [readonly]="item.product?.mensurationUnit === 'Nos'" />
-          <input type="text" inputmode="decimal" placeholder="Disc %" class="tiny-input disc-input"
-            [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'discount') ? counterSaleService.numpadValue() : (item.discount > 0 ? item.discount : '')"
-            (change)="onDiscountChange($index, $event)" (focus)="counterSaleService.setNumpadMode('discount')"
-            (click)="counterSaleService.setNumpadMode('discount')" />
-        </div>
-        <div class="item-total">₹{{ item.total | number:'1.2-2' }}</div>
-        <button class="delete-btn" (click)="removeItem($index)"><lucide-icon [img]="Trash2"></lucide-icon></button>
+    <!-- Dynamic Cart Items from Backend/Store -->
+    @for (item of dataSource(); track $index) {
+    <div class="cart-item" [class.selected]="counterSaleService.selectedItemIndex() === $index"
+      (click)="counterSaleService.selectItem($index)">
+      <div class="item-image">
+        <!-- Generic Package icon for all items -->
+        <lucide-icon [img]="Package" class="item-icon-milk"></lucide-icon>
       </div>
-      }
+      <div class="item-details">
+        <div class="item-name">{{ item.details }}</div>
+        <div class="item-price">₹{{ item.rate | number:'1.2-2' }}
+          @if (item.gst) {
+          <span class="item-gst">(+ {{ item.gst }}% GST: ₹{{ item.gstAmount | number:'1.2-2' }})</span>
+          }
+        </div>
+      </div>
+      <div class="item-controls-row">
+        <div class="item-qty-control" (click)="counterSaleService.setNumpadMode('quantity')">
+          <button class="qty-btn minus" (click)="updateQuantity($index, item.quantity, -1)"><lucide-icon
+              [img]="Minus"></lucide-icon></button>
+          <span class="qty-val">{{ (counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode()
+            === 'quantity') ? counterSaleService.numpadValue() : item.quantity }}
+          </span>
+          <button class="qty-btn plus" (click)="updateQuantity($index, item.quantity, 1)"><lucide-icon
+              [img]="Plus"></lucide-icon></button>
+        </div>
+        <input type="text" inputmode="decimal" placeholder="Amt" class="tiny-input amt-input"
+          [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'amount') ? counterSaleService.numpadValue() : item.netAmount"
+          (change)="onAmountChange($index, $event)" (focus)="counterSaleService.setNumpadMode('amount')"
+          (click)="counterSaleService.setNumpadMode('amount')" [readonly]="item.product?.mensurationUnit === 'Nos'" />
+        <input type="text" inputmode="decimal" placeholder="Disc %" class="tiny-input disc-input"
+          [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'discount') ? counterSaleService.numpadValue() : (item.discount > 0 ? item.discount : '')"
+          (change)="onDiscountChange($index, $event)" (focus)="counterSaleService.setNumpadMode('discount')"
+          (click)="counterSaleService.setNumpadMode('discount')" />
+      </div>
+      <div class="item-total">₹{{ item.total | number:'1.2-2' }}</div>
+      <button class="delete-btn" (click)="removeItem($index)"><lucide-icon [img]="Trash2"></lucide-icon></button>
+    </div>
+    }
     } @else {
-      <app-empty-state title="Cart is empty" message="Add products to start checkout." icon="cart">
-      </app-empty-state>
+    <app-empty-state title="Cart is empty" message="Add products to start checkout." icon="cart">
+    </app-empty-state>
     }
 
   </div>

@@ -296,6 +296,18 @@ export class ProductList implements OnInit, AfterViewInit {
     this.pageSize.set(event.pageSize);
   }
 
+  getShortBillNo(billNo: string): string {
+    if (!billNo) return '';
+    return billNo.split('/')[0];
+  }
+
+  loadPreviousBill(billNo: string) {
+    if (billNo) {
+      const cleanBillNo = this.getShortBillNo(billNo);
+      this.counterSaleService.loadInvoiceByBillNo(cleanBillNo);
+    }
+  }
+
   addToCart(product: any) {
     this.counterSaleService.addToCart(product);
   }

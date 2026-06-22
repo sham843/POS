@@ -73,6 +73,12 @@ export class CounterSale implements OnInit, OnDestroy {
     ).subscribe(value => {
       if (this.searchType() === 'customer' && value.trim().length > 0) {
         this.onSearchEnter(true); // show snackbar after debounce if not found
+      } else if (this.searchType() === 'bill') {
+        if (value.trim().length > 0) {
+          this.onSearchEnter(false); // fetch bill on debounce silently without error snackbar
+        } else {
+          this.counterSaleService.clearCart();
+        }
       }
     });
   }
@@ -99,6 +105,7 @@ export class CounterSale implements OnInit, OnDestroy {
       this.searchInput.nativeElement.value = '';
     }
     this.searchSubject.next('');
+    this.counterSaleService.clearCart();
   }
 
   openCustomerDrawer() {
@@ -143,6 +150,12 @@ export class CounterSale implements OnInit, OnDestroy {
       } else if (showSnackbar) {
         this.notificationService.showError('Customer not found matching "' + query + '"');
       }
+    } else if (this.searchType() === 'bill') {
+      const query = this.searchQuery().trim();
+      if (!query) return;
+
+      const cleanBillNo = query.split('/')[0];
+      this.counterSaleService.loadInvoiceByBillNo(cleanBillNo);
     }
   }
 
@@ -150,6 +163,9 @@ export class CounterSale implements OnInit, OnDestroy {
     this.counterSaleService.updateSearchQuery('');
     inputEl.value = '';
     this.searchSubject.next('');
+    if (this.searchType() === 'bill') {
+      this.counterSaleService.clearCart();
+    }
   }
 
   addBill() {
