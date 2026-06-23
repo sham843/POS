@@ -134,8 +134,14 @@ async function createWindow() {
   // Clear cache and load the Angular build URL
   win.webContents.session.clearCache();
 
-  win.webContents.on('console-message', (event, level, message, line, sourceId) => {
-    console.log(`[RENDERER CONSOLE] Level:${level} | ${message} | ${sourceId}:${line}`);
+  win.webContents.on('console-message', (event, ...args) => {
+    if (args.length === 1 && typeof args[0] === 'object' && args[0] !== null) {
+      const { level, message, line, sourceId } = args[0];
+      console.log(`[RENDERER CONSOLE] Level:${level} | ${message} | ${sourceId}:${line}`);
+    } else {
+      const [level, message, line, sourceId] = args;
+      console.log(`[RENDERER CONSOLE] Level:${level} | ${message} | ${sourceId}:${line}`);
+    }
   });
 
   if (serverPort) {
