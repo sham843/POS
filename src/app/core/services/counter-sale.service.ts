@@ -111,6 +111,7 @@ export class CounterSaleService {
   taxableAmount = computed(() => this.subTotal() - this.totalDiscount());
   totalGst = computed(() => this.cartItems().reduce((acc, item) => acc + item.gstAmount, 0));
   billAmount = computed(() => this.taxableAmount() + this.totalGst());
+  total = computed(() => this.cartItems().reduce((acc, item) => acc + item.total, 0));
   roundOff = computed(() => Math.ceil(this.billAmount()) - this.billAmount());
   totalPayable = computed(() => Math.ceil(this.billAmount()));
 
@@ -656,6 +657,7 @@ export class CounterSaleService {
           selectedCustomer = await this.dbService.customerList.get(partyId);
         }
 
+
         this.updateActiveBill({
           cartItems: cartItems,
           selectedCustomer: selectedCustomer,
@@ -772,7 +774,7 @@ export class CounterSaleService {
         igst: "0.00", // Ignoring IGST for now as per ref default MH state
         cgst: (item.gstAmount / 2).toFixed(2),
         sgst: (item.gstAmount / 2).toFixed(2),
-        subTotal: item.amount.toFixed(2),
+        subTotal: this.totalPayable().toFixed(2),
         unitId: unitId,
         serverId: 0,
         StockHistoryLocalId: 0
@@ -792,7 +794,7 @@ export class CounterSaleService {
       modifiedBy: userId,
       voucherTypeId: 1,
       discountAmount: this.totalDiscount().toFixed(2),
-      totalAmount: this.subTotal().toFixed(2),
+      totalAmount: this.total().toFixed(2),
       roundOff: this.roundOff().toFixed(2),
       paymentNote: "",
       deliveryNote: "",
@@ -832,8 +834,8 @@ export class CounterSaleService {
         ledger1: partyId,
         ledger2: companyLedgerId,
         bankCashLedger: bankCashLedger,
-        credit: this.totalPayable(),
-        debit: this.totalPayable(),
+        credit: 0, //this.totalPayable(),
+        debit: 0, // this.totalPayable(),
         ledgerAmount: parseFloat(this.totalPayable().toFixed(2)),
         transactionDate: now,
         modeOfPaymentId: modeOfPaymentId,
@@ -876,6 +878,9 @@ export class CounterSaleService {
 
     const amountPaid = this.totalPayable();
 
+    console.log(payload)
+
+    return
 
     this.apiService.post('api/v1/invoice/sale', payload).subscribe({
       next: (_res: any) => {
