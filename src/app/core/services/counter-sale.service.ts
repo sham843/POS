@@ -51,13 +51,10 @@ export class CounterSaleService {
     if (userStr) {
       try {
         const parsed = JSON.parse(userStr);
-        console.log('Userdetails ID:', parsed?.id);
         return parsed;
       } catch (e) {
-        console.error('Failed to parse UserDetails', e);
       }
     }
-    console.log('Userdetails ID not found, defaulting to 0');
     return { id: 0 };
   }
 
@@ -80,7 +77,6 @@ export class CounterSaleService {
     this.apiService.get<any>(`api/v1/session/bill/${sessionId}`).subscribe({
       next: (res) => {
         const data = res?.data || res || {};
-        console.log('Session Bill Stats API response:', data); // Log the response
         this.sessionBillStats.set({
           bills: data.billsCount ?? data.totalBills ?? data.bills ?? 0,
           totalAmount: data.totalAmount ?? data.totalSales ?? data.salesAmount ?? data.sales ?? 0,
@@ -716,17 +712,20 @@ export class CounterSaleService {
       isPaymentReceived = 0;
     }
 
-    let partyId = 0;
-    try {
-      const saleLedgers = await this.dbService.saleLedgerList.toArray();
-      if (saleLedgers && saleLedgers.length > 0) {
-        partyId = saleLedgers[0].id || 0;
-      }
-    } catch (e) {
-      console.error('Failed to load SaleLedgerList from indexedDB', e);
-    }
-
     const customer = this.selectedCustomer();
+    let partyId = 0;
+    if (customer && customer.id) {
+      partyId = customer.id;
+    } else {
+      try {
+        const saleLedgers = await this.dbService.saleLedgerList.toArray();
+        if (saleLedgers && saleLedgers.length > 0) {
+          partyId = saleLedgers[0].id || 0;
+        }
+      } catch (e) {
+        console.error('Failed to load SaleLedgerList from indexedDB', e);
+      }
+    }
     let companyLedgerId = 0;
     try {
       const companyLedgers = await this.dbService.companyLedgerList.toArray();
@@ -737,16 +736,19 @@ export class CounterSaleService {
       console.error('Failed to load CompanyLedgerList from indexedDB', e);
     }
     let bankCashLedger = 0;
+    let bankCashLedgerName = "";
     try {
       if (paymentMode === 'cash') {
         const cashLedgers = await this.dbService.cashLedger.toArray();
         if (cashLedgers && cashLedgers.length > 0) {
           bankCashLedger = cashLedgers[0].id || 0;
+          bankCashLedgerName = cashLedgers[0].customerName || "";
         }
       } else {
         const bankAccountsList = await this.dbService.bankAccounts.toArray();
         if (bankAccountsList && bankAccountsList.length > 0) {
           bankCashLedger = bankAccountsList[0].id || 0;
+          bankCashLedgerName = bankAccountsList[0].customerName || "";
         }
       }
     } catch (e) {
@@ -794,7 +796,7 @@ export class CounterSaleService {
       modifiedBy: userId,
       voucherTypeId: 1,
       discountAmount: this.totalDiscount().toFixed(2),
-      totalAmount: this.total().toFixed(2),
+      totalAmount: this.totalPayable().toFixed(2),
       roundOff: this.roundOff().toFixed(2),
       paymentNote: "",
       deliveryNote: "",
@@ -839,18 +841,18 @@ export class CounterSaleService {
         ledgerAmount: parseFloat(this.totalPayable().toFixed(2)),
         transactionDate: now,
         modeOfPaymentId: modeOfPaymentId,
-        modeOfPayment: modeString,
+        modeOfPayment: modeString == 'Credit' || modeString == 'Coupon' ? "Credit/Coupon" : modeString,
         transactionTypeId: 0,
         transactionType: "",
         transactionId: 0,
         transactionNo: "",
-        narration: modeString + " Entry",
+        narration: modeString == 'Credit' || modeString == 'Coupon' ? "Credit/Coupon Payment" : modeString == 'Online' ? "Bank Payment" : modeString + " Entry",
         referenceId: 0,
         groupId: 0,
         chequeDate: now,
         isTallyExport: 0,
         tallyReferenceId: 0,
-        particularsText: modeString + " Entry",
+        particularsText: modeString == 'Credit' || modeString == 'Coupon' ? "Credit/Coupon Payment" : modeString == 'Online' ? "Bank Payment" : modeString + " Entry",
         voucherTypeId: 1,
         voucherSubTypeId: 0,
         voucherSubType: "",
@@ -867,7 +869,7 @@ export class CounterSaleService {
         billNumber: "",
         fBillId: 0,
         selectedPartyName: customer ? (customer.customerName || customer.name) : 'Daily Cash Counter Party',
-        selectedBankName: paymentMode === 'cash' ? 'Cash Sale' : modeString,
+        selectedBankName: paymentMode === 'cash' || modeString === 'Credit' || modeString == 'Coupon' ? 'Cash Sale' : modeString == 'Online' ? bankCashLedgerName : modeString,
         remarks: "",
         inFavorPartyId: 0,
         inFavorPartyName: "",
