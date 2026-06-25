@@ -442,17 +442,30 @@ export class CounterSaleService {
             product = await this.dbService.products.get(materialId);
           }
 
+          // Calculate GST percentage from invoice details (CGST + SGST + IGST amounts divided by base taxable amount)
+          const cgstAmount = parseFloat(item.cgst) || 0;
+          const sgstAmount = parseFloat(item.sgst) || 0;
+          const igstAmount = parseFloat(item.igst) || 0;
+          const totalGstAmount = cgstAmount + sgstAmount + igstAmount;
+          const baseAmount = parseFloat(item.gstonAmount) || (parseFloat(item.total) - totalGstAmount) || 0;
+
+          let calculatedGstPercent = 0;
+          if (totalGstAmount > 0 && baseAmount > 0) {
+            calculatedGstPercent = Math.round(((totalGstAmount / baseAmount) * 100) * 10) / 10;
+          }
+
+          const gst = calculatedGstPercent || item.gst || product?.gst || product?.taxPercentage || 0;
+
           if (!product) {
             product = {
               id: materialId,
               productName: item.materialName || item.productName || 'Unknown Product',
               salePrice: item.rate || 0,
-              gst: (item.cgst + item.sgst) || item.gst || 0
+              gst: gst
             };
           }
 
           const rate = item.rate || product.salePrice || 0;
-          const gst = item.gst || product.gst || 0;
           const qty = item.quantity || 1;
           const discount = item.discount || 0;
 
