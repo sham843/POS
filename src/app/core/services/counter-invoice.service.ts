@@ -44,8 +44,14 @@ export class CounterInvoiceService {
       totalPayable: number;
     },
     selectedCustomer: any | null,
-    paymentMode: 'cash' | 'online' | 'card'
+    paymentMode: 'cash' | 'online' | 'card',
+    existingInvoiceHeader?: {
+      invoiceId: number | null;
+      invoiceNo: string | null;
+      invoiceDate: string | null;
+    }
   ): Promise<any> {
+    const isUpdate = !!existingInvoiceHeader?.invoiceId;
     const now = new Date().toISOString();
     const userDetails = this.Userdetails;
 
@@ -121,7 +127,7 @@ export class CounterInvoiceService {
       return {
         id: 0,
         dcDetailsId: 0,
-        invoiceId: 0,
+        invoiceId: isUpdate ? (existingInvoiceHeader?.invoiceId ?? 0) : 0,
         materialId: item.product?.id || item.product?.code || 0,
         materialUnitId: item.product?.unitId || item.product?.materialUnitId || 0,
         quantity: item.quantity,
@@ -146,8 +152,8 @@ export class CounterInvoiceService {
       createdDate: now,
       modifiedDate: now,
       isDeleted: false,
-      id: userId,
-      invoiceDate: now,
+      id: isUpdate ? (existingInvoiceHeader?.invoiceId ?? 0) : userId,
+      invoiceDate: isUpdate ? (existingInvoiceHeader?.invoiceDate ?? now) : now,
       partyId: partyId,
       companyLedgerId: companyLedgerId,
       createdBy: userId,
@@ -180,7 +186,7 @@ export class CounterInvoiceService {
       unitId: unitId,
       serverId: 0,
       chalanNo: 0,
-      invoiceNo: "",
+      invoiceNo: isUpdate ? (existingInvoiceHeader?.invoiceNo ?? "") : "",
       fYearId: 0,
       igst: 0,
       cgst: (totals.totalGst / 2).toFixed(2),
@@ -200,9 +206,9 @@ export class CounterInvoiceService {
         transactionDate: now,
         modeOfPaymentId: modeOfPaymentId,
         modeOfPayment: modeString == 'Credit' || modeString == 'Coupon' ? "Credit/Coupon" : modeString,
-        transactionTypeId: 0,
+        transactionTypeId: isUpdate ? (existingInvoiceHeader?.invoiceId ?? 0) : 0,
         transactionType: "",
-        transactionId: 0,
+        transactionId: isUpdate ? (existingInvoiceHeader?.invoiceId ?? 0) : 0,
         transactionNo: "",
         narration: modeString == 'Credit' || modeString == 'Coupon' ? "Credit/Coupon Payment" : modeString == 'Online' ? "Bank Payment" : modeString + " Entry",
         referenceId: 0,
@@ -224,7 +230,7 @@ export class CounterInvoiceService {
         isOpeningBalance: 0,
         showDate: now,
         isDeleted: 0,
-        billNumber: "",
+        billNumber: isUpdate ? (existingInvoiceHeader?.invoiceNo ?? "") : "",
         fBillId: 0,
         selectedPartyName: customer ? (customer.customerName || customer.name) : 'Daily Cash Counter Party',
         selectedBankName: paymentMode === 'cash' || modeString === 'Credit' || modeString == 'Coupon' ? 'Cash Sale' : modeString == 'Online' ? bankCashLedgerName : modeString,
@@ -236,7 +242,8 @@ export class CounterInvoiceService {
       }
     };
 
-    return this.apiService.post<any>('api/v1/invoice/sale', payload).toPromise();
+    const endpoint = isUpdate ? 'api/v1/invoice/update-sale' : 'api/v1/invoice/sale';
+    return this.apiService.post<any>(endpoint, payload).toPromise();
   }
 
   printReceipt(

@@ -534,7 +534,12 @@ export class CounterSaleService {
         this.cartItems(),
         totals,
         this.selectedCustomer(),
-        paymentMode
+        paymentMode,
+        {
+          invoiceId: this.invoiceHeader.invoiceId(),
+          invoiceNo: this.invoiceHeader.invoiceNo(),
+          invoiceDate: this.invoiceHeader.invoiceDate()
+        }
       );
 
       const invoiceData = res?.data;
