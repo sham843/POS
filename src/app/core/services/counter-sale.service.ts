@@ -1,13 +1,11 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
 import { NotificationService } from './notification.service';
-import { ApiService } from './api.service';
-import { DialogService } from './dialog.service';
 import { DbService } from './db.service';
 import { SessionService } from './session.service';
-import { ElectronService } from './electron.service';
+import { CounterInvoiceService } from './counter-invoice.service';
+import { CounterNumpadService } from './counter-numpad.service';
 
 export interface CartItem {
   product: any;
@@ -40,11 +38,10 @@ export interface BillState {
 })
 export class CounterSaleService {
   notificationService = inject(NotificationService);
-  apiService = inject(ApiService);
-  dialogService = inject(DialogService);
   dbService = inject(DbService);
   sessionService = inject(SessionService);
-  electronService = inject(ElectronService);
+  counterInvoiceService = inject(CounterInvoiceService);
+  counterNumpadService = inject(CounterNumpadService);
 
   get Userdetails() {
     const userStr = localStorage.getItem('UserDetails');
@@ -73,8 +70,8 @@ export class CounterSaleService {
   };
 
   fetchSessionBillStats() {
-    const sessionId = this.Userdetails.id;
-    this.apiService.get<any>(`api/v1/session/bill/${sessionId}`).subscribe({
+    const userId = this.Userdetails.id;
+    this.counterInvoiceService.fetchSessionBillStats(userId).subscribe({
       next: (res) => {
         const data = res?.data || res || {};
         this.sessionBillStats.set({
@@ -188,14 +185,9 @@ export class CounterSaleService {
         const item = this.cartItems()[oldIdx];
         if (this.numpadMode() === 'amount' && item.netAmount <= 0) {
           this.notificationService.showError(`Amount cannot be zero.`);
-          // Revert amount to rate * quantity as a fallback
-          const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
-          item.amount = isExcluded
-            ? Math.round((item.rate * item.quantity) * 100) / 100
-            : Math.round(((item.rate * item.quantity) / (1 + item.gst / 100)) * 100) / 100;
-          item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
-          item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
-          item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
+          const items = [...this.cartItems()];
+          items[oldIdx] = this.counterNumpadService.updateCartItemFromNumpad(item, 'quantity', item.quantity.toString());
+          this.updateActiveBill({ cartItems: items });
         }
       }
     }
@@ -215,13 +207,9 @@ export class CounterSaleService {
         const item = this.cartItems()[idx];
         if (item.netAmount <= 0) {
           this.notificationService.showError(`Amount cannot be zero.`);
-          const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
-          item.amount = isExcluded
-            ? Math.round((item.rate * item.quantity) * 100) / 100
-            : Math.round(((item.rate * item.quantity) / (1 + item.gst / 100)) * 100) / 100;
-          item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
-          item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
-          item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
+          const items = [...this.cartItems()];
+          items[idx] = this.counterNumpadService.updateCartItemFromNumpad(item, 'quantity', item.quantity.toString());
+          this.updateActiveBill({ cartItems: items });
         }
       }
     }
@@ -253,99 +241,24 @@ export class CounterSaleService {
     const idx = this.selectedItemIndex();
     if (idx === null || idx < 0 || idx >= this.cartItems().length) return;
 
-    let currentVal = this.numpadValue();
-    // let oldVal = currentVal;
+    const result = this.counterNumpadService.calculateNumpadInput(
+      val,
+      this.numpadValue(),
+      this.numpadMode(),
+      this.numpadShouldReplace,
+      this.numpadHasQuickWeight
+    );
 
-    if (this.numpadShouldReplace && val !== 'backspace' && val !== 'clear') {
-      if (!val.startsWith('.')) {
-        currentVal = this.numpadMode() === 'discount' ? '' : '0';
-        this.numpadHasQuickWeight = false;
-      }
-    }
-    this.numpadShouldReplace = false;
+    this.updateActiveBill({
+      numpadValue: result.nextVal,
+      numpadShouldReplace: result.nextShouldReplace,
+      numpadHasQuickWeight: result.nextHasQuickWeight
+    });
 
-    if (val === 'backspace') {
-      if (this.numpadMode() === 'quantity' && this.numpadHasQuickWeight && currentVal.includes('.')) {
-        const parts = currentVal.split('.');
-        if (parts[0].length > 1) {
-          currentVal = parts[0].slice(0, -1) + '.' + parts[1];
-        } else if (parts[0] !== '0') {
-          currentVal = '0.' + parts[1];
-        } else {
-          currentVal = '1';
-          this.numpadHasQuickWeight = false;
-          this.numpadShouldReplace = true;
-        }
-      } else {
-        currentVal = currentVal.slice(0, -1);
-        if (currentVal === '' || (this.numpadMode() === 'quantity' && currentVal === '0')) {
-          if (this.numpadMode() === 'quantity') {
-            currentVal = '1';
-            this.numpadShouldReplace = true;
-          } else if (this.numpadMode() === 'amount') {
-            currentVal = '0';
-          } else {
-            currentVal = '';
-          }
-        }
-      }
-    } else if (val === 'clear') {
-      if (this.numpadMode() === 'quantity') {
-        currentVal = '1';
-        this.numpadShouldReplace = true;
-      } else if (this.numpadMode() === 'amount') {
-        currentVal = '0';
-      } else {
-        currentVal = '';
-      }
-      this.numpadHasQuickWeight = false;
-    } else if (val.startsWith('.')) {
-      if (val.length > 1) { // Quick weight (.125, .250, etc)
-        if (currentVal.includes('.')) {
-          currentVal = currentVal.split('.')[0] + val;
-        } else {
-          currentVal = (currentVal || '0') + val;
-        }
-        this.numpadHasQuickWeight = true;
-      } else { // Manual dot
-        if (!currentVal.includes('.')) {
-          currentVal = (currentVal || '0') + val;
-        }
-        this.numpadHasQuickWeight = false;
-      }
-    } else { // Numeric digit
-      if (this.numpadMode() === 'quantity' && this.numpadHasQuickWeight && currentVal.includes('.')) {
-        const parts = currentVal.split('.');
-        currentVal = (parts[0] === '0' ? val : parts[0] + val) + '.' + parts[1];
-      } else if (currentVal.includes('.')) {
-        const parts = currentVal.split('.');
-        let maxDecimals = 0;
-        if (this.numpadMode() === 'discount' || this.numpadMode() === 'amount') {
-          maxDecimals = 2;
-        } else if (this.numpadMode() === 'quantity') {
-          maxDecimals = 2;
-        }
-
-        if (parts[1].length < maxDecimals) {
-          currentVal += val;
-        }
-      } else {
-        if (currentVal === '0' || currentVal === '') {
-          currentVal = val;
-        } else {
-          currentVal += val;
-        }
-      }
+    if (result.errorMessage) {
+      this.notificationService.showError(result.errorMessage);
     }
 
-    if (this.numpadMode() === 'discount') {
-      if (parseFloat(currentVal) > environment.maxDiscount) {
-        currentVal = environment.maxDiscount.toString();
-        this.notificationService.showError(`Discount cannot exceed ${environment.maxDiscount}%`);
-      }
-    }
-
-    this.updateActiveBill({ numpadValue: currentVal });
     this.syncCartFromNumpad();
   }
 
@@ -361,60 +274,19 @@ export class CounterSaleService {
     if (idx === null) return;
     const mode = this.numpadMode();
     const valStr = this.numpadValue();
-    const valNum = parseFloat(valStr) || 0;
 
     const items = [...this.cartItems()];
     const item = items[idx];
-    const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
 
-    if (mode === 'quantity') {
-      item.quantity = valNum;
-      item.amount = isExcluded
-        ? Math.round((item.rate * item.quantity) * 100) / 100
-        : Math.round(((item.rate * item.quantity) / (1 + item.gst / 100)) * 100) / 100;
-    } else if (mode === 'amount') {
-      if (item.product?.mensurationUnit === 'Nos') {
-        this.syncNumpadFromCart();
-        return;
-      }
-      if (isExcluded) {
-        const netAmount = Math.round(valNum * 100) / 100;
-        const discountFactor = 1 - (item.discount / 100);
-        if (discountFactor > 0) {
-          item.amount = Math.round((netAmount / discountFactor) * 100) / 100;
-        } else {
-          item.amount = netAmount;
-        }
-        if (item.rate > 0) {
-          item.quantity = Math.round((item.amount / item.rate) * 100) / 100;
-        }
-      } else {
-        const gstRate = item.gst || 0;
-        const enteredVal = Math.round(valNum * 100) / 100;
-        const netAmount = Math.round((enteredVal / (1 + gstRate / 100)) * 100) / 100;
-        const discountFactor = 1 - (item.discount / 100);
-        if (discountFactor > 0) {
-          item.amount = Math.round((netAmount / discountFactor) * 100) / 100;
-        } else {
-          item.amount = netAmount;
-        }
-        if (item.rate > 0) {
-          item.quantity = Math.round(((item.amount * (1 + gstRate / 100)) / item.rate) * 100) / 100;
-        }
-        item.netAmount = netAmount;
-        item.gstAmount = Math.round((enteredVal - netAmount) * 100) / 100;
-        item.total = enteredVal;
-      }
-    } else if (mode === 'discount') {
-      item.discount = valNum;
+    // Delegate calculation to NumpadService
+    const updatedItem = this.counterNumpadService.updateCartItemFromNumpad(item, mode, valStr);
+    
+    if (mode === 'amount' && item.product?.mensurationUnit === 'Nos') {
+      this.syncNumpadFromCart();
+      return;
     }
 
-    if (mode !== 'amount' || isExcluded) {
-      item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
-      item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
-      item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
-    }
-
+    items[idx] = updatedItem;
     this.updateActiveBill({ cartItems: items });
   }
 
@@ -427,33 +299,39 @@ export class CounterSaleService {
     );
 
     if (existingItemIndex > -1) {
-      this.updateQuantity(existingItemIndex, items[existingItemIndex].quantity + 1);
-      this.selectItem(existingItemIndex);
+      const existingItem = { ...items[existingItemIndex] };
+      const nextItem = this.counterNumpadService.updateCartItemFromNumpad(
+        existingItem,
+        'quantity',
+        (existingItem.quantity + 1).toString()
+      );
+
+      // Remove from its current position and move to the top
+      items.splice(existingItemIndex, 1);
+      items.unshift(nextItem);
+      this.updateActiveBill({ cartItems: items });
+      this.selectItem(0);
     } else {
       const rate = product.salePrice || product.mrp || product.rate || product.price || product.saleRate || 0;
       const gst = product.gst || product.taxPercentage || 0;
-      const isExcluded = (product.computationMethod || '').toUpperCase().includes('EXCLUDED');
-      const amount = isExcluded
-        ? Math.round((rate * 1) * 100) / 100
-        : Math.round(((rate * 1) / (1 + gst / 100)) * 100) / 100;
-      const netAmount = amount;
-      const gstAmount = Math.round((netAmount * gst / 100) * 100) / 100;
       const newItem: CartItem = {
         product: product,
         details: product.productName || product.materialName || product.name || 'Unknown Product',
         quantity: 1,
         rate: rate,
         discount: 0,
-        amount: amount,
-        netAmount: netAmount,
+        amount: 0,
+        netAmount: 0,
         gst: gst,
-        gstAmount: gstAmount,
-        total: Math.round((netAmount + gstAmount) * 100) / 100,
+        gstAmount: 0,
+        total: 0,
         unit: product.unit || product.uom || product.unitName || product.mensurationUnit || ''
       };
-      items.push(newItem);
+      
+      const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', '1');
+      items.unshift(calculatedItem);
       this.updateActiveBill({ cartItems: items });
-      this.selectItem(items.length - 1);
+      this.selectItem(0);
     }
   }
 
@@ -463,15 +341,7 @@ export class CounterSaleService {
       return;
     }
     const items = [...this.cartItems()];
-    const item = items[index];
-    item.quantity = Math.round(quantity * 100) / 100;
-    const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
-    item.amount = isExcluded
-      ? Math.round((item.rate * item.quantity) * 100) / 100
-      : Math.round(((item.rate * item.quantity) / (1 + item.gst / 100)) * 100) / 100;
-    item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
-    item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
-    item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
+    items[index] = this.counterNumpadService.updateCartItemFromNumpad(items[index], 'quantity', quantity.toString());
     this.updateActiveBill({ cartItems: items });
 
     if (this.selectedItemIndex() === index) {
@@ -481,45 +351,11 @@ export class CounterSaleService {
 
   updateAmount(index: number, amount: number) {
     const items = [...this.cartItems()];
-    const item = items[index];
-    if (item.product?.mensurationUnit === 'Nos') {
+    if (items[index]?.product?.mensurationUnit === 'Nos') {
       this.syncNumpadFromCart();
       return;
     }
-    const isExcluded = (item.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
-
-    if (isExcluded) {
-      const netAmount = Math.round(amount * 100) / 100;
-      const discountFactor = 1 - (item.discount / 100);
-      if (discountFactor > 0) {
-        item.amount = Math.round((netAmount / discountFactor) * 100) / 100;
-      } else {
-        item.amount = netAmount;
-      }
-      if (item.rate > 0) {
-        item.quantity = Math.round((item.amount / item.rate) * 100) / 100;
-      }
-      item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
-      item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
-      item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
-    } else {
-      const gstRate = item.gst || 0;
-      const enteredVal = Math.round(amount * 100) / 100;
-      const netAmount = Math.round((enteredVal / (1 + gstRate / 100)) * 100) / 100;
-      const discountFactor = 1 - (item.discount / 100);
-      if (discountFactor > 0) {
-        item.amount = Math.round((netAmount / discountFactor) * 100) / 100;
-      } else {
-        item.amount = netAmount;
-      }
-      if (item.rate > 0) {
-        item.quantity = Math.round(((item.amount * (1 + gstRate / 100)) / item.rate) * 100) / 100;
-      }
-      item.netAmount = netAmount;
-      item.gstAmount = Math.round((enteredVal - netAmount) * 100) / 100;
-      item.total = enteredVal;
-    }
-
+    items[index] = this.counterNumpadService.updateCartItemFromNumpad(items[index], 'amount', amount.toString());
     this.updateActiveBill({ cartItems: items });
 
     if (this.selectedItemIndex() === index) {
@@ -529,11 +365,7 @@ export class CounterSaleService {
 
   updateDiscount(index: number, discount: number) {
     const items = [...this.cartItems()];
-    const item = items[index];
-    item.discount = discount || 0;
-    item.netAmount = Math.round((item.amount - (item.amount * item.discount / 100)) * 100) / 100;
-    item.gstAmount = Math.round((item.netAmount * item.gst / 100) * 100) / 100;
-    item.total = Math.round((item.netAmount + item.gstAmount) * 100) / 100;
+    items[index] = this.counterNumpadService.updateCartItemFromNumpad(items[index], 'discount', discount.toString());
     this.updateActiveBill({ cartItems: items });
 
     if (this.selectedItemIndex() === index) {
@@ -581,7 +413,7 @@ export class CounterSaleService {
   }
 
   loadInvoiceByBillNo(billNo: string) {
-    this.apiService.get<any>(`api/v1/invoice/byId?billNo=${billNo}`).subscribe({
+    this.counterInvoiceService.loadInvoiceByBillNo(billNo).subscribe({
       next: async (res) => {
         const data = res?.data || res || {};
         const rawItems = data.invoiceDetails || data.spinvoicedetailsModel || data.details || [];
@@ -600,7 +432,6 @@ export class CounterSaleService {
         this.invoiceHeader.invoiceDate.set(invoiceDate);
         this.invoiceHeader.invoiceNo.set(invoiceHeaderData.invoiceNo || data.invoiceNo || null);
         this.invoiceHeader.invoiceId.set(invoiceHeaderData.id || data.id || null);
-        console.log('invoiceDate extracted:', invoiceDate, '| invoiceNo:', invoiceHeaderData.invoiceNo, '| id:', invoiceHeaderData.id);
 
         const cartItems: CartItem[] = [];
 
@@ -625,26 +456,22 @@ export class CounterSaleService {
           const qty = item.quantity || 1;
           const discount = item.discount || 0;
 
-          const isExcluded = (product.computationMethod || '').toUpperCase().includes('EXCLUDED');
-          const amount = isExcluded
-            ? Math.round((rate * qty) * 100) / 100
-            : Math.round(((rate * qty) / (1 + gst / 100)) * 100) / 100;
-          const netAmount = Math.round((amount - (amount * discount / 100)) * 100) / 100;
-          const gstAmount = Math.round((netAmount * gst / 100) * 100) / 100;
-
-          cartItems.push({
+          const newItem: CartItem = {
             product: product,
             details: product.productName || product.materialName || product.name || 'Unknown Product',
             quantity: qty,
             rate: rate,
             discount: discount,
-            amount: amount,
-            netAmount: netAmount,
+            amount: 0,
+            netAmount: 0,
             gst: gst,
-            gstAmount: gstAmount,
-            total: Math.round((netAmount + gstAmount) * 100) / 100,
+            gstAmount: 0,
+            total: 0,
             unit: product.unit || product.uom || product.unitName || product.mensurationUnit || ''
-          });
+          };
+
+          const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', qty.toString());
+          cartItems.push(calculatedItem);
         }
 
         const partyId = data.partyId || data.customerId || 0;
@@ -652,7 +479,6 @@ export class CounterSaleService {
         if (partyId) {
           selectedCustomer = await this.dbService.customerList.get(partyId);
         }
-
 
         this.updateActiveBill({
           cartItems: cartItems,
@@ -685,260 +511,82 @@ export class CounterSaleService {
       return;
     }
 
-    const now = new Date().toISOString();
-    const userDetailsStr = localStorage.getItem('UserDetails');
-    let userDetails: any = null;
-    try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) { }
+    const amountPaid = this.totalPayable();
+    const totals = {
+      subTotal: this.subTotal(),
+      totalDiscount: this.totalDiscount(),
+      totalGst: this.totalGst(),
+      billAmount: this.billAmount(),
+      roundOff: this.roundOff(),
+      totalPayable: amountPaid
+    };
 
-    const unitId = userDetails?.unitid || userDetails?.unitId || 0;
-    const userId = userDetails?.id || 0;
-    const organizationId = userDetails?.organizationId || 0;
-
-    // Determine counterSaleTypeId and Mode properties
-    let counterSaleTypeId = 1; // 1=Cash
-    let modeOfPaymentId = 1;
     let modeString = "Cash";
-    let isPaymentReceived = 1;
-
     if (paymentMode === 'online') {
-      counterSaleTypeId = 2;
-      modeOfPaymentId = 4;
       modeString = "Online";
     } else if (paymentMode === 'card') {
       const billingType = this.selectedCustomer()?.billingType?.toLowerCase();
-      counterSaleTypeId = billingType === 'prepaid' ? 4 : 3;
-      modeOfPaymentId = 0;
       modeString = billingType === 'prepaid' ? "Coupon" : "Credit";
-      isPaymentReceived = 0;
     }
 
-    const customer = this.selectedCustomer();
-    let partyId = 0;
-    if (customer && customer.id) {
-      partyId = customer.id;
-    } else {
-      try {
-        const saleLedgers = await this.dbService.saleLedgerList.toArray();
-        if (saleLedgers && saleLedgers.length > 0) {
-          partyId = saleLedgers[0].id || 0;
-        }
-      } catch (e) {
-        console.error('Failed to load SaleLedgerList from indexedDB', e);
-      }
-    }
-    let companyLedgerId = 0;
     try {
-      const companyLedgers = await this.dbService.companyLedgerList.toArray();
-      if (companyLedgers && companyLedgers.length > 0) {
-        companyLedgerId = companyLedgers[0].id || 0;
+      const res = await this.counterInvoiceService.saveInvoice(
+        this.cartItems(),
+        totals,
+        this.selectedCustomer(),
+        paymentMode
+      );
+
+      const invoiceData = res?.data;
+
+      // Determine the new bill number from the response
+      let newBillNo = '';
+      if (invoiceData) {
+        if (typeof invoiceData === 'object') {
+          if (invoiceData.invoiceNo) {
+            newBillNo = invoiceData.invoiceNo;
+          } else if (invoiceData.data) {
+            newBillNo = String(invoiceData.data);
+          }
+        } else {
+          newBillNo = String(invoiceData);
+        }
       }
-    } catch (e) {
-      console.error('Failed to load CompanyLedgerList from indexedDB', e);
+
+      // If it's a simple ID/number, format it using the previous bill number structure if possible
+      if (newBillNo && !newBillNo.includes('/')) {
+        const prev = this.sessionBillStats().previousBillNo;
+        if (prev && prev.includes('/')) {
+          const parts = prev.split('/');
+          parts[0] = newBillNo;
+          newBillNo = parts.join('/');
+        }
+      }
+
+      if (!newBillNo) {
+        newBillNo = this.sessionBillStats().previousBillNo;
+      }
+
+      // Update session stats
+      this.sessionBillStats.update(stats => ({
+        bills: stats.bills + 1,
+        totalAmount: stats.totalAmount + amountPaid,
+        previousBillNo: newBillNo
+      }));
+
+      // Print automatically if requested and print data is available
+      if (printAutomatically && invoiceData) {
+        this.counterInvoiceService.printReceipt(invoiceData, this.cartItems(), totals);
+      }
+
+      this.clearCart();
+      this.notificationService.showSuccess(
+        `Payment of ₹${amountPaid} received via ${modeString}. Bill No: ${newBillNo}`,
+        'Bill Generated Successfully!'
+      );
+    } catch (err) {
+      console.error('Failed to generate bill:', err);
+      this.notificationService.showError('Failed to generate bill');
     }
-    let bankCashLedger = 0;
-    let bankCashLedgerName = "";
-    try {
-      if (paymentMode === 'cash') {
-        const cashLedgers = await this.dbService.cashLedger.toArray();
-        if (cashLedgers && cashLedgers.length > 0) {
-          bankCashLedger = cashLedgers[0].id || 0;
-          bankCashLedgerName = cashLedgers[0].customerName || "";
-        }
-      } else {
-        const bankAccountsList = await this.dbService.bankAccounts.toArray();
-        if (bankAccountsList && bankAccountsList.length > 0) {
-          bankCashLedger = bankAccountsList[0].id || 0;
-          bankCashLedgerName = bankAccountsList[0].customerName || "";
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load bank/cash ledger from indexedDB', e);
-    }
-
-    const invoiceDetails = this.cartItems().map(item => {
-      // Assuming item.discount is a percentage. For flat rupee amount logic, you'd adapt here.
-      const discountAmount = parseFloat((item.amount * item.discount / 100).toFixed(2));
-      const gstonAmount = parseFloat(((item.quantity * item.rate) - (discountAmount + item.gstAmount)).toFixed(2));
-
-      return {
-        id: 0,
-        dcDetailsId: 0,
-        invoiceId: 0,
-        materialId: item.product?.id || item.product?.code || 0,
-        materialUnitId: item.product?.unitId || item.product?.materialUnitId || 0,
-        quantity: item.quantity,
-        rate: item.rate,
-        discount: item.discount,
-        total: item.total,
-        purchaseOrderId: 0,
-        discountAmount: discountAmount,
-        gstonAmount: gstonAmount,
-        igst: "0.00", // Ignoring IGST for now as per ref default MH state
-        cgst: (item.gstAmount / 2).toFixed(2),
-        sgst: (item.gstAmount / 2).toFixed(2),
-        subTotal: this.totalPayable().toFixed(2),
-        unitId: unitId,
-        serverId: 0,
-        StockHistoryLocalId: 0
-      };
-    });
-
-    const payload = {
-      sessionId: this.sessionService.getSessionId() ? parseInt(this.sessionService.getSessionId() || '0', 10) : null,
-      createdDate: now,
-      modifiedDate: now,
-      isDeleted: false,
-      id: userId,
-      invoiceDate: now,
-      partyId: partyId,
-      companyLedgerId: companyLedgerId,
-      createdBy: userId,
-      modifiedBy: userId,
-      voucherTypeId: 1,
-      discountAmount: this.totalDiscount().toFixed(2),
-      totalAmount: this.totalPayable().toFixed(2),
-      roundOff: this.roundOff().toFixed(2),
-      paymentNote: "",
-      deliveryNote: "",
-      deliveryNoteDate: "",
-      supplierBillNo: "",
-      supplierBillDate: "",
-      supplerRefNo: "",
-      otherRefNo: "",
-      buyerPONumber: "",
-      buyerPODate: "",
-      dispatchDetails: "",
-      termsOfDelivery: "",
-      purchaseOrderNo: "",
-      purchaseOrderDate: "",
-      isBillPaid: 1,
-      invoiceType: 1,
-      purchaseOrderId: 0,
-      isTallyExport: 0,
-      returnInvoiceId: 0,
-      counterNo: 0,
-      counterSaleTypeId: counterSaleTypeId,
-      isCounterSale: 1,
-      unitId: unitId,
-      serverId: 0,
-      chalanNo: 0,
-      invoiceNo: "",
-      fYearId: 0,
-      igst: 0,
-      cgst: (this.totalGst() / 2).toFixed(2),
-      sgst: (this.totalGst() / 2).toFixed(2),
-      stateFlag: 1,
-      isPaymentReceived: isPaymentReceived,
-      isPrint: printAutomatically,
-      spinvoicedetailsModel: invoiceDetails,
-      ledgerTransaction: {
-        id: 0,
-        ledger1: partyId,
-        ledger2: companyLedgerId,
-        bankCashLedger: bankCashLedger,
-        credit: 0, //this.totalPayable(),
-        debit: 0, // this.totalPayable(),
-        ledgerAmount: parseFloat(this.totalPayable().toFixed(2)),
-        transactionDate: now,
-        modeOfPaymentId: modeOfPaymentId,
-        modeOfPayment: modeString == 'Credit' || modeString == 'Coupon' ? "Credit/Coupon" : modeString,
-        transactionTypeId: 0,
-        transactionType: "",
-        transactionId: 0,
-        transactionNo: "",
-        narration: modeString == 'Credit' || modeString == 'Coupon' ? "Credit/Coupon Payment" : modeString == 'Online' ? "Bank Payment" : modeString + " Entry",
-        referenceId: 0,
-        groupId: 0,
-        chequeDate: now,
-        isTallyExport: 0,
-        tallyReferenceId: 0,
-        particularsText: modeString == 'Credit' || modeString == 'Coupon' ? "Credit/Coupon Payment" : modeString == 'Online' ? "Bank Payment" : modeString + " Entry",
-        voucherTypeId: 1,
-        voucherSubTypeId: 0,
-        voucherSubType: "",
-        fYearId: 0,
-        unitId: unitId,
-        organizationId: organizationId,
-        serverId: 0,
-        createdBy: userId,
-        createdDate: now,
-        modifiedBy: userId,
-        isOpeningBalance: 0,
-        showDate: now,
-        isDeleted: 0,
-        billNumber: "",
-        fBillId: 0,
-        selectedPartyName: customer ? (customer.customerName || customer.name) : 'Daily Cash Counter Party',
-        selectedBankName: paymentMode === 'cash' || modeString === 'Credit' || modeString == 'Coupon' ? 'Cash Sale' : modeString == 'Online' ? bankCashLedgerName : modeString,
-        remarks: "",
-        inFavorPartyId: 0,
-        inFavorPartyName: "",
-        groupIdForBulk: 0,
-        upiId: ""
-      }
-    };
-
-    const amountPaid = this.totalPayable();
-
-    console.log(payload)
-
-    return
-
-    this.apiService.post('api/v1/invoice/sale', payload).subscribe({
-      next: (_res: any) => {
-        const invoiceData = _res?.data;
-        if (printAutomatically && invoiceData) {
-          const itemsToPrint = this.cartItems().map(item => ({
-            name: (item.product?.name || item.product?.code || 'Product') + " (" + (item.product?.mensurationUnit || item.product?.unit || '') + ")",
-            rate: item.rate,
-            quantity: item.quantity,
-            discount: (item.rate * item.quantity * item.discount / 100).toFixed(2),
-            price: item.total
-          }));
-
-          const subTotalVal = this.subTotal();
-          const totalDiscountVal = this.totalDiscount();
-          const totalGstVal = this.totalGst();
-          const billAmountVal = this.billAmount();
-          const roundOffVal = this.roundOff();
-          const totalPayableVal = this.totalPayable();
-
-          const totalSum = this.cartItems().reduce((sum, item) => sum + (item.rate || 0), 0);
-
-          const printPayload = {
-            UnitName: invoiceData.unitName || userDetails?.unitName || 'Hi-Tech Dairy',
-            UnitAdd: invoiceData.unitAddress || userDetails?.unitAddress || '',
-            UnitMobile: invoiceData.unitMobileNo || userDetails?.unitMobileNo || '',
-            FssaiLicNo: userDetails?.fssailicNo || '',
-            GSTNo: invoiceData.gstNo || userDetails?.gstNo || '',
-            invoiceId: (invoiceData.id || '') + "/" + (invoiceData.invoiceNo || ''),
-            title: 'Sales Receipt',
-            timestamp: invoiceData.invoiceDate || now,
-            items: itemsToPrint,
-            totals: {
-              total: totalSum.toFixed(2),
-              subTotal: subTotalVal.toFixed(2),
-              discountPercent: '',
-              discount: totalDiscountVal.toFixed(2),
-              sgst: (totalGstVal / 2).toFixed(2),
-              cgst: (totalGstVal / 2).toFixed(2),
-              igst: '0.00',
-              billAmount: billAmountVal.toFixed(2),
-              roundOff: roundOffVal.toFixed(2),
-              totalPayable: totalPayableVal.toFixed(2)
-            }
-          };
-
-          this.electronService.sendPrintData(printPayload);
-        }
-
-        this.clearCart();
-        this.notificationService.showSuccess(`Payment of ₹${amountPaid} received via ${modeString}.`, 'Bill Generated Successfully!');
-      },
-      error: (err) => {
-        console.error('Failed to generate bill:', err);
-        this.notificationService.showError('Failed to generate bill');
-      }
-    });
   }
 }
