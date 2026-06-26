@@ -11,6 +11,8 @@ import { OrderDrawer } from './components/order-drawer/order-drawer';
 import { CounterSaleService } from '../../core/services/counter-sale.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { DbService } from '../../core/services/db.service';
+import { CounterInvoiceService } from '../../core/services/counter-invoice.service';
+import { ConfigService } from '../../core/services/config.service';
 import { Subject, Subscription, timer } from 'rxjs';
 import { debounce } from 'rxjs/operators';
 
@@ -38,10 +40,15 @@ export class CounterSale implements OnInit, OnDestroy {
   private counterSaleService = inject(CounterSaleService);
   private notificationService = inject(NotificationService);
   private dbService = inject(DbService);
+  private counterInvoiceService = inject(CounterInvoiceService);
+  private configService = inject(ConfigService);
 
   isCustomerDrawerOpen = signal<boolean>(false);
   isOrderDrawerOpen = signal<boolean>(false);
   selectedCustomer = this.counterSaleService.selectedCustomer;
+
+  upcomingOrdersCount = signal<number>(0);
+  private orderCountInterval?: any;
 
   @ViewChild('searchInput', { static: false }) searchInput?: ElementRef<HTMLInputElement>;
 
@@ -68,6 +75,7 @@ export class CounterSale implements OnInit, OnDestroy {
   ngOnInit() {
     this.counterSaleService.resetState();
     this.counterSaleService.fetchSessionBillStats();
+    this.startUpcomingOrdersPolling();
 
     this.timer = setInterval(() => {
       this.currentTime.set(new Date());
@@ -89,6 +97,7 @@ export class CounterSale implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.stopUpcomingOrdersPolling();
     if (this.timer) {
       clearInterval(this.timer);
     }
@@ -124,10 +133,12 @@ export class CounterSale implements OnInit, OnDestroy {
 
   openOrderDrawer() {
     this.isOrderDrawerOpen.set(true);
+    this.stopUpcomingOrdersPolling();
   }
 
   closeOrderDrawer() {
     this.isOrderDrawerOpen.set(false);
+    this.startUpcomingOrdersPolling();
   }
 
   clearSelectedCustomer() {
@@ -193,5 +204,31 @@ export class CounterSale implements OnInit, OnDestroy {
   removeBill(id: number, event: Event) {
     event.stopPropagation();
     this.counterSaleService.removeBill(id);
+  }
+
+  fetchUpcomingOrdersCount() {
+    this.counterInvoiceService.getOrderList('', 'Upcoming').subscribe({
+      next: (res) => {
+        const list = res?.data || res || [];
+        this.upcomingOrdersCount.set(Array.isArray(list) ? list.length : 0);
+      },
+      error: (err) => console.error('Error fetching upcoming orders count:', err)
+    });
+  }
+
+  startUpcomingOrdersPolling() {
+    this.stopUpcomingOrdersPolling();
+    this.fetchUpcomingOrdersCount();
+    const intervalMs = this.configService.getConfig()?.upcomingOrdersPollingInterval ?? 30000;
+    this.orderCountInterval = setInterval(() => {
+      this.fetchUpcomingOrdersCount();
+    }, intervalMs);
+  }
+
+  stopUpcomingOrdersPolling() {
+    if (this.orderCountInterval) {
+      clearInterval(this.orderCountInterval);
+      this.orderCountInterval = undefined;
+    }
   }
 }

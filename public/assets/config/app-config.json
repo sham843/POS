@@ -2,5 +2,6 @@
   "formFieldAppearance": "outline",
   "apiUrl": "",
   "orderSearchDebounceTime": 300,
-  "orderDrawerWidth": 800
+  "orderDrawerWidth": 800,
+  "upcomingOrdersPollingInterval": 60000
 }

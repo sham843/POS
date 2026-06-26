@@ -21,7 +21,8 @@ export class ConfigService {
         formFieldAppearance: 'outline',
         apiUrl: 'https://demoposapi.hitechdairy.in',
         orderSearchDebounceTime: 300,
-        orderDrawerWidth: 800
+        orderDrawerWidth: 800,
+        upcomingOrdersPollingInterval: 60000
       };
     }
   }

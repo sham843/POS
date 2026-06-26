@@ -96,6 +96,9 @@
       </button>
       <button class="order-list-btn" (click)="openOrderDrawer()" matTooltip="Upcoming Orders">
         <lucide-icon [img]="ShoppingBag"></lucide-icon>
+        @if (upcomingOrdersCount() > 0) {
+        <span class="upcoming-count-badge">{{ upcomingOrdersCount() }}</span>
+        }
       </button>
     </div>
 
