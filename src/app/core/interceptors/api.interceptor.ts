@@ -34,7 +34,14 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
       if (error instanceof TimeoutError) {
         errorMsg = 'Request timed out. Please try again.';
       } else if (error instanceof HttpErrorResponse) {
-        if (error.error && error.error.message) {
+        if (error.status === 401) {
+          errorMsg = 'Session expired or unauthorized. Please log in again.';
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('tk_9xf1BzX');
+          localStorage.removeItem('UserDetails');
+          localStorage.removeItem('sessionId');
+          router.navigate(['/login']);
+        } else if (error.error && error.error.message) {
           errorMsg = error.error.message;
         } else if (customFallbackError) {
           errorMsg = customFallbackError;
@@ -42,13 +49,6 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
           switch (error.status) {
             case 400:
               errorMsg = 'Bad Request. Please check the data you entered.';
-              break;
-            case 401:
-              errorMsg = 'Session expired or unauthorized. Please log in again.';
-              localStorage.removeItem('auth_token');
-              localStorage.removeItem('tk_9xf1BzX');
-              localStorage.removeItem('UserDetails');
-              router.navigate(['/login']);
               break;
             case 403:
               errorMsg = 'Forbidden. You do not have permission to perform this action.';

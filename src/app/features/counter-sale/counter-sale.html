@@ -94,8 +94,10 @@
         matTooltip="Maximum 5 bills allowed">
         <lucide-icon [img]="Plus"></lucide-icon>
       </button>
-      <button class="order-list-btn" (click)="openOrderDrawer()" matTooltip="Upcoming Orders">
+      <button class="order-list-btn ms-3" [disabled]="upcomingOrdersCount() < 0" (click)="openOrderDrawer()"
+        matTooltip="Orders">
         <lucide-icon [img]="ShoppingBag"></lucide-icon>
+        <span class="btn-text">Orders</span>
         @if (upcomingOrdersCount() > 0) {
         <span class="upcoming-count-badge">{{ upcomingOrdersCount() }}</span>
         }

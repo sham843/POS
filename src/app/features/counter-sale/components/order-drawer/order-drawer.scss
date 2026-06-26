@@ -139,6 +139,15 @@
         lucide-icon {
           color: #0052CC;
         }
+
+        &.delivered-chip {
+          color: #10B981; // Emerald green text
+          box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15); // Subtle green shadow
+
+          lucide-icon {
+            color: #10B981; // Emerald green icon
+          }
+        }
       }
     }
   }
@@ -320,9 +329,46 @@
   font-weight: 600;
   color: #0052CC;
   background-color: #EFF6FF;
-  padding: 2px 6px;
+  padding: 0px 6px;
   border-radius: 4px;
   border: 1px solid #BFDBFE;
+  white-space: nowrap;
+
+  &.delivered {
+    color: #10B981;
+    background-color: #ECFDF5;
+    border-color: #A7F3D0;
+  }
+}
+
+.order-no-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+}
+
+.order-date-sub {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  color: #9CA3AF;
+  font-weight: 500;
+  white-space: nowrap;
+  line-height: 1;
+
+  .date-icon {
+    width: 10px;
+    height: 10px;
+    color: #0052CC;
+  }
+
+  &.delivered-date {
+    .date-icon {
+      color: #10B981;
+    }
+  }
 }
 
 .name-cell {
@@ -398,6 +444,12 @@
   background-color: #EFF6FF;
   color: #0052CC;
   border: 1px solid #BFDBFE;
+
+  &.delivered {
+    background-color: #ECFDF5;
+    color: #10B981;
+    border-color: #A7F3D0;
+  }
 }
 
 /* LOADING & EMPTY STATES */
@@ -463,7 +515,7 @@
   justify-content: flex-start;
   background: #F1F5FF;
   border-bottom: 2px solid #DBEAFE;
-  padding: 12px 48px; // 24px (accordion padding) + 24px (panel padding)
+  padding: 12px 40px; // 24px (accordion padding) + 1px (border) + 15px (panel padding)
   position: sticky;
   top: 0;
   z-index: 10;
@@ -537,8 +589,9 @@
 
 .order-panel-header {
   height: auto !important;
-  padding: 12px 24px !important; // Match the 24px padding standard
+  // padding: 12px 24px !important; // Match the 24px padding standard
   font-size: 13px;
+  padding: 8px 15px !important;
   transition: background-color 0.2s;
 
   &:hover {
@@ -555,6 +608,9 @@
 
   .col-no {
     flex: 0 0 80px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
   }
 
   .col-name {
@@ -766,6 +822,23 @@
 
   &:active {
     background-color: #BFDBFE;
+  }
+
+  &.delivered {
+    background-color: #ECFDF5;
+    color: #10B981;
+    border-color: #A7F3D0;
+
+    &:hover {
+      background-color: #D1FAE5;
+      color: #059669;
+      border-color: #6EE7B7;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
+    }
+
+    &:active {
+      background-color: #A7F3D0;
+    }
   }
 
   lucide-icon {

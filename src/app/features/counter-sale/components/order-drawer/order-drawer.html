@@ -25,8 +25,9 @@
           <lucide-icon [img]="CalendarIcon"></lucide-icon>
           <span>Upcoming</span>
         </div>
-        <div class="chip" [class.active]="selectedStatus() === 'delivered'" (click)="setStatusFilter('delivered')">
-          <lucide-icon [img]="CheckCircleIcon"></lucide-icon>
+        <div class="chip delivered-chip" [class.active]="selectedStatus() === 'delivered'"
+          (click)="setStatusFilter('delivered')">
+          <lucide-icon [img]="TruckIcon"></lucide-icon>
           <span>Delivered</span>
         </div>
       </div>
@@ -67,7 +68,22 @@
           <mat-expansion-panel class="order-panel" [hideToggle]="false">
             <mat-expansion-panel-header class="order-panel-header">
               <div class="col-no">
-                <span class="order-no-badge">#{{ getOrderNo(order) }}</span>
+                <div class="order-no-stack">
+                  <span class="order-no-badge" [class.delivered]="selectedStatus() === 'delivered'">#{{
+                    getOrderNo(order) }}</span>
+                  @if (order.orderDate) {
+                  <span class="order-date-sub">
+                    <lucide-icon [img]="CalendarIcon" class="date-icon"></lucide-icon>
+                    {{ order.orderDate }}
+                  </span>
+                  }
+                  @if (selectedStatus() === 'delivered' && order.deliveredDate) {
+                  <span class="order-date-sub delivered-date">
+                    <lucide-icon [img]="TruckIcon" class="date-icon"></lucide-icon>
+                    {{ order.deliveredDate}}
+                  </span>
+                  }
+                </div>
               </div>
               <div class="col-name">
                 <div class="name-info-merged">
@@ -78,7 +94,7 @@
                 </div>
               </div>
               <div class="col-items">
-                <span class="items-count-badge">
+                <span class="items-count-badge" [class.delivered]="selectedStatus() === 'delivered'">
                   {{ order.items?.length || 0 }} {{ (order.items?.length === 1) ? 'Item' : 'Items' }}
                 </span>
               </div>
@@ -91,12 +107,13 @@
                 </span>
               </div>
               <div class="col-action">
-                <button class="select-order-btn" (click)="selectOrder(order, $event)" 
+                <button class="select-order-btn" [class.delivered]="selectedStatus() === 'delivered'"
+                  (click)="selectOrder(order, $event)"
                   [matTooltip]="selectedStatus() === 'delivered' ? 'View Order' : 'Select Order'">
                   @if (selectedStatus() === 'delivered') {
-                    <lucide-icon [img]="EyeIcon" class="btn-icon"></lucide-icon>
+                  <lucide-icon [img]="EyeIcon" class="btn-icon"></lucide-icon>
                   } @else {
-                    <lucide-icon [img]="ShoppingBagIcon" class="btn-icon"></lucide-icon>
+                  <lucide-icon [img]="ShoppingBagIcon" class="btn-icon"></lucide-icon>
                   }
                 </button>
               </div>

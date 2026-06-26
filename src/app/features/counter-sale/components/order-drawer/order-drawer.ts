@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Search, X, ShoppingBag, ClipboardList, Calendar, DollarSign, Loader, CheckCircle, Eye } from 'lucide-angular';
+import { LucideAngularModule, Search, X, ShoppingBag, ClipboardList, Calendar, DollarSign, Loader, CheckCircle, Eye, Truck } from 'lucide-angular';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CounterInvoiceService } from '../../../../core/services/counter-invoice.service';
@@ -57,6 +57,7 @@ export class OrderDrawer implements OnInit, OnDestroy {
   readonly LoaderIcon = Loader;
   readonly CheckCircleIcon = CheckCircle;
   readonly EyeIcon = Eye;
+  readonly TruckIcon = Truck;
 
   filteredOrders = computed(() => {
     const query = this.orderSearchQuery().toLowerCase().trim();
