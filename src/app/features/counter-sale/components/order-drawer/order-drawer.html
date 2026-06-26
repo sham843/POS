@@ -20,7 +20,8 @@
     <div class="drawer-search">
       <div class="search-box">
         <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
-        <input type="text" placeholder="Search by Order №, name or mobile..." [value]="orderSearchQuery()" (input)="onOrderSearch($event)" autofocus>
+        <input type="text" placeholder="Search by Order №, name or mobile..." [value]="orderSearchQuery()"
+          (input)="onOrderSearch($event)" autofocus>
         @if (orderSearchQuery()) {
         <button class="clear-btn" (click)="clearSearch()">
           <lucide-icon [img]="XIcon"></lucide-icon>
@@ -38,51 +39,65 @@
       </div>
       } @else {
       <div class="table-wrapper">
-        <table class="order-table">
-          <thead>
-            <tr>
-              <th class="col-no">Order №</th>
-              <th class="col-name">Customer</th>
-              <th class="col-date">Delivery Date</th>
-              <th class="col-amount">Amount</th>
-              <th class="col-status">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (order of filteredOrders(); track getOrderNo(order) || $index) {
-            <tr>
-              <td class="col-no">
+        <div class="accordion-header-row">
+          <div class="col-no">Order ID</div>
+          <div class="col-name">Customer Details</div>
+          <div class="col-items">Items (Qty)</div>
+          <div class="col-total">Total</div>
+          <div class="col-balance">Balance</div>
+        </div>
+
+        <mat-accordion class="order-accordion" [multi]="false">
+          @for (order of filteredOrders(); track getOrderNo(order) || $index) {
+          <mat-expansion-panel class="order-panel" [hideToggle]="false">
+            <mat-expansion-panel-header class="order-panel-header">
+              <div class="col-no">
                 <span class="order-no-badge">#{{ getOrderNo(order) }}</span>
-              </td>
-              <td class="col-name">
-                <div class="name-cell">
-                  <div class="avatar">{{ getAvatarInitial(order) }}</div>
-                  <div class="name-info">
-                    <span class="name-text">{{ getCustomerName(order) }}</span>
-                    @if (getMobileNo(order)) {
-                    <span class="mobile-sub">{{ getMobileNo(order) }}</span>
-                    }
-                  </div>
+              </div>
+              <div class="col-name">
+                <div class="name-info-merged">
+                  <span class="name-text">{{ getCustomerName(order) }}</span>
+                  @if (getMobileNo(order)) {
+                  <span class="mobile-sub">{{ getMobileNo(order) }}</span>
+                  }
                 </div>
-              </td>
-              <td class="col-date">
-                <div class="date-cell">
-                  <lucide-icon [img]="CalendarIcon" class="date-icon"></lucide-icon>
-                  <span>{{ getOrderDate(order) ? (getOrderDate(order) | date:'dd MMM yyyy, hh:mm a') : '—' }}</span>
-                </div>
-              </td>
-              <td class="col-amount">
-                <span class="amount-text">₹{{ getTotalAmount(order) | number:'1.2-2' }}</span>
-              </td>
-              <td class="col-status">
-                <span class="status-badge status-upcoming">
-                  {{ getStatus(order) }}
+              </div>
+              <div class="col-items">
+                <span class="items-count-badge">
+                  {{ order.items?.length || 0 }} {{ (order.items?.length === 1) ? 'Item' : 'Items' }}
                 </span>
-              </td>
-            </tr>
-            }
-          </tbody>
-        </table>
+              </div>
+              <div class="col-total">
+                <span class="amount-text">₹{{ getTotalAmount(order) | number:'1.2-2' }}</span>
+              </div>
+              <div class="col-balance">
+                <span class="balance-text" [class.has-balance]="getBalanceAmount(order) > 0">
+                  ₹{{ getBalanceAmount(order) | number:'1.2-2' }}
+                </span>
+              </div>
+            </mat-expansion-panel-header>
+
+            <!-- PANEL CONTENT: ITEMS LIST -->
+            <div class="order-items-container">
+              <h4 class="items-title">Ordered Items</h4>
+              <div class="items-list">
+                <div class="items-header-row">
+                  <span class="th-name">Product Name</span>
+                  <span class="th-qty">Quantity</span>
+                </div>
+                @for (item of order.items; track item.materialId || $index) {
+                <div class="item-row">
+                  <span class="item-name">{{ item.materialName || 'Unknown Item' }}</span>
+                  <span class="item-qty">x{{ item.quantity || 0 }}</span>
+                </div>
+                } @empty {
+                <div class="no-items">No items in this order</div>
+                }
+              </div>
+            </div>
+          </mat-expansion-panel>
+          }
+        </mat-accordion>
 
         <!-- EMPTY STATE -->
         @if (filteredOrders().length === 0) {

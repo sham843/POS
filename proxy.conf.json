@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://demoposapi.hitechdairy.in",
+    "target": "https://uatposapi.hitechdairy.in",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"

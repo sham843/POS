@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Search, X, ShoppingBag, ClipboardList, Calendar, DollarSign, Loader } from 'lucide-angular';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { CounterInvoiceService } from '../../../../core/services/counter-invoice.service';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -8,7 +9,7 @@ import { debounceTime } from 'rxjs/operators';
 @Component({
   selector: 'app-order-drawer',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, MatExpansionModule],
   templateUrl: './order-drawer.html',
   styleUrl: './order-drawer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -103,7 +104,7 @@ export class OrderDrawer implements OnInit, OnDestroy {
 
   // Resilient field extractors
   getOrderNo(order: any): string {
-    return order.orderNo || order.orderNumber || order.id || '—';
+    return order.orderId || order.orderNo || order.orderNumber || order.id || '—';
   }
 
   getCustomerName(order: any): string {
@@ -111,7 +112,7 @@ export class OrderDrawer implements OnInit, OnDestroy {
   }
 
   getMobileNo(order: any): string {
-    return order.mobileNo || order.phone || order.mobile || order.customer?.mobileNo || '';
+    return order.mobileNumber || order.mobileNo || order.phone || order.mobile || order.customer?.mobileNo || '';
   }
 
   getOrderDate(order: any): any {
@@ -120,6 +121,10 @@ export class OrderDrawer implements OnInit, OnDestroy {
 
   getTotalAmount(order: any): number {
     return order.totalAmount || order.total || order.amount || order.grandTotal || 0;
+  }
+
+  getBalanceAmount(order: any): number {
+    return order.balanceAmount || order.balance || 0;
   }
 
   getStatus(order: any): string {
