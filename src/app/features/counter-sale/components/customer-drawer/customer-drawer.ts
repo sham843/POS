@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Search, X, CheckCircle, Users, UserCheck } from 'lucide-angular';
+import { MatTableModule } from '@angular/material/table';
 import { DbService } from '../../../../core/services/db.service';
 import { CounterSaleService } from '../../../../core/services/counter-sale.service';
 import { Subject, Subscription } from 'rxjs';
@@ -9,7 +10,7 @@ import { debounceTime } from 'rxjs/operators';
 @Component({
   selector: 'app-customer-drawer',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, MatTableModule],
   templateUrl: './customer-drawer.html',
   styleUrl: './customer-drawer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -24,6 +25,8 @@ export class CustomerDrawer implements OnInit, OnDestroy {
   allCustomers = signal<any[]>([]);
   customerSearchQuery = signal<string>('');
   selectedCustomer = this.counterSaleService.selectedCustomer;
+
+  displayedColumns: string[] = ['name', 'credit', 'balance', 'action'];
 
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
