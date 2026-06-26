@@ -93,61 +93,8 @@
 }
 
 /* CHIPS CONTAINER */
-.drawer-chips-container {
-  display: flex;
-  background: #ffffff;
+.app-segment-container {
   border-bottom: 1px solid #E5E7EB;
-  padding: 12px 24px;
-}
-
-.search-type-chips {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  background: #E5EDF6;
-  padding: 4px;
-  border-radius: 8px;
-  gap: 4px;
-
-  .chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #4B5563;
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    .chip-icon {
-      width: 16px;
-      height: 16px;
-      color: #6B7280;
-      display: flex;
-      align-items: center;
-    }
-
-    &:hover:not(.active) {
-      color: #374151;
-
-      .chip-icon {
-        color: #4B5563;
-      }
-    }
-
-    &.active {
-      background: #ffffff;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      color: #0052CC;
-
-      .chip-icon {
-        color: #0052CC;
-      }
-    }
-  }
 }
 
 /* CONTENT CONTAINER */
@@ -252,74 +199,15 @@
   }
 }
 
-/* ACTION BUTTONS */
-.form-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 1px solid #F3F4F6;
-
-  button {
-    height: 36px;
-    padding: 0 18px;
-    border-radius: 8px;
-    font-size: 12.5px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    transition: all 0.2s;
-
-    lucide-icon {
-      width: 14px;
-      height: 14px;
-    }
-  }
-
-  .cancel-btn {
-    background: #ffffff;
-    border: 1px solid #D1D5DB;
-    color: #374151;
-
-    &:hover {
-      background: #F9FAFB;
-      border-color: #9CA3AF;
-    }
-  }
-
-  .submit-btn {
-    background: #0052CC;
-    border: 1px solid #0052CC;
-    color: #ffffff;
-
-    &:hover:not(:disabled) {
-      background: #0040A3;
-      border-color: #0040A3;
-    }
-
-    &:disabled {
-      background: #E5E7EB;
-      border-color: #E5E7EB;
-      color: #9CA3AF;
-      cursor: not-allowed;
-    }
-
-    .spinner {
-      animation: spin 1s linear infinite;
-    }
-  }
+/* ACTION BUTTONS SPINNER */
+.spinner {
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
   from {
     transform: rotate(0deg);
   }
-
   to {
     transform: rotate(360deg);
   }
@@ -353,12 +241,7 @@
     }
   }
 
-  .table-wrapper {
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #ffffff;
-  }
+
 }
 
 .filter-form-container {

@@ -17,13 +17,13 @@
     </div>
 
     <!-- CHIP NAVIGATION -->
-    <div class="drawer-chips-container">
-      <div class="search-type-chips">
-        <div class="chip" [class.active]="activeTab() === 'add'" (click)="activeTab.set('add')">
+    <div class="app-segment-container">
+      <div class="app-segment-chips">
+        <div class="app-chip" [class.active]="activeTab() === 'add'" (click)="activeTab.set('add')">
           <lucide-icon [img]="PlusIcon" class="chip-icon"></lucide-icon>
           <span>Add Balance</span>
         </div>
-        <div class="chip" [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">
+        <div class="app-chip" [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">
           <lucide-icon [img]="ReceiptTextIcon" class="chip-icon"></lucide-icon>
           <span>History</span>
         </div>
@@ -144,9 +144,9 @@
           </mat-form-field>
         </div>
 
-        <div class="form-actions">
-          <button type="button" class="cancel-btn" (click)="closeDrawer()">Cancel</button>
-          <button type="submit" class="submit-btn" [disabled]="isSaving() || ledgerForm.invalid">
+        <div class="app-form-actions">
+          <button type="button" class="app-btn btn-secondary" (click)="closeDrawer()">Cancel</button>
+          <button type="submit" class="app-btn btn-primary" [disabled]="isSaving() || ledgerForm.invalid">
             @if (isSaving()) {
             <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
             Saving...
@@ -214,8 +214,8 @@
           <p>Loading transaction history...</p>
         </div>
         } @else {
-        <div class="table-wrapper">
-          <table mat-table [dataSource]="filteredLedgerHistory()" class="mat-elevation-z0 ledger-mat-table">
+        <div class="app-table-wrapper">
+          <table mat-table [dataSource]="filteredLedgerHistory()" class="mat-elevation-z0 app-data-table ledger-mat-table">
             
             <!-- Sr Column -->
             <ng-container matColumnDef="sr">

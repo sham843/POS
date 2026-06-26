@@ -93,7 +93,7 @@
 }
 
 // ─── TABLE ────────────────────────────────────────────────────────
-.table-wrapper {
+.app-table-wrapper {
   flex: 1;
   overflow-y: auto;
   max-height: 280px;
@@ -271,23 +271,7 @@
   padding: 14px 22px;
   background: var(--pos-bg);
 
-  .btn-cancel {
-    background: transparent;
-    border: 1px solid var(--pos-card-border);
-    border-radius: 8px;
-    padding: 9px 20px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--pos-text-secondary);
-    cursor: pointer;
-    transition: all 0.15s ease;
 
-    &:hover {
-      background: var(--pos-bg);
-      border-color: var(--pos-card-border);
-      color: var(--pos-text-primary);
-    }
-  }
 
   .print-checkbox {
     font-size: 13px;
@@ -296,36 +280,5 @@
     margin-right: auto;
   }
 
-  .btn-confirm {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-wrap: nowrap !important;
-    gap: 8px;
-    border: none;
-    border-radius: 8px;
-    padding: 9px 24px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #fff;
-    background: var(--pos-accent);
-    cursor: pointer;
-    transition: all 0.15s ease;
 
-    lucide-icon {
-      width: 16px;
-      height: 16px;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    &:hover {
-      background: var(--pos-accent-hover);
-    }
-
-    &:active {
-      transform: translateY(1px);
-    }
-  }
 }

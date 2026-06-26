@@ -20,14 +20,14 @@
     <!-- SEARCH & FILTER BAR -->
     <div class="drawer-search-bar">
       <!-- Segmented Control (Left) -->
-      <div class="search-type-chips">
-        <div class="chip" [class.active]="selectedStatus() === 'Upcoming'" (click)="setStatusFilter('Upcoming')">
-          <lucide-icon [img]="CalendarIcon"></lucide-icon>
+      <div class="app-segment-chips">
+        <div class="app-chip" [class.active]="selectedStatus() === 'Upcoming'" (click)="setStatusFilter('Upcoming')">
+          <lucide-icon [img]="CalendarIcon" class="chip-icon"></lucide-icon>
           <span>Upcoming</span>
         </div>
-        <div class="chip delivered-chip" [class.active]="selectedStatus() === 'delivered'"
+        <div class="app-chip delivered-chip" [class.active]="selectedStatus() === 'delivered'"
           (click)="setStatusFilter('delivered')">
-          <lucide-icon [img]="TruckIcon"></lucide-icon>
+          <lucide-icon [img]="TruckIcon" class="chip-icon"></lucide-icon>
           <span>Delivered</span>
         </div>
       </div>
@@ -53,7 +53,7 @@
         <p>Loading upcoming orders...</p>
       </div>
       } @else {
-      <div class="table-wrapper">
+      <div class="app-table-wrapper">
         <div class="accordion-header-row">
           <div class="col-no">Order ID</div>
           <div class="col-name">Customer Details</div>

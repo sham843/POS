@@ -562,4 +562,160 @@ lucide-icon svg {
     min-height: 72px;
     resize: vertical;
   }
+}
+
+/* --- Global Premium Data Tables --- */
+.app-table-wrapper {
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.app-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  text-align: left;
+
+  th.mat-mdc-header-cell, th {
+    background: #F9FAFB !important;
+    color: #4B5563 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    font-size: 10.5px !important;
+    letter-spacing: 0.5px;
+    padding: 10px 14px !important;
+    border-bottom: 1px solid #E5E7EB !important;
+  }
+
+  td.mat-mdc-cell, td {
+    padding: 10px 14px !important;
+    font-size: 12.5px !important;
+    color: #374151 !important;
+    border-bottom: 1px solid #E5E7EB !important;
+    vertical-align: middle;
+  }
+
+  tr.mat-mdc-row:last-child td.mat-mdc-cell,
+  tr:last-child td {
+    border-bottom: none !important;
+  }
+
+  .no-records {
+    text-align: center;
+    padding: 32px 16px !important;
+    color: #6B7280;
+    font-style: italic;
+  }
+}
+
+/* --- Global Navigation Segments / Chips --- */
+.app-segment-container {
+  display: flex;
+  background: #ffffff;
+  padding: 12px 24px;
+}
+
+.app-segment-chips {
+  display: flex;
+  align-items: center;
+  background: #E5EDF6;
+  padding: 4px;
+  border-radius: 8px;
+  gap: 4px;
+
+  .app-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4B5563;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    .chip-icon {
+      width: 16px;
+      height: 16px;
+      color: #6B7280;
+      display: flex;
+      align-items: center;
+    }
+
+    &:hover:not(.active) {
+      color: #374151;
+      .chip-icon { color: #4B5563; }
+    }
+
+    &.active {
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      color: #0052CC;
+      .chip-icon { color: #0052CC; }
+    }
+  }
+}
+
+/* --- Global Form Actions & Buttons --- */
+.app-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #F3F4F6;
+}
+
+.app-btn {
+  height: 36px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+
+  lucide-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:disabled {
+    background: #E5E7EB !important;
+    border-color: #E5E7EB !important;
+    color: #9CA3AF !important;
+    cursor: not-allowed !important;
+  }
+
+  &.btn-secondary {
+    background: #ffffff;
+    border-color: #D1D5DB;
+    color: #374151;
+
+    &:hover:not(:disabled) {
+      background: #F9FAFB;
+      border-color: #9CA3AF;
+    }
+  }
+
+  &.btn-primary {
+    background: #0052CC;
+    border-color: #0052CC;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+      background: #0040A3;
+      border-color: #0040A3;
+    }
+  }
 }

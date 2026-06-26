@@ -98,57 +98,14 @@
   background: #FAFAFA;
 
   // Segmented control (Left)
-  .search-type-chips {
-    display: flex;
-    align-items: center;
-    background: #EAEFF8; // Soft blue-gray capsule background
-    padding: 4px;
-    border-radius: 10px;
-    height: 38px;
-    box-sizing: border-box;
+  // Component-specific color override for green "Delivered" active tab
+  .app-chip.delivered-chip.active {
+    color: #10B981 !important;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15) !important;
+    background: #ffffff !important;
 
-    .chip {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 16px;
-      height: 100%;
-      border-radius: 8px;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #4B5563;
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
-
-      lucide-icon {
-        width: 14px;
-        height: 14px;
-        color: #4B5563;
-        transition: color 0.2s;
-      }
-
-      &:hover {
-        color: #111827;
-      }
-
-      &.active {
-        background: #ffffff; // White active pill
-        color: #0052CC; // Brand blue text
-        box-shadow: 0 2px 6px rgba(0, 82, 204, 0.15); // Subtle shadow
-
-        lucide-icon {
-          color: #0052CC;
-        }
-
-        &.delivered-chip {
-          color: #10B981; // Emerald green text
-          box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15); // Subtle green shadow
-
-          lucide-icon {
-            color: #10B981; // Emerald green icon
-          }
-        }
-      }
+    .chip-icon {
+      color: #10B981 !important;
     }
   }
 
@@ -226,7 +183,7 @@
   flex-direction: column;
 }
 
-.table-wrapper {
+.app-table-wrapper {
   flex: 1;
   overflow-y: auto;
   overflow-x: auto;
