@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 // Include theming for Angular Material with `mat.theme()`.
 // This Sass mixin will define CSS variables that are used for styling Angular Material
 // components according to the Material 3 design spec.
@@ -175,16 +177,9 @@ app-root, app-main-layout {
 body {
   background-color: var(--bg-color);
   color: var(--text-primary);
-  font-family:
-    'Inter',
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
-  font-size: 16px;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14.5px; // Balanced, highly readable base size for modern POS/dashboards
+  font-weight: 400; // Crisp and clean default weight
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -192,6 +187,33 @@ body {
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
+}
+
+/* --- Global Typography Hierarchy Overrides --- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600 !important; // Sleek semi-bold weight
+  color: #111827 !important;
+}
+
+p, span, div, td, th, input, textarea, select, label {
+  font-family: 'Inter', sans-serif !important;
+}
+
+// Force Material Components to inherit the beautiful Inter font family
+.mat-mdc-button, 
+.mat-mdc-raised-button, 
+.mat-mdc-unelevated-button, 
+.mat-mdc-outlined-button,
+.mat-mdc-select,
+.mat-mdc-option,
+.mat-mdc-form-field,
+.mat-mdc-input-element,
+.mat-mdc-tab,
+.mat-mdc-table,
+.mat-mdc-dialog-title,
+.mat-mdc-dialog-content {
+  font-family: 'Inter', sans-serif !important;
 }
 
 mat-error {
