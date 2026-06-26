@@ -297,4 +297,15 @@ export class CounterInvoiceService {
 
     this.electronService.sendPrintData(printPayload);
   }
+
+  getOrderList(): Observable<any> {
+    const userDetailsStr = localStorage.getItem('UserDetails');
+    let userDetails: any = null;
+    try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) {}
+
+    const organizationId = userDetails?.organizationId || 28;
+    const unitId = userDetails?.unitid || userDetails?.unitId || 0;
+    
+    return this.apiService.get<any>(`api/v1/Order/getOrderList?organizationId=${organizationId}&unitId=${unitId}&deliveryStatus=Upcoming`);
+  }
 }

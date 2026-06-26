@@ -1,0 +1,104 @@
+@if (isOpen) {
+<div class="order-drawer-overlay" (click)="closeDrawer()">
+  <div class="order-drawer" (click)="$event.stopPropagation()">
+
+    <!-- HEADER -->
+    <div class="drawer-header">
+      <div class="header-left">
+        <lucide-icon [img]="ClipboardListIcon" class="header-icon"></lucide-icon>
+        <div>
+          <h3>Upcoming Orders</h3>
+          <span class="header-count">{{ filteredOrders().length }} orders</span>
+        </div>
+      </div>
+      <button class="close-btn" (click)="closeDrawer()">
+        <lucide-icon [img]="XIcon"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="drawer-search">
+      <div class="search-box">
+        <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
+        <input type="text" placeholder="Search by Order №, name or mobile..." [value]="orderSearchQuery()" (input)="onOrderSearch($event)" autofocus>
+        @if (orderSearchQuery()) {
+        <button class="clear-btn" (click)="clearSearch()">
+          <lucide-icon [img]="XIcon"></lucide-icon>
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="drawer-content">
+      @if (isLoading()) {
+      <div class="loading-state">
+        <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
+        <p>Loading upcoming orders...</p>
+      </div>
+      } @else {
+      <div class="table-wrapper">
+        <table class="order-table">
+          <thead>
+            <tr>
+              <th class="col-no">Order №</th>
+              <th class="col-name">Customer</th>
+              <th class="col-date">Delivery Date</th>
+              <th class="col-amount">Amount</th>
+              <th class="col-status">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (order of filteredOrders(); track getOrderNo(order) || $index) {
+            <tr>
+              <td class="col-no">
+                <span class="order-no-badge">#{{ getOrderNo(order) }}</span>
+              </td>
+              <td class="col-name">
+                <div class="name-cell">
+                  <div class="avatar">{{ getAvatarInitial(order) }}</div>
+                  <div class="name-info">
+                    <span class="name-text">{{ getCustomerName(order) }}</span>
+                    @if (getMobileNo(order)) {
+                    <span class="mobile-sub">{{ getMobileNo(order) }}</span>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td class="col-date">
+                <div class="date-cell">
+                  <lucide-icon [img]="CalendarIcon" class="date-icon"></lucide-icon>
+                  <span>{{ getOrderDate(order) ? (getOrderDate(order) | date:'dd MMM yyyy, hh:mm a') : '—' }}</span>
+                </div>
+              </td>
+              <td class="col-amount">
+                <span class="amount-text">₹{{ getTotalAmount(order) | number:'1.2-2' }}</span>
+              </td>
+              <td class="col-status">
+                <span class="status-badge status-upcoming">
+                  {{ getStatus(order) }}
+                </span>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+
+        <!-- EMPTY STATE -->
+        @if (filteredOrders().length === 0) {
+        <div class="empty-state">
+          <lucide-icon [img]="ShoppingBagIcon" class="empty-icon"></lucide-icon>
+          @if (orderSearchQuery()) {
+          <p>No orders found matching "{{ orderSearchQuery() }}"</p>
+          } @else {
+          <p>No upcoming orders available</p>
+          }
+        </div>
+        }
+      </div>
+      }
+    </div>
+
+  </div>
+</div>
+}

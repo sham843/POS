@@ -398,6 +398,29 @@
   }
 }
 
+.order-list-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #10B981;
+  color: #10B981;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  lucide-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: #ECFDF5;
+  }
+}
+
 
 .pos-main-content {
   flex: 1;

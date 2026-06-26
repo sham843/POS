@@ -94,6 +94,9 @@
         matTooltip="Maximum 5 bills allowed">
         <lucide-icon [img]="Plus"></lucide-icon>
       </button>
+      <button class="order-list-btn" (click)="openOrderDrawer()" matTooltip="Upcoming Orders">
+        <lucide-icon [img]="ShoppingBag"></lucide-icon>
+      </button>
     </div>
 
   </div>
@@ -122,5 +125,8 @@
 
   <!-- CUSTOMER SELECTION DRAWER OVERLAY -->
   <app-customer-drawer [isOpen]="isCustomerDrawerOpen()" (close)="closeCustomerDrawer()"></app-customer-drawer>
+
+  <!-- ORDER DRAWER OVERLAY -->
+  <app-order-drawer [isOpen]="isOrderDrawerOpen()" (close)="closeOrderDrawer()"></app-order-drawer>
 
 </div>

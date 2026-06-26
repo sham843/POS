@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal, OnInit, OnDestroy, inject, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp, CheckCircle, List } from 'lucide-angular';
+import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp, CheckCircle, List, ShoppingBag } from 'lucide-angular';
 import { ProductList } from './components/product-list/product-list';
 import { Cart } from './components/cart/cart';
 import { BillSummary } from './components/bill-summary/bill-summary';
 import { Payment } from './components/payment/payment';
 import { CustomerDrawer } from './components/customer-drawer/customer-drawer';
+import { OrderDrawer } from './components/order-drawer/order-drawer';
 import { CounterSaleService } from '../../core/services/counter-sale.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { DbService } from '../../core/services/db.service';
@@ -26,6 +27,7 @@ import { debounce } from 'rxjs/operators';
     BillSummary,
     Payment,
     CustomerDrawer,
+    OrderDrawer,
     MatTooltipModule
   ],
   templateUrl: './counter-sale.html',
@@ -38,6 +40,7 @@ export class CounterSale implements OnInit, OnDestroy {
   private dbService = inject(DbService);
 
   isCustomerDrawerOpen = signal<boolean>(false);
+  isOrderDrawerOpen = signal<boolean>(false);
   selectedCustomer = this.counterSaleService.selectedCustomer;
 
   @ViewChild('searchInput', { static: false }) searchInput?: ElementRef<HTMLInputElement>;
@@ -58,6 +61,7 @@ export class CounterSale implements OnInit, OnDestroy {
   readonly ArrowUp = ArrowUp;
   readonly CheckCircle = CheckCircle;
   readonly ListIcon = List;
+  readonly ShoppingBag = ShoppingBag;
 
   sessionBillStats = this.counterSaleService.sessionBillStats;
 
@@ -116,6 +120,14 @@ export class CounterSale implements OnInit, OnDestroy {
 
   closeCustomerDrawer() {
     this.isCustomerDrawerOpen.set(false);
+  }
+
+  openOrderDrawer() {
+    this.isOrderDrawerOpen.set(true);
+  }
+
+  closeOrderDrawer() {
+    this.isOrderDrawerOpen.set(false);
   }
 
   clearSelectedCustomer() {
