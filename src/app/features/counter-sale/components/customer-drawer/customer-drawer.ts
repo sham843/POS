@@ -93,6 +93,7 @@ export class CustomerDrawer implements OnInit, OnDestroy {
       this.counterSaleService.updateActiveBill({ selectedCustomer: null });
     } else {
       this.counterSaleService.updateActiveBill({ selectedCustomer: c });
+      this.counterSaleService.searchType.set('customer');
     }
     this.closeDrawer();
   }

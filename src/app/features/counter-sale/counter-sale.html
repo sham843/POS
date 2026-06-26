@@ -20,21 +20,24 @@
     </div>
 
     <!-- SEARCH -->
-    <div class="sub-header-search" [class.has-customer]="searchType() === 'customer' && selectedCustomer()">
-      <div class="search-box" [class.customer-mode]="searchType() === 'customer'">
+    <div class="sub-header-search" [class.has-customer]="selectedCustomer()">
+      <div class="search-box" [class.customer-mode]="searchType() === 'customer' || selectedCustomer()">
         <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
 
         <!-- Customer selected chip -->
-        @if (searchType() === 'customer' && selectedCustomer()) {
-        <div class="selected-customer-chip">
+        @if (selectedCustomer()) {
+        <div class="selected-customer-chip" [class.mini-mode]="searchType() !== 'customer'" (click)="openCustomerDrawer()" style="cursor: pointer;">
           <div class="chip-avatar">{{ (selectedCustomer()?.customerName || selectedCustomer()?.name ||
             '?')[0].toUpperCase() }}</div>
           <span class="chip-name">{{ selectedCustomer()?.customerName || selectedCustomer()?.name }}</span>
-          <button class="chip-clear" (click)="clearSelectedCustomer()" matTooltip="Remove customer">
+          <button class="chip-clear" (click)="clearSelectedCustomer(); $event.stopPropagation()" matTooltip="Remove customer">
             <lucide-icon [img]="X"></lucide-icon>
           </button>
         </div>
-        } @else {
+        }
+
+        <!-- Show search input if not 'customer' mode OR if no customer is selected in 'customer' mode -->
+        @if (searchType() !== 'customer' || !selectedCustomer()) {
         <!-- Normal search input -->
         <input type="text" #searchInput [value]="searchQuery()"
           [placeholder]="searchType() === 'product' ? 'Search by Product Name' : (searchType() === 'bill' ? 'Search by Bill №.' : 'Search by Customer Name')"
@@ -64,7 +67,7 @@
       }
 
       <!-- Customer Credit & Balance badges (outside the input box) -->
-      @if (searchType() === 'customer' && selectedCustomer()) {
+      @if (selectedCustomer()) {
       <div class="customer-info-badges">
         <span class="info-pill credit-pill">
           Credit: <strong>₹{{ selectedCustomer()?.creditLimit || 0 | number:'1.0-2' }}</strong>

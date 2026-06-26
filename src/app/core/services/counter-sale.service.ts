@@ -280,7 +280,7 @@ export class CounterSaleService {
 
     // Delegate calculation to NumpadService
     const updatedItem = this.counterNumpadService.updateCartItemFromNumpad(item, mode, valStr);
-    
+
     if (mode === 'amount' && item.product?.mensurationUnit === 'Nos') {
       this.syncNumpadFromCart();
       return;
@@ -327,7 +327,7 @@ export class CounterSaleService {
         total: 0,
         unit: product.unit || product.uom || product.unitName || product.mensurationUnit || ''
       };
-      
+
       const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', '1');
       items.unshift(calculatedItem);
       this.updateActiveBill({ cartItems: items });
@@ -514,7 +514,7 @@ export class CounterSaleService {
 
   async loadOrderToCart(order: any) {
     const cartItems: CartItem[] = [];
-    
+
     // 1. Fetch products from IndexedDB for each item in the order
     for (const item of order.items || []) {
       const materialId = item.materialId || item.productId || item.id || 0;
@@ -525,7 +525,7 @@ export class CounterSaleService {
             const rate = product.salePrice || product.mrp || product.rate || product.price || product.saleRate || 0;
             const gst = product.gst || product.taxPercentage || 0;
             const qty = item.quantity || 1;
-            
+
             const newItem: CartItem = {
               product: product,
               details: product.productName || product.materialName || product.name || 'Unknown Product',
@@ -539,7 +539,7 @@ export class CounterSaleService {
               total: 0,
               unit: product.unit || product.uom || product.unitName || product.mensurationUnit || ''
             };
-            
+
             const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', qty.toString());
             cartItems.push(calculatedItem);
           } else {
@@ -573,10 +573,15 @@ export class CounterSaleService {
     const partyId = order.partyId || order.customerId || 0;
     if (partyId) {
       try {
-        selectedCustomer = await this.dbService.customerList.get(partyId);
+        // Direct lookup with Number since Dexie table key is typed as number
+        selectedCustomer = await this.dbService.customerList.get(Number(partyId));
+        if (!selectedCustomer) {
+          const customers = await this.dbService.customerList.toArray();
+          selectedCustomer = customers.find(c => Number(c.id) === Number(partyId) || String(c.id) === String(partyId));
+        }
       } catch (e) { }
     }
-    
+
     if (!selectedCustomer) {
       const mobile = order.mobileNumber || order.mobileNo || order.phone || order.mobile || order.customer?.mobileNo || '';
       if (mobile) {
@@ -585,6 +590,13 @@ export class CounterSaleService {
           selectedCustomer = customers.find(c => String(c.mobileNo || c.phone || '').includes(mobile));
         } catch (e) { }
       }
+    }
+
+    if (selectedCustomer) {
+      selectedCustomer = {
+        ...selectedCustomer,
+        orderId: order.orderId
+      };
     }
 
     // 3. Update active bill state
@@ -597,6 +609,10 @@ export class CounterSaleService {
       numpadShouldReplace: true,
       numpadHasQuickWeight: false
     });
+
+    if (selectedCustomer) {
+      this.searchType.set('customer');
+    }
 
     const orderId = order.orderId || order.orderNo || order.id || '—';
     this.notificationService.showSuccess(`Order #${orderId} loaded into cart.`);
