@@ -19,7 +19,9 @@ export class ConfigService {
       // console.error('Failed to load application configuration', error);
       this.config = {
         formFieldAppearance: 'outline',
-        apiUrl: 'https://demoposapi.hitechdairy.in'
+        apiUrl: 'https://demoposapi.hitechdairy.in',
+        orderSearchDebounceTime: 300,
+        orderDrawerWidth: 800
       };
     }
   }

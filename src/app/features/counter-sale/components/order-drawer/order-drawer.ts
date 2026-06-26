@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Search, X, ShoppingBag, ClipboardList, Calendar, DollarSign, Loader } from 'lucide-angular';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CounterInvoiceService } from '../../../../core/services/counter-invoice.service';
+import { ConfigService } from '../../../../core/services/config.service';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
@@ -16,11 +17,12 @@ import { debounceTime } from 'rxjs/operators';
 })
 export class OrderDrawer implements OnInit, OnDestroy {
   private counterInvoiceService = inject(CounterInvoiceService);
+  private configService = inject(ConfigService);
 
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
     if (value) {
-      this.loadOrders();
+      this.loadOrders(this.orderSearchQuery());
     }
   }
   get isOpen(): boolean {
@@ -51,18 +53,20 @@ export class OrderDrawer implements OnInit, OnDestroy {
     const list = this.allOrders();
     if (!query) return list;
     return list.filter(order => {
-      const orderNo = this.getOrderNo(order).toLowerCase();
-      const customerName = this.getCustomerName(order).toLowerCase();
-      const phone = this.getMobileNo(order).toLowerCase();
+      const orderNo = String(this.getOrderNo(order)).toLowerCase();
+      const customerName = String(this.getCustomerName(order)).toLowerCase();
+      const phone = String(this.getMobileNo(order)).toLowerCase();
       return orderNo.includes(query) || customerName.includes(query) || phone.includes(query);
     });
   });
 
   ngOnInit() {
+    const debounceMs = this.configService.getConfig()?.orderSearchDebounceTime ?? 300;
     this.searchSubscription = this.searchSubject.pipe(
-      debounceTime(300)
+      debounceTime(debounceMs)
     ).subscribe(value => {
       this.orderSearchQuery.set(value);
+      this.loadOrders(value); // Trigger server-side API search
     });
   }
 
@@ -72,9 +76,9 @@ export class OrderDrawer implements OnInit, OnDestroy {
     }
   }
 
-  loadOrders() {
+  loadOrders(query: string = '') {
     this.isLoading.set(true);
-    this.counterInvoiceService.getOrderList().subscribe({
+    this.counterInvoiceService.getOrderList(query).subscribe({
       next: (res) => {
         const list = res?.data || res || [];
         this.allOrders.set(Array.isArray(list) ? list : []);
@@ -134,5 +138,9 @@ export class OrderDrawer implements OnInit, OnDestroy {
   getAvatarInitial(order: any): string {
     const name = this.getCustomerName(order);
     return name ? name[0].toUpperCase() : '?';
+  }
+
+  getDrawerWidth(): number {
+    return this.configService.getConfig()?.orderDrawerWidth ?? 800;
   }
 }

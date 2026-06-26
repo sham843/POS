@@ -1,6 +1,6 @@
 @if (isOpen) {
 <div class="order-drawer-overlay" (click)="closeDrawer()">
-  <div class="order-drawer" (click)="$event.stopPropagation()">
+  <div class="order-drawer" [style.width.px]="getDrawerWidth()" (click)="$event.stopPropagation()">
 
     <!-- HEADER -->
     <div class="drawer-header">

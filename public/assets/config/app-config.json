@@ -1,4 +1,6 @@
 {
   "formFieldAppearance": "outline",
-  "apiUrl": ""
+  "apiUrl": "",
+  "orderSearchDebounceTime": 300,
+  "orderDrawerWidth": 800
 }
