@@ -367,4 +367,199 @@ lucide-icon svg {
     transform: scale(1.5);
     opacity: 0;
   }
+}
+
+/* --- Global Form Design System --- */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 16px;
+  row-gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+
+  &.full-width {
+    grid-column: span 2;
+  }
+}
+
+.field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4B5563;
+  display: inline-block;
+
+  .required {
+    color: #EF4444;
+    margin-left: 2px;
+  }
+}
+
+/* --- Global Angular Material Outlined Form Field Overrides --- */
+.mat-mdc-form-field {
+  margin-bottom: 0;
+  width: 100%;
+
+  .mat-mdc-focus-indicator::after {
+    content: none !important;
+  }
+}
+
+.mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+  --mdc-outlined-text-field-container-shape: 8px;
+
+  .mat-mdc-form-field-flex {
+    height: 42px;
+    align-items: center;
+    background-color: #ffffff !important;
+    border-radius: 8px;
+    transition: box-shadow 0.15s ease-in-out;
+  }
+
+  .mdc-notched-outline {
+    .mdc-notched-outline__leading {
+      border-top-left-radius: 8px !important;
+      border-bottom-left-radius: 8px !important;
+      border-color: #D1D5DB !important;
+      border-width: 1px !important;
+    }
+    .mdc-notched-outline__notch {
+      border-color: #D1D5DB !important;
+      border-width: 1px !important;
+    }
+    .mdc-notched-outline__trailing {
+      border-top-right-radius: 8px !important;
+      border-bottom-right-radius: 8px !important;
+      border-color: #D1D5DB !important;
+      border-width: 1px !important;
+    }
+  }
+
+  .mat-mdc-form-field-infix {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    min-height: 42px !important;
+    display: flex;
+    align-items: center;
+  }
+
+  input.mat-mdc-input-element {
+    font-size: 13.5px;
+    color: #1F2937;
+    
+    &::placeholder {
+      color: #9CA3AF !important;
+      font-size: 12px !important;
+      font-weight: 400 !important;
+      opacity: 1;
+    }
+  }
+
+  textarea.mat-mdc-input-element {
+    font-size: 13.5px;
+    color: #1F2937;
+
+    &::placeholder {
+      color: #9CA3AF !important;
+      font-size: 12px !important;
+      font-weight: 400 !important;
+      opacity: 1;
+    }
+  }
+}
+
+// Select styling
+.mat-mdc-select {
+  font-size: 13.5px;
+  color: #1F2937;
+}
+
+.mat-mdc-select-placeholder {
+  color: #9CA3AF !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+
+.mat-mdc-select-arrow-wrapper {
+  height: 20px;
+  
+  .mat-mdc-select-arrow {
+    color: #6B7280 !important;
+  }
+}
+
+// Datepicker toggle
+.mat-datepicker-toggle {
+  .mat-mdc-icon-button {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    color: #6B7280;
+
+    .mat-mdc-button-persistent-ripple {
+      border-radius: 50%;
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+// Remove subscript area by default on all compact fields (if marked with no-subscript)
+.mat-mdc-form-field.no-subscript {
+  .mat-mdc-form-field-subscript-wrapper,
+  .mat-mdc-form-field-bottom-align {
+    display: none !important;
+  }
+}
+
+// Hover state
+.mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: #9CA3AF !important;
+  }
+}
+
+// Focus state
+.mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused {
+  .mat-mdc-form-field-flex {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: #3B82F6 !important;
+    border-width: 1.5px !important;
+  }
+}
+
+// Textarea special case — allow taller
+.remark-group {
+  .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+    .mat-mdc-form-field-flex {
+      height: auto;
+      min-height: 42px;
+    }
+
+    .mat-mdc-form-field-infix {
+      min-height: auto !important;
+      padding-top: 10px !important;
+      padding-bottom: 10px !important;
+    }
+  }
+
+  textarea {
+    min-height: 72px;
+    resize: vertical;
+  }
 }

@@ -318,5 +318,13 @@ export class CounterInvoiceService {
   updateOrderStatus(orderId: number, status: string = 'delivered'): Observable<any> {
     return this.apiService.get<any>(`api/v1/Order/GetOrdersbyId?OrderId=${orderId}&status=${status}`);
   }
+
+  getCustomerLedger(customerId: number, organizationId: number, unitId: number): Observable<any> {
+    return this.apiService.get<any>(`api/v1/LedgerTransaction/GetCustomerLedgerReport?organizationId=${organizationId}&unitId=${unitId}&ledgerId=${customerId}`);
+  }
+
+  addCustomerBalance(payload: any): Observable<any> {
+    return this.apiService.post<any>('api/v1/LedgerTransaction/saveLedgerTransaction', payload);
+  }
 }
 

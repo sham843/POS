@@ -137,4 +137,7 @@
   <!-- ORDER DRAWER OVERLAY -->
   <app-order-drawer [isOpen]="isOrderDrawerOpen()" (close)="closeOrderDrawer()"></app-order-drawer>
 
+  <!-- CUSTOMER LEDGER DRAWER OVERLAY -->
+  <app-customer-ledger [isOpen]="isLedgerDrawerOpen()" [customer]="selectedCustomer()" (close)="closeLedgerDrawer()" (balanceAdded)="onBalanceAdded()"></app-customer-ledger>
+
 </div>

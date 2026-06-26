@@ -8,6 +8,7 @@ import { BillSummary } from './components/bill-summary/bill-summary';
 import { Payment } from './components/payment/payment';
 import { CustomerDrawer } from './components/customer-drawer/customer-drawer';
 import { OrderDrawer } from './components/order-drawer/order-drawer';
+import { CustomerLedger } from './components/customer-ledger/customer-ledger';
 import { CounterSaleService } from '../../core/services/counter-sale.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { DbService } from '../../core/services/db.service';
@@ -30,6 +31,7 @@ import { debounce } from 'rxjs/operators';
     Payment,
     CustomerDrawer,
     OrderDrawer,
+    CustomerLedger,
     MatTooltipModule
   ],
   templateUrl: './counter-sale.html',
@@ -45,6 +47,7 @@ export class CounterSale implements OnInit, OnDestroy {
 
   isCustomerDrawerOpen = signal<boolean>(false);
   isOrderDrawerOpen = signal<boolean>(false);
+  isLedgerDrawerOpen = signal<boolean>(false);
   selectedCustomer = this.counterSaleService.selectedCustomer;
 
   upcomingOrdersCount = signal<number>(0);
@@ -147,8 +150,21 @@ export class CounterSale implements OnInit, OnDestroy {
   }
 
   openAddBalance() {
-    // TODO: open add-balance dialog for selectedCustomer
-    console.log('Add balance for:', this.selectedCustomer());
+    this.isLedgerDrawerOpen.set(true);
+  }
+
+  closeLedgerDrawer() {
+    this.isLedgerDrawerOpen.set(false);
+  }
+
+  async onBalanceAdded() {
+    const currentCust = this.selectedCustomer();
+    if (currentCust?.id) {
+      const updated = await this.dbService.customerList.get(Number(currentCust.id));
+      if (updated) {
+        this.counterSaleService.updateActiveBill({ selectedCustomer: updated });
+      }
+    }
   }
 
   onSearchChange(event: Event) {
