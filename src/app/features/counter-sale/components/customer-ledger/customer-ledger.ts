@@ -7,6 +7,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
 import { DbService } from '../../../../core/services/db.service';
 import { CounterInvoiceService } from '../../../../core/services/counter-invoice.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -22,7 +23,8 @@ import { ConfigService } from '../../../../core/services/config.service';
     MatDatepickerModule, 
     MatFormFieldModule, 
     MatInputModule, 
-    MatSelectModule
+    MatSelectModule,
+    MatTableModule
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './customer-ledger.html',
@@ -43,14 +45,21 @@ export class CustomerLedger {
   activeTab = signal<'add' | 'history'>('add');
   isLoading = signal<boolean>(false);
   isSaving = signal<boolean>(false);
+  
+  // History Signals
   ledgerHistory = signal<any[]>([]);
+  filteredLedgerHistory = signal<any[]>([]);
 
   // Dropdown Lists
   partiesList = signal<any[]>([]);
   bankAccountsList = signal<any[]>([]);
   cashLedgersList = signal<any[]>([]);
+  combinedBankCashList = signal<any[]>([]);
 
   ledgerForm: FormGroup;
+  filterForm: FormGroup;
+
+  displayedColumns: string[] = ['sr', 'date', 'billNo', 'credit', 'debit'];
 
   // Icons
   readonly XIcon = X;
@@ -73,11 +82,33 @@ export class CustomerLedger {
       remark: ['']
     });
 
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    this.filterForm = this.fb.group({
+      partyId: [null, Validators.required],
+      bankLedgerId: [null, Validators.required],
+      fromDate: [thirtyDaysAgo, Validators.required],
+      toDate: [new Date(), Validators.required]
+    });
+
     // Subscriptions for Reactive Form Changes
     this.ledgerForm.get('partyId')?.valueChanges.subscribe(val => {
       if (val) {
-        this.loadLedgerHistory();
+        this.filterForm.patchValue({ partyId: val }, { emitEvent: false });
+        this.loadLedgerHistory(val);
       }
+    });
+
+    this.filterForm.get('partyId')?.valueChanges.subscribe(val => {
+      if (val) {
+        this.ledgerForm.patchValue({ partyId: val }, { emitEvent: false });
+        this.loadLedgerHistory(val);
+      }
+    });
+
+    this.filterForm.valueChanges.subscribe(() => {
+      this.applyFilters();
     });
 
     this.ledgerForm.get('paymentMode')?.valueChanges.subscribe(() => {
@@ -87,6 +118,9 @@ export class CustomerLedger {
     effect(() => {
       if (this.isOpen && this.customer) {
         const today = new Date();
+        const start = new Date();
+        start.setDate(start.getDate() - 30);
+
         this.ledgerForm.patchValue({
           partyId: Number(this.customer.id),
           paymentMode: 'cash',
@@ -97,9 +131,15 @@ export class CustomerLedger {
           transactionNo: '',
           remark: ''
         }, { emitEvent: false });
+
+        this.filterForm.patchValue({
+          partyId: Number(this.customer.id),
+          fromDate: start,
+          toDate: today
+        }, { emitEvent: false });
         
         this.loadDropdownData().then(() => {
-          this.loadLedgerHistory();
+          this.loadLedgerHistory(Number(this.customer.id));
         });
       }
     });
@@ -124,7 +164,18 @@ export class CustomerLedger {
       const cash = await this.dbService.cashLedger.toArray();
       this.cashLedgersList.set(cash);
 
+      // Combine cash and bank accounts
+      const combined = [
+        ...cash.map(c => ({ id: c.id, name: c.ledgerName || c.name || 'Cash', type: 'Cash' })),
+        ...banks.map(b => ({ id: b.id, name: b.bankName || b.name || 'Bank', type: 'Bank' }))
+      ];
+      this.combinedBankCashList.set(combined);
+
       this.updateBankCashLedgerDefault();
+
+      if (combined.length > 0 && !this.filterForm.get('bankLedgerId')?.value) {
+        this.filterForm.patchValue({ bankLedgerId: combined[0].id }, { emitEvent: false });
+      }
     } catch (e) {
       console.error('Error loading dropdown lists', e);
     }
@@ -153,8 +204,8 @@ export class CustomerLedger {
     }
   }
 
-  async loadLedgerHistory() {
-    const partyId = this.ledgerForm.get('partyId')?.value || this.customer?.id;
+  async loadLedgerHistory(selectedPartyId?: number) {
+    const partyId = selectedPartyId || this.filterForm?.get('partyId')?.value || this.ledgerForm.get('partyId')?.value || this.customer?.id;
     if (!partyId) return;
     this.isLoading.set(true);
     
@@ -168,14 +219,54 @@ export class CustomerLedger {
       next: (res: any) => {
         const list = res?.data || res || [];
         this.ledgerHistory.set(Array.isArray(list) ? list : []);
+        this.applyFilters();
         this.isLoading.set(false);
       },
       error: (err: any) => {
         console.error('Error fetching customer ledger:', err);
         this.ledgerHistory.set([]);
+        this.applyFilters();
         this.isLoading.set(false);
       }
     });
+  }
+
+  applyFilters() {
+    const raw = this.ledgerHistory();
+    const filters = this.filterForm.value;
+    
+    let filtered = [...raw];
+    
+    // 1. Filter by Bank Ledger
+    if (filters.bankLedgerId) {
+      const bankId = Number(filters.bankLedgerId);
+      filtered = filtered.filter(row => 
+        Number(row.bankCashLedger) === bankId || 
+        Number(row.ledger2) === bankId
+      );
+    }
+    
+    // 2. Filter by From Date
+    if (filters.fromDate) {
+      const fromDate = new Date(filters.fromDate);
+      fromDate.setHours(0, 0, 0, 0);
+      filtered = filtered.filter(row => {
+        const date = new Date(row.transactionDate || row.showDate);
+        return date >= fromDate;
+      });
+    }
+    
+    // 3. Filter by To Date
+    if (filters.toDate) {
+      const toDate = new Date(filters.toDate);
+      toDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter(row => {
+        const date = new Date(row.transactionDate || row.showDate);
+        return date <= toDate;
+      });
+    }
+    
+    this.filteredLedgerHistory.set(filtered);
   }
 
   async submitBalance() {

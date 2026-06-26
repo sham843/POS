@@ -357,35 +357,49 @@
     border: 1px solid #E5E7EB;
     border-radius: 8px;
     overflow: hidden;
+    background: #ffffff;
   }
 }
 
-.ledger-table {
+.filter-form-container {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.ledger-mat-table {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
-  font-size: 12.5px;
-
-  th {
-    background: #F9FAFB;
-    padding: 10px 14px;
-    font-weight: 600;
-    color: #4B5563;
-    border-bottom: 1px solid #E5E7EB;
+  background: #ffffff;
+  
+  th.mat-mdc-header-cell {
+    background: #F9FAFB !important;
+    color: #4B5563 !important;
+    font-weight: 600 !important;
     text-transform: uppercase;
-    font-size: 10.5px;
+    font-size: 10.5px !important;
     letter-spacing: 0.5px;
+    padding: 10px 14px !important;
+    border-bottom: 1px solid #E5E7EB !important;
   }
-
-  td {
-    padding: 10px 14px;
-    border-bottom: 1px solid #E5E7EB;
-    color: #374151;
+  
+  td.mat-mdc-cell {
+    padding: 10px 14px !important;
+    font-size: 12.5px !important;
+    color: #374151 !important;
+    border-bottom: 1px solid #E5E7EB !important;
     vertical-align: middle;
   }
+  
+  tr.mat-mdc-row:last-child td.mat-mdc-cell {
+    border-bottom: none !important;
+  }
 
-  tr:last-child td {
-    border-bottom: none;
+  .col-sr {
+    width: 60px;
+    text-align: center;
   }
 
   .col-date {
@@ -394,45 +408,21 @@
     color: #4B5563;
   }
 
-  .type-badge {
-    font-size: 10.5px;
-    font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 4px;
-    text-transform: uppercase;
-
-    &.type-receipt {
-      background: #ECFDF5;
-      color: #10B981;
-    }
-
-    &.type-sale {
-      background: #FEF2F2;
-      color: #EF4444;
-    }
-  }
-
-  .col-credit {
-    font-weight: 600;
+  .col-bill {
     font-family: 'Roboto Mono', monospace;
+    white-space: nowrap;
+    color: #4B5563;
   }
 
+  .col-credit,
   .col-debit {
     font-weight: 600;
     font-family: 'Roboto Mono', monospace;
   }
 
-  .col-narration {
-    color: #6B7280;
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .no-records {
     text-align: center;
-    padding: 32px 16px;
+    padding: 32px 16px !important;
     color: #6B7280;
     font-style: italic;
   }
