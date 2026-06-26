@@ -53,9 +53,6 @@
                     <span class="mobile-sub">{{ c.mobileNo || c.phone }}</span>
                     }
                   </div>
-                  @if (selectedCustomer()?.id === c.id) {
-                  <lucide-icon [img]="CheckCircleIcon" class="selected-icon"></lucide-icon>
-                  }
                 </div>
               </td>
               <td class="col-credit">
