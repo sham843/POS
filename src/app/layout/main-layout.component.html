@@ -5,7 +5,12 @@
       <div class="brand-icon">
         <lucide-icon [img]="Droplets"></lucide-icon>
       </div>
-      <div class="brand-name">Dairy Shop POS</div>
+      <div class="brand-name-wrapper">
+        <div class="brand-name">Dairy Shop POS</div>
+        @if (userDetails()?.organizationName) {
+        <div class="org-name-sub">{{ userDetails()?.organizationName }}</div>
+        }
+      </div>
     </div>
 
     <!-- Date Display -->
@@ -42,13 +47,13 @@
       <app-network-status></app-network-status>
 
       <button class="icon-btn outline-btn"><lucide-icon [img]="Sun"></lucide-icon></button>
-      
+
       <!-- Profile Dropdown Container -->
       <div class="profile-menu-container">
         <button class="profile-avatar" (click)="toggleProfileMenu()">
           {{ getAvatarInitial(userDetails()?.name || 'User') }}
         </button>
-        
+
         <!-- Dropdown Menu -->
         <div class="profile-dropdown" *ngIf="showProfileMenu()">
           <div class="dropdown-header">

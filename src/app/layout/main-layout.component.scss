@@ -44,10 +44,24 @@
     }
   }
 
-  .brand-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: #111827;
+  .brand-name-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.1;
+
+    .brand-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .org-name-sub {
+      font-size: 14px;
+      font-weight: 500;
+      color: #0052CC;
+      margin-top: 1px;
+    }
   }
 }
 
