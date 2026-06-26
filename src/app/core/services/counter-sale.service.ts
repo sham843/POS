@@ -512,6 +512,96 @@ export class CounterSaleService {
     });
   }
 
+  async loadOrderToCart(order: any) {
+    const cartItems: CartItem[] = [];
+    
+    // 1. Fetch products from IndexedDB for each item in the order
+    for (const item of order.items || []) {
+      const materialId = item.materialId || item.productId || item.id || 0;
+      if (materialId) {
+        try {
+          const product = await this.dbService.products.get(materialId);
+          if (product) {
+            const rate = product.salePrice || product.mrp || product.rate || product.price || product.saleRate || 0;
+            const gst = product.gst || product.taxPercentage || 0;
+            const qty = item.quantity || 1;
+            
+            const newItem: CartItem = {
+              product: product,
+              details: product.productName || product.materialName || product.name || 'Unknown Product',
+              quantity: qty,
+              rate: rate,
+              discount: 0,
+              amount: 0,
+              netAmount: 0,
+              gst: gst,
+              gstAmount: 0,
+              total: 0,
+              unit: product.unit || product.uom || product.unitName || product.mensurationUnit || ''
+            };
+            
+            const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', qty.toString());
+            cartItems.push(calculatedItem);
+          } else {
+            // Fallback product if not in DB
+            const rate = item.rate || 0;
+            const qty = item.quantity || 1;
+            const newItem: CartItem = {
+              product: { id: materialId, productName: item.materialName || 'Unknown Product', salePrice: rate },
+              details: item.materialName || 'Unknown Product',
+              quantity: qty,
+              rate: rate,
+              discount: 0,
+              amount: 0,
+              netAmount: 0,
+              gst: 0,
+              gstAmount: 0,
+              total: 0,
+              unit: ''
+            };
+            const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', qty.toString());
+            cartItems.push(calculatedItem);
+          }
+        } catch (e) {
+          console.error('Error loading product for order item:', e);
+        }
+      }
+    }
+
+    // 2. Fetch customer from IndexedDB or match by phone
+    let selectedCustomer = null;
+    const partyId = order.partyId || order.customerId || 0;
+    if (partyId) {
+      try {
+        selectedCustomer = await this.dbService.customerList.get(partyId);
+      } catch (e) { }
+    }
+    
+    if (!selectedCustomer) {
+      const mobile = order.mobileNumber || order.mobileNo || order.phone || order.mobile || order.customer?.mobileNo || '';
+      if (mobile) {
+        try {
+          const customers = await this.dbService.customerList.toArray();
+          selectedCustomer = customers.find(c => String(c.mobileNo || c.phone || '').includes(mobile));
+        } catch (e) { }
+      }
+    }
+
+    // 3. Update active bill state
+    this.updateActiveBill({
+      cartItems: cartItems,
+      selectedCustomer: selectedCustomer,
+      selectedItemIndex: cartItems.length > 0 ? 0 : null,
+      numpadMode: 'quantity',
+      numpadValue: cartItems.length > 0 ? cartItems[0].quantity.toString() : '',
+      numpadShouldReplace: true,
+      numpadHasQuickWeight: false
+    });
+
+    const orderId = order.orderId || order.orderNo || order.id || '—';
+    this.notificationService.showSuccess(`Order #${orderId} loaded into cart.`);
+  }
+
   async saveInvoice(paymentMode: 'cash' | 'online' | 'card', printAutomatically: boolean) {
     if (this.cartItems().length === 0 || this.totalPayable() === 0) {
       this.notificationService.showError("The invoice total is ₹0. Please select a product before payment.");

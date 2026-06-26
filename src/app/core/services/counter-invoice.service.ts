@@ -298,18 +298,23 @@ export class CounterInvoiceService {
     this.electronService.sendPrintData(printPayload);
   }
 
-  getOrderList(textSearch?: string): Observable<any> {
+  getOrderList(textSearch?: string, deliveryStatus: string = 'Upcoming'): Observable<any> {
     const userDetailsStr = localStorage.getItem('UserDetails');
     let userDetails: any = null;
-    try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) {}
+    try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) { }
 
     const organizationId = userDetails?.organizationId || 28;
     const unitId = userDetails?.unitid || userDetails?.unitId || 0;
-    
-    let url = `api/v1/Order/getOrderList?organizationId=${organizationId}&unitId=${unitId}&deliveryStatus=Upcoming`;
+
+    let url = `api/v1/Order/getOrderList?organizationId=${organizationId}&unitId=${unitId}&status=${deliveryStatus}`;
     if (textSearch) {
       url += `&textSearch=${encodeURIComponent(textSearch)}`;
     }
     return this.apiService.get<any>(url);
   }
+
+  updateOrderStatus(orderId: number, status: string = 'delivered'): Observable<any> {
+    return this.apiService.get<any>(`api/v1/Order/GetOrdersbyId?OrderId=${orderId}&status=${status}`);
+  }
 }
+

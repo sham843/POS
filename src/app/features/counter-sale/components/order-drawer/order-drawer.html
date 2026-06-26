@@ -7,8 +7,9 @@
       <div class="header-left">
         <lucide-icon [img]="ClipboardListIcon" class="header-icon"></lucide-icon>
         <div>
-          <h3>Upcoming Orders</h3>
-          <span class="header-count">{{ filteredOrders().length }} orders</span>
+          <h3>Order Book</h3>
+          <span class="header-count">{{ filteredOrders().length }} {{ selectedStatus().toLowerCase() }} {{
+            filteredOrders().length === 1 ? 'order' : 'orders' }}</span>
         </div>
       </div>
       <button class="close-btn" (click)="closeDrawer()">
@@ -16,8 +17,21 @@
       </button>
     </div>
 
-    <!-- SEARCH -->
-    <div class="drawer-search">
+    <!-- SEARCH & FILTER BAR -->
+    <div class="drawer-search-bar">
+      <!-- Segmented Control (Left) -->
+      <div class="search-type-chips">
+        <div class="chip" [class.active]="selectedStatus() === 'Upcoming'" (click)="setStatusFilter('Upcoming')">
+          <lucide-icon [img]="CalendarIcon"></lucide-icon>
+          <span>Upcoming</span>
+        </div>
+        <div class="chip" [class.active]="selectedStatus() === 'delivered'" (click)="setStatusFilter('delivered')">
+          <lucide-icon [img]="CheckCircleIcon"></lucide-icon>
+          <span>Delivered</span>
+        </div>
+      </div>
+
+      <!-- Search Box (Right) -->
       <div class="search-box">
         <lucide-icon [img]="SearchIcon" class="search-icon"></lucide-icon>
         <input type="text" placeholder="Search by Order №, name or mobile..." [value]="orderSearchQuery()"
@@ -45,6 +59,7 @@
           <div class="col-items">Items (Qty)</div>
           <div class="col-total">Total</div>
           <div class="col-balance">Balance</div>
+          <div class="col-action">Action</div>
         </div>
 
         <mat-accordion class="order-accordion" [multi]="false">
@@ -75,6 +90,16 @@
                   ₹{{ getBalanceAmount(order) | number:'1.2-2' }}
                 </span>
               </div>
+              <div class="col-action">
+                <button class="select-order-btn" (click)="selectOrder(order, $event)" 
+                  [matTooltip]="selectedStatus() === 'delivered' ? 'View Order' : 'Select Order'">
+                  @if (selectedStatus() === 'delivered') {
+                    <lucide-icon [img]="EyeIcon" class="btn-icon"></lucide-icon>
+                  } @else {
+                    <lucide-icon [img]="ShoppingBagIcon" class="btn-icon"></lucide-icon>
+                  }
+                </button>
+              </div>
             </mat-expansion-panel-header>
 
             <!-- PANEL CONTENT: ITEMS LIST -->
@@ -95,6 +120,7 @@
                 }
               </div>
             </div>
+
           </mat-expansion-panel>
           }
         </mat-accordion>

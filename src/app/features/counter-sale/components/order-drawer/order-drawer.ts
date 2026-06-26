@@ -1,16 +1,19 @@
 import { Component, Input, Output, EventEmitter, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Search, X, ShoppingBag, ClipboardList, Calendar, DollarSign, Loader } from 'lucide-angular';
+import { LucideAngularModule, Search, X, ShoppingBag, ClipboardList, Calendar, DollarSign, Loader, CheckCircle, Eye } from 'lucide-angular';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CounterInvoiceService } from '../../../../core/services/counter-invoice.service';
 import { ConfigService } from '../../../../core/services/config.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { CounterSaleService } from '../../../../core/services/counter-sale.service';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-order-drawer',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, MatExpansionModule],
+  imports: [CommonModule, LucideAngularModule, MatExpansionModule, MatTooltipModule],
   templateUrl: './order-drawer.html',
   styleUrl: './order-drawer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -18,11 +21,13 @@ import { debounceTime } from 'rxjs/operators';
 export class OrderDrawer implements OnInit, OnDestroy {
   private counterInvoiceService = inject(CounterInvoiceService);
   private configService = inject(ConfigService);
+  private notificationService = inject(NotificationService);
+  private counterSaleService = inject(CounterSaleService);
 
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
     if (value) {
-      this.loadOrders(this.orderSearchQuery());
+      this.loadOrders(this.orderSearchQuery(), this.selectedStatus());
     }
   }
   get isOpen(): boolean {
@@ -34,7 +39,10 @@ export class OrderDrawer implements OnInit, OnDestroy {
 
   allOrders = signal<any[]>([]);
   orderSearchQuery = signal<string>('');
+  selectedStatus = signal<'Upcoming' | 'delivered'>('Upcoming');
   isLoading = signal<boolean>(false);
+  deliveringOrderId = signal<number | null>(null);
+
 
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
@@ -47,6 +55,8 @@ export class OrderDrawer implements OnInit, OnDestroy {
   readonly CalendarIcon = Calendar;
   readonly DollarSignIcon = DollarSign;
   readonly LoaderIcon = Loader;
+  readonly CheckCircleIcon = CheckCircle;
+  readonly EyeIcon = Eye;
 
   filteredOrders = computed(() => {
     const query = this.orderSearchQuery().toLowerCase().trim();
@@ -66,7 +76,7 @@ export class OrderDrawer implements OnInit, OnDestroy {
       debounceTime(debounceMs)
     ).subscribe(value => {
       this.orderSearchQuery.set(value);
-      this.loadOrders(value); // Trigger server-side API search
+      this.loadOrders(value, this.selectedStatus()); // Trigger server-side API search
     });
   }
 
@@ -76,9 +86,10 @@ export class OrderDrawer implements OnInit, OnDestroy {
     }
   }
 
-  loadOrders(query: string = '') {
+  loadOrders(query: string = '', status?: 'Upcoming' | 'delivered') {
+    const activeStatus = status || this.selectedStatus();
     this.isLoading.set(true);
-    this.counterInvoiceService.getOrderList(query).subscribe({
+    this.counterInvoiceService.getOrderList(query, activeStatus).subscribe({
       next: (res) => {
         const list = res?.data || res || [];
         this.allOrders.set(Array.isArray(list) ? list : []);
@@ -89,6 +100,11 @@ export class OrderDrawer implements OnInit, OnDestroy {
         this.isLoading.set(false);
       }
     });
+  }
+
+  setStatusFilter(status: 'Upcoming' | 'delivered') {
+    this.selectedStatus.set(status);
+    this.loadOrders(this.orderSearchQuery(), status);
   }
 
   onOrderSearch(event: Event) {
@@ -143,4 +159,35 @@ export class OrderDrawer implements OnInit, OnDestroy {
   getDrawerWidth(): number {
     return this.configService.getConfig()?.orderDrawerWidth ?? 800;
   }
+
+  deliverOrder(order: any, event: Event) {
+    event.stopPropagation();
+    const orderId = order.orderId || order.id;
+    if (!orderId) {
+      this.notificationService.showError('Invalid Order ID.');
+      return;
+    }
+
+    this.deliveringOrderId.set(orderId);
+    this.counterInvoiceService.updateOrderStatus(orderId, 'delivered').subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Order #' + orderId + ' marked as delivered successfully.');
+        this.deliveringOrderId.set(null);
+        this.loadOrders(this.orderSearchQuery(), this.selectedStatus());
+      },
+      error: (err) => {
+        console.error('Error delivering order:', err);
+        this.notificationService.showError('Failed to mark order as delivered.');
+        this.deliveringOrderId.set(null);
+      }
+    });
+  }
+
+  selectOrder(order: any, event: Event) {
+    event.stopPropagation();
+    this.counterSaleService.loadOrderToCart(order).then(() => {
+      this.closeDrawer();
+    });
+  }
 }
+
