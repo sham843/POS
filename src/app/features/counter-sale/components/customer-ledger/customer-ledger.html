@@ -44,7 +44,7 @@
             <label class="field-label">Party Ledger <span class="required">*</span></label>
             <mat-form-field appearance="outline" class="no-subscript">
               <mat-select formControlName="ledger1" [compareWith]="compareFn" placeholder="Select Party Ledger">
-                @for (party of partiesList(); track party.id) {
+                @for (party of partiesList(); track trackById($index, party)) {
                 <mat-option [value]="party.id">{{ party.displayName || party.customerName || party.name }}</mat-option>
                 }
               </mat-select>
@@ -84,11 +84,11 @@
             <mat-form-field appearance="outline" class="no-subscript">
               <mat-select formControlName="ledger2" [compareWith]="compareFn" placeholder="Select Bank / Cash Ledger">
                 @if (ledgerForm.get('paymentMode')?.value === 'cash') {
-                @for (c of cashLedgersList(); track c.id) {
+                @for (c of cashLedgersList(); track trackById($index, c)) {
                 <mat-option [value]="c.id">{{ c.displayName || c.ledgerName || c.customerName || c.name || 'Cash' }}</mat-option>
                 }
                 } @else {
-                @for (b of bankAccountsList(); track b.id) {
+                @for (b of bankAccountsList(); track trackById($index, b)) {
                 <mat-option [value]="b.id">{{ b.displayName || b.bankName || b.customerName || b.ledgerName || b.name || 'Bank' }}</mat-option>
                 }
                 }
@@ -178,7 +178,7 @@
             <div class="form-group">
               <mat-form-field appearance="outline" class="no-subscript">
                 <mat-select formControlName="partyId" [compareWith]="compareFn" placeholder="Party Ledger *">
-                  @for (party of partiesList(); track party.id) {
+                  @for (party of partiesList(); track trackById($index, party)) {
                   <mat-option [value]="party.id">{{ party.displayName || party.customerName || party.name
                     }}</mat-option>
                   }
@@ -190,7 +190,7 @@
             <div class="form-group">
               <mat-form-field appearance="outline" class="no-subscript">
                 <mat-select formControlName="bankLedgerId" placeholder="Bank Ledger *">
-                  @for (ledger of combinedBankCashList(); track ledger.id) {
+                  @for (ledger of combinedBankCashList(); track trackById($index, ledger)) {
                   <mat-option [value]="ledger.id">{{ ledger.name }}</mat-option>
                   }
                 </mat-select>

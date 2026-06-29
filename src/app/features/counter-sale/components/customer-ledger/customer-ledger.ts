@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter, inject, signal, effect, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, signal, effect, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LucideAngularModule, X, Plus, DollarSign, ReceiptText, ClipboardList, Loader } from 'lucide-angular';
@@ -32,7 +33,8 @@ import { ConfigService } from '../../../../core/services/config.service';
     { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
   ],
   templateUrl: './customer-ledger.html',
-  styleUrl: './customer-ledger.scss'
+  styleUrl: './customer-ledger.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CustomerLedger {
   private dbService = inject(DbService);
@@ -41,6 +43,7 @@ export class CustomerLedger {
   private configService = inject(ConfigService);
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   @Input() isOpen = false;
   @Input() customer: any = null;
@@ -48,6 +51,10 @@ export class CustomerLedger {
   compareFn(a: any, b: any): boolean {
     if (a === null || a === undefined || b === null || b === undefined) return a === b;
     return String(a) === String(b);
+  }
+
+  trackById(index: number, item: any): any {
+    return item?.id ?? item?.customerId ?? item?.partyId ?? index;
   }
   @Output() close = new EventEmitter<void>();
   @Output() balanceAdded = new EventEmitter<void>();
@@ -104,27 +111,35 @@ export class CustomerLedger {
     });
 
     // Subscriptions for Reactive Form Changes
-    this.ledgerForm.get('ledger1')?.valueChanges.subscribe(val => {
-      if (val) {
-        this.filterForm.patchValue({ partyId: val }, { emitEvent: false });
-        this.loadLedgerHistory(val);
-      }
-    });
+    this.ledgerForm.get('ledger1')?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(val => {
+        if (val) {
+          this.filterForm.patchValue({ partyId: val }, { emitEvent: false });
+          this.loadLedgerHistory(val);
+        }
+      });
 
-    this.filterForm.get('partyId')?.valueChanges.subscribe(val => {
-      if (val) {
-        this.ledgerForm.patchValue({ ledger1: val }, { emitEvent: false });
-        this.loadLedgerHistory(val);
-      }
-    });
+    this.filterForm.get('partyId')?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(val => {
+        if (val) {
+          this.ledgerForm.patchValue({ ledger1: val }, { emitEvent: false });
+          this.loadLedgerHistory(val);
+        }
+      });
 
-    this.filterForm.valueChanges.subscribe(() => {
-      this.applyFilters();
-    });
+    this.filterForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.applyFilters();
+      });
 
-    this.ledgerForm.get('paymentMode')?.valueChanges.subscribe(() => {
-      this.updateBankCashLedgerDefault();
-    });
+    this.ledgerForm.get('paymentMode')?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateBankCashLedgerDefault();
+      });
 
     effect(() => {
       if (this.isOpen) {
@@ -229,18 +244,20 @@ export class CustomerLedger {
         this.filterForm.patchValue({ bankLedgerId: combined[0].id }, { emitEvent: false });
       }
 
-      this.counterInvoiceService.getPaymentList().subscribe({
-        next: (res: any) => {
-          const list = res?.data || res || [];
-          if (Array.isArray(list)) {
-            this.paymentModesList.set(list);
+      this.counterInvoiceService.getPaymentList()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (res: any) => {
+            const list = res?.data || res || [];
+            if (Array.isArray(list)) {
+              this.paymentModesList.set(list);
+            }
+            this.cdr.markForCheck();
+          },
+          error: (err: any) => {
+            console.error('Error fetching payment modes:', err);
           }
-          this.cdr.markForCheck();
-        },
-        error: (err: any) => {
-          console.error('Error fetching payment modes:', err);
-        }
-      });
+        });
 
       this.cdr.markForCheck();
     } catch (e) {
@@ -282,7 +299,9 @@ export class CustomerLedger {
     const orgId = userDetails?.organizationId || 28;
     const unitId = userDetails?.unitid || userDetails?.unitId || 0;
 
-    this.counterInvoiceService.getCustomerLedger(partyId, orgId, unitId).subscribe({
+    this.counterInvoiceService.getCustomerLedger(partyId, orgId, unitId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
       next: (res: any) => {
         const list = res?.data || res || [];
         this.ledgerHistory.set(Array.isArray(list) ? list : []);
