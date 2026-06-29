@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, signal, effect, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, signal, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -37,7 +37,7 @@ import { SessionService } from '../../../../core/services/session.service';
   styleUrl: './customer-ledger.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CustomerLedger implements OnInit {
+export class CustomerLedger implements OnInit, OnChanges {
   private dbService = inject(DbService);
   private counterInvoiceService = inject(CounterInvoiceService);
   private notificationService = inject(NotificationService);
@@ -51,12 +51,18 @@ export class CustomerLedger implements OnInit {
     this.loadDropdownData();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['isOpen']?.currentValue === true || (this.isOpen && changes['customer']?.currentValue)) {
+      this.handleDrawerOpen();
+    }
+  }
+
   @Input() isOpen = false;
   @Input() customer: any = null;
 
   compareFn(a: any, b: any): boolean {
     if (a === null || a === undefined || b === null || b === undefined) return a === b;
-    return String(a) === String(b);
+    return Number(a) === Number(b);
   }
 
   trackById(index: number, item: any): any {
@@ -155,45 +161,47 @@ export class CustomerLedger implements OnInit {
       .subscribe(() => {
         this.updateBankCashLedgerDefault();
       });
+  }
 
-    effect(() => {
-      if (this.isOpen) {
-        const today = new Date();
-        const start = new Date();
-        start.setDate(start.getDate() - 30);
+  async handleDrawerOpen() {
+    const today = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - 30);
 
-        this.ledgerForm.patchValue({
-          paymentMode: 'cash',
-          ledgerAmount: null,
-          transactionDate: today,
-          chequeDate: today,
-          voucherSubType: 'Sale',
-          transactionNo: '',
-          remarks: ''
-        }, { emitEvent: false });
+    const rawCustId = this.customer?.id ?? this.customer?.customerId ?? this.customer?.partyId;
+    const custId = rawCustId ? Number(rawCustId) : 0;
 
-        this.filterForm.patchValue({
-          fromDate: start,
-          toDate: today
-        }, { emitEvent: false });
+    this.ledgerForm.patchValue({
+      ledger1: custId > 0 ? custId : null,
+      paymentMode: 'cash',
+      ledgerAmount: null,
+      transactionDate: today,
+      chequeDate: today,
+      voucherSubType: 'Sale',
+      transactionNo: '',
+      remarks: ''
+    }, { emitEvent: false });
 
-        this.loadDropdownData().then(() => {
-          const rawCustId = this.customer?.id ?? this.customer?.customerId ?? this.customer?.partyId;
-          const parties = this.partiesList();
-          let custId = rawCustId ? Number(rawCustId) : 0;
+    this.filterForm.patchValue({
+      partyId: custId > 0 ? custId : null,
+      fromDate: start,
+      toDate: today
+    }, { emitEvent: false });
 
-          if ((!custId || !parties.some(p => Number(p.id) === custId)) && parties.length > 0) {
-            custId = Number(parties[0].id);
-          }
+    await this.loadDropdownData();
 
-          if (custId > 0) {
-            this.ledgerForm.patchValue({ ledger1: custId });
-            this.filterForm.patchValue({ partyId: custId }, { emitEvent: false });
-          }
-          this.cdr.markForCheck();
-        });
-      }
-    });
+    const parties = this.partiesList();
+    let targetId = custId;
+
+    if ((!targetId || !parties.some(p => Number(p.id) === targetId)) && parties.length > 0) {
+      targetId = Number(parties[0].id);
+    }
+
+    if (targetId > 0) {
+      this.ledgerForm.get('ledger1')?.setValue(targetId);
+      this.filterForm.get('partyId')?.setValue(targetId, { emitEvent: false });
+    }
+    this.cdr.detectChanges();
   }
 
   switchTab(tab: 'add' | 'history') {
@@ -214,23 +222,33 @@ export class CustomerLedger implements OnInit {
   async loadDropdownData() {
     try {
       const parties = await this.dbService.customerList.toArray();
-      const mappedParties = (parties || []).map(p => ({
-        ...p,
-        id: Number(p.id ?? p.customerId ?? p.partyId ?? 0),
-        displayName: p.customerName || p.name || `Customer #${p.id}`
-      })).filter(p => p.id > 0);
+      const mappedParties = (parties || []).map(p => {
+        const cName = p.customerName || p.name || p.displayName || `Customer #${p.id}`;
+        return {
+          ...p,
+          id: Number(p.id ?? p.customerId ?? p.partyId ?? 0),
+          customerName: cName,
+          displayName: cName
+        };
+      }).filter(p => p.id > 0);
 
       mappedParties.sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''));
 
       const rawCustId = this.customer?.id ?? this.customer?.customerId ?? this.customer?.partyId;
       if (rawCustId) {
         const custId = Number(rawCustId);
-        if (!mappedParties.some(p => Number(p.id) === custId)) {
+        const cName = this.customer.customerName || this.customer.name || this.customer.displayName || `Customer #${custId}`;
+        const existing = mappedParties.find(p => Number(p.id) === custId);
+        if (!existing) {
           mappedParties.unshift({
             ...this.customer,
             id: custId,
-            displayName: this.customer.customerName || this.customer.name || `Customer #${custId}`
+            customerName: cName,
+            displayName: cName
           });
+        } else {
+          existing.customerName = cName;
+          existing.displayName = cName;
         }
       }
 
