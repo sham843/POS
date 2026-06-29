@@ -11,7 +11,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "electron": "electron .",
-    "dist": "powershell -Command \"$v=(Get-Content package.json|ConvertFrom-Json).version; $env:WINCODESIGN_PATH='C:\\Users\\shamj\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\\winCodeSign-2.6.0'; ng build; electron-builder --win; Start-Sleep -Seconds 3; Compress-Archive -Path release/win-unpacked/* -DestinationPath \\\"release/Dairy Shop POS $v.zip\\\" -Force\""
+    "dist": "powershell -Command \"$v=(Get-Content package.json|ConvertFrom-Json).version; $env:WINCODESIGN_PATH='C:\\Users\\shamj\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\\winCodeSign-2.6.0'; ng build; electron-builder --win; Start-Sleep -Seconds 3; Compress-Archive -Path release/win-unpacked/* -DestinationPath \\\"release/Dairy Shop POS $v.zip\\\" -Force\"",
+    "release": "powershell -Command \"$env:GH_TOKEN='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'; $env:WINCODESIGN_PATH='C:\\Users\\shamj\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\\winCodeSign-2.6.0'; ng build; electron-builder --win -p always\""
   },
   "private": true,
   "packageManager": "npm@10.8.2",
@@ -37,7 +38,7 @@
     ],
     "win": {
       "target": [
-        "dir"
+        "nsis"
       ]
     },
     "nsis": {
