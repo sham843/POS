@@ -1,6 +1,6 @@
 {
   "name": "pos",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Hi-Tech Dairy Shop POS Application",
   "author": "Hi-Tech Dairy",
   "main": "main.js",
@@ -11,7 +11,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "electron": "electron .",
-    "dist": "powershell -Command \"$env:WINCODESIGN_PATH='C:\\Users\\shamj\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\\winCodeSign-2.6.0'; ng build; electron-builder --win; Compress-Archive -Path release/win-unpacked/* -DestinationPath 'release/Dairy Shop POS 1.0.0.zip' -Force\""
+    "dist": "powershell -Command \"$v=(Get-Content package.json|ConvertFrom-Json).version; $env:WINCODESIGN_PATH='C:\\Users\\shamj\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\\winCodeSign-2.6.0'; ng build; electron-builder --win; Start-Sleep -Seconds 3; Compress-Archive -Path release/win-unpacked/* -DestinationPath \\\"release/Dairy Shop POS $v.zip\\\" -Force\""
   },
   "private": true,
   "packageManager": "npm@10.8.2",
