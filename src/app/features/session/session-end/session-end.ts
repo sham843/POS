@@ -62,7 +62,7 @@ export class SessionEnd {
       couponSale: 0,
       onlineSale: 0,
       cashSale: 0,
-      totalSale: 0,
+      totalAmount: 0,
       totalBills: 0
     },
     online: {
@@ -104,7 +104,7 @@ export class SessionEnd {
                 couponSale: data.couponSale || data.CouponSale || 0,
                 onlineSale: data.onlineSale || data.OnlineSale || 0,
                 cashSale: data.cashSale || data.CashSale || 0,
-                totalSale: data.totalSale || data.TotalSale || 0,
+                totalAmount: data.totalAmount || data.TotalAmount || data.totalSale || data.TotalSale || 0,
                 totalBills: data.totalBills || data.TotalBills || 0
               },
               online: {
