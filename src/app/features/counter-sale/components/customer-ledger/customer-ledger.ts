@@ -14,6 +14,7 @@ import { DbService } from '../../../../core/services/db.service';
 import { CounterInvoiceService } from '../../../../core/services/counter-invoice.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ConfigService } from '../../../../core/services/config.service';
+import { SessionService } from '../../../../core/services/session.service';
 
 @Component({
   selector: 'app-customer-ledger',
@@ -41,6 +42,7 @@ export class CustomerLedger implements OnInit {
   private counterInvoiceService = inject(CounterInvoiceService);
   private notificationService = inject(NotificationService);
   private configService = inject(ConfigService);
+  private sessionService = inject(SessionService);
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
@@ -400,6 +402,9 @@ export class CustomerLedger implements OnInit {
     const unitId = userDetails?.unitid || userDetails?.unitId || 0;
     const userId = userDetails?.id || 0;
 
+    const localSessionId = localStorage.getItem('sessionId');
+    const sessionId = this.sessionService.getSessionId() ? parseInt(this.sessionService.getSessionId() || '0', 10) : (localSessionId ? parseInt(localSessionId, 10) : 0);
+
     let companyLedgerId = 0;
     try {
       const companyLedgers = await this.dbService.companyLedgerList.toArray();
@@ -430,6 +435,15 @@ export class CustomerLedger implements OnInit {
       modeName = 'UPI';
     }
 
+    let selectedBankName = '';
+    if (formValues.paymentMode === 'cash') {
+      const found = this.cashLedgersList().find(c => Number(c.id) === Number(formValues.ledger2));
+      selectedBankName = found?.customerName || found?.displayName || found?.ledgerName || found?.name || 'Cash Account';
+    } else {
+      const found = this.bankAccountsList().find(b => Number(b.id) === Number(formValues.ledger2));
+      selectedBankName = found?.customerName || found?.displayName || found?.bankName || found?.name || 'Bank Account';
+    }
+
     const payload = {
       id: 0,
       ledger1: Number(partyId),
@@ -442,18 +456,18 @@ export class CustomerLedger implements OnInit {
       modeOfPaymentId: modeId,
       modeOfPayment: modeName,
       transactionTypeId: 0,
-      transactionType: 'Receipt',
+      transactionType: '',
       transactionId: 0,
       transactionNo: formValues.transactionNo || '',
-      narration: formValues.remarks || 'Customer Balance Received',
+      narration: '',
       referenceId: 0,
       groupId: 0,
       chequeDate: rDate,
       isTallyExport: 0,
       tallyReferenceId: 0,
-      particularsText: formValues.remarks || 'Customer Balance Received',
-      voucherTypeId: 1,
-      voucherSubTypeId: 0,
+      particularsText: 'Deposit Received',
+      voucherTypeId: 4,
+      voucherSubTypeId: 3,
       voucherSubType: formValues.voucherSubType || 'Sale',
       fYearId: 0,
       unitId: unitId,
@@ -468,16 +482,15 @@ export class CustomerLedger implements OnInit {
       billNumber: '',
       fBillId: 0,
       selectedPartyName: selectedParty?.customerName || '',
-      selectedBankName: formValues.paymentMode === 'cash' ? 'Cash Sale' : 'Bank Transfer',
+      selectedBankName: selectedBankName,
       remarks: formValues.remarks || '',
       inFavorPartyId: 0,
       inFavorPartyName: '',
       groupIdForBulk: 0,
-      upiId: ''
+      upiId: '',
+      sessionId: sessionId
     };
 
-    console.log(payload)
-    return
     this.counterInvoiceService.addCustomerBalance(payload).subscribe({
       next: () => {
         this.notificationService.showSuccess(`₹${amt} added successfully.`);
