@@ -452,13 +452,14 @@ lucide-icon svg {
 
 .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
   --mdc-outlined-text-field-container-shape: 8px;
+  background-color: #ffffff !important;
+  border-radius: 8px;
+  transition: box-shadow 0.15s ease-in-out;
 
   .mat-mdc-form-field-flex {
     height: 42px;
     align-items: center;
-    background-color: #ffffff !important;
-    border-radius: 8px;
-    transition: box-shadow 0.15s ease-in-out;
+    background-color: transparent !important;
   }
 
   .mdc-notched-outline {
@@ -535,13 +536,13 @@ lucide-icon svg {
   }
 }
 
-// Datepicker toggle
+// Datepicker toggle & calendar popup styling
 .mat-datepicker-toggle {
   .mat-mdc-icon-button {
     width: 32px;
     height: 32px;
     padding: 4px;
-    color: #6B7280;
+    color: #0052CC !important;
 
     .mat-mdc-button-persistent-ripple {
       border-radius: 50%;
@@ -550,7 +551,59 @@ lucide-icon svg {
     svg {
       width: 18px;
       height: 18px;
+      fill: currentColor;
+      color: #0052CC !important;
     }
+  }
+}
+
+.mat-datepicker-content {
+  background-color: #ffffff !important;
+  color: #1F2937 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+
+  .mat-calendar-header {
+    background-color: #F8FAFC !important;
+    padding: 8px 8px 0 8px !important;
+
+    .mat-calendar-period-button {
+      font-weight: 600 !important;
+      color: #0052CC !important;
+    }
+
+    .mat-calendar-arrow {
+      fill: #0052CC !important;
+    }
+
+    .mat-calendar-previous-button,
+    .mat-calendar-next-button {
+      color: #475569 !important;
+    }
+  }
+
+  .mat-calendar-table-header {
+    color: #64748B !important;
+
+    th {
+      font-size: 11px !important;
+      font-weight: 600 !important;
+    }
+  }
+
+  .mat-calendar-body-cell-content {
+    color: #1F2937 !important;
+    font-size: 13px !important;
+
+    &.mat-calendar-body-selected {
+      background-color: #0052CC !important;
+      color: #ffffff !important;
+      font-weight: 700 !important;
+    }
+  }
+
+  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: #0052CC !important;
   }
 }
 
@@ -575,8 +628,10 @@ lucide-icon svg {
 
 // Focus state
 .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+
   .mat-mdc-form-field-flex {
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    box-shadow: none !important;
   }
 
   .mdc-notched-outline__leading,

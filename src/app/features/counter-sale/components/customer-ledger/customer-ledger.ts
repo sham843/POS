@@ -1,9 +1,10 @@
-import { Component, Input, Output, EventEmitter, inject, signal, effect } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, signal, effect, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LucideAngularModule, X, Plus, DollarSign, ReceiptText, ClipboardList, Loader } from 'lucide-angular';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { CustomDateAdapter, CUSTOM_DATE_FORMATS } from '../../../../core/adapters/custom-date-adapter';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -17,16 +18,19 @@ import { ConfigService } from '../../../../core/services/config.service';
   selector: 'app-customer-ledger',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    LucideAngularModule, 
-    MatDatepickerModule, 
-    MatFormFieldModule, 
-    MatInputModule, 
+    CommonModule,
+    ReactiveFormsModule,
+    LucideAngularModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatSelectModule,
     MatTableModule
   ],
-  providers: [provideNativeDateAdapter()],
+  providers: [
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
+  ],
   templateUrl: './customer-ledger.html',
   styleUrl: './customer-ledger.scss'
 })
@@ -36,16 +40,22 @@ export class CustomerLedger {
   private notificationService = inject(NotificationService);
   private configService = inject(ConfigService);
   private fb = inject(FormBuilder);
+  private cdr = inject(ChangeDetectorRef);
 
   @Input() isOpen = false;
   @Input() customer: any = null;
+
+  compareFn(a: any, b: any): boolean {
+    if (a === null || a === undefined || b === null || b === undefined) return a === b;
+    return String(a) === String(b);
+  }
   @Output() close = new EventEmitter<void>();
   @Output() balanceAdded = new EventEmitter<void>();
 
   activeTab = signal<'add' | 'history'>('add');
   isLoading = signal<boolean>(false);
   isSaving = signal<boolean>(false);
-  
+
   // History Signals
   ledgerHistory = signal<any[]>([]);
   filteredLedgerHistory = signal<any[]>([]);
@@ -55,6 +65,7 @@ export class CustomerLedger {
   bankAccountsList = signal<any[]>([]);
   cashLedgersList = signal<any[]>([]);
   combinedBankCashList = signal<any[]>([]);
+  paymentModesList = signal<any[]>([]);
 
   ledgerForm: FormGroup;
   filterForm: FormGroup;
@@ -71,15 +82,15 @@ export class CustomerLedger {
 
   constructor() {
     this.ledgerForm = this.fb.group({
-      partyId: [null, Validators.required],
+      ledger1: [null, Validators.required],
       paymentMode: ['cash', Validators.required],
-      bankCashLedgerId: [null, Validators.required],
-      amount: [null, [Validators.required, Validators.min(0.01)]],
+      ledger2: [null, Validators.required],
+      ledgerAmount: [null, [Validators.required, Validators.min(0.01)]],
       transactionDate: [new Date(), Validators.required],
-      receiptDate: [new Date(), Validators.required],
-      subVoucherType: [''],
+      chequeDate: [new Date(), Validators.required],
+      voucherSubType: ['Sale'],
       transactionNo: [''],
-      remark: ['']
+      remarks: ['']
     });
 
     const thirtyDaysAgo = new Date();
@@ -93,7 +104,7 @@ export class CustomerLedger {
     });
 
     // Subscriptions for Reactive Form Changes
-    this.ledgerForm.get('partyId')?.valueChanges.subscribe(val => {
+    this.ledgerForm.get('ledger1')?.valueChanges.subscribe(val => {
       if (val) {
         this.filterForm.patchValue({ partyId: val }, { emitEvent: false });
         this.loadLedgerHistory(val);
@@ -102,7 +113,7 @@ export class CustomerLedger {
 
     this.filterForm.get('partyId')?.valueChanges.subscribe(val => {
       if (val) {
-        this.ledgerForm.patchValue({ partyId: val }, { emitEvent: false });
+        this.ledgerForm.patchValue({ ledger1: val }, { emitEvent: false });
         this.loadLedgerHistory(val);
       }
     });
@@ -116,30 +127,41 @@ export class CustomerLedger {
     });
 
     effect(() => {
-      if (this.isOpen && this.customer) {
+      if (this.isOpen) {
         const today = new Date();
         const start = new Date();
         start.setDate(start.getDate() - 30);
 
         this.ledgerForm.patchValue({
-          partyId: Number(this.customer.id),
           paymentMode: 'cash',
-          amount: null,
+          ledgerAmount: null,
           transactionDate: today,
-          receiptDate: today,
-          subVoucherType: '',
+          chequeDate: today,
+          voucherSubType: 'Sale',
           transactionNo: '',
-          remark: ''
+          remarks: ''
         }, { emitEvent: false });
 
         this.filterForm.patchValue({
-          partyId: Number(this.customer.id),
           fromDate: start,
           toDate: today
         }, { emitEvent: false });
-        
+
         this.loadDropdownData().then(() => {
-          this.loadLedgerHistory(Number(this.customer.id));
+          const rawCustId = this.customer?.id ?? this.customer?.customerId ?? this.customer?.partyId;
+          const parties = this.partiesList();
+          let custId = rawCustId ? Number(rawCustId) : 0;
+
+          if ((!custId || !parties.some(p => Number(p.id) === custId)) && parties.length > 0) {
+            custId = Number(parties[0].id);
+          }
+
+          if (custId > 0) {
+            this.ledgerForm.patchValue({ ledger1: custId });
+            this.filterForm.patchValue({ partyId: custId }, { emitEvent: false });
+            this.loadLedgerHistory(custId);
+          }
+          this.cdr.markForCheck();
         });
       }
     });
@@ -156,18 +178,48 @@ export class CustomerLedger {
   async loadDropdownData() {
     try {
       const parties = await this.dbService.customerList.toArray();
-      this.partiesList.set(parties);
-      
-      const banks = await this.dbService.bankAccounts.toArray();
-      this.bankAccountsList.set(banks);
-      
-      const cash = await this.dbService.cashLedger.toArray();
-      this.cashLedgersList.set(cash);
+      const mappedParties = (parties || []).map(p => ({
+        ...p,
+        id: Number(p.id ?? p.customerId ?? p.partyId ?? 0),
+        displayName: p.customerName || p.name || `Customer #${p.id}`
+      })).filter(p => p.id > 0);
 
-      // Combine cash and bank accounts
+      mappedParties.sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''));
+
+      const rawCustId = this.customer?.id ?? this.customer?.customerId ?? this.customer?.partyId;
+      if (rawCustId) {
+        const custId = Number(rawCustId);
+        if (!mappedParties.some(p => Number(p.id) === custId)) {
+          mappedParties.unshift({
+            ...this.customer,
+            id: custId,
+            displayName: this.customer.customerName || this.customer.name || `Customer #${custId}`
+          });
+        }
+      }
+
+      this.partiesList.set(mappedParties);
+
+      const banks = await this.dbService.bankAccounts.toArray();
+      const mappedBanks = (banks || []).map(b => ({
+        ...b,
+        id: Number(b.id ?? b.bankAccountId ?? 0),
+        displayName: b.bankName || b.customerName || b.ledgerName || b.name || `Bank #${b.id}`
+      })).filter(b => b.id > 0);
+      this.bankAccountsList.set(mappedBanks);
+
+      const cash = await this.dbService.cashLedger.toArray();
+      const mappedCash = (cash || []).map(c => ({
+        ...c,
+        id: Number(c.id ?? c.cashLedgerId ?? 0),
+        displayName: c.ledgerName || c.customerName || c.name || `Cash #${c.id}`
+      })).filter(c => c.id > 0);
+      this.cashLedgersList.set(mappedCash);
+
+      // Combine cash and bank accounts for filter
       const combined = [
-        ...cash.map(c => ({ id: c.id, name: c.ledgerName || c.name || 'Cash', type: 'Cash' })),
-        ...banks.map(b => ({ id: b.id, name: b.bankName || b.name || 'Bank', type: 'Bank' }))
+        ...mappedCash.map(c => ({ id: c.id, name: c.displayName, type: 'Cash' })),
+        ...mappedBanks.map(b => ({ id: b.id, name: b.displayName, type: 'Bank' }))
       ];
       this.combinedBankCashList.set(combined);
 
@@ -176,8 +228,23 @@ export class CustomerLedger {
       if (combined.length > 0 && !this.filterForm.get('bankLedgerId')?.value) {
         this.filterForm.patchValue({ bankLedgerId: combined[0].id }, { emitEvent: false });
       }
+
+      this.counterInvoiceService.getPaymentList().subscribe({
+        next: (res: any) => {
+          const list = res?.data || res || [];
+          if (Array.isArray(list)) {
+            this.paymentModesList.set(list);
+          }
+          this.cdr.markForCheck();
+        },
+        error: (err: any) => {
+          console.error('Error fetching payment modes:', err);
+        }
+      });
+
+      this.cdr.markForCheck();
     } catch (e) {
-      console.error('Error loading dropdown lists', e);
+      console.error('Error loading dropdown lists from IndexedDB', e);
     }
   }
 
@@ -190,25 +257,25 @@ export class CustomerLedger {
     if (paymentMode === 'cash') {
       const list = this.cashLedgersList();
       if (list.length > 0) {
-        this.ledgerForm.patchValue({ bankCashLedgerId: list[0].id });
+        this.ledgerForm.patchValue({ ledger2: list[0].id });
       } else {
-        this.ledgerForm.patchValue({ bankCashLedgerId: null });
+        this.ledgerForm.patchValue({ ledger2: null });
       }
     } else {
       const list = this.bankAccountsList();
       if (list.length > 0) {
-        this.ledgerForm.patchValue({ bankCashLedgerId: list[0].id });
+        this.ledgerForm.patchValue({ ledger2: list[0].id });
       } else {
-        this.ledgerForm.patchValue({ bankCashLedgerId: null });
+        this.ledgerForm.patchValue({ ledger2: null });
       }
     }
   }
 
   async loadLedgerHistory(selectedPartyId?: number) {
-    const partyId = selectedPartyId || this.filterForm?.get('partyId')?.value || this.ledgerForm.get('partyId')?.value || this.customer?.id;
+    const partyId = selectedPartyId || this.filterForm?.get('partyId')?.value || this.ledgerForm.get('ledger1')?.value || this.customer?.id;
     if (!partyId) return;
     this.isLoading.set(true);
-    
+
     const userDetailsStr = localStorage.getItem('UserDetails');
     let userDetails: any = null;
     try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) { }
@@ -234,18 +301,18 @@ export class CustomerLedger {
   applyFilters() {
     const raw = this.ledgerHistory();
     const filters = this.filterForm.value;
-    
+
     let filtered = [...raw];
-    
+
     // 1. Filter by Bank Ledger
     if (filters.bankLedgerId) {
       const bankId = Number(filters.bankLedgerId);
-      filtered = filtered.filter(row => 
-        Number(row.bankCashLedger) === bankId || 
+      filtered = filtered.filter(row =>
+        Number(row.bankCashLedger) === bankId ||
         Number(row.ledger2) === bankId
       );
     }
-    
+
     // 2. Filter by From Date
     if (filters.fromDate) {
       const fromDate = new Date(filters.fromDate);
@@ -255,7 +322,7 @@ export class CustomerLedger {
         return date >= fromDate;
       });
     }
-    
+
     // 3. Filter by To Date
     if (filters.toDate) {
       const toDate = new Date(filters.toDate);
@@ -265,7 +332,7 @@ export class CustomerLedger {
         return date <= toDate;
       });
     }
-    
+
     this.filteredLedgerHistory.set(filtered);
   }
 
@@ -276,15 +343,15 @@ export class CustomerLedger {
     }
 
     const formValues = this.ledgerForm.value;
-    const amt = formValues.amount;
-    const partyId = formValues.partyId;
+    const amt = formValues.ledgerAmount;
+    const partyId = formValues.ledger1;
 
     this.isSaving.set(true);
-    
+
     const userDetailsStr = localStorage.getItem('UserDetails');
     let userDetails: any = null;
     try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) { }
-    
+
     const orgId = userDetails?.organizationId || 28;
     const unitId = userDetails?.unitid || userDetails?.unitId || 0;
     const userId = userDetails?.id || 0;
@@ -295,7 +362,7 @@ export class CustomerLedger {
       if (companyLedgers && companyLedgers.length > 0) {
         companyLedgerId = companyLedgers[0].id || 0;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     const selectedParty = this.partiesList().find(p => Number(p.id) === Number(partyId)) || this.customer;
 
@@ -303,8 +370,8 @@ export class CustomerLedger {
     let rDate = new Date().toISOString();
     try {
       if (formValues.transactionDate) tDate = new Date(formValues.transactionDate).toISOString();
-      if (formValues.receiptDate) rDate = new Date(formValues.receiptDate).toISOString();
-    } catch (e) {}
+      if (formValues.chequeDate) rDate = new Date(formValues.chequeDate).toISOString();
+    } catch (e) { }
 
     let modeId = 1;
     let modeName = 'Cash';
@@ -323,7 +390,7 @@ export class CustomerLedger {
       id: 0,
       ledger1: Number(partyId),
       ledger2: companyLedgerId,
-      bankCashLedger: Number(formValues.bankCashLedgerId || 0),
+      bankCashLedger: Number(formValues.ledger2 || 0),
       credit: amt,
       debit: 0,
       ledgerAmount: amt,
@@ -334,16 +401,16 @@ export class CustomerLedger {
       transactionType: 'Receipt',
       transactionId: 0,
       transactionNo: formValues.transactionNo || '',
-      narration: formValues.remark || 'Customer Balance Received',
+      narration: formValues.remarks || 'Customer Balance Received',
       referenceId: 0,
       groupId: 0,
       chequeDate: rDate,
       isTallyExport: 0,
       tallyReferenceId: 0,
-      particularsText: formValues.remark || 'Customer Balance Received',
+      particularsText: formValues.remarks || 'Customer Balance Received',
       voucherTypeId: 1,
       voucherSubTypeId: 0,
-      voucherSubType: formValues.subVoucherType || '',
+      voucherSubType: formValues.voucherSubType || 'Sale',
       fYearId: 0,
       unitId: unitId,
       organizationId: orgId,
@@ -358,7 +425,7 @@ export class CustomerLedger {
       fBillId: 0,
       selectedPartyName: selectedParty?.customerName || selectedParty?.name || '',
       selectedBankName: formValues.paymentMode === 'cash' ? 'Cash Sale' : 'Bank Transfer',
-      remarks: formValues.remark || '',
+      remarks: formValues.remarks || '',
       inFavorPartyId: 0,
       inFavorPartyName: '',
       groupIdForBulk: 0,
@@ -370,12 +437,12 @@ export class CustomerLedger {
         this.notificationService.showSuccess(`₹${amt} added successfully.`);
         this.isSaving.set(false);
         this.ledgerForm.patchValue({
-          amount: null,
-          remark: ''
+          ledgerAmount: null,
+          remarks: ''
         });
-        
+
         this.updateIndexedDbBalance(amt, Number(partyId));
-        
+
         this.balanceAdded.emit();
         this.activeTab.set('history');
         this.loadLedgerHistory();
@@ -393,8 +460,8 @@ export class CustomerLedger {
       const currentCust = await this.dbService.customerList.get(partyId);
       if (currentCust) {
         const currentBalance = currentCust.balanceAtDairy || currentCust.balance || 0;
-        const newBalance = currentBalance - amt; 
-        
+        const newBalance = currentBalance - amt;
+
         await this.dbService.customerList.update(partyId, {
           balanceAtDairy: newBalance,
           balance: newBalance

@@ -326,5 +326,14 @@ export class CounterInvoiceService {
   addCustomerBalance(payload: any): Observable<any> {
     return this.apiService.post<any>('api/v1/LedgerTransaction/saveLedgerTransaction', payload);
   }
+
+  getPaymentList(): Observable<any> {
+    const userDetailsStr = localStorage.getItem('UserDetails');
+    let userDetails: any = null;
+    try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) { }
+    const organizationId = userDetails?.organizationId || 28;
+    const unitId = userDetails?.unitid || userDetails?.unitId || 0;
+    return this.apiService.get<any>(`api/v1/customer/paymentlist?organizationId=${organizationId}&unitId=${unitId}`);
+  }
 }
 

@@ -1,14 +1,15 @@
 @if (isOpen) {
 <div class="ledger-drawer-overlay" (click)="closeDrawer()">
   <div class="ledger-drawer" [style.width.px]="getDrawerWidth()" (click)="$event.stopPropagation()">
-    
+
     <!-- HEADER -->
     <div class="drawer-header">
       <div class="header-left">
         <lucide-icon [img]="ClipboardListIcon" class="header-icon"></lucide-icon>
         <div>
           <h3>Customer Ledger</h3>
-          <span class="header-subtitle">{{ customer?.customerName || customer?.name || '—' }} ({{ customer?.mobileNo || customer?.phone || 'No Mobile' }})</span>
+          <span class="header-subtitle">{{ customer?.customerName || customer?.name || '—' }} ({{ customer?.mobileNo ||
+            customer?.phone || 'No Mobile' }})</span>
         </div>
       </div>
       <button class="close-btn" (click)="closeDrawer()">
@@ -32,19 +33,19 @@
 
     <!-- CONTENT -->
     <div class="drawer-content">
-      
+
       <!-- ADD BALANCE FORM -->
       @if (activeTab() === 'add') {
       <form [formGroup]="ledgerForm" (ngSubmit)="submitBalance()" class="form-container">
-        
+
         <div class="form-grid">
           <!-- Party Ledger Dropdown -->
           <div class="form-group">
             <label class="field-label">Party Ledger <span class="required">*</span></label>
             <mat-form-field appearance="outline" class="no-subscript">
-              <mat-select formControlName="partyId" placeholder="Select Party Ledger">
+              <mat-select formControlName="ledger1" [compareWith]="compareFn" placeholder="Select Party Ledger">
                 @for (party of partiesList(); track party.id) {
-                <mat-option [value]="party.id">{{ party.customerName || party.name }}</mat-option>
+                <mat-option [value]="party.id">{{ party.displayName || party.customerName || party.name }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -54,19 +55,23 @@
           <div class="form-group payment-mode-group">
             <label class="field-label">Payment Mode <span class="required">*</span></label>
             <div class="payment-mode-grid">
-              <div class="mode-card" [class.active]="ledgerForm.get('paymentMode')?.value === 'cash'" (click)="setPaymentMode('cash')">
+              <div class="mode-card" [class.active]="ledgerForm.get('paymentMode')?.value === 'cash'"
+                (click)="setPaymentMode('cash')">
                 <lucide-icon [img]="DollarSignIcon" class="mode-icon"></lucide-icon>
                 <span class="mode-label">Cash</span>
               </div>
-              <div class="mode-card" [class.active]="ledgerForm.get('paymentMode')?.value === 'cheque'" (click)="setPaymentMode('cheque')">
+              <div class="mode-card" [class.active]="ledgerForm.get('paymentMode')?.value === 'cheque'"
+                (click)="setPaymentMode('cheque')">
                 <lucide-icon [img]="ClipboardListIcon" class="mode-icon"></lucide-icon>
                 <span class="mode-label">Cheque</span>
               </div>
-              <div class="mode-card" [class.active]="ledgerForm.get('paymentMode')?.value === 'neft'" (click)="setPaymentMode('neft')">
+              <div class="mode-card" [class.active]="ledgerForm.get('paymentMode')?.value === 'neft'"
+                (click)="setPaymentMode('neft')">
                 <lucide-icon [img]="ReceiptTextIcon" class="mode-icon"></lucide-icon>
                 <span class="mode-label">NEFT/RTGS</span>
               </div>
-              <div class="mode-card" [class.active]="ledgerForm.get('paymentMode')?.value === 'upi'" (click)="setPaymentMode('upi')">
+              <div class="mode-card" [class.active]="ledgerForm.get('paymentMode')?.value === 'upi'"
+                (click)="setPaymentMode('upi')">
                 <lucide-icon [img]="PlusIcon" class="mode-icon"></lucide-icon>
                 <span class="mode-label">UPI</span>
               </div>
@@ -77,15 +82,15 @@
           <div class="form-group">
             <label class="field-label">Bank / Cash Ledger <span class="required">*</span></label>
             <mat-form-field appearance="outline" class="no-subscript">
-              <mat-select formControlName="bankCashLedgerId" placeholder="Select Bank / Cash Ledger">
+              <mat-select formControlName="ledger2" [compareWith]="compareFn" placeholder="Select Bank / Cash Ledger">
                 @if (ledgerForm.get('paymentMode')?.value === 'cash') {
-                  @for (c of cashLedgersList(); track c.id) {
-                  <mat-option [value]="c.id">{{ c.ledgerName || c.name || 'Cash' }}</mat-option>
-                  }
+                @for (c of cashLedgersList(); track c.id) {
+                <mat-option [value]="c.id">{{ c.displayName || c.ledgerName || c.customerName || c.name || 'Cash' }}</mat-option>
+                }
                 } @else {
-                  @for (b of bankAccountsList(); track b.id) {
-                  <mat-option [value]="b.id">{{ b.bankName || b.name || 'Bank' }}</mat-option>
-                  }
+                @for (b of bankAccountsList(); track b.id) {
+                <mat-option [value]="b.id">{{ b.displayName || b.bankName || b.customerName || b.ledgerName || b.name || 'Bank' }}</mat-option>
+                }
                 }
               </mat-select>
             </mat-form-field>
@@ -95,7 +100,7 @@
           <div class="form-group">
             <label class="field-label">Amount (₹) <span class="required">*</span></label>
             <mat-form-field appearance="outline" class="no-subscript">
-              <input matInput type="number" formControlName="amount" placeholder="0.00" min="0.01">
+              <input matInput type="number" formControlName="ledgerAmount" placeholder="0.00" min="0.01">
             </mat-form-field>
           </div>
 
@@ -103,7 +108,8 @@
           <div class="form-group">
             <label class="field-label">Transaction Date <span class="required">*</span></label>
             <mat-form-field appearance="outline" class="no-subscript">
-              <input matInput [matDatepicker]="tdPicker" formControlName="transactionDate" readonly (click)="tdPicker.open()" placeholder="Choose Date">
+              <input matInput [matDatepicker]="tdPicker" formControlName="transactionDate" readonly
+                (click)="tdPicker.open()" placeholder="Choose Date">
               <mat-datepicker-toggle matSuffix [for]="tdPicker"></mat-datepicker-toggle>
               <mat-datepicker #tdPicker></mat-datepicker>
             </mat-form-field>
@@ -113,7 +119,8 @@
           <div class="form-group">
             <label class="field-label">Receipt Date <span class="required">*</span></label>
             <mat-form-field appearance="outline" class="no-subscript">
-              <input matInput [matDatepicker]="rdPicker" formControlName="receiptDate" readonly (click)="rdPicker.open()" placeholder="Choose Date">
+              <input matInput [matDatepicker]="rdPicker" formControlName="chequeDate" readonly (click)="rdPicker.open()"
+                placeholder="Choose Date">
               <mat-datepicker-toggle matSuffix [for]="rdPicker"></mat-datepicker-toggle>
               <mat-datepicker #rdPicker></mat-datepicker>
             </mat-form-field>
@@ -123,7 +130,7 @@
           <div class="form-group">
             <label class="field-label">Sub Voucher Type</label>
             <mat-form-field appearance="outline" class="no-subscript">
-              <input matInput type="text" formControlName="subVoucherType" placeholder="e.g. Regular">
+              <input matInput type="text" formControlName="voucherSubType" placeholder="e.g. Regular" readonly>
             </mat-form-field>
           </div>
 
@@ -140,7 +147,8 @@
         <div class="form-group full-width remark-group">
           <label class="field-label">Remark / Notes</label>
           <mat-form-field appearance="outline" class="no-subscript">
-            <textarea matInput formControlName="remark" rows="3" placeholder="Add details about this payment..."></textarea>
+            <textarea matInput formControlName="remarks" rows="3"
+              placeholder="Add details about this payment..."></textarea>
           </mat-form-field>
         </div>
 
@@ -162,16 +170,17 @@
       <!-- TRANSACTION HISTORY -->
       @if (activeTab() === 'history') {
       <div class="history-container">
-        
+
         <!-- FILTER FORM -->
         <form [formGroup]="filterForm" class="filter-form-container">
           <div class="form-grid">
             <!-- Party Ledger Filter -->
             <div class="form-group">
               <mat-form-field appearance="outline" class="no-subscript">
-                <mat-select formControlName="partyId" placeholder="Party Ledger *">
+                <mat-select formControlName="partyId" [compareWith]="compareFn" placeholder="Party Ledger *">
                   @for (party of partiesList(); track party.id) {
-                  <mat-option [value]="party.id">{{ party.customerName || party.name }}</mat-option>
+                  <mat-option [value]="party.id">{{ party.displayName || party.customerName || party.name
+                    }}</mat-option>
                   }
                 </mat-select>
               </mat-form-field>
@@ -191,7 +200,8 @@
             <!-- From Date Filter -->
             <div class="form-group">
               <mat-form-field appearance="outline" class="no-subscript">
-                <input matInput [matDatepicker]="fdPicker" formControlName="fromDate" readonly (click)="fdPicker.open()" placeholder="From Date">
+                <input matInput [matDatepicker]="fdPicker" formControlName="fromDate" readonly (click)="fdPicker.open()"
+                  placeholder="From Date">
                 <mat-datepicker-toggle matSuffix [for]="fdPicker"></mat-datepicker-toggle>
                 <mat-datepicker #fdPicker></mat-datepicker>
               </mat-form-field>
@@ -200,7 +210,8 @@
             <!-- To Date Filter -->
             <div class="form-group">
               <mat-form-field appearance="outline" class="no-subscript">
-                <input matInput [matDatepicker]="tdFilterPicker" formControlName="toDate" readonly (click)="tdFilterPicker.open()" placeholder="To Date">
+                <input matInput [matDatepicker]="tdFilterPicker" formControlName="toDate" readonly
+                  (click)="tdFilterPicker.open()" placeholder="To Date">
                 <mat-datepicker-toggle matSuffix [for]="tdFilterPicker"></mat-datepicker-toggle>
                 <mat-datepicker #tdFilterPicker></mat-datepicker>
               </mat-form-field>
@@ -215,8 +226,9 @@
         </div>
         } @else {
         <div class="app-table-wrapper">
-          <table mat-table [dataSource]="filteredLedgerHistory()" class="mat-elevation-z0 app-data-table ledger-mat-table">
-            
+          <table mat-table [dataSource]="filteredLedgerHistory()"
+            class="mat-elevation-z0 app-data-table ledger-mat-table">
+
             <!-- Sr Column -->
             <ng-container matColumnDef="sr">
               <th mat-header-cell *matHeaderCellDef class="col-sr"> Sr </th>
@@ -226,7 +238,8 @@
             <!-- Date Column -->
             <ng-container matColumnDef="date">
               <th mat-header-cell *matHeaderCellDef class="col-date"> Date </th>
-              <td mat-cell *matCellDef="let row"> {{ (row.transactionDate || row.showDate) | date:'dd MMM yyyy, hh:mm a' }} </td>
+              <td mat-cell *matCellDef="let row"> {{ (row.transactionDate || row.showDate) | date:'dd MMM yyyy, hh:mm a'
+                }} </td>
             </ng-container>
 
             <!-- Bill No Column -->
