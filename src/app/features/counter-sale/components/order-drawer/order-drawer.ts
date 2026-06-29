@@ -105,8 +105,10 @@ export class OrderDrawer implements OnInit, OnDestroy {
   }
 
   setStatusFilter(status: 'Upcoming' | 'delivered') {
+    if (this.selectedStatus() === status && !this.orderSearchQuery()) return;
     this.selectedStatus.set(status);
-    this.loadOrders(this.orderSearchQuery(), status);
+    this.orderSearchQuery.set('');
+    this.loadOrders('', status);
   }
 
   onOrderSearch(event: Event) {
@@ -115,12 +117,13 @@ export class OrderDrawer implements OnInit, OnDestroy {
   }
 
   clearSearch() {
+    if (!this.orderSearchQuery()) return;
     this.orderSearchQuery.set('');
-    this.searchSubject.next('');
+    this.loadOrders('', this.selectedStatus());
   }
 
   closeDrawer() {
-    this.clearSearch();
+    this.orderSearchQuery.set('');
     this.close.emit();
   }
 
