@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy, inject, ElementRef, HostListener } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { LucideAngularModule, Droplets, PieChart, Monitor, LineChart, Settings, Sun, LogOut, Calendar } from 'lucide-angular';
 import { HealthService } from '../core/services/health.service';
@@ -28,6 +28,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   router = inject(Router);
   healthService = inject(HealthService);
   private swUpdate = inject(SwUpdate);
+  private elementRef = inject(ElementRef);
   currentTime = signal(new Date());
   showProfileMenu = signal(false);
   userDetails = signal<any>(null);
@@ -75,6 +76,16 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   toggleProfileMenu() {
     this.showProfileMenu.update(val => !val);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (this.showProfileMenu()) {
+      const clickedInside = this.elementRef.nativeElement.querySelector('.profile-menu-container')?.contains(event.target as Node);
+      if (!clickedInside) {
+        this.showProfileMenu.set(false);
+      }
+    }
   }
 
   endSession() {
