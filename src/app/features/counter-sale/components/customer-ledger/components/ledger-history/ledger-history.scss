@@ -1,7 +1,99 @@
 .history-container {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+}
+
+.filter-card {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
+  background: #F8FAFC;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.filter-row-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+
+  .filter-field {
+    width: 100%;
+  }
+}
+
+.filter-row-bottom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+
+  .date-input-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .filter-buttons-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+
+    .btn-icon-action {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 0;
+
+      lucide-icon {
+        width: 17px;
+        height: 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      &.btn-reset {
+        background: #FFFFFF;
+        color: #475569;
+        border: 1px solid #CBD5E1;
+
+        &:hover {
+          background: #F1F5F9;
+          color: #0F172A;
+          border-color: #94A3B8;
+        }
+      }
+
+      &.btn-apply {
+        background: #0052CC;
+        color: #FFFFFF;
+        border: 1px solid #0052CC;
+        box-shadow: 0 2px 4px rgba(0, 82, 204, 0.2);
+
+        &:hover {
+          background: #0043A4;
+          border-color: #0043A4;
+          box-shadow: 0 3px 6px rgba(0, 82, 204, 0.3);
+        }
+
+        &[disabled] {
+          opacity: 0.6;
+          cursor: not-allowed;
+          box-shadow: none;
+        }
+      }
+    }
+  }
 }
 
 .loading-state {
@@ -10,18 +102,152 @@
   align-items: center;
   justify-content: center;
   padding: 40px 0;
-  color: #6B7280;
+  color: #64748B;
 
   .spinner {
     width: 28px;
     height: 28px;
     animation: spin 1s linear infinite;
     margin-bottom: 8px;
-    color: #2563EB;
+    color: #0052CC;
   }
+}
+
+.empty-state-wrapper {
+  padding: 30px 0;
 }
 
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* TABLE STYLES (EXACT CUSTOMER DRAWER COLORS & BADGES) */
+.app-table-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #F9FAFB;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #D1D5DB;
+    border-radius: 4px;
+
+    &:hover {
+      background: #9CA3AF;
+    }
+  }
+}
+
+.ledger-mat-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: #ffffff;
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    tr {
+      background: #ffffff;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    th {
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #6B7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #F3F4F6;
+      transition: background-color 0.15s;
+      cursor: default;
+
+      &:hover {
+        background-color: #F8FAFF;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      padding: 12px 16px;
+      color: #374151;
+      vertical-align: middle;
+      font-size: 13px;
+    }
+  }
+}
+
+.col-sr { width: 50px; text-align: center; color: #9CA3AF; font-size: 12px; }
+.col-date { min-width: 160px; font-weight: 500; color: #111827; }
+.col-bill { min-width: 110px; color: #6B7280; font-family: 'Roboto Mono', monospace; font-size: 12px; }
+.col-credit { width: 130px; text-align: right; }
+.col-debit { width: 130px; text-align: right; }
+
+.text-right {
+  text-align: right;
+}
+
+/* BALANCE & TRANSACTION BADGES (EXACT COLOR COMBINATION FROM SCREENSHOT) */
+.balance-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Roboto Mono', monospace;
+
+  &.balance-due {
+    background-color: #FFF7ED;
+    color: #C2410C;
+    border: 1px solid #FED7AA;
+  }
+
+  &.balance-debit {
+    background-color: #FEF2F2;
+    color: #DC2626;
+    border: 1px solid #FCA5A5;
+  }
+
+  &.balance-zero {
+    background-color: #F3F4F6;
+    color: #6B7280;
+    border: 1px solid #E5E7EB;
+  }
+}
+
+.na-text {
+  color: #D1D5DB;
+  font-size: 13px;
+}
+
+.no-records {
+  text-align: center;
+  padding: 40px 14px;
+  color: #9CA3AF;
+  font-style: italic;
 }

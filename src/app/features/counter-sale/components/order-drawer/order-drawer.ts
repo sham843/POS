@@ -7,13 +7,14 @@ import { CounterInvoiceService } from '../../../../core/services/counter-invoice
 import { ConfigService } from '../../../../core/services/config.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { CounterSaleService } from '../../../../core/services/counter-sale.service';
+import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-order-drawer',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, MatExpansionModule, MatTooltipModule],
+  imports: [CommonModule, LucideAngularModule, MatExpansionModule, MatTooltipModule, EmptyState],
   templateUrl: './order-drawer.html',
   styleUrl: './order-drawer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

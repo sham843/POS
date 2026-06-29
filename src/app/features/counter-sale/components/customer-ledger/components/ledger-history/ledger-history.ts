@@ -2,7 +2,7 @@ import { Component, Input, inject, signal, ChangeDetectorRef, ChangeDetectionStr
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LucideAngularModule, Loader } from 'lucide-angular';
+import { LucideAngularModule, Loader, Search, RotateCcw } from 'lucide-angular';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { CustomDateAdapter, CUSTOM_DATE_FORMATS } from '../../../../../../core/adapters/custom-date-adapter';
@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { CounterInvoiceService } from '../../../../../../core/services/counter-invoice.service';
+import { EmptyState } from '../../../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-ledger-history',
@@ -23,7 +24,8 @@ import { CounterInvoiceService } from '../../../../../../core/services/counter-i
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatTableModule
+    MatTableModule,
+    EmptyState
   ],
   providers: [
     { provide: DateAdapter, useClass: CustomDateAdapter },
@@ -49,8 +51,12 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
   filteredLedgerHistory = signal<any[]>([]);
   filterForm: FormGroup;
 
+  maxDate: Date = new Date();
+
   displayedColumns: string[] = ['sr', 'date', 'billNo', 'credit', 'debit'];
   readonly LoaderIcon = Loader;
+  readonly SearchIcon = Search;
+  readonly RotateCcwIcon = RotateCcw;
 
   compareFn(a: any, b: any): boolean {
     if (a === null || a === undefined || b === null || b === undefined) return a === b;
@@ -67,23 +73,15 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
 
     this.filterForm = this.fb.group({
       partyId: [null, Validators.required],
-      bankLedgerId: [null, Validators.required],
+      bankLedgerId: [null],
       fromDate: [thirtyDaysAgo, Validators.required],
       toDate: [new Date(), Validators.required]
     });
 
-    this.filterForm.get('partyId')?.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(val => {
-        if (val) {
-          this.loadLedgerHistory(val);
-        }
-      });
-
-    this.filterForm.valueChanges
+    this.filterForm.get('fromDate')?.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        this.applyFilters();
+        this.filterForm.patchValue({ toDate: null }, { emitEvent: false });
       });
   }
 
@@ -109,14 +107,9 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
       custId = Number(this.partiesList[0].id);
     }
 
-    let defaultBankId = this.filterForm.get('bankLedgerId')?.value;
-    if (!defaultBankId && this.combinedBankCashList.length > 0) {
-      defaultBankId = this.combinedBankCashList[0].id;
-    }
-
     this.filterForm.patchValue({
       partyId: custId > 0 ? custId : null,
-      bankLedgerId: defaultBankId || null,
+      bankLedgerId: null,
       fromDate: start,
       toDate: today
     }, { emitEvent: false });
@@ -127,6 +120,36 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
     this.cdr.detectChanges();
   }
 
+  searchHistory() {
+    const partyId = this.filterForm.get('partyId')?.value;
+    if (partyId) {
+      this.loadLedgerHistory(Number(partyId));
+    }
+  }
+
+  resetFilters() {
+    const today = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - 30);
+
+    const rawCustId = this.customer?.id ?? this.customer?.customerId ?? this.customer?.partyId;
+    let custId = rawCustId ? Number(rawCustId) : 0;
+    if ((!custId || !this.partiesList.some(p => Number(p.id) === custId)) && this.partiesList.length > 0) {
+      custId = Number(this.partiesList[0].id);
+    }
+
+    this.filterForm.patchValue({
+      partyId: custId > 0 ? custId : null,
+      bankLedgerId: null,
+      fromDate: start,
+      toDate: today
+    });
+
+    if (custId > 0) {
+      this.loadLedgerHistory(custId);
+    }
+  }
+
   async loadLedgerHistory(selectedPartyId?: number) {
     const partyId = selectedPartyId || this.filterForm?.get('partyId')?.value || this.customer?.id;
     if (!partyId) return;
@@ -135,17 +158,33 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
     const userDetailsStr = localStorage.getItem('UserDetails');
     let userDetails: any = null;
     try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) { }
-    const orgId = userDetails?.organizationId || 28;
+    const orgId = userDetails?.organizationId || userDetails?.organizationid || 28;
     const unitId = userDetails?.unitid || userDetails?.unitId || 0;
+    const userId = userDetails?.id || userDetails?.userId || 0;
 
-    this.counterInvoiceService.getCustomerLedger(partyId, orgId, unitId)
+    const fromDateVal = this.filterForm?.get('fromDate')?.value;
+    const toDateVal = this.filterForm?.get('toDate')?.value;
+    const fromDate = fromDateVal ? new Date(fromDateVal).toISOString() : undefined;
+    const toDate = toDateVal ? new Date(toDateVal).toISOString() : undefined;
+
+    this.counterInvoiceService.getCustomerLedger({
+      partyId: Number(partyId),
+      organizationId: orgId,
+      unitId: unitId,
+      userId: userId,
+      fromDate: fromDate,
+      toDate: toDate,
+      pageNo: 1,
+      pageSize: 1000
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res: any) => {
-          const list = res?.data || res || [];
+          const list = res?.responseData || res?.data || res || [];
           this.ledgerHistory.set(Array.isArray(list) ? list : []);
           this.applyFilters();
           this.isLoading.set(false);
+          this.cdr.detectChanges();
         },
         error: (err: any) => {
           console.error('Error fetching customer ledger:', err);

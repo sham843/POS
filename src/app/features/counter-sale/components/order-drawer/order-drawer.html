@@ -144,13 +144,12 @@
 
         <!-- EMPTY STATE -->
         @if (filteredOrders().length === 0) {
-        <div class="empty-state">
-          <lucide-icon [img]="ShoppingBagIcon" class="empty-icon"></lucide-icon>
-          @if (orderSearchQuery()) {
-          <p>No orders found matching "{{ orderSearchQuery() }}"</p>
-          } @else {
-          <p>No upcoming orders available</p>
-          }
+        <div class="empty-state-wrapper" style="padding: 40px 0;">
+          <app-empty-state
+            [title]="orderSearchQuery() ? 'No Matching Orders' : (selectedStatus() === 'Upcoming' ? 'No Upcoming Orders' : 'No Delivered Orders')"
+            [message]="orderSearchQuery() ? 'No orders found matching &quot;' + orderSearchQuery() + '&quot;' : 'There are no ' + (selectedStatus() === 'Upcoming' ? 'upcoming' : 'delivered') + ' orders available.'"
+            [icon]="orderSearchQuery() ? 'search' : 'cart'">
+          </app-empty-state>
         </div>
         }
       </div>

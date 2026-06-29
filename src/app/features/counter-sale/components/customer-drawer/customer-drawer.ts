@@ -4,13 +4,14 @@ import { LucideAngularModule, Search, X, CheckCircle, Users, UserCheck } from 'l
 import { MatTableModule } from '@angular/material/table';
 import { DbService } from '../../../../core/services/db.service';
 import { CounterSaleService } from '../../../../core/services/counter-sale.service';
+import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customer-drawer',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, MatTableModule],
+  imports: [CommonModule, LucideAngularModule, MatTableModule, EmptyState],
   templateUrl: './customer-drawer.html',
   styleUrl: './customer-drawer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

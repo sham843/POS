@@ -95,13 +95,12 @@
 
         <!-- EMPTY STATE -->
         @if (filteredCustomers().length === 0) {
-        <div class="empty-state">
-          <lucide-icon [img]="UsersIcon" class="empty-icon"></lucide-icon>
-          @if (customerSearchQuery()) {
-          <p>No customers found matching "{{ customerSearchQuery() }}"</p>
-          } @else {
-          <p>No customers available</p>
-          }
+        <div class="empty-state-wrapper" style="padding: 40px 0;">
+          <app-empty-state
+            [title]="customerSearchQuery() ? 'No Matching Customers' : 'No Customers Found'"
+            [message]="customerSearchQuery() ? 'No customers found matching &quot;' + customerSearchQuery() + '&quot;' : 'There are no customers registered in the system.'"
+            [icon]="customerSearchQuery() ? 'search' : 'inbox'">
+          </app-empty-state>
         </div>
         }
       </div>

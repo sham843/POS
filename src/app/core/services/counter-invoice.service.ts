@@ -321,8 +321,40 @@ export class CounterInvoiceService {
     return this.apiService.get<any>(`api/v1/Order/GetOrdersbyId?OrderId=${orderId}&status=${status}`);
   }
 
-  getCustomerLedger(customerId: number, organizationId: number, unitId: number): Observable<any> {
-    return this.apiService.get<any>(`api/v1/LedgerTransaction/GetCustomerLedgerReport?organizationId=${organizationId}&unitId=${unitId}&ledgerId=${customerId}`);
+  getCustomerLedger(params: {
+    partyId: number;
+    organizationId?: number;
+    unitId?: number;
+    userId?: number;
+    fromDate?: string;
+    toDate?: string;
+    pageNo?: number;
+    pageSize?: number;
+  } | number, organizationId?: number, unitId?: number): Observable<any> {
+    let partyId = 0;
+    let orgId = organizationId || 28;
+    let uId = unitId || 0;
+    let usrId = 0;
+    let from = new Date(new Date().setDate(new Date().getDate() - 30)).toISOString();
+    let to = new Date().toISOString();
+    let pNo = 1;
+    let pSize = 1000;
+
+    if (typeof params === 'object' && params !== null) {
+      partyId = params.partyId;
+      if (params.organizationId) orgId = params.organizationId;
+      if (params.unitId) uId = params.unitId;
+      if (params.userId) usrId = params.userId;
+      if (params.fromDate) from = params.fromDate;
+      if (params.toDate) to = params.toDate;
+      if (params.pageNo) pNo = params.pageNo;
+      if (params.pageSize) pSize = params.pageSize;
+    } else {
+      partyId = params;
+    }
+
+    const url = `api/v1/account/viewledger?OrgnizationId=${orgId}&UnitId=${uId}&UserId=${usrId}&FYearId=0&PartyId=${partyId}&VoucherTypeId=4&FromDate=${from}&ToDate=${to}&pageno=${pNo}&pagesize=${pSize}`;
+    return this.apiService.get<any>(url);
   }
 
   addCustomerBalance(payload: any): Observable<any> {
