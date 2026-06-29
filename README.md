@@ -62,5 +62,5 @@ For more information on using the Angular CLI, including detailed command refere
 <!-- 
 1.ng build
 2.npm run electron 
-
+3.npm run dist // For Create exe
 -->
