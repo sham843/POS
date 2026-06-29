@@ -492,24 +492,24 @@ lucide-icon svg {
   }
 
   input.mat-mdc-input-element {
-    font-size: 13.5px;
+    font-size: 12.5px !important;
     color: #1F2937;
 
     &::placeholder {
       color: #9CA3AF !important;
-      font-size: 12px !important;
+      font-size: 11.5px !important;
       font-weight: 400 !important;
       opacity: 1;
     }
   }
 
   textarea.mat-mdc-input-element {
-    font-size: 13.5px;
+    font-size: 12.5px !important;
     color: #1F2937;
 
     &::placeholder {
       color: #9CA3AF !important;
-      font-size: 12px !important;
+      font-size: 11.5px !important;
       font-weight: 400 !important;
       opacity: 1;
     }
@@ -518,13 +518,18 @@ lucide-icon svg {
 
 // Select styling
 .mat-mdc-select {
-  font-size: 13.5px;
+  font-size: 12.5px !important;
   color: #1F2937;
+  
+  .mat-mdc-select-value-text,
+  .mat-mdc-select-value {
+    font-size: 12.5px !important;
+  }
 }
 
 .mat-mdc-select-placeholder {
   color: #9CA3AF !important;
-  font-size: 12px !important;
+  font-size: 11.5px !important;
   font-weight: 400 !important;
 }
 
@@ -533,6 +538,103 @@ lucide-icon svg {
 
   .mat-mdc-select-arrow {
     color: #6B7280 !important;
+  }
+}
+
+// Global Angular Material Select Dropdown Panel Styling
+.mat-mdc-select-panel {
+  background-color: #ffffff !important;
+  border-radius: 10px !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.06) !important;
+  padding: 6px 0 !important;
+  margin-top: 4px !important;
+  max-height: 280px !important;
+
+  /* Custom Clean Scrollbar */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+
+    &:hover {
+      background: #94A3B8;
+    }
+  }
+
+  .mat-mdc-option {
+    min-height: 36px !important;
+    padding: 6px 14px !important;
+    margin: 2px 6px !important;
+    border-radius: 6px !important;
+    font-size: 12.5px !important;
+    color: #1E293B !important;
+    font-weight: 500 !important;
+    transition: background-color 0.15s ease, color 0.15s ease !important;
+
+    .mdc-list-item__primary-text {
+      color: inherit !important;
+      font-size: 12.5px !important;
+    }
+
+    /* Hover state */
+    &:hover:not(.mdc-list-item--disabled) {
+      background-color: #EFF6FF !important;
+      color: #1E40AF !important;
+    }
+
+    /* Focused state (via keyboard navigation) */
+    &.mat-mdc-option-active:not(.mdc-list-item--selected) {
+      background-color: #F1F5F9 !important;
+      color: #0F172A !important;
+    }
+
+    /* Selected state - Only tick icon highlighted */
+    &.mdc-list-item--selected {
+      background-color: transparent !important;
+      color: #1E293B !important;
+      font-weight: 500 !important;
+
+      .mdc-list-item__primary-text {
+        color: #1E293B !important;
+        font-weight: 500 !important;
+      }
+
+      .mat-pseudo-checkbox,
+      .mat-mdc-option-pseudo-checkbox {
+        background-color: transparent !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+
+        &.mat-pseudo-checkbox-checked {
+          background-color: transparent !important;
+          background: transparent !important;
+          border: none !important;
+
+          &::after {
+            border-color: #0052CC !important;
+            color: #0052CC !important;
+          }
+
+          svg {
+            fill: #0052CC !important;
+            color: #0052CC !important;
+            path {
+              stroke: #0052CC !important;
+              fill: #0052CC !important;
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -599,6 +701,15 @@ lucide-icon svg {
       background-color: #0052CC !important;
       color: #ffffff !important;
       font-weight: 700 !important;
+    }
+  }
+
+  .mat-calendar-body-disabled {
+    cursor: not-allowed !important;
+    opacity: 0.5 !important;
+
+    .mat-calendar-body-cell-content {
+      color: #94A3B8 !important;
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, signal, effect, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, signal, effect, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -36,7 +36,7 @@ import { ConfigService } from '../../../../core/services/config.service';
   styleUrl: './customer-ledger.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CustomerLedger {
+export class CustomerLedger implements OnInit {
   private dbService = inject(DbService);
   private counterInvoiceService = inject(CounterInvoiceService);
   private notificationService = inject(NotificationService);
@@ -44,6 +44,10 @@ export class CustomerLedger {
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
+
+  ngOnInit() {
+    this.loadDropdownData();
+  }
 
   @Input() isOpen = false;
   @Input() customer: any = null;
@@ -87,6 +91,8 @@ export class CustomerLedger {
   readonly ClipboardListIcon = ClipboardList;
   readonly LoaderIcon = Loader;
 
+  maxDate: Date = new Date();
+
   constructor() {
     this.ledgerForm = this.fb.group({
       ledger1: [null, Validators.required],
@@ -111,12 +117,19 @@ export class CustomerLedger {
     });
 
     // Subscriptions for Reactive Form Changes
+    this.ledgerForm.get('transactionDate')?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (this.ledgerForm.get('chequeDate')?.value) {
+          this.ledgerForm.patchValue({ chequeDate: null });
+        }
+      });
+
     this.ledgerForm.get('ledger1')?.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(val => {
         if (val) {
           this.filterForm.patchValue({ partyId: val }, { emitEvent: false });
-          this.loadLedgerHistory(val);
         }
       });
 
@@ -174,12 +187,18 @@ export class CustomerLedger {
           if (custId > 0) {
             this.ledgerForm.patchValue({ ledger1: custId });
             this.filterForm.patchValue({ partyId: custId }, { emitEvent: false });
-            this.loadLedgerHistory(custId);
           }
           this.cdr.markForCheck();
         });
       }
     });
+  }
+
+  switchTab(tab: 'add' | 'history') {
+    this.activeTab.set(tab);
+    if (tab === 'history') {
+      this.loadLedgerHistory();
+    }
   }
 
   closeDrawer() {
@@ -216,19 +235,29 @@ export class CustomerLedger {
       this.partiesList.set(mappedParties);
 
       const banks = await this.dbService.bankAccounts.toArray();
-      const mappedBanks = (banks || []).map(b => ({
-        ...b,
-        id: Number(b.id ?? b.bankAccountId ?? 0),
-        displayName: b.bankName || b.customerName || b.ledgerName || b.name || `Bank #${b.id}`
-      })).filter(b => b.id > 0);
+      const mappedBanks = (banks || []).map(b => {
+        const name = b.customerName || b.bankName || b.ledgerName || b.accountName || b.name || `Bank #${b.id}`;
+        return {
+          ...b,
+          id: Number(b.id ?? b.bankAccountId ?? 0),
+          customerName: name,
+          bankName: name,
+          displayName: name
+        };
+      }).filter(b => b.id > 0);
       this.bankAccountsList.set(mappedBanks);
 
       const cash = await this.dbService.cashLedger.toArray();
-      const mappedCash = (cash || []).map(c => ({
-        ...c,
-        id: Number(c.id ?? c.cashLedgerId ?? 0),
-        displayName: c.ledgerName || c.customerName || c.name || `Cash #${c.id}`
-      })).filter(c => c.id > 0);
+      const mappedCash = (cash || []).map(c => {
+        const name = c.customerName || c.ledgerName || c.name || `Cash #${c.id}`;
+        return {
+          ...c,
+          id: Number(c.id ?? c.cashLedgerId ?? 0),
+          customerName: name,
+          ledgerName: name,
+          displayName: name
+        };
+      }).filter(c => c.id > 0);
       this.cashLedgersList.set(mappedCash);
 
       // Combine cash and bank accounts for filter
@@ -279,12 +308,8 @@ export class CustomerLedger {
         this.ledgerForm.patchValue({ ledger2: null });
       }
     } else {
-      const list = this.bankAccountsList();
-      if (list.length > 0) {
-        this.ledgerForm.patchValue({ ledger2: list[0].id });
-      } else {
-        this.ledgerForm.patchValue({ ledger2: null });
-      }
+      // For bank / online payment modes (cheque, neft, upi), let the user select manually
+      this.ledgerForm.patchValue({ ledger2: null });
     }
   }
 
@@ -302,19 +327,19 @@ export class CustomerLedger {
     this.counterInvoiceService.getCustomerLedger(partyId, orgId, unitId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-      next: (res: any) => {
-        const list = res?.data || res || [];
-        this.ledgerHistory.set(Array.isArray(list) ? list : []);
-        this.applyFilters();
-        this.isLoading.set(false);
-      },
-      error: (err: any) => {
-        console.error('Error fetching customer ledger:', err);
-        this.ledgerHistory.set([]);
-        this.applyFilters();
-        this.isLoading.set(false);
-      }
-    });
+        next: (res: any) => {
+          const list = res?.data || res || [];
+          this.ledgerHistory.set(Array.isArray(list) ? list : []);
+          this.applyFilters();
+          this.isLoading.set(false);
+        },
+        error: (err: any) => {
+          console.error('Error fetching customer ledger:', err);
+          this.ledgerHistory.set([]);
+          this.applyFilters();
+          this.isLoading.set(false);
+        }
+      });
   }
 
   applyFilters() {
@@ -442,7 +467,7 @@ export class CustomerLedger {
       isDeleted: 0,
       billNumber: '',
       fBillId: 0,
-      selectedPartyName: selectedParty?.customerName || selectedParty?.name || '',
+      selectedPartyName: selectedParty?.customerName || '',
       selectedBankName: formValues.paymentMode === 'cash' ? 'Cash Sale' : 'Bank Transfer',
       remarks: formValues.remarks || '',
       inFavorPartyId: 0,
@@ -451,6 +476,8 @@ export class CustomerLedger {
       upiId: ''
     };
 
+    console.log(payload)
+    return
     this.counterInvoiceService.addCustomerBalance(payload).subscribe({
       next: () => {
         this.notificationService.showSuccess(`₹${amt} added successfully.`);

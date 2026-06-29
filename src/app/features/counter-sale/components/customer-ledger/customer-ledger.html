@@ -20,11 +20,11 @@
     <!-- CHIP NAVIGATION -->
     <div class="app-segment-container">
       <div class="app-segment-chips">
-        <div class="app-chip" [class.active]="activeTab() === 'add'" (click)="activeTab.set('add')">
+        <div class="app-chip" [class.active]="activeTab() === 'add'" (click)="switchTab('add')">
           <lucide-icon [img]="PlusIcon" class="chip-icon"></lucide-icon>
           <span>Add Balance</span>
         </div>
-        <div class="app-chip" [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">
+        <div class="app-chip" [class.active]="activeTab() === 'history'" (click)="switchTab('history')">
           <lucide-icon [img]="ReceiptTextIcon" class="chip-icon"></lucide-icon>
           <span>History</span>
         </div>
@@ -45,7 +45,7 @@
             <mat-form-field appearance="outline" class="no-subscript">
               <mat-select formControlName="ledger1" [compareWith]="compareFn" placeholder="Select Party Ledger">
                 @for (party of partiesList(); track trackById($index, party)) {
-                <mat-option [value]="party.id">{{ party.displayName || party.customerName || party.name }}</mat-option>
+                <mat-option [value]="party.id">{{ party.customerName }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -85,11 +85,11 @@
               <mat-select formControlName="ledger2" [compareWith]="compareFn" placeholder="Select Bank / Cash Ledger">
                 @if (ledgerForm.get('paymentMode')?.value === 'cash') {
                 @for (c of cashLedgersList(); track trackById($index, c)) {
-                <mat-option [value]="c.id">{{ c.displayName || c.ledgerName || c.customerName || c.name || 'Cash' }}</mat-option>
+                <mat-option [value]="c.id">{{ c.customerName || c.displayName || c.ledgerName || 'Cash' }}</mat-option>
                 }
                 } @else {
                 @for (b of bankAccountsList(); track trackById($index, b)) {
-                <mat-option [value]="b.id">{{ b.displayName || b.bankName || b.customerName || b.ledgerName || b.name || 'Bank' }}</mat-option>
+                <mat-option [value]="b.id">{{ b.customerName || b.displayName || b.bankName || 'Bank' }}</mat-option>
                 }
                 }
               </mat-select>
@@ -108,7 +108,7 @@
           <div class="form-group">
             <label class="field-label">Transaction Date <span class="required">*</span></label>
             <mat-form-field appearance="outline" class="no-subscript">
-              <input matInput [matDatepicker]="tdPicker" formControlName="transactionDate" readonly
+              <input matInput [matDatepicker]="tdPicker" [max]="maxDate" formControlName="transactionDate" readonly
                 (click)="tdPicker.open()" placeholder="Choose Date">
               <mat-datepicker-toggle matSuffix [for]="tdPicker"></mat-datepicker-toggle>
               <mat-datepicker #tdPicker></mat-datepicker>
@@ -119,7 +119,7 @@
           <div class="form-group">
             <label class="field-label">Receipt Date <span class="required">*</span></label>
             <mat-form-field appearance="outline" class="no-subscript">
-              <input matInput [matDatepicker]="rdPicker" formControlName="chequeDate" readonly (click)="rdPicker.open()"
+              <input matInput [matDatepicker]="rdPicker" [min]="ledgerForm.get('transactionDate')?.value" [max]="maxDate" formControlName="chequeDate" readonly (click)="rdPicker.open()"
                 placeholder="Choose Date">
               <mat-datepicker-toggle matSuffix [for]="rdPicker"></mat-datepicker-toggle>
               <mat-datepicker #rdPicker></mat-datepicker>

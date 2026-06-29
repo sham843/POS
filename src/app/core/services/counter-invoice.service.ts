@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { DbService } from './db.service';
 import { SessionService } from './session.service';
@@ -14,6 +15,7 @@ export class CounterInvoiceService {
   private dbService = inject(DbService);
   private sessionService = inject(SessionService);
   private electronService = inject(ElectronService);
+  private paymentList$?: Observable<any>;
 
   get Userdetails() {
     const userStr = localStorage.getItem('UserDetails');
@@ -328,12 +330,12 @@ export class CounterInvoiceService {
   }
 
   getPaymentList(): Observable<any> {
-    const userDetailsStr = localStorage.getItem('UserDetails');
-    let userDetails: any = null;
-    try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) { }
-    const organizationId = userDetails?.organizationId || 28;
-    const unitId = userDetails?.unitid || userDetails?.unitId || 0;
-    return this.apiService.get<any>(`api/v1/customer/paymentlist?organizationId=${organizationId}&unitId=${unitId}`);
+    if (!this.paymentList$) {
+      this.paymentList$ = this.apiService.get<any>(`api/v1/customer/paymentlist`).pipe(
+        shareReplay(1)
+      );
+    }
+    return this.paymentList$;
   }
 }
 
