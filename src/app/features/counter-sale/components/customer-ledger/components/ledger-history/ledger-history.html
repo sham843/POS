@@ -1,0 +1,102 @@
+<div class="history-container">
+  <!-- FILTER FORM -->
+  <form [formGroup]="filterForm" class="filter-form-container">
+    <div class="form-grid">
+      <!-- Party Ledger Filter -->
+      <div class="form-group">
+        <mat-form-field appearance="outline" class="no-subscript">
+          <mat-select formControlName="partyId" [compareWith]="compareFn" placeholder="Party Ledger *">
+            @for (party of partiesList; track trackById($index, party)) {
+            <mat-option [value]="party.id">{{ party.displayName || party.customerName || party.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Bank Ledger Filter -->
+      <div class="form-group">
+        <mat-form-field appearance="outline" class="no-subscript">
+          <mat-select formControlName="bankLedgerId" placeholder="Bank Ledger *">
+            @for (ledger of combinedBankCashList; track trackById($index, ledger)) {
+            <mat-option [value]="ledger.id">{{ ledger.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- From Date Filter -->
+      <div class="form-group">
+        <mat-form-field appearance="outline" class="no-subscript">
+          <input matInput [matDatepicker]="fdPicker" formControlName="fromDate" readonly (click)="fdPicker.open()"
+            placeholder="From Date">
+          <mat-datepicker-toggle matSuffix [for]="fdPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fdPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- To Date Filter -->
+      <div class="form-group">
+        <mat-form-field appearance="outline" class="no-subscript">
+          <input matInput [matDatepicker]="tdFilterPicker" formControlName="toDate" readonly
+            (click)="tdFilterPicker.open()" placeholder="To Date">
+          <mat-datepicker-toggle matSuffix [for]="tdFilterPicker"></mat-datepicker-toggle>
+          <mat-datepicker #tdFilterPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+
+  @if (isLoading()) {
+  <div class="loading-state">
+    <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
+    <p>Loading transaction history...</p>
+  </div>
+  } @else {
+  <div class="app-table-wrapper">
+    <table mat-table [dataSource]="filteredLedgerHistory()"
+      class="mat-elevation-z0 app-data-table ledger-mat-table">
+
+      <!-- Sr Column -->
+      <ng-container matColumnDef="sr">
+        <th mat-header-cell *matHeaderCellDef class="col-sr"> Sr </th>
+        <td mat-cell *matCellDef="let row; let i = index"> {{ i + 1 }} </td>
+      </ng-container>
+
+      <!-- Date Column -->
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef class="col-date"> Date </th>
+        <td mat-cell *matCellDef="let row"> {{ (row.transactionDate || row.showDate) | date:'dd MMM yyyy, hh:mm a' }} </td>
+      </ng-container>
+
+      <!-- Bill No Column -->
+      <ng-container matColumnDef="billNo">
+        <th mat-header-cell *matHeaderCellDef class="col-bill"> Bill No </th>
+        <td mat-cell *matCellDef="let row"> {{ row.billNumber || row.transactionNo || '—' }} </td>
+      </ng-container>
+
+      <!-- Credit Column -->
+      <ng-container matColumnDef="credit">
+        <th mat-header-cell *matHeaderCellDef class="col-credit"> Credit </th>
+        <td mat-cell *matCellDef="let row" class="text-success">
+          {{ row.credit > 0 ? '₹' + (row.credit | number:'1.2-2') : '—' }}
+        </td>
+      </ng-container>
+
+      <!-- Debit Column -->
+      <ng-container matColumnDef="debit">
+        <th mat-header-cell *matHeaderCellDef class="col-debit"> Debit </th>
+        <td mat-cell *matCellDef="let row" class="text-danger">
+          {{ row.debit > 0 ? '₹' + (row.debit | number:'1.2-2') : '—' }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell no-records" colspan="5">No transaction records found for the selected filters</td>
+      </tr>
+    </table>
+  </div>
+  }
+</div>

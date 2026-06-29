@@ -1,0 +1,60 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payment-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+
+  .mode-card {
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    background: #ffffff;
+
+    .mode-icon {
+      width: 15px;
+      height: 15px;
+      color: #4B5563;
+      display: flex;
+      align-items: center;
+    }
+
+    .mode-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #4B5563;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    &:hover {
+      border-color: #9CA3AF;
+      background: #F9FAFB;
+    }
+
+    &.active {
+      border-color: #2563EB;
+      background: #EFF6FF;
+      border-width: 1.5px;
+
+      .mode-icon {
+        color: #2563EB;
+      }
+
+      .mode-label {
+        color: #2563EB;
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+.history-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: #6B7280;
+
+  .spinner {
+    width: 28px;
+    height: 28px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 8px;
+    color: #2563EB;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
