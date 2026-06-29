@@ -3,6 +3,7 @@ const { app, BrowserWindow, ipcMain, Menu, session, screen, dialog } = require('
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
+const { autoUpdater } = require('electron-updater');
 
 let win;
 let defaultPrinterName = null;
@@ -159,6 +160,7 @@ app.whenReady().then(async () => {
   try {
     await startLocalServer();
     createWindow();
+    autoUpdater.checkForUpdatesAndNotify();
   } catch (err) {
     console.error('Failed to start local server:', err);
     app.quit();
