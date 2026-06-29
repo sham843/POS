@@ -136,12 +136,17 @@ export class CustomerLedger implements OnInit, OnChanges {
       }).filter(c => c.id > 0);
       this.cashLedgersList.set(mappedCash);
 
-      // Combine cash and bank accounts for filter
-      const combined = [
-        ...mappedCash.map(c => ({ id: c.id, name: c.displayName, type: 'Cash' })),
-        ...mappedBanks.map(b => ({ id: b.id, name: b.displayName, type: 'Bank' }))
-      ];
-      this.combinedBankCashList.set(combined);
+      // Combine cash and bank accounts for filter and deduplicate by ID
+      const combinedMap = new Map<number, any>();
+      mappedCash.forEach(c => {
+        if (c.id > 0) combinedMap.set(c.id, { id: c.id, name: c.displayName, type: 'Cash' });
+      });
+      mappedBanks.forEach(b => {
+        if (b.id > 0 && !combinedMap.has(b.id)) {
+          combinedMap.set(b.id, { id: b.id, name: b.displayName, type: 'Bank' });
+        }
+      });
+      this.combinedBankCashList.set(Array.from(combinedMap.values()));
 
       this.counterInvoiceService.getPaymentList()
         .pipe(takeUntilDestroyed(this.destroyRef))

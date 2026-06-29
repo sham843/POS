@@ -1,7 +1,7 @@
 <div class="history-container">
   <!-- FILTER FORM -->
   <form [formGroup]="filterForm" class="filter-card" (ngSubmit)="searchHistory()">
-    
+
     <!-- Row 1: Dropdowns Grid -->
     <div class="filter-row-top">
       <div class="filter-field">
@@ -16,8 +16,8 @@
 
       <div class="filter-field">
         <mat-form-field appearance="outline" class="no-subscript">
-          <mat-select formControlName="bankLedgerId" placeholder="All Bank / Cash Accounts">
-            <mat-option [value]="null">All Bank / Cash Accounts</mat-option>
+          <mat-select formControlName="bankLedgerId" placeholder="All Bank">
+            <mat-option [value]="null">All Bank </mat-option>
             @for (ledger of combinedBankCashList; track trackById($index, ledger)) {
             <mat-option [value]="ledger.id">{{ ledger.name }}</mat-option>
             }
@@ -30,8 +30,8 @@
     <div class="filter-row-bottom">
       <div class="date-input-wrap">
         <mat-form-field appearance="outline" class="no-subscript">
-          <input matInput [matDatepicker]="fdPicker" [max]="maxDate" formControlName="fromDate" readonly (click)="fdPicker.open()"
-            placeholder="From Date">
+          <input matInput [matDatepicker]="fdPicker" [max]="maxDate" formControlName="fromDate" readonly
+            (click)="fdPicker.open()" placeholder="From Date">
           <mat-datepicker-toggle matSuffix [for]="fdPicker"></mat-datepicker-toggle>
           <mat-datepicker #fdPicker></mat-datepicker>
         </mat-form-field>
@@ -39,8 +39,8 @@
 
       <div class="date-input-wrap">
         <mat-form-field appearance="outline" class="no-subscript">
-          <input matInput [matDatepicker]="tdFilterPicker" [min]="filterForm.get('fromDate')?.value" [max]="maxDate" formControlName="toDate" readonly
-            (click)="tdFilterPicker.open()" placeholder="To Date">
+          <input matInput [matDatepicker]="tdFilterPicker" [min]="filterForm.get('fromDate')?.value" [max]="maxDate"
+            formControlName="toDate" readonly (click)="tdFilterPicker.open()" placeholder="To Date">
           <mat-datepicker-toggle matSuffix [for]="tdFilterPicker"></mat-datepicker-toggle>
           <mat-datepicker #tdFilterPicker></mat-datepicker>
         </mat-form-field>
@@ -69,16 +69,13 @@
   </div>
   } @else if (filteredLedgerHistory().length === 0) {
   <div class="empty-state-wrapper">
-    <app-empty-state 
-      title="No Transaction History Found" 
-      message="No transaction records found for the selected filters." 
-      icon="inbox">
+    <app-empty-state title="No Transaction History Found"
+      message="No transaction records found for the selected filters." icon="inbox">
     </app-empty-state>
   </div>
   } @else {
   <div class="app-table-wrapper">
-    <table mat-table [dataSource]="filteredLedgerHistory()"
-      class="app-data-table ledger-mat-table">
+    <table mat-table [dataSource]="filteredLedgerHistory()" class="app-data-table ledger-mat-table">
 
       <!-- Sr Column -->
       <ng-container matColumnDef="sr">
@@ -89,7 +86,8 @@
       <!-- Date Column -->
       <ng-container matColumnDef="date">
         <th mat-header-cell *matHeaderCellDef class="col-date"> Date </th>
-        <td mat-cell *matCellDef="let row" class="col-date"> {{ (row.transactionDate || row.showDate) | date:'dd MMM yyyy, hh:mm a' }} </td>
+        <td mat-cell *matCellDef="let row" class="col-date"> {{ (row.transactionDate || row.showDate) | date:'dd MMM
+          yyyy, hh:mm a' }} </td>
       </ng-container>
 
       <!-- Bill No Column -->
