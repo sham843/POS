@@ -405,14 +405,6 @@ export class CustomerLedger implements OnInit {
     const localSessionId = localStorage.getItem('sessionId');
     const sessionId = this.sessionService.getSessionId() ? parseInt(this.sessionService.getSessionId() || '0', 10) : (localSessionId ? parseInt(localSessionId, 10) : 0);
 
-    let companyLedgerId = 0;
-    try {
-      const companyLedgers = await this.dbService.companyLedgerList.toArray();
-      if (companyLedgers && companyLedgers.length > 0) {
-        companyLedgerId = companyLedgers[0].id || 0;
-      }
-    } catch (e) { }
-
     const selectedParty = this.partiesList().find(p => Number(p.id) === Number(partyId)) || this.customer;
 
     let tDate = new Date().toISOString();
@@ -435,19 +427,15 @@ export class CustomerLedger implements OnInit {
       modeName = 'UPI';
     }
 
-    let selectedBankName = '';
-    if (formValues.paymentMode === 'cash') {
-      const found = this.cashLedgersList().find(c => Number(c.id) === Number(formValues.ledger2));
-      selectedBankName = found?.customerName || found?.displayName || found?.ledgerName || found?.name || 'Cash Account';
-    } else {
-      const found = this.bankAccountsList().find(b => Number(b.id) === Number(formValues.ledger2));
-      selectedBankName = found?.customerName || found?.displayName || found?.bankName || found?.name || 'Bank Account';
-    }
+    const targetBankId = formValues.paymentMode === 'cash' ? 1177 : Number(formValues.ledger2);
+    const foundBank = this.bankAccountsList().find(b => Number(b.id) === targetBankId);
+    const selectedBankName = foundBank?.customerName || '';
+    const bankLedgerId = Number(foundBank?.id || targetBankId || 0);
 
     const payload = {
       id: 0,
       ledger1: Number(partyId),
-      ledger2: companyLedgerId,
+      ledger2: bankLedgerId,
       bankCashLedger: Number(formValues.ledger2 || 0),
       credit: amt,
       debit: 0,
@@ -503,8 +491,7 @@ export class CustomerLedger implements OnInit {
         this.updateIndexedDbBalance(amt, Number(partyId));
 
         this.balanceAdded.emit();
-        this.activeTab.set('history');
-        this.loadLedgerHistory();
+        this.closeDrawer();
       },
       error: (err: any) => {
         console.error('Error adding balance:', err);

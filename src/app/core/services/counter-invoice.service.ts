@@ -326,7 +326,7 @@ export class CounterInvoiceService {
   }
 
   addCustomerBalance(payload: any): Observable<any> {
-    return this.apiService.post<any>('api/v1/LedgerTransaction/saveLedgerTransaction', payload);
+    return this.apiService.post<any>('api/v1/account/addledger', payload);
   }
 
   getPaymentList(): Observable<any> {
