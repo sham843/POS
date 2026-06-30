@@ -34,6 +34,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   showProfileMenu = signal(false);
   userDetails = signal<any>(null);
   appVersion = signal<string>('');
+  updateAvailableVersion = signal<string>('');
+  updateDownloaded = signal<boolean>(false);
   private timerInterval: any;
 
   ngOnInit() {
@@ -47,6 +49,22 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       });
     } else {
       this.appVersion.set(packageInfo.version);
+    }
+
+    if (electronAPI) {
+      if (typeof electronAPI.onUpdateAvailable === 'function') {
+        electronAPI.onUpdateAvailable((version: string) => {
+          console.log('Update available:', version);
+          this.updateAvailableVersion.set(version);
+        });
+      }
+      if (typeof electronAPI.onUpdateDownloaded === 'function') {
+        electronAPI.onUpdateDownloaded((version: string) => {
+          console.log('Update downloaded and ready to install:', version);
+          this.updateAvailableVersion.set(version);
+          this.updateDownloaded.set(true);
+        });
+      }
     }
 
     if (this.swUpdate.isEnabled) {
@@ -105,5 +123,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   endSession() {
     this.showProfileMenu.set(false);
     this.router.navigate(['/session-end']);
+  }
+
+  installUpdate() {
+    const electronAPI = (window as any).electron;
+    if (electronAPI && typeof electronAPI.installUpdate === 'function') {
+      if (confirm('App will restart to install the new update. Do you want to proceed?')) {
+        electronAPI.installUpdate();
+      }
+    }
   }
 }

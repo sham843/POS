@@ -9,7 +9,14 @@
         <div class="brand-name">
           Dairy Shop POS
           @if (appVersion()) {
-          <span class="version-badge">v{{ appVersion() }}</span>
+          <span class="version-badge" [class.update-available]="updateAvailableVersion()"
+            (click)="updateAvailableVersion() ? installUpdate() : null"
+            [title]="updateAvailableVersion() ? 'New update v' + updateAvailableVersion() + ' ready! Click to install.' : ''">
+            v{{ appVersion() }}
+            @if (updateAvailableVersion()) {
+            <span class="update-indicator"></span>
+            }
+          </span>
           }
         </div>
         @if (userDetails()?.organizationName) {

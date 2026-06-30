@@ -172,6 +172,24 @@ ipcMain.handle('get-app-version', () => {
   return app.getVersion();
 });
 
+// Auto-updater Events
+autoUpdater.on('update-available', (info) => {
+  if (win && win.webContents) {
+    win.webContents.send('update-available', info.version);
+  }
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  if (win && win.webContents) {
+    win.webContents.send('update-downloaded', info.version);
+  }
+});
+
+// IPC: Install Update
+ipcMain.handle('install-update', () => {
+  autoUpdater.quitAndInstall();
+});
+
 // IPC: Get Printers
 ipcMain.on('get-printers', async (event) => {
   try {

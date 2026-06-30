@@ -41,6 +41,8 @@ export class Login implements OnInit {
   hidePassword = true;
   errorMessage = signal('');
   appVersion = signal<string>('');
+  updateAvailableVersion = signal<string>('');
+  updateDownloaded = signal<boolean>(false);
 
   publickey: string = '';
 
@@ -81,6 +83,20 @@ export class Login implements OnInit {
       });
     } else {
       this.appVersion.set(packageInfo.version);
+    }
+
+    if (electronAPI) {
+      if (typeof electronAPI.onUpdateAvailable === 'function') {
+        electronAPI.onUpdateAvailable((version: string) => {
+          this.updateAvailableVersion.set(version);
+        });
+      }
+      if (typeof electronAPI.onUpdateDownloaded === 'function') {
+        electronAPI.onUpdateDownloaded((version: string) => {
+          this.updateAvailableVersion.set(version);
+          this.updateDownloaded.set(true);
+        });
+      }
     }
 
     //this.loaderService.show(); // Start loader for key generation
@@ -141,6 +157,15 @@ export class Login implements OnInit {
       }
     } else {
       this.loginForm.markAllAsTouched();
+    }
+  }
+
+  installUpdate() {
+    const electronAPI = (window as any).electron;
+    if (electronAPI && typeof electronAPI.installUpdate === 'function') {
+      if (confirm('App will restart to install the new update. Do you want to proceed?')) {
+        electronAPI.installUpdate();
+      }
     }
   }
 }

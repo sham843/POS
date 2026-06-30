@@ -30,6 +30,8 @@ export class SessionStart {
   userDetails = signal<any>(null);
   currentDate = signal<Date>(new Date());
   appVersion = signal<string>('');
+  updateAvailableVersion = signal<string>('');
+  updateDownloaded = signal<boolean>(false);
 
   // Expose icons to the template
   readonly LogOut = LogOut;
@@ -53,6 +55,20 @@ export class SessionStart {
       });
     } else {
       this.appVersion.set(packageInfo.version);
+    }
+
+    if (electronAPI) {
+      if (typeof electronAPI.onUpdateAvailable === 'function') {
+        electronAPI.onUpdateAvailable((version: string) => {
+          this.updateAvailableVersion.set(version);
+        });
+      }
+      if (typeof electronAPI.onUpdateDownloaded === 'function') {
+        electronAPI.onUpdateDownloaded((version: string) => {
+          this.updateAvailableVersion.set(version);
+          this.updateDownloaded.set(true);
+        });
+      }
     }
 
     const userStr = localStorage.getItem('UserDetails');
@@ -109,6 +125,15 @@ export class SessionStart {
     localStorage.removeItem('UserDetails');
     localStorage.removeItem('tk_9xf1BzX');
     this.router.navigate(['/login']);
+  }
+
+  installUpdate() {
+    const electronAPI = (window as any).electron;
+    if (electronAPI && typeof electronAPI.installUpdate === 'function') {
+      if (confirm('App will restart to install the new update. Do you want to proceed?')) {
+        electronAPI.installUpdate();
+      }
+    }
   }
 }
 
