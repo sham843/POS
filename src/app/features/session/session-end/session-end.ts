@@ -3,7 +3,7 @@ import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@a
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { LucideAngularModule, Store, ReceiptText, Banknote, ScanBarcode, CreditCard, ArrowLeft, LogOut, Wifi, WifiOff, Calendar, Clock, Receipt, Ticket, Globe, Calculator, Bot, Phone, Printer, Wallet, X, CheckCircle } from 'lucide-angular';
+import { LucideAngularModule, Store, ReceiptText, Banknote, ScanBarcode, CreditCard, ArrowLeft, LogOut, Wifi, WifiOff, Calendar, Clock, Receipt, Ticket, Globe, Calculator, Bot, Phone, Printer, Wallet, X, CheckCircle, RefreshCw } from 'lucide-angular';
 import { MatDividerModule } from '@angular/material/divider';
 import { TranslatePipe } from '@ngx-translate/core';
 import { HealthService } from '../../../core/services/health.service';
@@ -12,11 +12,12 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
 import { SessionService } from '../../../core/services/session.service';
 import { DbService } from '../../../core/services/db.service';
+import { UpdateConfirmModalComponent } from '../../../shared/components/update-confirm-modal/update-confirm-modal';
 import packageInfo from '../../../../../package.json';
 
 @Component({
   selector: 'app-session-end',
-  imports: [CommonModule, MatCardModule, MatButtonModule, LucideAngularModule, MatDividerModule, NetworkStatusComponent, TranslatePipe, FormsModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, LucideAngularModule, MatDividerModule, NetworkStatusComponent, TranslatePipe, FormsModule, UpdateConfirmModalComponent],
   standalone: true,
   templateUrl: './session-end.html',
   styleUrl: './session-end.scss',
@@ -57,6 +58,10 @@ export class SessionEnd {
   updateAvailableVersion = signal<string>('');
   updateDownloaded = signal<boolean>(false);
   isCheckingForUpdate = signal<boolean>(false);
+  showUpdateConfirmModal = signal<boolean>(false);
+
+  // Expose RefreshCw icon
+  readonly RefreshCw = RefreshCw;
 
   sessionData = signal<any>({
     userName: '',
@@ -277,11 +282,18 @@ export class SessionEnd {
   }
 
   installUpdate() {
+    this.showUpdateConfirmModal.set(true);
+  }
+
+  cancelUpdateInstall() {
+    this.showUpdateConfirmModal.set(false);
+  }
+
+  confirmUpdateInstall() {
+    this.showUpdateConfirmModal.set(false);
     const electronAPI = (window as any).electron;
     if (electronAPI && typeof electronAPI.installUpdate === 'function') {
-      if (confirm('App will restart to install the new update. Do you want to proceed?')) {
-        electronAPI.installUpdate();
-      }
+      electronAPI.installUpdate();
     }
   }
 }

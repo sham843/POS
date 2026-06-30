@@ -1,20 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { LucideAngularModule, LogOut, Phone, Wallet, Receipt, Banknote, Calendar, Clock, Wifi, WifiOff } from 'lucide-angular';
+import { LucideAngularModule, LogOut, Phone, Wallet, Receipt, Banknote, Calendar, Clock, Wifi, WifiOff, RefreshCw } from 'lucide-angular';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MasterDataService } from '../../../core/services/master-data.service';
 import { HealthService } from '../../../core/services/health.service';
 import { ApiService } from '../../../core/services/api.service';
 import { NetworkStatusComponent } from '../../../shared/components/network-status/network-status';
+import { UpdateConfirmModalComponent } from '../../../shared/components/update-confirm-modal/update-confirm-modal';
 import packageInfo from '../../../../../package.json';
 
 import { SessionService } from '../../../core/services/session.service';
 
 @Component({
   selector: 'app-session-start',
-  imports: [CommonModule, MatButtonModule, LucideAngularModule, TranslatePipe, NetworkStatusComponent],
+  imports: [CommonModule, MatButtonModule, LucideAngularModule, TranslatePipe, NetworkStatusComponent, UpdateConfirmModalComponent],
   standalone: true,
   templateUrl: './session-start.html',
   styleUrl: './session-start.scss',
@@ -35,10 +36,12 @@ export class SessionStart {
   isCheckingForUpdate = signal<boolean>(false);
   isMasterDataLoading = signal<boolean>(true);
   isStartingSession = signal<boolean>(false);
+  showUpdateConfirmModal = signal<boolean>(false);
 
   // Expose icons to the template
   readonly LogOut = LogOut;
   readonly Phone = Phone;
+  readonly RefreshCw = RefreshCw;
   readonly Wallet = Wallet;
   readonly Receipt = Receipt;
   readonly Banknote = Banknote;
@@ -159,11 +162,18 @@ export class SessionStart {
   }
 
   installUpdate() {
+    this.showUpdateConfirmModal.set(true);
+  }
+
+  cancelUpdateInstall() {
+    this.showUpdateConfirmModal.set(false);
+  }
+
+  confirmUpdateInstall() {
+    this.showUpdateConfirmModal.set(false);
     const electronAPI = (window as any).electron;
     if (electronAPI && typeof electronAPI.installUpdate === 'function') {
-      if (confirm('App will restart to install the new update. Do you want to proceed?')) {
-        electronAPI.installUpdate();
-      }
+      electronAPI.installUpdate();
     }
   }
 }

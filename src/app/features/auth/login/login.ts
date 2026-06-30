@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { LucideAngularModule, Eye, EyeOff, Wifi, WifiOff } from 'lucide-angular';
+import { LucideAngularModule, Eye, EyeOff, Wifi, WifiOff, RefreshCw } from 'lucide-angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -15,6 +15,7 @@ import { RsaService } from '../../../core/services/rsa.service';
 import { LoaderService } from '../../../core/services/loader.service';
 import { HealthService } from '../../../core/services/health.service';
 import { NetworkStatusComponent } from '../../../shared/components/network-status/network-status';
+import { UpdateConfirmModalComponent } from '../../../shared/components/update-confirm-modal/update-confirm-modal';
 import packageInfo from '../../../../../package.json';
 
 @Component({
@@ -29,7 +30,8 @@ import packageInfo from '../../../../../package.json';
     MatCheckboxModule,
     LucideAngularModule,
     TranslatePipe,
-    NetworkStatusComponent
+    NetworkStatusComponent,
+    UpdateConfirmModalComponent
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -44,6 +46,7 @@ export class Login implements OnInit {
   updateAvailableVersion = signal<string>('');
   updateDownloaded = signal<boolean>(false);
   isCheckingForUpdate = signal<boolean>(false);
+  showUpdateConfirmModal = signal<boolean>(false);
 
   publickey: string = '';
 
@@ -52,6 +55,7 @@ export class Login implements OnInit {
   readonly EyeOff = EyeOff;
   readonly Wifi = Wifi;
   readonly WifiOff = WifiOff;
+  readonly RefreshCw = RefreshCw;
 
   public healthService = inject(HealthService);
 
@@ -182,11 +186,18 @@ export class Login implements OnInit {
   }
 
   installUpdate() {
+    this.showUpdateConfirmModal.set(true);
+  }
+
+  cancelUpdateInstall() {
+    this.showUpdateConfirmModal.set(false);
+  }
+
+  confirmUpdateInstall() {
+    this.showUpdateConfirmModal.set(false);
     const electronAPI = (window as any).electron;
     if (electronAPI && typeof electronAPI.installUpdate === 'function') {
-      if (confirm('App will restart to install the new update. Do you want to proceed?')) {
-        electronAPI.installUpdate();
-      }
+      electronAPI.installUpdate();
     }
   }
 }

@@ -76,4 +76,12 @@
       }
     </div>
   </div>
+
+  <!-- CUSTOM UPDATE CONFIRM MODAL -->
+  <app-update-confirm-modal
+    [show]="showUpdateConfirmModal()"
+    [version]="updateAvailableVersion()"
+    (confirm)="confirmUpdateInstall()"
+    (cancel)="cancelUpdateInstall()">
+  </app-update-confirm-modal>
 </div>

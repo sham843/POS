@@ -1,17 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy, inject, ElementRef, HostListener } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
-import { LucideAngularModule, Droplets, PieChart, Monitor, LineChart, Settings, Sun, LogOut, Calendar } from 'lucide-angular';
+import { LucideAngularModule, Droplets, PieChart, Monitor, LineChart, Settings, Sun, LogOut, Calendar, RefreshCw } from 'lucide-angular';
 import { HealthService } from '../core/services/health.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
 import { NetworkStatusComponent } from '../shared/components/network-status/network-status';
+import { UpdateConfirmModalComponent } from '../shared/components/update-confirm-modal/update-confirm-modal';
 import packageInfo from '../../../package.json';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, RouterModule, NetworkStatusComponent],
+  imports: [CommonModule, LucideAngularModule, RouterModule, NetworkStatusComponent, UpdateConfirmModalComponent],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -23,6 +24,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   readonly Monitor = Monitor;
   readonly LineChart = LineChart;
   readonly Settings = Settings;
+  readonly RefreshCw = RefreshCw;
   readonly Sun = Sun;
   readonly LogOut = LogOut;
   readonly Calendar = Calendar;
@@ -37,6 +39,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   updateAvailableVersion = signal<string>('');
   updateDownloaded = signal<boolean>(false);
   isCheckingForUpdate = signal<boolean>(false);
+  showUpdateConfirmModal = signal<boolean>(false);
   private timerInterval: any;
 
   ngOnInit() {
@@ -147,11 +150,18 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
   installUpdate() {
+    this.showUpdateConfirmModal.set(true);
+  }
+
+  cancelUpdateInstall() {
+    this.showUpdateConfirmModal.set(false);
+  }
+
+  confirmUpdateInstall() {
+    this.showUpdateConfirmModal.set(false);
     const electronAPI = (window as any).electron;
     if (electronAPI && typeof electronAPI.installUpdate === 'function') {
-      if (confirm('App will restart to install the new update. Do you want to proceed?')) {
-        electronAPI.installUpdate();
-      }
+      electronAPI.installUpdate();
     }
   }
 }
