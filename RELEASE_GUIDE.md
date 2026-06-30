@@ -34,3 +34,17 @@ Once the build and upload process completes successfully (takes about 2-3 minute
 ---
 
 💡 **Note:** Once the release is published, existing users will automatically receive a notification to update their app when they launch it, and the app will auto-update itself!
+
+---
+
+### ⚠️ Troubleshooting: GitHub Token Expired (401 Unauthorized)
+If running `npm run release` fails with `HttpError: 401 Unauthorized` or `Bad credentials`, it means the GitHub token in [package.json](package.json) has expired or is invalid.
+
+**How to generate a new token and update it:**
+1. Go to your GitHub account ➡️ **Settings** ➡️ **Developer settings** ➡️ **Personal access tokens** ➡️ **Tokens (classic)**.
+2. Click **Generate new token (classic)**.
+3. Set a Note (e.g., `POS Release Token`), select the **`repo`** scope checkbox (required to upload releases), and generate the token.
+4. Copy the generated token (it starts with `ghp_...`).
+5. Open [package.json](package.json), look for `"release"` inside `"scripts"`, and replace the old token inside `$env:GH_TOKEN='ghp_...'` with your new token.
+6. Save the file and run `npm run release` again.
+
