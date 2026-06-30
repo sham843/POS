@@ -32,6 +32,7 @@ export class SessionStart {
   appVersion = signal<string>('');
   updateAvailableVersion = signal<string>('');
   updateDownloaded = signal<boolean>(false);
+  isCheckingForUpdate = signal<boolean>(false);
 
   // Expose icons to the template
   readonly LogOut = LogOut;
@@ -67,6 +68,14 @@ export class SessionStart {
         electronAPI.onUpdateDownloaded((version: string) => {
           this.updateAvailableVersion.set(version);
           this.updateDownloaded.set(true);
+        });
+      }
+      if (typeof electronAPI.onNoUpdate === 'function') {
+        electronAPI.onNoUpdate(() => {
+          if (this.isCheckingForUpdate()) {
+            this.isCheckingForUpdate.set(false);
+            alert('Your application is up to date!');
+          }
         });
       }
     }
@@ -125,6 +134,18 @@ export class SessionStart {
     localStorage.removeItem('UserDetails');
     localStorage.removeItem('tk_9xf1BzX');
     this.router.navigate(['/login']);
+  }
+
+  onVersionBadgeClick() {
+    if (this.updateAvailableVersion()) {
+      this.installUpdate();
+    } else {
+      const electronAPI = (window as any).electron;
+      if (electronAPI && typeof electronAPI.checkForUpdate === 'function') {
+        this.isCheckingForUpdate.set(true);
+        electronAPI.checkForUpdate();
+      }
+    }
   }
 
   installUpdate() {

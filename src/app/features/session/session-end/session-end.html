@@ -11,7 +11,7 @@
         <h5 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2" style="letter-spacing: 0.3px; font-size: 1.15rem;">
           Session End & Cash Report
           @if (appVersion()) {
-          <span class="version-badge" [class.update-available]="updateAvailableVersion()" (click)="updateAvailableVersion() ? installUpdate() : null" [title]="updateAvailableVersion() ? 'New update v' + updateAvailableVersion() + ' ready! Click to install.' : ''">
+          <span class="version-badge" [class.update-available]="updateAvailableVersion()" (click)="onVersionBadgeClick()" [title]="updateAvailableVersion() ? 'New update v' + updateAvailableVersion() + ' ready! Click to install.' : 'Click to check for updates'">
             v{{ appVersion() }}
             @if (updateAvailableVersion()) {
             <span class="update-indicator"></span>

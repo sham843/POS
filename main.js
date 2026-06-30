@@ -161,6 +161,11 @@ app.whenReady().then(async () => {
     await startLocalServer();
     createWindow();
     autoUpdater.checkForUpdatesAndNotify();
+
+    // Check for updates every 2 hours (2 * 60 * 60 * 1000)
+    setInterval(() => {
+      autoUpdater.checkForUpdatesAndNotify();
+    }, 2 * 60 * 60 * 1000);
   } catch (err) {
     console.error('Failed to start local server:', err);
     app.quit();
@@ -179,10 +184,21 @@ autoUpdater.on('update-available', (info) => {
   }
 });
 
+autoUpdater.on('update-not-available', () => {
+  if (win && win.webContents) {
+    win.webContents.send('no_update_available');
+  }
+});
+
 autoUpdater.on('update-downloaded', (info) => {
   if (win && win.webContents) {
     win.webContents.send('update-downloaded', info.version);
   }
+});
+
+// IPC: Check for updates manually
+ipcMain.on('check_for_update', () => {
+  autoUpdater.checkForUpdatesAndNotify();
 });
 
 // IPC: Install Update
