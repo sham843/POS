@@ -6,7 +6,12 @@
         <lucide-icon [img]="Droplets"></lucide-icon>
       </div>
       <div class="brand-name-wrapper">
-        <div class="brand-name">Dairy Shop POS</div>
+        <div class="brand-name">
+          Dairy Shop POS
+          @if (appVersion()) {
+          <span class="version-badge">v{{ appVersion() }}</span>
+          }
+        </div>
         @if (userDetails()?.organizationName) {
         <div class="org-name-sub">{{ userDetails()?.organizationName }}</div>
         }

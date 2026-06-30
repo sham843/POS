@@ -15,6 +15,7 @@ import { RsaService } from '../../../core/services/rsa.service';
 import { LoaderService } from '../../../core/services/loader.service';
 import { HealthService } from '../../../core/services/health.service';
 import { NetworkStatusComponent } from '../../../shared/components/network-status/network-status';
+import packageInfo from '../../../../../package.json';
 
 @Component({
   selector: 'app-login',
@@ -39,6 +40,7 @@ export class Login implements OnInit {
   appearance: any = 'outline';
   hidePassword = true;
   errorMessage = signal('');
+  appVersion = signal<string>('');
 
   publickey: string = '';
 
@@ -69,6 +71,18 @@ export class Login implements OnInit {
   }
 
   async ngOnInit() {
+    const electronAPI = (window as any).electron;
+    if (electronAPI && typeof electronAPI.getAppVersion === 'function') {
+      electronAPI.getAppVersion().then((version: string) => {
+        this.appVersion.set(version);
+      }).catch((err: any) => {
+        console.error('Failed to get app version:', err);
+        this.appVersion.set(packageInfo.version);
+      });
+    } else {
+      this.appVersion.set(packageInfo.version);
+    }
+
     //this.loaderService.show(); // Start loader for key generation
     try {
       await this.crypto.generateSessionKey();

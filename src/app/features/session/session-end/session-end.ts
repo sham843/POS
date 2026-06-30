@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
 import { SessionService } from '../../../core/services/session.service';
 import { DbService } from '../../../core/services/db.service';
+import packageInfo from '../../../../../package.json';
 
 @Component({
   selector: 'app-session-end',
@@ -52,6 +53,7 @@ export class SessionEnd {
   readonly CheckCircle = CheckCircle;
 
   userDetails = signal<any>(null);
+  appVersion = signal<string>('');
 
   sessionData = signal<any>({
     userName: '',
@@ -78,6 +80,18 @@ export class SessionEnd {
   });
 
   ngOnInit() {
+    const electronAPI = (window as any).electron;
+    if (electronAPI && typeof electronAPI.getAppVersion === 'function') {
+      electronAPI.getAppVersion().then((version: string) => {
+        this.appVersion.set(version);
+      }).catch((err: any) => {
+        console.error('Failed to get app version:', err);
+        this.appVersion.set(packageInfo.version);
+      });
+    } else {
+      this.appVersion.set(packageInfo.version);
+    }
+
     const userStr = localStorage.getItem('UserDetails');
     let userId = 0;
     if (userStr) {

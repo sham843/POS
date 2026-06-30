@@ -167,6 +167,11 @@ app.whenReady().then(async () => {
   }
 });
 
+// IPC: Get App Version
+ipcMain.handle('get-app-version', () => {
+  return app.getVersion();
+});
+
 // IPC: Get Printers
 ipcMain.on('get-printers', async (event) => {
   try {

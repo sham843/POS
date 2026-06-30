@@ -63,6 +63,11 @@
           {{ 'LOGIN.SIGN_IN' | translate }}
         </button>
       </form>
+      @if (appVersion()) {
+      <div class="text-center mt-3 app-version-container">
+        <span class="app-version-text">v{{ appVersion() }}</span>
+      </div>
+      }
     </div>
   </div>
 </div>

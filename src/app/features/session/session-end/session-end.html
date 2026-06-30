@@ -8,7 +8,11 @@
         <lucide-icon [img]="Calculator" [size]="20"></lucide-icon>
       </div>
       <div>
-        <h5 class="mb-0 fw-bold text-dark" style="letter-spacing: 0.3px; font-size: 1.15rem;">Session End & Cash Report
+        <h5 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2" style="letter-spacing: 0.3px; font-size: 1.15rem;">
+          Session End & Cash Report
+          @if (appVersion()) {
+          <span class="version-badge">v{{ appVersion() }}</span>
+          }
         </h5>
         <span class="text-secondary" style="font-size: 0.75rem;">Verify today's collections and close the session</span>
       </div>

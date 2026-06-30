@@ -19,5 +19,6 @@ contextBridge.exposeInMainWorld('electron', {
   checkForUpdate: () => ipcRenderer.send("check_for_update"),
   onNoUpdate: (callback) => ipcRenderer.on("no_update_available", (event, data) => callback(data)),
   onDownloadComplete: (callback) => ipcRenderer.on('download-complete', callback),
-  generatePDF: (htmlContent) => ipcRenderer.invoke('generate-pdf', htmlContent)
+  generatePDF: (htmlContent) => ipcRenderer.invoke('generate-pdf', htmlContent),
+  getAppVersion: () => ipcRenderer.invoke('get-app-version')
 });

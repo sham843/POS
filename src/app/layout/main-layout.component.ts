@@ -6,6 +6,7 @@ import { HealthService } from '../core/services/health.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
 import { NetworkStatusComponent } from '../shared/components/network-status/network-status';
+import packageInfo from '../../../package.json';
 
 @Component({
   selector: 'app-main-layout',
@@ -32,9 +33,22 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   currentTime = signal(new Date());
   showProfileMenu = signal(false);
   userDetails = signal<any>(null);
+  appVersion = signal<string>('');
   private timerInterval: any;
 
   ngOnInit() {
+    const electronAPI = (window as any).electron;
+    if (electronAPI && typeof electronAPI.getAppVersion === 'function') {
+      electronAPI.getAppVersion().then((version: string) => {
+        this.appVersion.set(version);
+      }).catch((err: any) => {
+        console.error('Failed to get app version:', err);
+        this.appVersion.set(packageInfo.version);
+      });
+    } else {
+      this.appVersion.set(packageInfo.version);
+    }
+
     if (this.swUpdate.isEnabled) {
       this.swUpdate.versionUpdates
         .pipe(filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'))
