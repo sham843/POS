@@ -165,7 +165,7 @@ app.whenReady().then(async () => {
     // Check for updates every 2 hours (2 * 60 * 60 * 1000)
     setInterval(() => {
       autoUpdater.checkForUpdatesAndNotify();
-    }, 2 * 60 * 60 * 1000);
+    }, 2 * 60 * 1000);
   } catch (err) {
     console.error('Failed to start local server:', err);
     app.quit();
@@ -236,10 +236,11 @@ ipcMain.on('print-data', (event, printOptions) => {
     <head>
     <style>
       body {
-        width: 80mm;
+        width: 48mm;
         font-family: 'Courier New', monospace;
-        font-size: 13px;
-        margin: 10px;
+        font-size: 9px;
+        margin: 0;
+        padding: 0;
         color: #000;
         font-weight: 600;
         -webkit-print-color-adjust: exact;
@@ -248,12 +249,15 @@ ipcMain.on('print-data', (event, printOptions) => {
       .header, .footer {
         text-align: center;
       }
-      .header h1, .header h4 {
-        margin: 3px 0;
+      .header h4 {
+        margin: 2px 0;
+        font-size: 11px;
         font-weight: 700;
       }
-      .header h4 {
-        font-size: 11px;
+      .header div {
+        font-size: 8px;
+        line-height: 1.2;
+        margin-bottom: 1px;
       }
       table {
         width: 100%;
@@ -262,37 +266,56 @@ ipcMain.on('print-data', (event, printOptions) => {
         border-collapse: collapse;
       }
       th {
-        text-align: left;
-        background-color: #f4f4f4;
-        padding: 5px;
-        border-bottom: 1px solid #ddd;
+        font-size: 9px;
         font-weight: 800;
+        padding: 3px 1px;
+        border-bottom: 1px dashed #000;
       }
       td {
-        padding: 3px;
-        font-size: 12px;
-        text-align: center;
+        padding: 3px 1px;
+        font-size: 8px;
         font-weight: 700;
+        vertical-align: top;
       }
-      td.item-name {
+      .col-item {
         text-align: left;
-        font-weight: 600;
+      }
+      .col-qty {
+        text-align: center;
+      }
+      .col-rate {
+        text-align: right;
+      }
+      .col-amt {
+        text-align: right;
       }
       .summary {
         margin-top: 5px;
         border-top: 1px dashed #000;
-        padding-top: 5px;
+        padding-top: 3px;
       }
       .summary div {
         display: flex;
         justify-content: space-between;
-        margin: 2px 0;
+        margin: 1px 0;
+        font-size: 8px;
         font-weight: 700;
       }
+      .summary .total-payable {
+        font-size: 10px;
+        border-top: 1px dashed #000;
+        padding-top: 2px;
+        margin-top: 2px;
+      }
       .footer {
-        margin-top: 10px;
-        font-size: 11px;
+        margin-top: 8px;
+        border-top: 1px dashed #000;
+        padding-top: 4px;
+        font-size: 8px;
         font-weight: 700;
+      }
+      .footer p {
+        margin: 0;
       }
     </style>
     </head>
@@ -308,19 +331,19 @@ ipcMain.on('print-data', (event, printOptions) => {
       <table>
         <thead>
           <tr>
-            <th>Item</th>
-            <th>Qty</th>
-            <th>Rate</th>
-            <th>Amt</th>
+            <th class="col-item">Item</th>
+            <th class="col-qty">Qty</th>
+            <th class="col-rate">Rate</th>
+            <th class="col-amt">Amt</th>
           </tr>
         </thead>
         <tbody>
           ${data.items.map(item => `
             <tr>
-              <td class="item-name">${item.name}</td>
-              <td>${item.quantity}</td>
-              <td>₹${item.rate}</td>
-              <td>₹${item.price}</td>
+              <td class="col-item">${item.name}</td>
+              <td class="col-qty">${item.quantity}</td>
+              <td class="col-rate">₹${item.rate}</td>
+              <td class="col-amt">₹${item.price}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -333,7 +356,7 @@ ipcMain.on('print-data', (event, printOptions) => {
         <div><span>IGST:</span><span>₹${data.totals.igst}</span></div>
         <div><span>Bill Amount:</span><span>₹${data.totals.billAmount}</span></div>
         <div><span>Round Off:</span><span>₹${data.totals.roundOff}</span></div>
-        <div><strong>Total Payable:</strong><strong>₹${data.totals.totalPayable}</strong></div>
+        <div class="total-payable"><strong>Total Payable:</strong><strong>₹${data.totals.totalPayable}</strong></div>
       </div>
       <div class="footer">
         <p>*** Thank You! Visit Again ***</p>
