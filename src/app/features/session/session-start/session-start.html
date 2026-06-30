@@ -93,9 +93,15 @@
             </div>
 
             <div class="mt-auto">
-                <button mat-flat-button color="primary" class="start-btn w-100 py-4  fs-6 rounded-pill shadow-sm"
-                    (click)="startSession()">
-                    {{ 'SESSION_SUMMARY.START_SESSION' | translate }}
+                <button mat-flat-button color="primary" class="start-btn w-100 py-4 fs-6 rounded-pill shadow-sm"
+                    (click)="startSession()" [disabled]="isMasterDataLoading() || isStartingSession()">
+                    @if (isMasterDataLoading()) {
+                        Loading Master Data...
+                    } @else if (isStartingSession()) {
+                        Starting Session...
+                    } @else {
+                        {{ 'SESSION_SUMMARY.START_SESSION' | translate }}
+                    }
                 </button>
                 @if (appVersion()) {
                 <div class="text-center mt-3">

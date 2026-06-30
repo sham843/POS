@@ -33,6 +33,8 @@ export class SessionStart {
   updateAvailableVersion = signal<string>('');
   updateDownloaded = signal<boolean>(false);
   isCheckingForUpdate = signal<boolean>(false);
+  isMasterDataLoading = signal<boolean>(true);
+  isStartingSession = signal<boolean>(false);
 
   // Expose icons to the template
   readonly LogOut = LogOut;
@@ -90,14 +92,20 @@ export class SessionStart {
     }
 
     try {
+      this.isMasterDataLoading.set(true);
       // Load master data as soon as the page opens
       await this.masterDataService.loadAndStoreMasterData();
     } catch (error) {
       console.error('Failed to load master data on init', error);
+    } finally {
+      this.isMasterDataLoading.set(false);
     }
   }
 
   startSession() {
+    if (this.isMasterDataLoading() || this.isStartingSession()) return;
+    this.isStartingSession.set(true);
+
     const user = this.userDetails();
     const params = {
       request: {
@@ -115,11 +123,13 @@ export class SessionStart {
           this.router.navigate(['/counter-sale']);
         } else {
           // alert('Failed to get session ID from server.');
+          this.isStartingSession.set(false);
         }
       },
       error: (err) => {
         console.error('Error starting session', err);
         // alert('Error starting session. Check console for details.');
+        this.isStartingSession.set(false);
       }
     });
   }
