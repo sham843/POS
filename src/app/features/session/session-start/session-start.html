@@ -97,6 +97,11 @@
                     (click)="startSession()">
                     {{ 'SESSION_SUMMARY.START_SESSION' | translate }}
                 </button>
+                @if (appVersion()) {
+                <div class="text-center mt-3">
+                    <span class="version-badge">v{{ appVersion() }}</span>
+                </div>
+                }
             </div>
 
         </div>

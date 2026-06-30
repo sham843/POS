@@ -1,12 +1,5 @@
 <div class="login-container">
   <div class="login-wrapper shadow-lg position-relative">
-    <!-- Version Badge -->
-    @if (appVersion()) {
-    <div class="position-absolute top-0 start-0 m-3 z-3">
-      <span class="version-badge">v{{ appVersion() }}</span>
-    </div>
-    }
-
     <!-- Online/Offline Indicator -->
     <div class="position-absolute top-0 end-0 m-3 z-3">
       <app-network-status cssClass="shadow-sm bg-white"></app-network-status>
@@ -21,7 +14,7 @@
 
     <!-- Right side Form Section -->
     <div class="login-form-section p-4 p-md-5">
-      <div class="form-header mb-4">
+      <div class="form-header mb-3">
         <h2 class="fw-bold mb-1">{{ 'LOGIN.WELCOME_BACK' | translate }}</h2>
         <p style="color: var(--text-secondary)">{{ 'LOGIN.ENTER_DETAILS' | translate }}</p>
       </div>
@@ -70,6 +63,11 @@
           {{ 'LOGIN.SIGN_IN' | translate }}
         </button>
       </form>
+      @if (appVersion()) {
+      <div class="text-center mt-3">
+        <span class="version-badge">v{{ appVersion() }}</span>
+      </div>
+      }
     </div>
   </div>
 </div>

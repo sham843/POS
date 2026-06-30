@@ -8,6 +8,7 @@ import { MasterDataService } from '../../../core/services/master-data.service';
 import { HealthService } from '../../../core/services/health.service';
 import { ApiService } from '../../../core/services/api.service';
 import { NetworkStatusComponent } from '../../../shared/components/network-status/network-status';
+import packageInfo from '../../../../../package.json';
 
 import { SessionService } from '../../../core/services/session.service';
 
@@ -28,6 +29,7 @@ export class SessionStart {
 
   userDetails = signal<any>(null);
   currentDate = signal<Date>(new Date());
+  appVersion = signal<string>('');
 
   // Expose icons to the template
   readonly LogOut = LogOut;
@@ -41,6 +43,18 @@ export class SessionStart {
   readonly WifiOff = WifiOff;
 
   async ngOnInit() {
+    const electronAPI = (window as any).electron;
+    if (electronAPI && typeof electronAPI.getAppVersion === 'function') {
+      electronAPI.getAppVersion().then((version: string) => {
+        this.appVersion.set(version);
+      }).catch((err: any) => {
+        console.error('Failed to get app version:', err);
+        this.appVersion.set(packageInfo.version);
+      });
+    } else {
+      this.appVersion.set(packageInfo.version);
+    }
+
     const userStr = localStorage.getItem('UserDetails');
     if (userStr) {
       try {
