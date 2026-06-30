@@ -1,5 +1,12 @@
 <div class="login-container">
   <div class="login-wrapper shadow-lg position-relative">
+    <!-- Version Badge -->
+    @if (appVersion()) {
+    <div class="position-absolute top-0 start-0 m-3 z-3">
+      <span class="version-badge">v{{ appVersion() }}</span>
+    </div>
+    }
+
     <!-- Online/Offline Indicator -->
     <div class="position-absolute top-0 end-0 m-3 z-3">
       <app-network-status cssClass="shadow-sm bg-white"></app-network-status>
@@ -63,11 +70,6 @@
           {{ 'LOGIN.SIGN_IN' | translate }}
         </button>
       </form>
-      @if (appVersion()) {
-      <div class="text-center mt-3 app-version-container">
-        <span class="app-version-text">v{{ appVersion() }}</span>
-      </div>
-      }
     </div>
   </div>
 </div>

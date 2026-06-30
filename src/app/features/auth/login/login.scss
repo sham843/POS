@@ -66,22 +66,6 @@ $primary-color: var(--pos-accent);
   .fs-sm {
     font-size: 0.875rem;
   }
-
-  .app-version-container {
-    margin-top: 1.5rem;
-
-    .app-version-text {
-      font-size: 11px;
-      font-weight: 700;
-      color: #DC2626;
-      letter-spacing: 0.03em;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      padding: 3px 12px;
-      border-radius: 12px;
-      display: inline-block;
-    }
-  }
 }
 
 @media (max-width: 768px) {
