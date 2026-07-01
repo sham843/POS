@@ -112,6 +112,18 @@ export class Login implements OnInit {
       }
     }
 
+    // Load Remembered Credentials
+    const rememberMe = localStorage.getItem('rememberMe') === 'true';
+    if (rememberMe) {
+      const savedUsername = localStorage.getItem('remember_username') || '';
+      const savedPassword = localStorage.getItem('remember_password') || '';
+      this.loginForm.patchValue({
+        username: savedUsername,
+        password: savedPassword,
+        rememberMe: true
+      });
+    }
+
     //this.loaderService.show(); // Start loader for key generation
     try {
       await this.crypto.generateSessionKey();
@@ -154,6 +166,19 @@ export class Login implements OnInit {
 
             localStorage.setItem('tk_9xf1BzX', token);
             localStorage.setItem('UserDetails', data);
+
+            // Handle Remember Me logic
+            const { username, password, rememberMe } = this.loginForm.value;
+            if (rememberMe) {
+              localStorage.setItem('remember_username', username);
+              localStorage.setItem('remember_password', password);
+              localStorage.setItem('rememberMe', 'true');
+            } else {
+              localStorage.removeItem('remember_username');
+              localStorage.removeItem('remember_password');
+              localStorage.removeItem('rememberMe');
+            }
+
             this.errorMessage.set('');
             this.router.navigate(['/session-start']);
 
