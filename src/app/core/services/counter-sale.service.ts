@@ -306,11 +306,11 @@ export class CounterSaleService {
         (existingItem.quantity + 1).toString()
       );
 
-      // Remove from its current position and move to the top
+      // Remove from its current position and move to the bottom
       items.splice(existingItemIndex, 1);
-      items.unshift(nextItem);
+      items.push(nextItem);
       this.updateActiveBill({ cartItems: items });
-      this.selectItem(0);
+      this.selectItem(items.length - 1);
     } else {
       const rate = product.salePrice || product.mrp || product.rate || product.price || product.saleRate || 0;
       const gst = product.gst || product.taxPercentage || 0;
@@ -329,9 +329,9 @@ export class CounterSaleService {
       };
 
       const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', '1');
-      items.unshift(calculatedItem);
+      items.push(calculatedItem);
       this.updateActiveBill({ cartItems: items });
-      this.selectItem(0);
+      this.selectItem(items.length - 1);
     }
   }
 

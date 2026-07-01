@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, ChangeDetectionStrategy, } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, effect, ElementRef } from '@angular/core';
 import { LucideAngularModule, Trash2, Package, Minus, Plus } from 'lucide-angular';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,11 +35,33 @@ import { NotificationService } from '../../../../core/services/notification.serv
 export class Cart {
   counterSaleService = inject(CounterSaleService);
   notificationService = inject(NotificationService);
+  private el = inject(ElementRef);
 
   displayedColumns: string[] = ['details', 'quantity', 'rate', 'discount', 'amount', 'gst', 'total'];
 
   // Data source for the table uses the shared cart state
   dataSource = this.counterSaleService.cartItems;
+
+  constructor() {
+    effect(() => {
+      const selectedIndex = this.counterSaleService.selectedItemIndex();
+      if (selectedIndex !== null) {
+        setTimeout(() => {
+          const container = this.el.nativeElement.querySelector('.cart-items-list');
+          if (container) {
+            if (selectedIndex === this.dataSource().length - 1) {
+              container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            } else {
+              const selectedElement = container.querySelector('.cart-item.selected');
+              if (selectedElement) {
+                selectedElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }
+            }
+          }
+        }, 100);
+      }
+    });
+  }
 
 
   // Expose icons to template
