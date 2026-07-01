@@ -9,6 +9,7 @@ let win;
 let defaultPrinterName = null;
 let server = null;
 let serverPort = null;
+const fileCache = new Map();
 
 function startLocalServer() {
   return new Promise((resolve, reject) => {
@@ -58,6 +59,14 @@ function startLocalServer() {
         filePath = path.join(__dirname, 'dist/POS/browser/index.html');
       }
 
+      // Check in-memory cache first
+      if (fileCache.has(filePath)) {
+        const cached = fileCache.get(filePath);
+        res.writeHead(200, { 'Content-Type': cached.contentType });
+        res.end(cached.content);
+        return;
+      }
+
       const ext = path.extname(filePath).toLowerCase();
       const mimeTypes = {
         '.html': 'text/html',
@@ -83,8 +92,10 @@ function startLocalServer() {
           res.writeHead(500);
           res.end('Error loading file');
         } else {
+          // Cache the content
+          fileCache.set(filePath, { contentType, content });
           res.writeHead(200, { 'Content-Type': contentType });
-          res.end(content, 'utf-8');
+          res.end(content);
         }
       });
     });
@@ -111,7 +122,7 @@ async function createWindow() {
       contextIsolation: true,
       enableRemoteModule: false,
       nodeIntegration: false,
-      webSecurity: false,
+      webSecurity: true,
       sandbox: false,
       preload: path.join(__dirname, 'preload.js')
     },
@@ -214,6 +225,12 @@ ipcMain.on('get-printers', async (event) => {
   } catch (err) {
     event.reply('printers-list', []);
   }
+});
+
+// IPC: Set Default Printer
+ipcMain.on('set-default-printer', (event, printerName) => {
+  defaultPrinterName = printerName;
+  console.log(`Default printer set to: ${printerName}`);
 });
 
 // Handle print request
