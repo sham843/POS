@@ -1,10 +1,27 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { throwError, TimeoutError } from 'rxjs';
-import { catchError, finalize, timeout } from 'rxjs/operators';
+import { catchError, finalize, timeout, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LoaderService } from '../services/loader.service';
 import { NotificationService } from '../services/notification.service';
+
+const containsNoActiveSession = (obj: any): boolean => {
+  if (!obj) return false;
+  if (typeof obj === 'string') {
+    return obj.toLowerCase().includes('no active session');
+  }
+  if (typeof obj === 'object') {
+    for (const key of Object.keys(obj)) {
+      try {
+        if (containsNoActiveSession(obj[key])) {
+          return true;
+        }
+      } catch (e) { }
+    }
+  }
+  return false;
+};
 
 export const apiInterceptor: HttpInterceptorFn = (req, next) => {
   const loaderService = inject(LoaderService);
@@ -13,7 +30,7 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
 
   const skipLoader = req.headers.has('X-Skip-Loader');
   const customFallbackError = req.headers.get('X-Custom-Error');
-  
+
   // Remove the custom header so it doesn't go to the server
   let modifiedReq = req;
   if (skipLoader || customFallbackError) {
@@ -28,21 +45,30 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
   return next(modifiedReq).pipe(
     // 30 seconds timeout
     timeout(30000),
+    map((event) => {
+      if (event instanceof HttpResponse) {
+        if (containsNoActiveSession(event.body)) {
+          // If a session error is returned in a successful response body, clean up and redirect
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('tk_9xf1BzX');
+          localStorage.removeItem('UserDetails');
+          localStorage.removeItem('sessionId');
+          router.navigate(['/login']);
+          throw new Error('No active session found for user. Please log in again.');
+        }
+      }
+      return event;
+    }),
     catchError((error: any) => {
       let errorMsg = 'An unknown error occurred!';
 
       if (error instanceof TimeoutError) {
         errorMsg = 'Request timed out. Please try again.';
       } else if (error instanceof HttpErrorResponse) {
-        if (error.status === 401) {
-          errorMsg = 'Session expired or unauthorized. Please log in again.';
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('tk_9xf1BzX');
-          localStorage.removeItem('UserDetails');
-          localStorage.removeItem('sessionId');
-          router.navigate(['/login']);
-        } else if (error.error && error.error.message) {
+        if (error.error && error.error.message) {
           errorMsg = error.error.message;
+        } else if (error.error && typeof error.error === 'string') {
+          errorMsg = error.error;
         } else if (customFallbackError) {
           errorMsg = customFallbackError;
         } else {
@@ -74,6 +100,22 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
               errorMsg = `Server error: ${error.status} ${error.statusText}`;
               break;
           }
+        }
+
+        // Check if this error is an authentication error or indicates no active session
+        const hasNoSessionMessage = errorMsg && errorMsg.toLowerCase().includes('no active session');
+
+        if (error.status === 401 || hasNoSessionMessage) {
+          if (error.status === 401 && !hasNoSessionMessage) {
+            errorMsg = 'Session expired or unauthorized. Please log in again.';
+          } else {
+            errorMsg = 'No active session found for user. Please log in again.';
+          }
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('tk_9xf1BzX');
+          localStorage.removeItem('UserDetails');
+          localStorage.removeItem('sessionId');
+          router.navigate(['/login']);
         }
       } else if (error.message) {
         errorMsg = error.message;
