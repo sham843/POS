@@ -337,8 +337,21 @@ export class SessionEnd {
 
     const user = this.userDetails();
     const summary = this.rawSummaryData();
-    const sessionIdStr = summary?.sessionIds ? summary.sessionIds.split(',').pop() : (this.sessionService.getSessionId() || '');
+    const localSessionId = this.sessionService.getSessionId();
+    const sessionIdInt = localSessionId ? parseInt(localSessionId, 10) : 0;
+    const sessionIdStr = summary?.sessionIds ? summary.sessionIds.split(',').pop() : (localSessionId || '');
 
+    // 1. Prepare payload for api/v1/session/end
+    const endPayload = {
+      UserId: user?.id || 0,
+      SessionId: sessionIdInt,
+      ClosingBalance: (summary?.openingBalance || 0) + (summary?.cashSale || 0) - (this.otherCash() || 0),
+      TotalAmount: summary?.totalAmount || 0,
+      otherCash: this.otherCash() || 0,
+      openingBalanceforNextShift: this.nextShiftOpeningBalance() || 0
+    };
+
+    // 2. Prepare payload for api/v1/session/save-summary
     const cashDenominations = this.denominations
       .filter(denom => (this.cashCounts()[denom] || 0) > 0)
       .map(denom => ({
@@ -347,7 +360,7 @@ export class SessionEnd {
         amount: denom * (this.cashCounts()[denom] || 0)
       }));
 
-    const payload = {
+    const saveSummaryPayload = {
       UserId: user?.id || 0,
       SessionId: sessionIdStr,
       closingBalance: (summary?.openingBalance || 0) + (summary?.cashSale || 0),
@@ -380,21 +393,32 @@ export class SessionEnd {
       remark: this.remark() || ''
     };
 
-    this.apiService.post<any>('api/v1/session/save-summary', payload).subscribe({
-      next: async () => {
-        // Clear IndexedDB
-        await this.dbService.clearAllData();
+    // 3. Call api/v1/session/save-summary first
+    this.apiService.post<any>('api/v1/session/save-summary', saveSummaryPayload).subscribe({
+      next: () => {
+        // If save-summary API call succeeds, call api/v1/session/end
+        this.apiService.post<any>('api/v1/session/end', endPayload).subscribe({
+          next: async () => {
+            // Clear IndexedDB
+            await this.dbService.clearAllData();
 
-        // Clear all storage
-        this.sessionService.clearSessionId();
-        localStorage.clear();
-        sessionStorage.clear();
+            // Clear all storage
+            this.sessionService.clearSessionId();
+            localStorage.clear();
+            sessionStorage.clear();
 
-        // Navigate to login
-        this.router.navigate(['/login']);
+            // Navigate to login
+            this.router.navigate(['/login']);
+          },
+          error: (err) => {
+            console.error('Failed to end session:', err);
+            this.notificationService.showError('Failed to end session');
+          }
+        });
       },
       error: (err) => {
-        console.error('Failed to end session:', err);
+        console.error('Failed to save summary:', err);
+        this.notificationService.showError('Failed to save cash summary');
       }
     });
   }
