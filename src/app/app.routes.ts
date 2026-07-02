@@ -16,6 +16,7 @@ export const routes: Routes = [
       { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard) },
       { path: 'counter-sale', loadComponent: () => import('./features/counter-sale/counter-sale').then(m => m.CounterSale) },
 
+      { path: 'reports', redirectTo: 'reports/user-report', pathMatch: 'full' },
       { path: 'reports/user-report', loadComponent: () => import('./features/reports/user-report/user-report').then(m => m.UserReport) },
       { path: 'reports/product-report', loadComponent: () => import('./features/reports/product-report/product-report').then(m => m.ProductReport) },
       { path: 'reports/bill-report', loadComponent: () => import('./features/reports/bill-report/bill-report').then(m => m.BillReport) },

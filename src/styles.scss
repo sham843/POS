@@ -1000,3 +1000,72 @@ lucide-icon svg {
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
   }
 }
+
+/* --- Global Reports Sub Header --- */
+.pos-sub-header {
+  height: 56px;
+  background: #EFF6FF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #BFDBFE;
+  gap: 24px;
+  flex-shrink: 0;
+
+  .sub-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1E3A8A;
+
+    lucide-icon {
+      width: 18px;
+      height: 18px;
+      color: #0052CC;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .sub-header-filters {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #4B5563;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .filter-input,
+      select {
+        height: 32px;
+        padding: 0 10px;
+        border: 1px solid #BFDBFE;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #374151;
+        background: #ffffff;
+        outline: none;
+        box-sizing: border-box;
+
+        &:focus {
+          border-color: #0052CC;
+          box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
+        }
+      }
+    }
+  }
+}

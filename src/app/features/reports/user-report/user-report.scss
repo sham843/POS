@@ -1,0 +1,77 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  color: #6B7280;
+  height: 100%;
+
+  p {
+    margin: 12px 0 0 0;
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    color: #0052CC;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+::ng-deep {
+  .mat-mdc-paginator {
+    background: #ffffff !important;
+    font-family: 'Inter', 'Roboto', sans-serif;
+    padding: 8px 16px !important;
+  }
+
+  .mat-mdc-paginator-container {
+    justify-content: flex-end !important;
+    padding: 0 !important;
+    min-height: 36px !important;
+    height: 36px !important;
+  }
+
+  .mat-mdc-paginator-range-label {
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #0052CC !important; /* Premium Blue color for range label */
+    margin-right: 20px !important;
+  }
+
+  .mat-mdc-paginator-navigation-button {
+    color: #374151 !important;
+    background-color: #F3F4F6 !important;
+    border-radius: 8px !important;
+    margin: 0 4px !important;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover:not([disabled]) {
+      background-color: #E6F0FF !important;
+      color: #0052CC !important;
+    }
+
+    &[disabled] {
+      opacity: 0.4 !important;
+      background-color: transparent !important;
+    }
+  }
+}

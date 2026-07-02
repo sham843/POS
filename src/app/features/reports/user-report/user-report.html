@@ -1,1 +1,108 @@
-<p>user-report works!</p>
+<div class="d-flex flex-column h-100 w-100 bg-white">
+
+  <!-- SUB HEADER -->
+  <div class="pos-sub-header">
+    <div class="sub-header-title">
+      <lucide-icon [img]="UserIcon"></lucide-icon>
+      <span>User Report</span>
+    </div>
+
+    <div class="sub-header-filters">
+      <!-- From Date -->
+      <div class="filter-item">
+        <label for="fromDate">From:</label>
+        <input type="date" id="fromDate" class="filter-input" [ngModel]="fromDate()"
+          (ngModelChange)="fromDate.set($event); onFilterChange()">
+      </div>
+
+      <!-- To Date -->
+      <div class="filter-item">
+        <label for="toDate">To:</label>
+        <input type="date" id="toDate" class="filter-input" [ngModel]="toDate()"
+          (ngModelChange)="toDate.set($event); onFilterChange()">
+      </div>
+
+      <!-- User Selection -->
+      <div class="filter-item">
+        <label for="userSelect">User:</label>
+        <select id="userSelect" class="filter-input" [ngModel]="selectedUser()"
+          (ngModelChange)="selectedUser.set($event); onFilterChange()">
+          <option value="all">All Users</option>
+          <option *ngFor="let u of userList()" [value]="u.name">{{ u.name }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA AREA -->
+  <div class="flex-grow-1 p-4 overflow-auto bg-light position-relative d-flex flex-column gap-3">
+
+    <!-- Custom Pickup-style Loader -->
+    <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm" *ngIf="isLoading()">
+      <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
+      <p>Loading user sales data...</p>
+    </div>
+
+    <!-- Table Wrapper (Only visible when not loading) -->
+    <div
+      class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white"
+      *ngIf="!isLoading()">
+      <div class="table-responsive flex-grow-1 overflow-auto">
+        <table class="app-data-table table-hover">
+          <thead>
+            <tr>
+
+              <th>Bill Number</th>
+              <th>Bill Date</th>
+              <th>Customer Name</th>
+              <th class="text-end">Total Amount (₹)</th>
+              <th class="text-end">Discount (₹)</th>
+              <th class="text-end">Taxable Amount (₹)</th>
+              <th class="text-end">Cgst (₹)</th>
+              <th class="text-end">Sgst (₹)</th>
+              <th class="text-end">Igst (₹)</th>
+              <th class="text-end">After Tax Total</th>
+              <th class="text-end">Chargeable Amount</th>
+              <th class="text-end" style="padding-right: 20px;">Round Off</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of paginatedData()">
+              <td class="fw-semibold text-secondary">{{ item.bill_Number || '-' }}</td>
+              <td>{{ item.bill_Date || '-' }}</td>
+              <td>
+                {{ item.customer_Name || '-' }}
+                <span class="badge ms-1 rounded-pill" [ngClass]="{
+                    'bg-primary': getPaymentMode(item) === 'Credit',
+                    'bg-success': getPaymentMode(item) === 'Cash',
+                    'bg-warning text-dark': getPaymentMode(item) === 'Coupon',
+                    'bg-info text-dark': getPaymentMode(item) === 'Online'
+                  }" *ngIf="getPaymentMode(item)">
+                  {{ getPaymentMode(item) }}
+                </span>
+              </td>
+              <td class="text-end">₹{{ item.totalAmount || item.TotalAmount || 0 }}</td>
+              <td class="text-end">₹{{ item.discount || item.Discount || 0 }}</td>
+              <td class="text-end">₹{{ item.taxableAmount || item.TaxableAmount || 0 }}</td>
+              <td class="text-end">₹{{ item.cgst || item.Cgst || item.CGST || 0 }}</td>
+              <td class="text-end">₹{{ item.sgst || item.Sgst || item.SGST || 0 }}</td>
+              <td class="text-end">₹{{ item.igst || item.Igst || item.IGST || 0 }}</td>
+              <td class="text-end">₹{{ item.afterTaxTotal || item.AfterTaxTotal || 0 }}</td>
+              <td class="text-end fw-bold text-primary">₹{{ item.chargeableAmount || item.ChargeableAmount || 0 }}</td>
+              <td class="text-end" style="padding-right: 20px;">₹{{ item.roundOff || item.RoundOff || 0 }}</td>
+            </tr>
+            <tr *ngIf="reportData().length === 0">
+              <td colspan="13" class="no-records text-center">No report entries found for the specified period.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Angular Material Paginator -->
+      <mat-paginator [length]="reportData().length" [pageSize]="pageSize()" hidePageSize="true"
+        showFirstLastButtons="true" [pageIndex]="currentPage()" (page)="onPageChange($event)" aria-label="Select page"
+        class="border-top">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

@@ -44,14 +44,12 @@
         <lucide-icon [img]="Monitor"></lucide-icon>
         <span class="nav-text">POS</span>
       </a>
-      <!-- Reports Menu Container -->
-      <div class="reports-menu-container" (mouseenter)="showReportsDropdown.set(true)"
-        (mouseleave)="showReportsDropdown.set(false)">
-        <a routerLink="/reports" routerLinkActive="active" class="nav-link"
-          (click)="showReportsDropdown.update(v => !v)">
+      <!-- Reports Menu Container (Click-to-toggle, touch-friendly, no direct navigation) -->
+      <div class="reports-menu-container">
+        <a class="nav-link" [class.active]="router.url.includes('reports/')" (click)="showReportsDropdown.update(v => !v)" style="cursor: pointer;">
           <lucide-icon [img]="LineChart"></lucide-icon>
           <span class="nav-text">Reports</span>
-          <lucide-icon [img]="ChevronDown" [size]="12" class="ms-1 dropdown-chevron"></lucide-icon>
+          <lucide-icon [img]="ChevronDown" [size]="12" class="ms-1 dropdown-chevron" [class.rotated-chevron]="showReportsDropdown()"></lucide-icon>
         </a>
 
         <!-- Reports Dropdown Menu -->
