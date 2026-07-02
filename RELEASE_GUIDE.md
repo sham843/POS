@@ -43,7 +43,10 @@ Once the build and upload process completes successfully (takes about 2-3 minute
 
 ---
 
-💡 **Note:** Once the release is published, existing users will automatically receive a notification to update their app when they launch it, and the app will auto-update itself!
+💡 **Note: How Auto-Updates Work**
+* **On App Launch:** Once the release is published on GitHub, existing users' apps will check for updates immediately when they launch/start the app.
+* **Auto-Check (Every 2 Hours):** While the app remains open, it automatically checks for updates in the background every **2 hours**.
+* **Manual Check:** Users can also click on the **Version Badge** (e.g., `v1.0.17`) on the Login/Dashboard pages to check for updates manually.
 
 ---
 

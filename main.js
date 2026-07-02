@@ -176,7 +176,7 @@ app.whenReady().then(async () => {
     // Check for updates every 2 hours (2 * 60 * 60 * 1000)
     setInterval(() => {
       autoUpdater.checkForUpdatesAndNotify();
-    }, 2 * 60 * 1000);
+    }, 2 * 60 * 60 * 1000);
   } catch (err) {
     console.error('Failed to start local server:', err);
     app.quit();
