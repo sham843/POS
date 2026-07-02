@@ -1,14 +1,32 @@
 import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, User, Loader } from 'lucide-angular';
+import { HttpHeaders } from '@angular/common/http';
+import { LucideAngularModule, User, Loader, Receipt, Calendar } from 'lucide-angular';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatTableModule } from '@angular/material/table';
 import { ApiService } from '../../../core/services/api.service';
 
 @Component({
   selector: 'app-user-report',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, MatPaginatorModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LucideAngularModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatTableModule
+  ],
   templateUrl: './user-report.html',
   styleUrl: './user-report.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -18,24 +36,45 @@ export class UserReport implements OnInit {
 
   readonly UserIcon = User;
   readonly LoaderIcon = Loader;
+  readonly ReceiptIcon = Receipt;
+  readonly CalendarIcon = Calendar;
 
-  // Filters State
+  // Filter Date Objects (for mat-datepicker)
+  fromDateObj = signal<Date>(new Date('2025-02-04'));
+  toDateObj = signal<Date>(new Date('2026-07-02'));
+
+  // Formatted Filter Strings (for API payload)
   fromDate = signal<string>('2025-02-04');
   toDate = signal<string>('2026-07-02');
   selectedUser = signal<string>('all');
-  
+
   isLoading = signal<boolean>(false);
   currentUser = signal<any>(null);
 
   // Pagination State
   currentPage = signal<number>(0);
-  pageSize = signal<number>(10);
+  pageSize = signal<number>(5);
 
   // Dynamic user list for dropdown selector
   userList = signal<any[]>([]);
 
   // Report results from API
   reportData = signal<any[]>([]);
+
+  // Mat-table columns configuration
+  displayedColumns: string[] = [
+    'billDetails',
+    'customerName',
+    'totalAmount',
+    'discount',
+    'taxableAmount',
+    'cgst',
+    'sgst',
+    'igst',
+    'afterTaxTotal',
+    'chargeableAmount',
+    'roundOff'
+  ];
 
   // Computed paginated view of active data
   paginatedData = computed(() => {
@@ -53,10 +92,10 @@ export class UserReport implements OnInit {
       try {
         const user = JSON.parse(userStr);
         this.currentUser.set(user);
-        
+
         const currentUserId = user.id || user.UserId || 620;
         const currentUserName = user.name || 'Pravin Varpe';
-        
+
         this.userList.set([{ id: currentUserId, name: currentUserName }]);
       } catch (e) {
         console.error('Failed to parse user details:', e);
@@ -87,7 +126,11 @@ export class UserReport implements OnInit {
       UserId: targetUserId
     };
 
-    this.apiService.post<any>('api/v1/report/user-wise-sale', payload).subscribe({
+    const headers = new HttpHeaders({
+      'X-Skip-Loader': 'true'
+    });
+
+    this.apiService.post<any>('api/v1/report/user-wise-sale', payload, headers).subscribe({
       next: (response) => {
         if (response && response.data) {
           this.reportData.set(response.data);
@@ -108,6 +151,29 @@ export class UserReport implements OnInit {
 
   onFilterChange() {
     this.fetchReport();
+  }
+
+  onFromDateChange(date: Date) {
+    if (date) {
+      this.fromDateObj.set(date);
+      this.fromDate.set(this.formatDate(date));
+      this.onFilterChange();
+    }
+  }
+
+  onToDateChange(date: Date) {
+    if (date) {
+      this.toDateObj.set(date);
+      this.toDate.set(this.formatDate(date));
+      this.onFilterChange();
+    }
+  }
+
+  formatDate(date: Date): string {
+    const month = '' + (date.getMonth() + 1);
+    const day = '' + date.getDate();
+    const year = date.getFullYear();
+    return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
   }
 
   onPageChange(event: PageEvent) {
