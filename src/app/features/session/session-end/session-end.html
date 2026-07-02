@@ -50,7 +50,7 @@
       <!-- Keypad -->
       <div class="modern-card p-2 flex-grow-1 d-flex flex-column justify-content-center">
         <div class="keypad-grid">
-          <button class="keypad-btn" *ngFor="let key of keypadNumbers" (click)="onKeypadPress(key)">{{ key }}</button>
+          <button type="button" class="keypad-btn" *ngFor="let key of keypadNumbers" (click)="onKeypadPress(key)" (mousedown)="$event.preventDefault()">{{ key }}</button>
         </div>
       </div>
     </div>
@@ -110,8 +110,12 @@
                     class="icon-expense"></lucide-icon> Online Difference <span class="text-danger">*</span></span>
                 <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
                   <span class="text-secondary fw-semibold small">₹</span>
-                  <input type="number" class="modern-input flex-grow-1 text-end" [ngModel]="onlineDifference()"
-                    (ngModelChange)="onlineDifference.set($event)" placeholder="0">
+                  <input type="number" class="modern-input flex-grow-1 text-end"
+                    [class.active-input]="isFieldActive('onlineDifference')"
+                    [ngModel]="onlineDifference()"
+                    (ngModelChange)="onlineDifference.set($event)"
+                    (focus)="setActiveField('onlineDifference')"
+                    placeholder="0">
                 </div>
               </div>
             </div>
@@ -138,8 +142,12 @@
                     class="icon-other"></lucide-icon> Other Cash <span class="text-danger">*</span></span>
                 <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
                   <span class="text-secondary fw-semibold small">₹</span>
-                  <input type="number" class="modern-input flex-grow-1 text-end" [ngModel]="otherCash()"
-                    (ngModelChange)="otherCash.set($event)" placeholder="0">
+                  <input type="number" class="modern-input flex-grow-1 text-end"
+                    [class.active-input]="isFieldActive('otherCash')"
+                    [ngModel]="otherCash()"
+                    (ngModelChange)="otherCash.set($event)"
+                    (focus)="setActiveField('otherCash')"
+                    placeholder="0">
                 </div>
               </div>
 
@@ -148,8 +156,12 @@
                     class="icon-expense"></lucide-icon> Expense <span class="text-danger">*</span></span>
                 <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
                   <span class="text-secondary fw-semibold small">₹</span>
-                  <input type="number" class="modern-input flex-grow-1 text-end" [ngModel]="expense()"
-                    (ngModelChange)="expense.set($event)" placeholder="0">
+                  <input type="number" class="modern-input flex-grow-1 text-end"
+                    [class.active-input]="isFieldActive('expense')"
+                    [ngModel]="expense()"
+                    (ngModelChange)="expense.set($event)"
+                    (focus)="setActiveField('expense')"
+                    placeholder="0">
                 </div>
               </div>
 
@@ -158,8 +170,12 @@
                     class="icon-wallet"></lucide-icon> Next Shift Opening <span class="text-danger">*</span></span>
                 <div class="d-flex align-items-center gap-1" style="width: 100px; flex-shrink: 0;">
                   <span class="text-secondary fw-semibold small">₹</span>
-                  <input type="number" class="modern-input flex-grow-1 text-end" [ngModel]="nextShiftOpeningBalance()"
-                    (ngModelChange)="nextShiftOpeningBalance.set($event)" placeholder="0">
+                  <input type="number" class="modern-input flex-grow-1 text-end"
+                    [class.active-input]="isFieldActive('nextShiftOpeningBalance')"
+                    [ngModel]="nextShiftOpeningBalance()"
+                    (ngModelChange)="nextShiftOpeningBalance.set($event)"
+                    (focus)="setActiveField('nextShiftOpeningBalance')"
+                    placeholder="0">
                 </div>
               </div>
             </div>
@@ -194,8 +210,11 @@
             <div class="fw-bold text-primary" style="width: 42px; font-size: 0.95rem;">{{ den }}</div>
             <div class="text-secondary fw-semibold" style="font-size: 0.9rem;">×</div>
             <input type="number" class="modern-input text-center fw-semibold"
+              [class.active-input]="isFieldActive('denomination', den)"
               style="width: 60px; padding: 2px 4px; font-size: 0.95rem;" min="0" [value]="cashCounts()[den] || ''"
-              (input)="updateCashCount(den, $any($event.target).value)" placeholder="0">
+              (input)="updateCashCount(den, $any($event.target).value)"
+              (focus)="setActiveField('denomination', den)"
+              placeholder="0">
             <div class="text-secondary fw-semibold" style="font-size: 0.9rem;">=</div>
             <div class="fw-bold text-end text-dark" style="width: 75px; font-size: 0.95rem;">₹{{ den *
               (cashCounts()[den] || 0) }}</div>

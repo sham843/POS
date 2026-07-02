@@ -169,6 +169,9 @@ export class SessionEnd {
         }
       });
     }
+
+    // Auto-select the 500 denomination input when page loads
+    this.setActiveField('denomination', 500);
   }
 
   goBack() {
@@ -188,6 +191,23 @@ export class SessionEnd {
     this.cashCounts.set({
       500: 0, 200: 0, 100: 0, 50: 0, 20: 0, 10: 0, 5: 0, 2: 0, 1: 0
     });
+    this.setActiveField('denomination', 500);
+  }
+
+  // Active Input Field Tracking
+  activeField = signal<{ name: 'onlineDifference' | 'otherCash' | 'expense' | 'nextShiftOpeningBalance' | 'denomination', den?: number } | null>(null);
+
+  setActiveField(name: 'onlineDifference' | 'otherCash' | 'expense' | 'nextShiftOpeningBalance' | 'denomination', den?: number) {
+    this.activeField.set({ name, den });
+  }
+
+  isFieldActive(name: string, den?: number): boolean {
+    const active = this.activeField();
+    if (!active) return false;
+    if (name === 'denomination') {
+      return active.name === 'denomination' && active.den === den;
+    }
+    return active.name === name;
   }
 
   // Additional Input Fields
@@ -224,7 +244,36 @@ export class SessionEnd {
   }
 
   onKeypadPress(key: number | string) {
-    console.log('Keypad pressed:', key);
+    const currentActive = this.activeField();
+    if (!currentActive) return;
+
+    let currentValue = '';
+    if (currentActive.name === 'denomination') {
+      const den = currentActive.den!;
+      currentValue = (this.cashCounts()[den] || 0).toString();
+    } else {
+      const val = (this as any)[currentActive.name]();
+      currentValue = val !== null && val !== undefined && val !== 0 ? val.toString() : '';
+    }
+
+    if (key === 'C') {
+      currentValue = '';
+    } else if (key === '⌫') {
+      currentValue = currentValue.slice(0, -1);
+    } else {
+      if (currentValue.length < 10) {
+        currentValue = currentValue + key.toString();
+      }
+    }
+
+    const numericValue = currentValue === '' ? 0 : parseInt(currentValue, 10);
+
+    if (currentActive.name === 'denomination') {
+      const den = currentActive.den!;
+      this.cashCounts.update(counts => ({ ...counts, [den]: numericValue }));
+    } else {
+      (this as any)[currentActive.name].set(numericValue === 0 ? null : numericValue);
+    }
   }
 
   getAvatarInitial(name: string): string {
