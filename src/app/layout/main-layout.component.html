@@ -44,10 +44,56 @@
         <lucide-icon [img]="Monitor"></lucide-icon>
         <span class="nav-text">POS</span>
       </a>
-      <a routerLink="/reports" routerLinkActive="active" class="nav-link">
-        <lucide-icon [img]="LineChart"></lucide-icon>
-        <span class="nav-text">Reports</span>
-      </a>
+      <!-- Reports Menu Container -->
+      <div class="reports-menu-container" (mouseenter)="showReportsDropdown.set(true)"
+        (mouseleave)="showReportsDropdown.set(false)">
+        <a routerLink="/reports" routerLinkActive="active" class="nav-link"
+          (click)="showReportsDropdown.update(v => !v)">
+          <lucide-icon [img]="LineChart"></lucide-icon>
+          <span class="nav-text">Reports</span>
+          <lucide-icon [img]="ChevronDown" [size]="12" class="ms-1 dropdown-chevron"></lucide-icon>
+        </a>
+
+        <!-- Reports Dropdown Menu -->
+        <div class="reports-dropdown" *ngIf="showReportsDropdown()">
+          <a [routerLink]="['/reports']" [queryParams]="{ type: 'user' }" class="dropdown-item"
+            (click)="showReportsDropdown.set(false)">
+            User Report
+          </a>
+          <a [routerLink]="['/reports']" [queryParams]="{ type: 'product' }" class="dropdown-item"
+            (click)="showReportsDropdown.set(false)">
+            Product Report
+          </a>
+          <a [routerLink]="['/reports']" [queryParams]="{ type: 'bill' }" class="dropdown-item"
+            (click)="showReportsDropdown.set(false)">
+            Bill Report
+          </a>
+          <a [routerLink]="['/reports']" [queryParams]="{ type: 'customer' }" class="dropdown-item"
+            (click)="showReportsDropdown.set(false)">
+            Customer Report
+          </a>
+          <a [routerLink]="['/reports']" [queryParams]="{ type: 'party' }" class="dropdown-item"
+            (click)="showReportsDropdown.set(false)">
+            All Party Balance
+          </a>
+          <a [routerLink]="['/reports']" [queryParams]="{ type: 'gst' }" class="dropdown-item"
+            (click)="showReportsDropdown.set(false)">
+            GST Report
+          </a>
+          <a [routerLink]="['/reports']" [queryParams]="{ type: 'payment' }" class="dropdown-item"
+            (click)="showReportsDropdown.set(false)">
+            Customer Payment History
+          </a>
+          <a [routerLink]="['/reports']" [queryParams]="{ type: 'cash' }" class="dropdown-item"
+            (click)="showReportsDropdown.set(false)">
+            Cash Report
+          </a>
+          <a [routerLink]="['/reports']" [queryParams]="{ type: 'sales' }" class="dropdown-item"
+            (click)="showReportsDropdown.set(false)">
+            Sales Invoice Report
+          </a>
+        </div>
+      </div>
       <a routerLink="/settings" routerLinkActive="active" class="nav-link">
         <lucide-icon [img]="Settings"></lucide-icon>
         <span class="nav-text">Settings</span>

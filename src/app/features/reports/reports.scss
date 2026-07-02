@@ -1,0 +1,57 @@
+.reports-container {
+  font-family: 'Inter', sans-serif;
+  
+  .card {
+    background: #ffffff;
+    transition: box-shadow 0.2s ease-in-out;
+  }
+
+  .table {
+    border-collapse: separate;
+    border-spacing: 0;
+
+    thead th {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #6B7280;
+      background-color: #F9FAFB;
+      border-bottom: 1px solid #E5E7EB;
+      padding: 14px 16px;
+    }
+
+    tbody td {
+      font-size: 0.875rem;
+      padding: 14px 16px;
+      border-bottom: 1px solid #F3F4F6;
+      color: #374151;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  .badge {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-outline-primary {
+    border-color: #E5E7EB;
+    color: #4B5563;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #0052CC;
+      border-color: #0052CC;
+      color: #ffffff;
+    }
+  }
+
+  .form-control:focus {
+    box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.15);
+    border-color: #0052CC;
+  }
+}

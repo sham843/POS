@@ -1,1 +1,300 @@
-<p>reports works!</p>
+<div class="reports-container p-4 h-100 overflow-auto bg-light">
+  
+  <!-- Header Card -->
+  <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body p-4 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-3" style="width: 48px; height: 48px;">
+          <lucide-icon [img]="reportIcon()" [size]="24"></lucide-icon>
+        </div>
+        <div>
+          <h4 class="mb-1 fw-bold text-dark">{{ reportTitle() }}</h4>
+          <span class="text-secondary small">Comprehensive daily and monthly statistics</span>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary d-flex align-items-center gap-2 rounded-pill px-3 py-2 fw-semibold" style="font-size: 0.85rem;" onclick="window.print()">
+          Print Report
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Block -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    
+    <!-- Table Header (Search/Actions Mockup) -->
+    <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+      <div class="search-input-wrapper position-relative" style="width: 300px;">
+        <input type="text" class="form-control rounded-pill px-3 py-2 text-secondary" style="font-size: 0.85rem;" placeholder="Search report details...">
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2" style="font-size: 0.8rem;">
+          Today: {{ currentTime() | date:'dd MMM yyyy' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Table Content -->
+    <div class="card-body p-0 overflow-auto">
+      
+      <!-- 1. User Report -->
+      <table class="table table-hover align-middle mb-0" *ngIf="activeReport() === 'user'">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">User ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th class="text-end">Total Bills</th>
+            <th class="text-end pe-4">Total Sales (Cash)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of usersData">
+            <td class="ps-4 fw-semibold text-secondary">#{{ item.id }}</td>
+            <td class="fw-bold text-dark">{{ item.name }}</td>
+            <td><span class="badge bg-light text-dark border rounded-pill px-2.5 py-1" style="font-size: 0.75rem;">{{ item.role }}</span></td>
+            <td>
+              <span class="badge rounded-pill px-2.5 py-1" style="font-size: 0.75rem;"
+                [ngClass]="{'bg-success bg-opacity-10 text-success': item.status === 'Active', 'bg-secondary bg-opacity-10 text-secondary': item.status !== 'Active'}">
+                {{ item.status }}
+              </span>
+            </td>
+            <td class="text-end">{{ item.bills }}</td>
+            <td class="text-end fw-bold text-primary pe-4">₹{{ item.sales }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 2. Product Report -->
+      <table class="table table-hover align-middle mb-0" *ngIf="activeReport() === 'product'">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Product ID</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Unit Price</th>
+            <th class="text-end">Stock Quantity</th>
+            <th class="text-end pe-4">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of productsData">
+            <td class="ps-4 fw-semibold text-secondary">#{{ item.id }}</td>
+            <td class="fw-bold text-dark">{{ item.name }}</td>
+            <td>{{ item.category }}</td>
+            <td class="fw-semibold">₹{{ item.price }}</td>
+            <td class="text-end">{{ item.stock }}</td>
+            <td class="text-end pe-4">
+              <span class="badge rounded-pill px-2.5 py-1" style="font-size: 0.75rem;"
+                [ngClass]="{
+                  'bg-success bg-opacity-10 text-success': item.status === 'In Stock', 
+                  'bg-warning bg-opacity-10 text-warning': item.status === 'Low Stock',
+                  'bg-danger bg-opacity-10 text-danger': item.status === 'Out of Stock'
+                }">
+                {{ item.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 3. Bill Report -->
+      <table class="table table-hover align-middle mb-0" *ngIf="activeReport() === 'bill'">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Bill Number</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Payment Mode</th>
+            <th class="text-end">Status</th>
+            <th class="text-end pe-4">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of billsData">
+            <td class="ps-4 fw-semibold text-primary">{{ item.id }}</td>
+            <td>{{ item.date }}</td>
+            <td class="fw-bold text-dark">{{ item.customer }}</td>
+            <td><span class="badge bg-light text-dark border px-2.5 py-1" style="font-size: 0.75rem;">{{ item.method }}</span></td>
+            <td class="text-end">
+              <span class="badge rounded-pill px-2.5 py-1" style="font-size: 0.75rem;"
+                [ngClass]="{'bg-success bg-opacity-10 text-success': item.status === 'Paid', 'bg-warning bg-opacity-10 text-warning': item.status === 'Pending'}">
+                {{ item.status }}
+              </span>
+            </td>
+            <td class="text-end fw-bold text-dark pe-4">₹{{ item.amount }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 4. Customer Report -->
+      <table class="table table-hover align-middle mb-0" *ngIf="activeReport() === 'customer'">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Customer ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Tier</th>
+            <th class="text-end">Visits</th>
+            <th class="text-end pe-4">Total Spent</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of customersData">
+            <td class="ps-4 fw-semibold text-secondary">#{{ item.id }}</td>
+            <td class="fw-bold text-dark">{{ item.name }}</td>
+            <td>{{ item.phone }}</td>
+            <td>
+              <span class="badge rounded-pill px-2.5 py-1" style="font-size: 0.75rem;"
+                [ngClass]="{
+                  'bg-warning bg-opacity-10 text-warning': item.tier === 'Gold', 
+                  'bg-info bg-opacity-10 text-info': item.tier === 'Silver',
+                  'bg-secondary bg-opacity-10 text-secondary': item.tier === 'Bronze'
+                }">
+                {{ item.tier }}
+              </span>
+            </td>
+            <td class="text-end">{{ item.visits }}</td>
+            <td class="text-end fw-bold text-success pe-4">₹{{ item.totalSpent }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 5. All Party Balance -->
+      <table class="table table-hover align-middle mb-0" *ngIf="activeReport() === 'party'">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Party Name</th>
+            <th>Phone</th>
+            <th>Type</th>
+            <th>Last Transaction</th>
+            <th class="text-end pe-4">Ledger Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of partyBalanceData">
+            <td class="ps-4 fw-bold text-dark">{{ item.name }}</td>
+            <td>{{ item.phone }}</td>
+            <td>
+              <span class="badge rounded-pill px-2.5 py-1" style="font-size: 0.75rem;"
+                [ngClass]="{'bg-primary bg-opacity-10 text-primary': item.type === 'Debit', 'bg-danger bg-opacity-10 text-danger': item.type === 'Credit'}">
+                {{ item.type }}
+              </span>
+            </td>
+            <td>{{ item.lastTx }}</td>
+            <td class="text-end fw-bold pe-4" [ngClass]="{'text-success': item.type === 'Debit', 'text-danger': item.type === 'Credit'}">
+              ₹{{ item.balance }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 6. GST Report -->
+      <table class="table table-hover align-middle mb-0" *ngIf="activeReport() === 'gst'">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Month</th>
+            <th class="text-end">Taxable Value</th>
+            <th class="text-end">CGST (9%)</th>
+            <th class="text-end">SGST (9%)</th>
+            <th class="text-end pe-4">Total GST Collected</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of gstData">
+            <td class="ps-4 fw-bold text-dark">{{ item.month }}</td>
+            <td class="text-end">₹{{ item.taxable }}</td>
+            <td class="text-end text-secondary">₹{{ item.cgst }}</td>
+            <td class="text-end text-secondary">₹{{ item.sgst }}</td>
+            <td class="text-end fw-bold text-primary pe-4">₹{{ item.total }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 7. Customer Payment History -->
+      <table class="table table-hover align-middle mb-0" *ngIf="activeReport() === 'payment'">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Transaction ID</th>
+            <th>Date</th>
+            <th>Party/Customer</th>
+            <th>Payment Mode</th>
+            <th>Type</th>
+            <th class="text-end pe-4">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of paymentHistoryData">
+            <td class="ps-4 fw-semibold text-primary">{{ item.id }}</td>
+            <td>{{ item.date }}</td>
+            <td class="fw-bold text-dark">{{ item.customer }}</td>
+            <td><span class="badge bg-light text-dark border px-2.5 py-1" style="font-size: 0.75rem;">{{ item.method }}</span></td>
+            <td>
+              <span class="badge rounded-pill px-2.5 py-1" style="font-size: 0.75rem;"
+                [ngClass]="{'bg-success bg-opacity-10 text-success': item.type === 'Received', 'bg-danger bg-opacity-10 text-danger': item.type === 'Paid'}">
+                {{ item.type }}
+              </span>
+            </td>
+            <td class="text-end fw-bold pe-4" [ngClass]="{'text-success': item.type === 'Received', 'text-danger': item.type === 'Paid'}">
+              ₹{{ item.amount }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 8. Cash Report -->
+      <table class="table table-hover align-middle mb-0" *ngIf="activeReport() === 'cash'">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Shift Date</th>
+            <th class="text-end">Opening</th>
+            <th class="text-end">Cash Sales</th>
+            <th class="text-end">Other Cash</th>
+            <th class="text-end">Expense</th>
+            <th class="text-end">Next Shift</th>
+            <th class="text-end pe-4">Closing Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of cashReportData">
+            <td class="ps-4 fw-bold text-dark">{{ item.date }}</td>
+            <td class="text-end">₹{{ item.opening }}</td>
+            <td class="text-end text-success">₹{{ item.sales }}</td>
+            <td class="text-end text-primary">+₹{{ item.other }}</td>
+            <td class="text-end text-danger">-₹{{ item.expense }}</td>
+            <td class="text-end text-secondary">₹{{ item.nextShift }}</td>
+            <td class="text-end fw-bold text-dark pe-4">₹{{ item.closing }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 9. Sales Invoice Report -->
+      <table class="table table-hover align-middle mb-0" *ngIf="activeReport() === 'sales'">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Invoice Number</th>
+            <th>Date</th>
+            <th>Party Name</th>
+            <th class="text-end">Gross Amount</th>
+            <th class="text-end">GST Value</th>
+            <th class="text-end pe-4">Net Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of salesInvoiceData">
+            <td class="ps-4 fw-bold text-primary">{{ item.invoice }}</td>
+            <td>{{ item.date }}</td>
+            <td class="fw-bold text-dark">{{ item.party }}</td>
+            <td class="text-end">₹{{ item.gross }}</td>
+            <td class="text-end text-secondary">₹{{ item.gst }}</td>
+            <td class="text-end fw-bold text-success pe-4">₹{{ item.net }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>

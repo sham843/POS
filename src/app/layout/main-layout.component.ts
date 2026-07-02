@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy, inject, ElementRef, HostListener } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
-import { LucideAngularModule, Droplets, PieChart, Monitor, LineChart, Settings, Sun, LogOut, Calendar, RefreshCw } from 'lucide-angular';
+import { LucideAngularModule, Droplets, PieChart, Monitor, LineChart, Settings, Sun, LogOut, Calendar, RefreshCw, ChevronDown } from 'lucide-angular';
 import { HealthService } from '../core/services/health.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
@@ -28,12 +28,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   readonly Sun = Sun;
   readonly LogOut = LogOut;
   readonly Calendar = Calendar;
+  readonly ChevronDown = ChevronDown;
   router = inject(Router);
   healthService = inject(HealthService);
   private swUpdate = inject(SwUpdate);
   private elementRef = inject(ElementRef);
   currentTime = signal(new Date());
   showProfileMenu = signal(false);
+  showReportsDropdown = signal(false);
   userDetails = signal<any>(null);
   appVersion = signal<string>('');
   updateAvailableVersion = signal<string>('');
@@ -128,6 +130,12 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       const clickedInside = this.elementRef.nativeElement.querySelector('.profile-menu-container')?.contains(event.target as Node);
       if (!clickedInside) {
         this.showProfileMenu.set(false);
+      }
+    }
+    if (this.showReportsDropdown()) {
+      const clickedInside = this.elementRef.nativeElement.querySelector('.reports-menu-container')?.contains(event.target as Node);
+      if (!clickedInside) {
+        this.showReportsDropdown.set(false);
       }
     }
   }
