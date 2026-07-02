@@ -162,6 +162,10 @@ export class SessionEnd {
                 actualCashReceived: data.actualCashReceived || data.ActualCashReceived || 0
               }
             });
+
+            // Initialize nextShiftOpeningBalance to default expected cash
+            const expectedCash = (data.cashSale || 0) + (data.openingBalance || 0) + (data.couponCustomerAdvReceived || 0);
+            this.nextShiftOpeningBalance.set(expectedCash);
           }
         },
         error: (err) => {
@@ -233,9 +237,20 @@ export class SessionEnd {
     return this.denominations.reduce((sum, den) => sum + (den * (counts[den] || 0)), 0);
   });
 
+  actualCashReceived = computed(() => {
+    const cash = this.sessionData()?.cash;
+    if (!cash) return 0;
+    const cashSale = cash.cashSale || 0;
+    const openingBalance = cash.openingBalance || 0;
+    const couponAdv = cash.couponCustomerAdvReceived || 0;
+    const other = this.otherCash() || 0;
+    const exp = this.expense() || 0;
+    const nextShift = Number(this.nextShiftOpeningBalance()) || 0;
+    return cashSale + openingBalance + couponAdv + other - exp - nextShift;
+  });
+
   cashDifference = computed(() => {
-    const actualReceived = this.sessionData()?.cash?.actualCashReceived || 0;
-    return this.totalCollection() - actualReceived;
+    return this.totalCollection() - this.actualCashReceived();
   });
 
   updateCashCount(den: number, value: string) {
