@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
 import { SessionService } from '../../../core/services/session.service';
 import { DbService } from '../../../core/services/db.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { UpdateConfirmModalComponent } from '../../../shared/components/update-confirm-modal/update-confirm-modal';
 import packageInfo from '../../../../../package.json';
 
@@ -29,6 +30,7 @@ export class SessionEnd {
   apiService = inject(ApiService);
   sessionService = inject(SessionService);
   dbService = inject(DbService);
+  notificationService = inject(NotificationService);
 
   constructor() {
     effect(() => {
@@ -64,6 +66,7 @@ export class SessionEnd {
   readonly CheckCircle = CheckCircle;
 
   userDetails = signal<any>(null);
+  rawSummaryData = signal<any>(null);
   appVersion = signal<string>('');
   updateAvailableVersion = signal<string>('');
   updateDownloaded = signal<boolean>(false);
@@ -149,6 +152,7 @@ export class SessionEnd {
         next: (response) => {
           const data = response?.data;
           if (data) {
+            this.rawSummaryData.set(data);
             this.sessionData.set({
               userName: this.userDetails()?.name || 'User',
               date: data.date || data.Date || new Date().toLocaleDateString(),
@@ -313,19 +317,70 @@ export class SessionEnd {
   }
 
   confirmEndSession() {
+    // Validate mandatory fields
+    if (this.onlineDifference() === null || this.onlineDifference() === undefined) {
+      this.notificationService.showError('Online Difference is required');
+      return;
+    }
+    if (this.otherCash() === null || this.otherCash() === undefined) {
+      this.notificationService.showError('Other cash amount is required');
+      return;
+    }
+    if (this.expense() === null || this.expense() === undefined) {
+      this.notificationService.showError('Expense is required');
+      return;
+    }
+    if (this.nextShiftOpeningBalance() === null || this.nextShiftOpeningBalance() === undefined) {
+      this.notificationService.showError('Opening balance for next shift is required');
+      return;
+    }
+
     const user = this.userDetails();
-    const localSessionId = this.sessionService.getSessionId();
-    const sessionId = localSessionId ? parseInt(localSessionId, 10) : 0;
+    const summary = this.rawSummaryData();
+    const sessionIdStr = summary?.sessionIds ? summary.sessionIds.split(',').pop() : (this.sessionService.getSessionId() || '');
+
+    const cashDenominations = this.denominations
+      .filter(denom => (this.cashCounts()[denom] || 0) > 0)
+      .map(denom => ({
+        denomination: denom,
+        quantity: this.cashCounts()[denom] || 0,
+        amount: denom * (this.cashCounts()[denom] || 0)
+      }));
 
     const payload = {
       UserId: user?.id || 0,
-      SessionId: sessionId,
-      ClosingBalance: this.totalCollection(),
+      SessionId: sessionIdStr,
+      closingBalance: (summary?.openingBalance || 0) + (summary?.cashSale || 0),
+      TotalAmount: summary?.totalAmount || 0,
+      Denominations: cashDenominations,
+      Summary: {
+        date: summary?.date || summary?.Date || new Date().toLocaleDateString(),
+        startTime: summary?.startTime || summary?.StartTime || '-',
+        endTime: summary?.endTime || summary?.EndTime || '-',
+        totalAmount: summary?.totalAmount || 0,
+        totalBills: summary?.totalBills || 0,
+        cashSale: summary?.cashSale || 0,
+        onlineSale: summary?.onlineSale || 0,
+        creditSale: summary?.creditSale || 0,
+        couponSale: summary?.couponSale || 0,
+        sessionIds: summary?.sessionIds || '',
+        openingBalance: summary?.openingBalance || 0,
+        custDepositOnl: this.onlineDifference() || 0,
+        actualCashReceived: this.actualCashReceived(),
+        couponCustAdvReceived: summary?.couponCustAdvReceived || summary?.couponCustomerAdvReceived || 0,
+        expense: this.expense() || 0,
+        remark: this.remark() || null
+      },
+      ClosingBalance: (summary?.openingBalance || 0) + (summary?.cashSale || 0) - (this.otherCash() || 0),
+      openingBalanceNextShift: this.nextShiftOpeningBalance() || 0,
       otherCash: this.otherCash() || 0,
-      openingBalanceforNextShift: this.nextShiftOpeningBalance() || 0
+      custDepositOnline: this.onlineDifference() || 0,
+      couponCustAdvReceived: summary?.couponCustAdvReceived || summary?.couponCustomerAdvReceived || 0,
+      expense: this.expense() || 0,
+      remark: this.remark() || ''
     };
 
-    this.apiService.post<any>('api/v1/session/end', payload).subscribe({
+    this.apiService.post<any>('api/v1/session/save-summary', payload).subscribe({
       next: async () => {
         // Clear IndexedDB
         await this.dbService.clearAllData();
@@ -340,7 +395,6 @@ export class SessionEnd {
       },
       error: (err) => {
         console.error('Failed to end session:', err);
-        // alert('Failed to end session. Check console for details.');
       }
     });
   }
