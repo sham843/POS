@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, effect, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,6 +29,16 @@ export class SessionEnd {
   apiService = inject(ApiService);
   sessionService = inject(SessionService);
   dbService = inject(DbService);
+
+  constructor() {
+    effect(() => {
+      const cash = this.sessionData()?.cash;
+      if (cash) {
+        const expectedNextShift = (cash.openingBalance || 0) + (cash.cashSale || 0);
+        this.nextShiftOpeningBalance.set(expectedNextShift);
+      }
+    }, { allowSignalWrites: true });
+  }
 
   // Expose icons to the template
   readonly Store = Store;
@@ -163,9 +173,7 @@ export class SessionEnd {
               }
             });
 
-            // Initialize nextShiftOpeningBalance to default expected cash
-            const expectedCash = (data.cashSale || 0) + (data.openingBalance || 0) + (data.couponCustomerAdvReceived || 0);
-            this.nextShiftOpeningBalance.set(expectedCash);
+            // Auto-calculated by effect
           }
         },
         error: (err) => {
@@ -250,8 +258,12 @@ export class SessionEnd {
   });
 
   cashDifference = computed(() => {
-    return this.totalCollection() - this.actualCashReceived();
+    return this.actualCashReceived() - this.totalCollection();
   });
+
+  formatDiff(value: number): string {
+    return value < 0 ? `-₹${Math.abs(value)}` : `₹${value}`;
+  }
 
   updateCashCount(den: number, value: string) {
     const parsed = parseInt(value, 10) || 0;
