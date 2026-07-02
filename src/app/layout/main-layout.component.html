@@ -56,39 +56,33 @@
 
         <!-- Reports Dropdown Menu -->
         <div class="reports-dropdown" *ngIf="showReportsDropdown()">
-          <a [routerLink]="['/reports']" [queryParams]="{ type: 'user' }" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/user-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             User Report
           </a>
-          <a [routerLink]="['/reports']" [queryParams]="{ type: 'product' }" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/product-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             Product Report
           </a>
-          <a [routerLink]="['/reports']" [queryParams]="{ type: 'bill' }" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/bill-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             Bill Report
           </a>
-          <a [routerLink]="['/reports']" [queryParams]="{ type: 'customer' }" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/customer-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             Customer Report
           </a>
-          <a [routerLink]="['/reports']" [queryParams]="{ type: 'party' }" class="dropdown-item"
+          <a [routerLink]="['reports/all-party-balance']" class="dropdown-item"
             (click)="showReportsDropdown.set(false)">
             All Party Balance
           </a>
-          <a [routerLink]="['/reports']" [queryParams]="{ type: 'gst' }" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/gst-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             GST Report
           </a>
-          <a [routerLink]="['/reports']" [queryParams]="{ type: 'payment' }" class="dropdown-item"
+          <a [routerLink]="['reports/customer-payment-history']" class="dropdown-item"
             (click)="showReportsDropdown.set(false)">
             Customer Payment History
           </a>
-          <a [routerLink]="['/reports']" [queryParams]="{ type: 'cash' }" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/cash-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             Cash Report
           </a>
-          <a [routerLink]="['/reports']" [queryParams]="{ type: 'sales' }" class="dropdown-item"
+          <a [routerLink]="['reports/sales-invoice-report']" class="dropdown-item"
             (click)="showReportsDropdown.set(false)">
             Sales Invoice Report
           </a>
