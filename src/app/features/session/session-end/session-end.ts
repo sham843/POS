@@ -66,6 +66,14 @@ export class SessionEnd {
   readonly CheckCircle = CheckCircle;
 
   userDetails = signal<any>(null);
+  avatarInitial = computed(() => {
+    const name = this.userDetails()?.name || 'User';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  });
   rawSummaryData = signal<any>(null);
   appVersion = signal<string>('');
   updateAvailableVersion = signal<string>('');
@@ -217,15 +225,6 @@ export class SessionEnd {
     this.activeField.set({ name, den });
   }
 
-  isFieldActive(name: string, den?: number): boolean {
-    const active = this.activeField();
-    if (!active) return false;
-    if (name === 'denomination') {
-      return active.name === 'denomination' && active.den === den;
-    }
-    return active.name === name;
-  }
-
   // Additional Input Fields
   onlineDifference = signal<number | null>(null);
   otherCash = signal<number | null>(null);
@@ -330,14 +329,7 @@ export class SessionEnd {
     }
   }
 
-  getAvatarInitial(name: string): string {
-    if (!name) return 'PV';
-    const parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
-  }
+
 
   confirmEndSession() {
     const user = this.userDetails();
