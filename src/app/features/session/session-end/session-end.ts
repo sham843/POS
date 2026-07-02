@@ -269,6 +269,29 @@ export class SessionEnd {
     return value < 0 ? `-₹${Math.abs(value)}` : `₹${value}`;
   }
 
+  hasChanges = computed(() => {
+    const other = this.otherCash();
+    const otherChanged = other !== null && other !== 0;
+
+    const exp = this.expense();
+    const expChanged = exp !== null && exp !== 0;
+
+    const onlDiff = this.onlineDifference();
+    const onlDiffChanged = onlDiff !== null && onlDiff !== 0;
+
+    const remChanged = this.remark().trim().length > 0;
+
+    const counts = this.cashCounts();
+    const hasDenominations = Object.values(counts).some(count => count > 0);
+
+    const cash = this.sessionData()?.cash;
+    const defaultNextShift = cash ? (cash.openingBalance || 0) + (cash.cashSale || 0) : 0;
+    const nextShift = this.nextShiftOpeningBalance();
+    const nextShiftChanged = nextShift !== null && nextShift !== defaultNextShift;
+
+    return otherChanged || expChanged || onlDiffChanged || remChanged || hasDenominations || nextShiftChanged;
+  });
+
   updateCashCount(den: number, value: string) {
     const parsed = parseInt(value, 10) || 0;
     this.cashCounts.update(counts => ({ ...counts, [den]: parsed }));
@@ -317,7 +340,50 @@ export class SessionEnd {
   }
 
   confirmEndSession() {
-    // Validate mandatory fields
+    const user = this.userDetails();
+    const summary = this.rawSummaryData();
+    const localSessionId = this.sessionService.getSessionId();
+    const sessionIdInt = localSessionId ? parseInt(localSessionId, 10) : 0;
+    const sessionIdStr = summary?.sessionIds ? summary.sessionIds.split(',').pop() : (localSessionId || '');
+
+    // 1. Prepare payload for api/v1/session/end
+    const endPayload = {
+      UserId: user?.id || 0,
+      SessionId: sessionIdInt,
+      ClosingBalance: (summary?.openingBalance || 0) + (summary?.cashSale || 0) - (this.otherCash() || 0),
+      TotalAmount: summary?.totalAmount || 0,
+      otherCash: this.otherCash() || 0,
+      openingBalanceforNextShift: this.nextShiftOpeningBalance() || 0
+    };
+
+    const logoutAndEnd = async () => {
+      // Clear IndexedDB
+      await this.dbService.clearAllData();
+
+      // Clear all storage
+      this.sessionService.clearSessionId();
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Navigate to login
+      this.router.navigate(['/login']);
+    };
+
+    // If no changes have been made, only call end API
+    if (!this.hasChanges()) {
+      this.apiService.post<any>('api/v1/session/end', endPayload).subscribe({
+        next: () => {
+          logoutAndEnd();
+        },
+        error: (err) => {
+          console.error('Failed to end session:', err);
+          this.notificationService.showError('Failed to end session');
+        }
+      });
+      return;
+    }
+
+    // Validate mandatory fields only if there are changes
     if (this.onlineDifference() === null || this.onlineDifference() === undefined) {
       this.notificationService.showError('Online Difference is required');
       return;
@@ -334,22 +400,6 @@ export class SessionEnd {
       this.notificationService.showError('Opening balance for next shift is required');
       return;
     }
-
-    const user = this.userDetails();
-    const summary = this.rawSummaryData();
-    const localSessionId = this.sessionService.getSessionId();
-    const sessionIdInt = localSessionId ? parseInt(localSessionId, 10) : 0;
-    const sessionIdStr = summary?.sessionIds ? summary.sessionIds.split(',').pop() : (localSessionId || '');
-
-    // 1. Prepare payload for api/v1/session/end
-    const endPayload = {
-      UserId: user?.id || 0,
-      SessionId: sessionIdInt,
-      ClosingBalance: (summary?.openingBalance || 0) + (summary?.cashSale || 0) - (this.otherCash() || 0),
-      TotalAmount: summary?.totalAmount || 0,
-      otherCash: this.otherCash() || 0,
-      openingBalanceforNextShift: this.nextShiftOpeningBalance() || 0
-    };
 
     // 2. Prepare payload for api/v1/session/save-summary
     const cashDenominations = this.denominations
@@ -393,22 +443,12 @@ export class SessionEnd {
       remark: this.remark() || ''
     };
 
-    // 3. Call api/v1/session/save-summary first
+    // 3. Call api/v1/session/save-summary first, then api/v1/session/end
     this.apiService.post<any>('api/v1/session/save-summary', saveSummaryPayload).subscribe({
       next: () => {
-        // If save-summary API call succeeds, call api/v1/session/end
         this.apiService.post<any>('api/v1/session/end', endPayload).subscribe({
-          next: async () => {
-            // Clear IndexedDB
-            await this.dbService.clearAllData();
-
-            // Clear all storage
-            this.sessionService.clearSessionId();
-            localStorage.clear();
-            sessionStorage.clear();
-
-            // Navigate to login
-            this.router.navigate(['/login']);
+          next: () => {
+            logoutAndEnd();
           },
           error: (err) => {
             console.error('Failed to end session:', err);

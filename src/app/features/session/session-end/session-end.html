@@ -255,7 +255,7 @@
 
     <button class="btn-confirm" (click)="confirmEndSession()">
       <div class="d-flex align-items-center gap-2">
-        <lucide-icon [img]="CheckCircle" [size]="16" class="text-white"></lucide-icon> Save & End Session
+        <lucide-icon [img]="CheckCircle" [size]="16" class="text-white"></lucide-icon> {{ hasChanges() ? 'Save & End Session' : 'End Session' }}
       </div>
     </button>
   </div>
