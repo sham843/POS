@@ -215,23 +215,19 @@ export class UserReport implements OnInit {
   setReportType(type: 'details' | 'summary') {
     this.reportType.set(type);
     this.currentPage.set(0);
-    if (this.fromDate() || this.toDate()) {
-      this.fetchReport();
-    } else {
-      this.reportData.set([]);
-    }
+    this.resetFiltersAndData();
+  }
+
+  resetFiltersAndData() {
+    this.fromDateObj.set(null);
+    this.toDateObj.set(null);
+    this.fromDate.set('');
+    this.toDate.set('');
+    this.selectedUser.set('all');
+    this.reportData.set([]);
   }
 
   ngOnInit() {
-    // Set default date range: from the 1st of current month to today
-    const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-
-    this.fromDateObj.set(firstDay);
-    this.toDateObj.set(today);
-    this.fromDate.set(this.formatDate(firstDay));
-    this.toDate.set(this.formatDate(today));
-
     const userStr = localStorage.getItem('UserDetails');
     let orgId = 28; // Default orgId fallback
     if (userStr) {
@@ -253,7 +249,6 @@ export class UserReport implements OnInit {
     }
 
     this.fetchUserList(orgId);
-    this.fetchReport();
   }
 
   fetchUserList(orgId: number) {
