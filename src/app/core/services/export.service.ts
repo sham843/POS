@@ -46,7 +46,7 @@ const formatGeneratedOn = (): string => {
   const day = String(now.getDate()).padStart(2, '0');
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const year = now.getFullYear();
-  
+
   let hours = now.getHours();
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const seconds = String(now.getSeconds()).padStart(2, '0');
@@ -88,49 +88,49 @@ export class ExportService {
 
     const aoa: any[][] = [];
 
-    // Add Brand Header (Extra Bold, Large 16pt, Blue text, Center-Aligned)
-    aoa.push([{ 
-      v: unitName, 
-      s: { 
-        font: { bold: true, size: 16, color: { rgb: '1E3A8A' } }, 
-        alignment: { horizontal: 'center' } 
-      } 
+    // Add Brand Header (Extra Bold, Large 20pt, Blue text, Center-Aligned)
+    aoa.push([{
+      v: unitName,
+      s: {
+        font: { bold: true, size: 25, color: { rgb: '1E3A8A' } },
+        alignment: { horizontal: 'center' }
+      }
     }]);
-    
+
     // Add Report Title (Bold 12pt, Center-Aligned)
-    aoa.push([{ 
-      v: title + (subtitle ? ' - ' + subtitle : ''), 
-      s: { 
-        font: { bold: true, size: 12 }, 
-        alignment: { horizontal: 'center' } 
-      } 
+    aoa.push([{
+      v: title + (subtitle ? ' - ' + subtitle : ''),
+      s: {
+        font: { bold: true, size: 12 },
+        alignment: { horizontal: 'center' }
+      }
     }]);
 
     if (periodFrom || periodTo) {
       const formattedFrom = formatToDdMmYyyy(periodFrom);
       const formattedTo = formatToDdMmYyyy(periodTo);
-      aoa.push([{ 
-        v: `Period: ${formattedFrom} to ${formattedTo}`, 
-        s: { 
-          alignment: { horizontal: 'center' } 
-        } 
+      aoa.push([{
+        v: `Period: ${formattedFrom} to ${formattedTo}`,
+        s: {
+          alignment: { horizontal: 'center' }
+        }
       }]);
     }
 
     metaInfo.forEach(meta => {
-      aoa.push([{ 
-        v: `${meta.label}: ${meta.value}`, 
-        s: { 
-          alignment: { horizontal: 'center' } 
-        } 
+      aoa.push([{
+        v: `${meta.label}: ${meta.value}`,
+        s: {
+          alignment: { horizontal: 'center' }
+        }
       }]);
     });
 
-    aoa.push([{ 
-      v: `Generated On: ${formatGeneratedOn()}`, 
-      s: { 
-        alignment: { horizontal: 'center' } 
-      } 
+    aoa.push([{
+      v: `Generated On: ${formatGeneratedOn()}`,
+      s: {
+        alignment: { horizontal: 'center' }
+      }
     }]);
     aoa.push([]); // Spacer row before data table
 
@@ -178,7 +178,7 @@ export class ExportService {
     const merges: any[] = [];
     merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } }); // Unit Name
     merges.push({ s: { r: 1, c: 0 }, e: { r: 1, c: headers.length - 1 } }); // Title
-    
+
     let mergeRowIdx = 2;
     if (periodFrom || periodTo) {
       merges.push({ s: { r: mergeRowIdx, c: 0 }, e: { r: mergeRowIdx, c: headers.length - 1 } }); // Period
@@ -189,7 +189,7 @@ export class ExportService {
       mergeRowIdx++;
     });
     merges.push({ s: { r: mergeRowIdx, c: 0 }, e: { r: mergeRowIdx, c: headers.length - 1 } }); // Generated On
-    
+
     worksheet['!merges'] = merges;
 
     // Auto-calculate column widths
@@ -299,7 +299,7 @@ export class ExportService {
               padding-bottom: 10px;
             }
             .header h1 {
-              font-size: 20px;
+              font-size: 26px;
               color: #1E3A8A;
               margin: 0 0 5px 0;
               font-weight: 800; /* Extra bold unit name */
