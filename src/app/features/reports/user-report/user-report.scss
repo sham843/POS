@@ -4,6 +4,56 @@
   height: 100%;
 }
 
+.pos-sub-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  background: #EFF6FF;
+  border-bottom: 1px solid #BFDBFE;
+  height: 56px;
+  flex-shrink: 0;
+
+  .sub-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1E3A8A;
+
+    lucide-icon {
+      width: 18px;
+      height: 18px;
+      color: #0052CC;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .sub-header-filters {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #4B5563;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        margin: 0;
+      }
+    }
+  }
+}
+
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -37,6 +87,18 @@
 }
 
 ::ng-deep {
+  /* Force all rows to have clean white background */
+  tr.mat-mdc-row {
+    background-color: #ffffff !important;
+  }
+
+  /* Force Right Alignment of both Header cell text and Row cell text */
+  th.mat-mdc-header-cell.text-end,
+  td.mat-mdc-cell.text-end {
+    text-align: right !important;
+  }
+
+  /* Paginator styling overrides */
   .mat-mdc-paginator {
     background: #ffffff !important;
     font-family: 'Inter', 'Roboto', sans-serif;
@@ -73,5 +135,128 @@
       opacity: 0.4 !important;
       background-color: transparent !important;
     }
+  }
+
+  /* Table Footer styling */
+  tr.mat-mdc-footer-row {
+    background-color: #EFF6FF !important;
+    border-top: 2px solid #BFDBFE !important;
+    border-bottom: 2px solid #BFDBFE !important;
+  }
+
+  td.mat-mdc-footer-cell {
+    color: #1E3A8A !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    padding: 10px 16px !important;
+    border-bottom: none !important;
+    
+    &.text-end {
+      text-align: right !important;
+    }
+  }
+}
+
+/* Premium Buttons Styling */
+.btn {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  span {
+    line-height: 1;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.btn-icon-only {
+  width: 38px;
+  height: 38px;
+  padding: 0 !important;
+  border-radius: 8px;
+
+  .btn-icon-large {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.btn-search {
+  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  color: #ffffff;
+  border: none;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1D4ED8, #1E40AF);
+  }
+}
+
+.btn-clear {
+  background-color: #ffffff;
+  border-color: #D1D5DB;
+  color: #374151;
+
+  &:hover:not(:disabled) {
+    background-color: #F9FAFB;
+    border-color: #9CA3AF;
+  }
+}
+
+.btn-excel {
+  background-color: #ECFDF5;
+  border-color: #A7F3D0;
+  color: #047857;
+
+  &:hover:not(:disabled) {
+    background-color: #D1FAE5;
+    border-color: #6EE7B7;
+  }
+}
+
+.btn-pdf {
+  background-color: #FEF2F2;
+  border-color: #FCA5A5;
+  color: #B91C1C;
+
+  &:hover:not(:disabled) {
+    background-color: #FEE2E2;
+    border-color: #F87171;
   }
 }

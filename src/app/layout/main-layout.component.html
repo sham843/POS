@@ -46,10 +46,12 @@
       </a>
       <!-- Reports Menu Container (Click-to-toggle, touch-friendly, no direct navigation) -->
       <div class="reports-menu-container">
-        <a class="nav-link" [class.active]="router.url.includes('reports/')" (click)="showReportsDropdown.update(v => !v)" style="cursor: pointer;">
+        <a class="nav-link" [class.active]="router.url.includes('reports/')"
+          (click)="showReportsDropdown.update(v => !v)" style="cursor: pointer;">
           <lucide-icon [img]="LineChart"></lucide-icon>
           <span class="nav-text">Reports</span>
-          <lucide-icon [img]="ChevronDown" [size]="12" class="ms-1 dropdown-chevron" [class.rotated-chevron]="showReportsDropdown()"></lucide-icon>
+          <lucide-icon [img]="ChevronDown" [size]="12" class="ms-1 dropdown-chevron"
+            [class.rotated-chevron]="showReportsDropdown()"></lucide-icon>
         </a>
 
         <!-- Reports Dropdown Menu -->

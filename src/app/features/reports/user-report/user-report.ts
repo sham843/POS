@@ -2,7 +2,7 @@ import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy } 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
-import { LucideAngularModule, User, Loader, Receipt, Calendar } from 'lucide-angular';
+import { LucideAngularModule, User, Loader, Receipt, Calendar, Search, RotateCcw, FileSpreadsheet, FileText } from 'lucide-angular';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,6 +11,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTableModule } from '@angular/material/table';
 import { ApiService } from '../../../core/services/api.service';
+import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-user-report',
@@ -25,7 +26,8 @@ import { ApiService } from '../../../core/services/api.service';
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatTableModule
+    MatTableModule,
+    EmptyState
   ],
   templateUrl: './user-report.html',
   styleUrl: './user-report.scss',
@@ -38,6 +40,10 @@ export class UserReport implements OnInit {
   readonly LoaderIcon = Loader;
   readonly ReceiptIcon = Receipt;
   readonly CalendarIcon = Calendar;
+  readonly SearchIcon = Search;
+  readonly ClearIcon = RotateCcw;
+  readonly ExcelIcon = FileSpreadsheet;
+  readonly PdfIcon = FileText;
 
   // Filter Date Objects (for mat-datepicker)
   fromDateObj = signal<Date>(new Date('2025-02-04'));
@@ -47,6 +53,43 @@ export class UserReport implements OnInit {
   fromDate = signal<string>('2025-02-04');
   toDate = signal<string>('2026-07-02');
   selectedUser = signal<string>('all');
+
+  // Computed properties for column totals
+  totalBillAmount = computed(() => {
+    return this.reportData().reduce((sum, item) => sum + (Number(item.totalAmount || item.TotalAmount) || 0), 0);
+  });
+
+  totalDiscount = computed(() => {
+    return this.reportData().reduce((sum, item) => sum + (Number(item.discount || item.Discount) || 0), 0);
+  });
+
+  totalTaxableAmount = computed(() => {
+    return this.reportData().reduce((sum, item) => sum + (Number(item.taxableAmount || item.TaxableAmount) || 0), 0);
+  });
+
+  totalCgst = computed(() => {
+    return this.reportData().reduce((sum, item) => sum + (Number(item.cgst || item.Cgst || item.CGST) || 0), 0);
+  });
+
+  totalSgst = computed(() => {
+    return this.reportData().reduce((sum, item) => sum + (Number(item.sgst || item.Sgst || item.SGST) || 0), 0);
+  });
+
+  totalIgst = computed(() => {
+    return this.reportData().reduce((sum, item) => sum + (Number(item.igst || item.Igst || item.IGST) || 0), 0);
+  });
+
+  totalAfterTaxTotal = computed(() => {
+    return this.reportData().reduce((sum, item) => sum + (Number(item.afterTaxTotal || item.AfterTaxTotal) || 0), 0);
+  });
+
+  totalChargeableAmount = computed(() => {
+    return this.reportData().reduce((sum, item) => sum + (Number(item.chargeableAmount || item.ChargeableAmount) || 0), 0);
+  });
+
+  totalRoundOff = computed(() => {
+    return this.reportData().reduce((sum, item) => sum + (Number(item.roundOff || item.RoundOff) || 0), 0);
+  });
 
   isLoading = signal<boolean>(false);
   currentUser = signal<any>(null);
@@ -62,7 +105,9 @@ export class UserReport implements OnInit {
   reportData = signal<any[]>([]);
 
   // Mat-table columns configuration
+
   displayedColumns: string[] = [
+    'user_Name',
     'billDetails',
     'customerName',
     'totalAmount',
@@ -104,8 +149,6 @@ export class UserReport implements OnInit {
     } else {
       this.userList.set([{ id: 620, name: 'Pravin Varpe' }]);
     }
-
-    this.fetchReport();
   }
 
   fetchReport() {
@@ -149,15 +192,23 @@ export class UserReport implements OnInit {
     });
   }
 
-  onFilterChange() {
+  searchReport() {
     this.fetchReport();
+  }
+
+  clearFilters() {
+    this.fromDateObj.set(new Date('2025-02-04'));
+    this.toDateObj.set(new Date('2026-07-02'));
+    this.fromDate.set('2025-02-04');
+    this.toDate.set('2026-07-02');
+    this.selectedUser.set('all');
+    this.reportData.set([]);
   }
 
   onFromDateChange(date: Date) {
     if (date) {
       this.fromDateObj.set(date);
       this.fromDate.set(this.formatDate(date));
-      this.onFilterChange();
     }
   }
 
@@ -165,8 +216,236 @@ export class UserReport implements OnInit {
     if (date) {
       this.toDateObj.set(date);
       this.toDate.set(this.formatDate(date));
-      this.onFilterChange();
     }
+  }
+
+  exportToExcel() {
+    const data = this.reportData();
+    if (!data || data.length === 0) {
+      return;
+    }
+
+    const headers = [
+      'User Name',
+      'Bill No',
+      'Bill Date',
+      'Customer Name',
+      'Payment Mode',
+      'Total Amount (INR)',
+      'Discount (INR)',
+      'Taxable Amount (INR)',
+      'CGST (INR)',
+      'SGST (INR)',
+      'IGST (INR)',
+      'After Tax Total (INR)',
+      'Chargeable Amount (INR)',
+      'Round Off (INR)'
+    ];
+
+    const rows = data.map(item => [
+      item.user_Name || '',
+      item.bill_Number || '',
+      item.bill_Date || '',
+      item.customer_Name || '',
+      this.getPaymentMode(item) || '',
+      item.totalAmount || item.TotalAmount || 0,
+      item.discount || item.Discount || 0,
+      item.taxableAmount || item.TaxableAmount || 0,
+      item.cgst || item.Cgst || item.CGST || 0,
+      item.sgst || item.Sgst || item.SGST || 0,
+      item.igst || item.Igst || item.IGST || 0,
+      item.afterTaxTotal || item.AfterTaxTotal || 0,
+      item.chargeableAmount || item.ChargeableAmount || 0,
+      item.roundOff || item.RoundOff || 0
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(val => {
+        const str = typeof val === 'string' ? val : String(val);
+        const escaped = str.replace(/"/g, '""');
+        return (escaped.includes(',') || escaped.includes('\n') || escaped.includes('"'))
+          ? `"${escaped}"`
+          : escaped;
+      }).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `User_Wise_Sale_Report_${this.fromDate()}_to_${this.toDate()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  exportToPdf() {
+    const data = this.reportData();
+    if (!data || data.length === 0) {
+      return;
+    }
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups to print/export PDF.');
+      return;
+    }
+
+    const fromDate = this.fromDate();
+    const toDate = this.toDate();
+    const selectedUser = this.selectedUser();
+
+    const rowsHtml = data.map((item, idx) => `
+      <tr>
+        <td style="text-align: center;">${idx + 1}</td>
+        <td>${item.user_Name || ''}</td>
+        <td>${item.bill_Number || '-'}<br/><small>${item.bill_Date || ''}</small></td>
+        <td>${item.customer_Name || '-'}</td>
+        <td style="text-align: center;">${this.getPaymentMode(item) || '-'}</td>
+        <td style="text-align: right;">₹${(Number(item.totalAmount || item.TotalAmount) || 0).toFixed(2)}</td>
+        <td style="text-align: right;">₹${(Number(item.discount || item.Discount) || 0).toFixed(2)}</td>
+        <td style="text-align: right;">₹${(Number(item.taxableAmount || item.TaxableAmount) || 0).toFixed(2)}</td>
+        <td style="text-align: right;">₹${(Number(item.cgst || item.Cgst || item.CGST) || 0).toFixed(2)}</td>
+        <td style="text-align: right;">₹${(Number(item.sgst || item.Sgst || item.SGST) || 0).toFixed(2)}</td>
+        <td style="text-align: right;">₹${(Number(item.igst || item.Igst || item.IGST) || 0).toFixed(2)}</td>
+        <td style="text-align: right;">₹${(Number(item.afterTaxTotal || item.AfterTaxTotal) || 0).toFixed(2)}</td>
+        <td style="text-align: right; font-weight: bold;">₹${(Number(item.chargeableAmount || item.ChargeableAmount) || 0).toFixed(2)}</td>
+        <td style="text-align: right;">₹${(Number(item.roundOff || item.RoundOff) || 0).toFixed(2)}</td>
+      </tr>
+    `).join('');
+
+    const totalsHtml = `
+      <tr class="totals-row">
+        <td colspan="5" style="text-align: right; font-weight: bold;">Total:</td>
+        <td style="text-align: right; font-weight: bold;">₹${this.totalBillAmount().toFixed(2)}</td>
+        <td style="text-align: right; font-weight: bold;">₹${this.totalDiscount().toFixed(2)}</td>
+        <td style="text-align: right; font-weight: bold;">₹${this.totalTaxableAmount().toFixed(2)}</td>
+        <td style="text-align: right; font-weight: bold;">₹${this.totalCgst().toFixed(2)}</td>
+        <td style="text-align: right; font-weight: bold;">₹${this.totalSgst().toFixed(2)}</td>
+        <td style="text-align: right; font-weight: bold;">₹${this.totalIgst().toFixed(2)}</td>
+        <td style="text-align: right; font-weight: bold;">₹${this.totalAfterTaxTotal().toFixed(2)}</td>
+        <td style="text-align: right; font-weight: bold; color: #1E3A8A;">₹${this.totalChargeableAmount().toFixed(2)}</td>
+        <td style="text-align: right; font-weight: bold;">₹${this.totalRoundOff().toFixed(2)}</td>
+      </tr>
+    `;
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>User Wise Sale Report</title>
+          <style>
+            body {
+              font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+              color: #1F2937;
+              padding: 20px;
+              font-size: 11px;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 20px;
+              border-bottom: 2px solid #E5E7EB;
+              padding-bottom: 10px;
+            }
+            .header h1 {
+              font-size: 18px;
+              color: #1E3A8A;
+              margin: 0 0 5px 0;
+            }
+            .header p {
+              margin: 0;
+              color: #4B5563;
+              font-size: 12px;
+            }
+            .meta-info {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 15px;
+              font-size: 11px;
+              color: #4B5563;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+            }
+            th, td {
+              border: 1px solid #D1D5DB;
+              padding: 6px 8px;
+              text-align: left;
+            }
+            th {
+              background-color: #F3F4F6;
+              color: #374151;
+              font-weight: 600;
+              font-size: 10px;
+              text-transform: uppercase;
+            }
+            tr:nth-child(even) {
+              background-color: #F9FAFB;
+            }
+            .totals-row {
+              background-color: #EFF6FF !important;
+            }
+            .totals-row td {
+              border-top: 2px solid #3B82F6;
+              border-bottom: 2px solid #3B82F6;
+            }
+            @media print {
+              body {
+                padding: 0;
+              }
+              @page {
+                size: A4 landscape;
+                margin: 10mm;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Hi-Tech Dairy Shop</h1>
+            <p>User Wise Sale Report</p>
+          </div>
+          <div class="meta-info">
+            <div><strong>Period:</strong> ${fromDate} to ${toDate}</div>
+            <div><strong>User Filter:</strong> ${selectedUser === 'all' ? 'All Users' : selectedUser}</div>
+            <div><strong>Generated On:</strong> ${new Date().toLocaleString()}</div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 30px; text-align: center;">Sr</th>
+                <th>User Name</th>
+                <th>Bill No / Date</th>
+                <th>Customer Name</th>
+                <th style="text-align: center;">Payment Mode</th>
+                <th style="text-align: right;">Total Amt</th>
+                <th style="text-align: right;">Disc</th>
+                <th style="text-align: right;">Taxable Amt</th>
+                <th style="text-align: right;">CGST</th>
+                <th style="text-align: right;">SGST</th>
+                <th style="text-align: right;">IGST</th>
+                <th style="text-align: right;">After Tax</th>
+                <th style="text-align: right;">Chargeable</th>
+                <th style="text-align: right;">Round Off</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+              ${totalsHtml}
+            </tbody>
+          </table>
+          <script>
+            window.onload = function() {
+              window.print();
+              window.close();
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   }
 
   formatDate(date: Date): string {
