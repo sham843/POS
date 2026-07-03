@@ -69,6 +69,7 @@ export class UserReport implements OnInit {
   fromDate = signal<string>('');
   toDate = signal<string>('');
   selectedUser = signal<string>('all');
+  maxDate = new Date();
 
   // Report type state ('details' or 'summary')
   reportType = signal<'details' | 'summary'>('details');
@@ -341,6 +342,11 @@ export class UserReport implements OnInit {
     this.fromDateObj.set(date);
     if (date) {
       this.fromDate.set(this.formatDate(date));
+      const currentTo = this.toDateObj();
+      if (currentTo && date > currentTo) {
+        this.toDateObj.set(date);
+        this.toDate.set(this.formatDate(date));
+      }
     } else {
       this.fromDate.set('');
     }
@@ -350,6 +356,11 @@ export class UserReport implements OnInit {
     this.toDateObj.set(date);
     if (date) {
       this.toDate.set(this.formatDate(date));
+      const currentFrom = this.fromDateObj();
+      if (currentFrom && date < currentFrom) {
+        this.fromDateObj.set(date);
+        this.fromDate.set(this.formatDate(date));
+      }
     } else {
       this.toDate.set('');
     }

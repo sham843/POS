@@ -28,7 +28,7 @@
         <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
           <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
             (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
-            placeholder="From Date">
+            placeholder="From Date" [max]="toDateObj() || maxDate">
           <mat-datepicker-toggle matSuffix [for]="fromDateStrPicker"></mat-datepicker-toggle>
           <mat-datepicker #fromDateStrPicker></mat-datepicker>
         </mat-form-field>
@@ -39,7 +39,8 @@
 
         <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
           <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
-            (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date">
+            (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date"
+            [min]="fromDateObj()" [max]="maxDate">
           <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
           <mat-datepicker #toDateStrPicker></mat-datepicker>
         </mat-form-field>
