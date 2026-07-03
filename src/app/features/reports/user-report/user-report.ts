@@ -8,11 +8,22 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { CustomDateAdapter, CUSTOM_DATE_FORMATS } from '../../../core/adapters/custom-date-adapter';
 import { MatTableModule } from '@angular/material/table';
 import { ApiService } from '../../../core/services/api.service';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ExportService } from '../../../core/services/export.service';
+
+export interface UserSaleSummaryItem {
+  userName: string;
+  cashSale: number;
+  onlineSale: number;
+  couponSale: number;
+  creditSale: number;
+  totalBills: number;
+  totalSale: number;
+}
 
 @Component({
   selector: 'app-user-report',
@@ -26,9 +37,12 @@ import { ExportService } from '../../../core/services/export.service';
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatNativeDateModule,
     MatTableModule,
     EmptyState
+  ],
+  providers: [
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
   ],
   templateUrl: './user-report.html',
   styleUrl: './user-report.scss',
@@ -55,6 +69,9 @@ export class UserReport implements OnInit {
   fromDate = signal<string>('');
   toDate = signal<string>('');
   selectedUser = signal<string>('all');
+
+  // Report type state ('details' or 'summary')
+  reportType = signal<'details' | 'summary'>('details');
 
   // Computed properties for column totals
   totalBillAmount = computed(() => {
@@ -106,26 +123,86 @@ export class UserReport implements OnInit {
   // Report results from API
   reportData = signal<any[]>([]);
 
-  // Mat-table columns configuration
+  normalizeSummaryData(item: any): UserSaleSummaryItem {
+    return {
+      userName: item.user_Name || item.userName || item.UserName || item.name || item.Name || '',
+      cashSale: Number(item.total_Cash_Sale ?? item.cashSale ?? item.CashSale ?? item.cash_Sale ?? item.cashAmount ?? item.CashAmount ?? 0),
+      onlineSale: Number(item.total_Online_Sale ?? item.onlineSale ?? item.OnlineSale ?? item.online_Sale ?? item.onlineAmount ?? item.OnlineAmount ?? 0),
+      couponSale: Number(item.total_Coupon_Sale ?? item.couponSale ?? item.CouponSale ?? item.coupon_Sale ?? item.couponAmount ?? item.CouponAmount ?? 0),
+      creditSale: Number(item.total_Credit_Sale ?? item.creditSale ?? item.CreditSale ?? item.credit_Sale ?? item.creditAmount ?? item.CreditAmount ?? 0),
+      totalBills: Number(item.total_Bills ?? item.totalBills ?? item.TotalBills ?? item.billCount ?? item.BillCount ?? 0),
+      totalSale: Number(item.totalSale ?? item.TotalSale ?? item.total_Sale ?? item.totalAmount ?? item.TotalAmount ?? 0)
+    };
+  }
 
-  displayedColumns: string[] = [
-    'user_Name',
-    'billDetails',
-    'customerName',
-    'totalAmount',
-    'discount',
-    'taxableAmount',
-    'cgst',
-    'sgst',
-    'igst',
-    'afterTaxTotal',
-    'roundOff',
-    'chargeableAmount'
-  ];
+  // Normalized summary data
+  summaryData = computed<UserSaleSummaryItem[]>(() => {
+    if (this.reportType() !== 'summary') return [];
+    return this.reportData().map(item => this.normalizeSummaryData(item));
+  });
+
+  // Computed summary totals
+  totalCashSale = computed(() => {
+    return this.summaryData().reduce((sum, item) => sum + item.cashSale, 0);
+  });
+
+  totalOnlineSale = computed(() => {
+    return this.summaryData().reduce((sum, item) => sum + item.onlineSale, 0);
+  });
+
+  totalCouponSale = computed(() => {
+    return this.summaryData().reduce((sum, item) => sum + item.couponSale, 0);
+  });
+
+  totalCreditSale = computed(() => {
+    return this.summaryData().reduce((sum, item) => sum + item.creditSale, 0);
+  });
+
+  totalBillsSummary = computed(() => {
+    return this.summaryData().reduce((sum, item) => sum + item.totalBills, 0);
+  });
+
+  totalSaleSummary = computed(() => {
+    return this.summaryData().reduce((sum, item) => sum + item.totalSale, 0);
+  });
+
+  // Dynamic active report length
+  activeReportLength = computed(() => {
+    return this.reportType() === 'summary' ? this.summaryData().length : this.reportData().length;
+  });
+
+  // Mat-table columns configuration
+  displayedColumns = computed<string[]>(() => {
+    if (this.reportType() === 'summary') {
+      return [
+        'user_Name',
+        'cashSale',
+        'onlineSale',
+        'couponSale',
+        'creditSale',
+        'totalBills',
+        'totalSale'
+      ];
+    }
+    return [
+      'user_Name',
+      'billDetails',
+      'customerName',
+      'totalAmount',
+      'discount',
+      'taxableAmount',
+      'cgst',
+      'sgst',
+      'igst',
+      'afterTaxTotal',
+      'roundOff',
+      'chargeableAmount'
+    ];
+  });
 
   // Computed paginated view of active data
   paginatedData = computed(() => {
-    const data = this.reportData();
+    const data = this.reportType() === 'summary' ? this.summaryData() : this.reportData();
     const size = this.pageSize();
     const pageIndex = this.currentPage();
     const start = pageIndex * size;
@@ -133,7 +210,27 @@ export class UserReport implements OnInit {
     return data.slice(start, end);
   });
 
+  // Toggle report type method
+  setReportType(type: 'details' | 'summary') {
+    this.reportType.set(type);
+    this.currentPage.set(0);
+    if (this.fromDate() || this.toDate()) {
+      this.fetchReport();
+    } else {
+      this.reportData.set([]);
+    }
+  }
+
   ngOnInit() {
+    // Set default date range: from the 1st of current month to today
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    this.fromDateObj.set(firstDay);
+    this.toDateObj.set(today);
+    this.fromDate.set(this.formatDate(firstDay));
+    this.toDate.set(this.formatDate(today));
+
     const userStr = localStorage.getItem('UserDetails');
     let orgId = 28; // Default orgId fallback
     if (userStr) {
@@ -155,6 +252,7 @@ export class UserReport implements OnInit {
     }
 
     this.fetchUserList(orgId);
+    this.fetchReport();
   }
 
   fetchUserList(orgId: number) {
@@ -203,25 +301,14 @@ export class UserReport implements OnInit {
       'X-Skip-Loader': 'true'
     });
 
-    this.apiService.post<any>('api/v1/report/user-wise-sale', payload, headers).subscribe({
+    const endpoint = this.reportType() === 'details' ? 'api/v1/report/user-wise-sale' : 'api/v1/report/user-sale-summary';
+
+    this.apiService.post<any>(endpoint, payload, headers).subscribe({
       next: (response) => {
         if (response && response.data) {
           console.log('API Response data sample:', response.data[0]);
           console.log('All Response data:', response.data);
           this.reportData.set(response.data);
-          setTimeout(() => {
-            console.log('Computed Totals Debug:', {
-              totalBillAmount: this.totalBillAmount(),
-              totalDiscount: this.totalDiscount(),
-              totalTaxableAmount: this.totalTaxableAmount(),
-              totalCgst: this.totalCgst(),
-              totalSgst: this.totalSgst(),
-              totalIgst: this.totalIgst(),
-              totalAfterTaxTotal: this.totalAfterTaxTotal(),
-              totalChargeableAmount: this.totalChargeableAmount(),
-              totalRoundOff: this.totalRoundOff()
-            });
-          }, 200);
         } else {
           this.reportData.set([]);
         }
@@ -229,7 +316,7 @@ export class UserReport implements OnInit {
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('Failed to fetch user-wise sale report:', err);
+        console.error('Failed to fetch user sale report:', err);
         this.reportData.set([]);
         this.currentPage.set(0);
         this.isLoading.set(false);
@@ -269,61 +356,96 @@ export class UserReport implements OnInit {
   }
 
   exportToExcel() {
-    const data = this.reportData();
+    const isSummary = this.reportType() === 'summary';
+    const data = isSummary ? this.summaryData() : this.reportData();
     if (!data || data.length === 0) {
       return;
     }
 
-    const headers = [
-      'User Name',
-      'Bill No',
-      'Bill Date',
-      'Customer Name',
-      'Payment Mode',
-      'Total Amount (INR)',
-      'Discount (INR)',
-      'Taxable Amount (INR)',
-      'CGST (INR)',
-      'SGST (INR)',
-      'IGST (INR)',
-      'After Tax Total (INR)',
-      'Chargeable Amount (INR)',
-      'Round Off (INR)'
-    ];
+    let headers: string[];
+    let rows: any[][];
+    let footerRow: any[];
 
-    const rows = data.map(item => [
-      item.user_Name || '',
-      item.bill_Number || '',
-      item.bill_Date || '',
-      item.customer_Name || '',
-      this.getPaymentMode(item) || '',
-      item.totalAmount || item.TotalAmount || 0,
-      item.discount || item.Discount || 0,
-      item.taxableAmount || item.TaxableAmount || 0,
-      item.cgst || item.Cgst || item.CGST || 0,
-      item.sgst || item.Sgst || item.SGST || 0,
-      item.igst || item.Igst || item.IGST || 0,
-      item.afterTaxTotal || item.AfterTaxTotal || 0,
-      item.chargeableAmount || item.ChargeableAmount || 0,
-      item.roundOff || item.RoundOff || 0
-    ]);
+    if (isSummary) {
+      headers = [
+        'User Name',
+        'Cash Sale (INR)',
+        'Online Sale (INR)',
+        'Coupon Sale (INR)',
+        'Credit Sale (INR)',
+        'Total Bills',
+        'Total Sale (INR)'
+      ];
+      rows = (data as UserSaleSummaryItem[]).map(item => [
+        item.userName,
+        item.cashSale,
+        item.onlineSale,
+        item.couponSale,
+        item.creditSale,
+        item.totalBills,
+        item.totalSale
+      ]);
+      footerRow = [
+        'Total:',
+        this.totalCashSale(),
+        this.totalOnlineSale(),
+        this.totalCouponSale(),
+        this.totalCreditSale(),
+        this.totalBillsSummary(),
+        this.totalSaleSummary()
+      ];
+    } else {
+      headers = [
+        'User Name',
+        'Bill No',
+        'Bill Date',
+        'Customer Name',
+        'Payment Mode',
+        'Total Amount (INR)',
+        'Discount (INR)',
+        'Taxable Amount (INR)',
+        'CGST (INR)',
+        'SGST (INR)',
+        'IGST (INR)',
+        'After Tax Total (INR)',
+        'Chargeable Amount (INR)',
+        'Round Off (INR)'
+      ];
 
-    const footerRow = [
-      'Total:',
-      '',
-      '',
-      '',
-      '',
-      this.totalBillAmount(),
-      this.totalDiscount(),
-      this.totalTaxableAmount(),
-      this.totalCgst(),
-      this.totalSgst(),
-      this.totalIgst(),
-      this.totalAfterTaxTotal(),
-      this.totalChargeableAmount(),
-      this.totalRoundOff()
-    ];
+      rows = data.map(item => [
+        item.user_Name || '',
+        item.bill_Number || '',
+        item.bill_Date || '',
+        item.customer_Name || '',
+        this.getPaymentMode(item) || '',
+        item.totalAmount || item.TotalAmount || 0,
+        item.discount || item.Discount || 0,
+        item.taxableAmount || item.TaxableAmount || 0,
+        item.cgst || item.Cgst || item.CGST || 0,
+        item.sgst || item.Sgst || item.SGST || 0,
+        item.igst || item.Igst || item.IGST || 0,
+        item.afterTaxTotal || item.AfterTaxTotal || 0,
+        item.chargeableAmount || item.ChargeableAmount || 0,
+        item.roundOff || item.RoundOff || 0
+      ]);
+
+      footerRow = [
+        'Total:',
+        '',
+        '',
+        '',
+        '',
+        this.totalBillAmount(),
+        this.totalDiscount(),
+        this.totalTaxableAmount(),
+        this.totalCgst(),
+        this.totalSgst(),
+        this.totalIgst(),
+        this.totalAfterTaxTotal(),
+        this.totalChargeableAmount(),
+        this.totalRoundOff()
+      ];
+    }
 
     const selectedUserVal = this.selectedUser();
     let selectedUserName = 'All Users';
@@ -338,7 +460,7 @@ export class UserReport implements OnInit {
     const unitName = this.currentUser()?.unitName || this.currentUser()?.UnitName || 'Hi-Tech Dairy Shop';
 
     this.exportService.exportToExcel({
-      title: 'User Wise Sale Report',
+      title: isSummary ? 'User Sale Summary Report' : 'User Wise Sale Report',
       unitName,
       periodFrom: this.fromDate() || '-',
       periodTo: this.toDate() || '-',
@@ -348,83 +470,137 @@ export class UserReport implements OnInit {
       headers,
       rows,
       footerRow,
-      fileName: `User_Wise_Sale_Report_${this.fromDate() || 'all'}_to_${this.toDate() || 'all'}.xlsx`
+      fileName: isSummary 
+        ? `User_Sale_Summary_Report_${this.fromDate() || 'all'}_to_${this.toDate() || 'all'}.xlsx`
+        : `User_Wise_Sale_Report_${this.fromDate() || 'all'}_to_${this.toDate() || 'all'}.xlsx`
     });
   }
 
   exportToPdf() {
-    const data = this.reportData();
+    const isSummary = this.reportType() === 'summary';
+    const data = isSummary ? this.summaryData() : this.reportData();
     if (!data || data.length === 0) {
       return;
     }
 
-    const headers = [
-      'Sr',
-      'User Name',
-      'Bill No / Date',
-      'Customer Name',
-      'Payment Mode',
-      'Total Amt',
-      'Disc',
-      'Taxable Amt',
-      'CGST',
-      'SGST',
-      'IGST',
-      'After Tax',
-      'Chargeable',
-      'Round Off'
-    ];
+    let headers: string[];
+    let rows: any[][];
+    let footerRow: any[];
+    let columnAlignments: ('left' | 'center' | 'right')[];
 
-    const rows = data.map((item, idx) => [
-      idx + 1,
-      item.user_Name || '',
-      `${item.bill_Number || '-'}<br/><small>${item.bill_Date || ''}</small>`,
-      item.customer_Name || '-',
-      this.getPaymentMode(item) || '-',
-      `Rs. ${(Number(item.totalAmount || item.TotalAmount) || 0).toFixed(2)}`,
-      `Rs. ${(Number(item.discount || item.Discount) || 0).toFixed(2)}`,
-      `Rs. ${(Number(item.taxableAmount || item.TaxableAmount) || 0).toFixed(2)}`,
-      `Rs. ${(Number(item.cgst || item.Cgst || item.CGST) || 0).toFixed(2)}`,
-      `Rs. ${(Number(item.sgst || item.Sgst || item.SGST) || 0).toFixed(2)}`,
-      `Rs. ${(Number(item.igst || item.Igst || item.IGST) || 0).toFixed(2)}`,
-      `Rs. ${(Number(item.afterTaxTotal || item.AfterTaxTotal) || 0).toFixed(2)}`,
-      `Rs. ${(Number(item.chargeableAmount || item.ChargeableAmount) || 0).toFixed(2)}`,
-      `Rs. ${(Number(item.roundOff || item.RoundOff) || 0).toFixed(2)}`
-    ]);
+    if (isSummary) {
+      headers = [
+        'Sr',
+        'User Name',
+        'Cash Sale',
+        'Online Sale',
+        'Coupon Sale',
+        'Credit Sale',
+        'Total Bills',
+        'Total Sale'
+      ];
 
-    const footerRow = [
-      'Total:',
-      '',
-      '',
-      '',
-      '',
-      `Rs. ${this.totalBillAmount().toFixed(2)}`,
-      `Rs. ${this.totalDiscount().toFixed(2)}`,
-      `Rs. ${this.totalTaxableAmount().toFixed(2)}`,
-      `Rs. ${this.totalCgst().toFixed(2)}`,
-      `Rs. ${this.totalSgst().toFixed(2)}`,
-      `Rs. ${this.totalIgst().toFixed(2)}`,
-      `Rs. ${this.totalAfterTaxTotal().toFixed(2)}`,
-      `Rs. ${this.totalChargeableAmount().toFixed(2)}`,
-      `Rs. ${this.totalRoundOff().toFixed(2)}`
-    ];
+      rows = (data as UserSaleSummaryItem[]).map((item, idx) => [
+        idx + 1,
+        item.userName,
+        `Rs. ${item.cashSale.toFixed(2)}`,
+        `Rs. ${item.onlineSale.toFixed(2)}`,
+        `Rs. ${item.couponSale.toFixed(2)}`,
+        `Rs. ${item.creditSale.toFixed(2)}`,
+        item.totalBills.toString(),
+        `Rs. ${item.totalSale.toFixed(2)}`
+      ]);
 
-    const columnAlignments: ('left' | 'center' | 'right')[] = [
-      'center', // Sr
-      'left',   // User Name
-      'left',   // Bill No / Date
-      'left',   // Customer Name
-      'center', // Payment Mode
-      'right',  // Total Amt
-      'right',  // Disc
-      'right',  // Taxable Amt
-      'right',  // CGST
-      'right',  // SGST
-      'right',  // IGST
-      'right',  // After Tax
-      'right',  // Chargeable
-      'right'   // Round Off
-    ];
+      footerRow = [
+        'Total:',
+        '',
+        `Rs. ${this.totalCashSale().toFixed(2)}`,
+        `Rs. ${this.totalOnlineSale().toFixed(2)}`,
+        `Rs. ${this.totalCouponSale().toFixed(2)}`,
+        `Rs. ${this.totalCreditSale().toFixed(2)}`,
+        this.totalBillsSummary().toString(),
+        `Rs. ${this.totalSaleSummary().toFixed(2)}`
+      ];
+
+      columnAlignments = [
+        'center', // Sr
+        'left',   // User Name
+        'right',  // Cash Sale
+        'right',  // Online Sale
+        'right',  // Coupon Sale
+        'right',  // Credit Sale
+        'center', // Total Bills
+        'right'   // Total Sale
+      ];
+    } else {
+      headers = [
+        'Sr',
+        'User Name',
+        'Bill No / Date',
+        'Customer Name',
+        'Payment Mode',
+        'Total Amt',
+        'Disc',
+        'Taxable Amt',
+        'CGST',
+        'SGST',
+        'IGST',
+        'After Tax',
+        'Chargeable',
+        'Round Off'
+      ];
+
+      rows = data.map((item, idx) => [
+        idx + 1,
+        item.user_Name || '',
+        `${item.bill_Number || '-'}<br/><small>${item.bill_Date || ''}</small>`,
+        item.customer_Name || '-',
+        this.getPaymentMode(item) || '-',
+        `Rs. ${(Number(item.totalAmount || item.TotalAmount) || 0).toFixed(2)}`,
+        `Rs. ${(Number(item.discount || item.Discount) || 0).toFixed(2)}`,
+        `Rs. ${(Number(item.taxableAmount || item.TaxableAmount) || 0).toFixed(2)}`,
+        `Rs. ${(Number(item.cgst || item.Cgst || item.CGST) || 0).toFixed(2)}`,
+        `Rs. ${(Number(item.sgst || item.Sgst || item.SGST) || 0).toFixed(2)}`,
+        `Rs. ${(Number(item.igst || item.Igst || item.IGST) || 0).toFixed(2)}`,
+        `Rs. ${(Number(item.afterTaxTotal || item.AfterTaxTotal) || 0).toFixed(2)}`,
+        `Rs. ${(Number(item.chargeableAmount || item.ChargeableAmount) || 0).toFixed(2)}`,
+        `Rs. ${(Number(item.roundOff || item.RoundOff) || 0).toFixed(2)}`
+      ]);
+
+      footerRow = [
+        'Total:',
+        '',
+        '',
+        '',
+        '',
+        `Rs. ${this.totalBillAmount().toFixed(2)}`,
+        `Rs. ${this.totalDiscount().toFixed(2)}`,
+        `Rs. ${this.totalTaxableAmount().toFixed(2)}`,
+        `Rs. ${this.totalCgst().toFixed(2)}`,
+        `Rs. ${this.totalSgst().toFixed(2)}`,
+        `Rs. ${this.totalIgst().toFixed(2)}`,
+        `Rs. ${this.totalAfterTaxTotal().toFixed(2)}`,
+        `Rs. ${this.totalChargeableAmount().toFixed(2)}`,
+        `Rs. ${this.totalRoundOff().toFixed(2)}`
+      ];
+
+      columnAlignments = [
+        'center', // Sr
+        'left',   // User Name
+        'left',   // Bill No / Date
+        'left',   // Customer Name
+        'center', // Payment Mode
+        'right',  // Total Amt
+        'right',  // Disc
+        'right',  // Taxable Amt
+        'right',  // CGST
+        'right',  // SGST
+        'right',  // IGST
+        'right',  // After Tax
+        'right',  // Chargeable
+        'right'   // Round Off
+      ];
+    }
 
     const selectedUserVal = this.selectedUser();
     let selectedUserName = 'All Users';
@@ -439,7 +615,7 @@ export class UserReport implements OnInit {
     const unitName = this.currentUser()?.unitName || this.currentUser()?.UnitName || 'Hi-Tech Dairy Shop';
 
     this.exportService.exportToPdf({
-      title: 'User Wise Sale Report',
+      title: isSummary ? 'User Sale Summary Report' : 'User Wise Sale Report',
       unitName,
       periodFrom: this.fromDate() || '-',
       periodTo: this.toDate() || '-',
@@ -450,7 +626,9 @@ export class UserReport implements OnInit {
       rows,
       footerRow,
       columnAlignments,
-      fileName: `User_Wise_Sale_Report_${this.fromDate() || 'all'}_to_${this.toDate() || 'all'}.pdf`
+      fileName: isSummary
+        ? `User_Sale_Summary_Report_${this.fromDate() || 'all'}_to_${this.toDate() || 'all'}.pdf`
+        : `User_Wise_Sale_Report_${this.fromDate() || 'all'}_to_${this.toDate() || 'all'}.pdf`
     });
   }
 

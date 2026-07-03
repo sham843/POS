@@ -2,9 +2,23 @@
 
   <!-- SUB HEADER (Angular Material Styled Filters) -->
   <div class="pos-sub-header">
-    <div class="sub-header-title">
-      <lucide-icon [img]="UserIcon"></lucide-icon>
-      <span>User Report</span>
+    <div class="d-flex align-items-center gap-3">
+      <div class="sub-header-title">
+        <lucide-icon [img]="UserIcon"></lucide-icon>
+        <span>User Report</span>
+      </div>
+
+      <!-- Segmented Control for Details / Summary -->
+      <div class="app-segment-chips">
+        <div class="app-chip" [class.active]="reportType() === 'details'" (click)="setReportType('details')">
+          <lucide-icon [img]="ReceiptIcon" class="chip-icon"></lucide-icon>
+          <span>Details</span>
+        </div>
+        <div class="app-chip" [class.active]="reportType() === 'summary'" (click)="setReportType('summary')">
+          <lucide-icon [img]="UserIcon" class="chip-icon"></lucide-icon>
+          <span>Summary</span>
+        </div>
+      </div>
     </div>
 
     <div class="sub-header-filters align-items-center">
@@ -53,13 +67,13 @@
         </button>
 
         <button class="btn btn-excel d-flex align-items-center gap-1" (click)="exportToExcel()"
-          [disabled]="reportData().length === 0" title="Export to Excel">
+          [disabled]="activeReportLength() === 0" title="Export to Excel">
           <lucide-icon [img]="ExcelIcon" class="btn-icon"></lucide-icon>
           <span>Excel</span>
         </button>
 
         <button class="btn btn-pdf d-flex align-items-center gap-1" (click)="exportToPdf()"
-          [disabled]="reportData().length === 0" title="Export to PDF">
+          [disabled]="activeReportLength() === 0" title="Export to PDF">
           <lucide-icon [img]="PdfIcon" class="btn-icon"></lucide-icon>
           <span>PDF</span>
         </button>
@@ -86,8 +100,50 @@
           <!-- User Name Def -->
           <ng-container matColumnDef="user_Name">
             <th mat-header-cell *matHeaderCellDef> User Name </th>
-            <td mat-cell *matCellDef="let item"> {{ item.user_Name }} </td>
+            <td mat-cell *matCellDef="let item"> {{ item.user_Name || item.userName }} </td>
             <td mat-footer-cell *matFooterCellDef class="fw-bold"> Total </td>
+          </ng-container>
+
+          <!-- Cash Sale Def -->
+          <ng-container matColumnDef="cashSale">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> Cash Sale (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.cashSale }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalCashSale().toFixed(2) }} </td>
+          </ng-container>
+
+          <!-- Online Sale Def -->
+          <ng-container matColumnDef="onlineSale">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> Online Sale (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.onlineSale }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalOnlineSale().toFixed(2) }} </td>
+          </ng-container>
+
+          <!-- Coupon Sale Def -->
+          <ng-container matColumnDef="couponSale">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> Coupon Sale (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.couponSale }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalCouponSale().toFixed(2) }} </td>
+          </ng-container>
+
+          <!-- Credit Sale Def -->
+          <ng-container matColumnDef="creditSale">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> Credit Sale (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.creditSale }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalCreditSale().toFixed(2) }} </td>
+          </ng-container>
+
+          <!-- Total Bills Def -->
+          <ng-container matColumnDef="totalBills">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> Total Bills </th>
+            <td mat-cell *matCellDef="let item" class="text-end"> {{ item.totalBills }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> {{ totalBillsSummary() }} </td>
+          </ng-container>
+
+          <!-- Total Sale Def -->
+          <ng-container matColumnDef="totalSale">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> Total Sale (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end fw-bold text-primary"> ₹{{ item.totalSale }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-primary"> ₹{{ totalSaleSummary().toFixed(2) }} </td>
           </ng-container>
 
           <!-- Bill Details (Merged Number & Date) Def -->
@@ -201,20 +257,20 @@
           </ng-container>
 
           <!-- Header & Row bindings -->
-          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-          <tr mat-row *matRowDef="let item; columns: displayedColumns;"></tr>
-          <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true" [hidden]="reportData().length === 0">
+          <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
+          <tr mat-row *matRowDef="let item; columns: displayedColumns();"></tr>
+          <tr mat-footer-row *matFooterRowDef="displayedColumns(); sticky: true" [hidden]="activeReportLength() === 0">
           </tr>
         </table>
 
-        <app-empty-state *ngIf="reportData().length === 0" title="No Sales Found"
+        <app-empty-state *ngIf="activeReportLength() === 0" title="No Sales Found"
           message="No report entries found for the specified period." icon="search"
           class="py-5 bg-white border-top d-block">
         </app-empty-state>
       </div>
 
       <!-- Angular Material Paginator -->
-      <mat-paginator [length]="reportData().length" [pageSize]="pageSize()" hidePageSize="true"
+      <mat-paginator [length]="activeReportLength()" [pageSize]="pageSize()" hidePageSize="true"
         showFirstLastButtons="true" [pageIndex]="currentPage()" (page)="onPageChange($event)" aria-label="Select page"
         class="border-top">
       </mat-paginator>
