@@ -1,0 +1,38 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.payment-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+  background-color: #F3F4F6;
+  color: #374151;
+
+  &.payment-cash {
+    background-color: #D1FAE5;
+    color: #065F46;
+  }
+
+  &.payment-coupon {
+    background-color: #F3E8FF;
+    color: #6B21A8;
+  }
+
+  &.payment-credit {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+  }
+
+  &.payment-upi {
+    background-color: #FEF3C7;
+    color: #92400E;
+  }
+}
