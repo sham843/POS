@@ -57,7 +57,6 @@ const formatGeneratedOn = (): string => {
   hours = hours % 12;
   hours = hours ? hours : 12;
   const hoursStr = String(hours).padStart(2, '0');
-
   return `${day}-${month}-${year}, ${hoursStr}:${minutes}:${seconds} ${ampm}`;
 };
 
@@ -278,7 +277,7 @@ export class ExportService {
       const formattedTo = formatToDdMmYyyy(periodTo);
       filterString += `Period: ${formattedFrom} to ${formattedTo}`;
     }
-    
+
     metaInfo.forEach(meta => {
       if (filterString) filterString += '   |   ';
       filterString += `${meta.label}: ${meta.value}`;
@@ -294,7 +293,7 @@ export class ExportService {
 
     // 4. Build Table using jspdf-autotable
     // Map cell text values and clean HTML tags if any (convert <br/> to \n)
-    const cleanRows = rows.map(row => 
+    const cleanRows = rows.map(row =>
       row.map(cell => {
         if (cell === null || cell === undefined) return '';
         return String(cell)

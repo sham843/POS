@@ -791,13 +791,13 @@ lucide-icon svg {
 
   th.mat-mdc-header-cell,
   th {
-    background: #F9FAFB !important;
+    background: #efefef !important;
     color: #4B5563 !important;
     font-weight: 600 !important;
     text-transform: uppercase;
     font-size: 10.5px !important;
     letter-spacing: 0.5px;
-    padding: 10px 14px !important;
+    padding: 6px 14px !important;
     border-bottom: 1px solid #E5E7EB !important;
   }
 
@@ -1100,6 +1100,7 @@ lucide-icon svg {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -1131,19 +1132,23 @@ td.mat-mdc-cell.text-end {
 .mat-mdc-paginator-range-label {
   font-size: 13.5px !important;
   font-weight: 500 !important;
-  color: #4B6584 !important; /* Muted blue-gray color matching screenshot */
+  color: #4B6584 !important;
+  /* Muted blue-gray color matching screenshot */
   margin-right: 20px !important;
 }
 
 .mat-mdc-paginator-navigation-button {
   color: #4B5563 !important;
-  background-color: transparent !important; /* No background box */
-  border-radius: 50% !important; /* Circular ripple if clicked */
+  background-color: transparent !important;
+  /* No background box */
+  border-radius: 50% !important;
+  /* Circular ripple if clicked */
   margin: 0 2px !important;
   transition: all 0.2s ease;
 
   &:hover:not([disabled]) {
-    background-color: #F1F5F9 !important; /* Subtle hover highlight */
+    background-color: #F1F5F9 !important;
+    /* Subtle hover highlight */
     color: #1F2937 !important;
   }
 
@@ -1176,7 +1181,7 @@ td.mat-mdc-footer-cell {
   font-weight: 700 !important;
   padding: 10px 16px !important;
   border-bottom: none !important;
-  
+
   &.text-end {
     text-align: right !important;
   }
