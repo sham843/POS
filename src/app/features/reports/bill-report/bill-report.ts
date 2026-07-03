@@ -355,10 +355,17 @@ export class BillReport implements OnInit {
     const cleanFromDate = this.fromDate().split('T')[0];
     const cleanToDate = this.toDate().split('T')[0];
 
+    const metaInfo = [
+      { label: 'Total Bill', value: String(this.totalBillsBadge()) },
+      { label: 'Total Customers', value: String(this.totalCustomersBadge()) },
+      { label: 'Total Amount', value: 'Rs. ' + Number(this.totalAmountBadge()).toFixed(2) }
+    ];
+
     this.exportService.exportToExcel({
       title: 'Bill Wise Sale Report',
       periodFrom: cleanFromDate || '-',
       periodTo: cleanToDate || '-',
+      metaInfo,
       headers,
       rows,
       footerRow,
@@ -440,11 +447,18 @@ export class BillReport implements OnInit {
     const cleanToDate = this.toDate().split('T')[0];
     const unitName = this.currentUser()?.unitName || this.currentUser()?.UnitName || 'Hi-Tech Dairy Shop';
 
+    const metaInfo = [
+      { label: 'Total Bill', value: String(this.totalBillsBadge()) },
+      { label: 'Total Customers', value: String(this.totalCustomersBadge()) },
+      { label: 'Total Amount', value: 'Rs. ' + Number(this.totalAmountBadge()).toFixed(2) }
+    ];
+
     this.exportService.exportToPdf({
       title: 'Bill Wise Sale Report',
       unitName,
       periodFrom: cleanFromDate || '-',
       periodTo: cleanToDate || '-',
+      metaInfo,
       headers,
       rows,
       footerRow,
