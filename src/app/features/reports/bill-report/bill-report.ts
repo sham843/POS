@@ -267,9 +267,7 @@ export class BillReport implements OnInit {
     } else {
       d.setHours(0, 0, 0, 0);
     }
-    const tzOffset = d.getTimezoneOffset() * 60000;
-    const localISOTime = new Date(d.getTime() - tzOffset).toISOString().slice(0, -1);
-    return localISOTime;
+    return d.toISOString();
   }
 
   onFromDateChange(date: Date | null) {
