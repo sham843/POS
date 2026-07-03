@@ -11,15 +11,15 @@
       <!-- Compact Summary in Header -->
       <div class="d-flex align-items-center" *ngIf="reportData().length > 0" style="font-size: 13px;">
         <div class="pe-3 border-end">
-          <span class="text-muted">Total Bill:</span>
+          <span class="text-muted">Bills:</span>
           <span class="text-primary fw-bold ms-1">{{ totalBillsBadge() }}</span>
         </div>
         <div class="px-3 border-end">
-          <span class="text-muted">Total Customers:</span>
+          <span class="text-muted">Customers:</span>
           <span class="text-primary fw-bold ms-1">{{ totalCustomersBadge() }}</span>
         </div>
         <div class="px-3">
-          <span class="text-muted">Total Amount:</span>
+          <span class="text-muted">Total:</span>
           <span class="text-primary fw-bold ms-1">₹{{ totalAmountBadge() | number:'1.2-2' }}</span>
         </div>
       </div>
