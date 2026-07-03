@@ -1,1 +1,195 @@
-<p>product-report works!</p>
+<div class="d-flex flex-column h-100 w-100 bg-white">
+
+  <!-- SUB HEADER (Angular Material Styled Filters) -->
+  <div class="pos-sub-header">
+    <div class="d-flex align-items-center gap-3">
+      <div class="sub-header-title">
+        <lucide-icon [img]="ProductIcon"></lucide-icon>
+        <span>Product Sale Report</span>
+      </div>
+
+      <!-- Segmented Control for Details / Summary -->
+      <div class="app-segment-chips">
+        <div class="app-chip" [class.active]="reportType() === 'details'" (click)="setReportType('details')">
+          <lucide-icon [img]="ReceiptIcon" class="chip-icon"></lucide-icon>
+          <span>Details</span>
+        </div>
+        <div class="app-chip" [class.active]="reportType() === 'summary'" (click)="setReportType('summary')">
+          <lucide-icon [img]="ProductIcon" class="chip-icon"></lucide-icon>
+          <span>Summary</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-header-filters align-items-center">
+      <!-- From Date Picker -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
+          <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
+            (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
+            placeholder="From Date" [max]="toDateObj() || maxDate">
+          <mat-datepicker-toggle matSuffix [for]="fromDateStrPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromDateStrPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- To Date Picker -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
+          <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
+            (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date"
+            [min]="fromDateObj()" [max]="maxDate">
+          <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toDateStrPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- Product Selection Select Dropdown -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 200px;">
+          <mat-select [ngModel]="selectedProduct()" (ngModelChange)="selectedProduct.set($event)" placeholder="Select Product">
+            <mat-option [value]="0">All Products</mat-option>
+            <mat-option *ngFor="let p of productList()" [value]="p.id">{{ p.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2"
+        style="border-color: #BFDBFE !important;">
+        <button class="btn btn-icon-only btn-search" (click)="searchReport()" title="Search Report">
+          <lucide-icon [img]="SearchIcon" class="btn-icon-large"></lucide-icon>
+        </button>
+
+        <button class="btn btn-icon-only btn-clear" (click)="clearFilters()" title="Clear Filters">
+          <lucide-icon [img]="ClearIcon" class="btn-icon-large"></lucide-icon>
+        </button>
+
+        <button class="btn btn-excel d-flex align-items-center gap-1" (click)="exportToExcel()"
+          [disabled]="activeReportLength() === 0" title="Export to Excel">
+          <lucide-icon [img]="ExcelIcon" class="btn-icon"></lucide-icon>
+          <span>Excel</span>
+        </button>
+
+        <button class="btn btn-pdf d-flex align-items-center gap-1" (click)="exportToPdf()"
+          [disabled]="activeReportLength() === 0" title="Export to PDF">
+          <lucide-icon [img]="PdfIcon" class="btn-icon"></lucide-icon>
+          <span>PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA AREA -->
+  <div class="flex-grow-1 p-4 overflow-auto bg-light position-relative d-flex flex-column gap-3">
+
+    <!-- Custom Pickup-style Loader -->
+    <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm" *ngIf="isLoading()">
+      <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
+      <p>Loading product sales data...</p>
+    </div>
+
+    <!-- Table Wrapper (Only visible when not loading) -->
+    <div
+      class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white"
+      *ngIf="!isLoading()">
+      <div class="table-responsive flex-grow-1 overflow-auto">
+        <table mat-table [dataSource]="paginatedData()" class="app-data-table table-hover">
+
+          <!-- Product Name Column -->
+          <ng-container matColumnDef="productName">
+            <th mat-header-cell *matHeaderCellDef> Product Name </th>
+            <td mat-cell *matCellDef="let item"> {{ item.productName }} </td>
+            <td mat-footer-cell *matFooterCellDef class="fw-bold"> Total </td>
+          </ng-container>
+
+          <!-- Rate Column -->
+          <ng-container matColumnDef="rate">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> Rate (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.rate.toFixed(2) }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end"></td>
+          </ng-container>
+
+          <!-- Quantity Column -->
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef class="text-center"> Quantity </th>
+            <td mat-cell *matCellDef="let item" class="text-center"> {{ item.quantity }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-center fw-bold"> {{ totalQuantity() }} </td>
+          </ng-container>
+
+          <!-- Unit Column -->
+          <ng-container matColumnDef="unit">
+            <th mat-header-cell *matHeaderCellDef class="text-center"> Unit </th>
+            <td mat-cell *matCellDef="let item" class="text-center"> {{ item.unit }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-center"></td>
+          </ng-container>
+
+          <!-- Sub Total Column -->
+          <ng-container matColumnDef="subTotal">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> Sub Total (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.subTotal.toFixed(2) }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalSubTotal().toFixed(2) }} </td>
+          </ng-container>
+
+          <!-- Discount Column -->
+          <ng-container matColumnDef="discount">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> Discount (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end text-danger"> ₹{{ item.discount.toFixed(2) }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-danger"> ₹{{ totalDiscount().toFixed(2) }} </td>
+          </ng-container>
+
+          <!-- Taxable Amount Column -->
+          <ng-container matColumnDef="taxableAmount">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> Taxable Amount (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.taxableAmount.toFixed(2) }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalTaxableAmount().toFixed(2) }} </td>
+          </ng-container>
+
+          <!-- SGST Column -->
+          <ng-container matColumnDef="sgst">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> SGST (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.sgst.toFixed(2) }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalSgst().toFixed(2) }} </td>
+          </ng-container>
+
+          <!-- CGST Column -->
+          <ng-container matColumnDef="cgst">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> CGST (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.cgst.toFixed(2) }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalCgst().toFixed(2) }} </td>
+          </ng-container>
+
+          <!-- IGST Column -->
+          <ng-container matColumnDef="igst">
+            <th mat-header-cell *matHeaderCellDef class="text-end"> IGST (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.igst.toFixed(2) }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalIgst().toFixed(2) }} </td>
+          </ng-container>
+
+          <!-- Total Amount Column -->
+          <ng-container matColumnDef="totalAmount">
+            <th mat-header-cell *matHeaderCellDef class="text-end" style="padding-right: 20px;"> Total Amount (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end fw-bold text-primary" style="padding-right: 20px;"> ₹{{ item.totalAmount.toFixed(2) }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-primary" style="padding-right: 20px;"> ₹{{ totalAmount().toFixed(2) }} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
+          <tr mat-footer-row *matFooterRowDef="displayedColumns(); sticky: true" [hidden]="activeReportLength() === 0"></tr>
+        </table>
+
+        <app-empty-state *ngIf="activeReportLength() === 0" title="No product sale records found"
+          message="Adjust your filters or dates range above and click search." icon="search"
+          class="py-5 bg-white border-top d-block">
+        </app-empty-state>
+      </div>
+
+      <!-- Angular Material Paginator -->
+      <mat-paginator [length]="activeReportLength()" [pageSize]="pageSize()" hidePageSize="true"
+        showFirstLastButtons="true" [pageIndex]="currentPage()" (page)="onPageChange($event)" aria-label="Select page"
+        class="border-top">
+      </mat-paginator>
+    </div>
+
+  </div>
+</div>
