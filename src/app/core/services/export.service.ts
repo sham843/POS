@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as XLSX from 'xlsx-js-style';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export interface PdfExportOptions {
   title: string;
@@ -12,6 +14,7 @@ export interface PdfExportOptions {
   rows: any[][];
   footerRow?: any[];
   columnAlignments?: ('left' | 'center' | 'right')[];
+  fileName?: string;
 }
 
 export interface ExcelExportOptions {
@@ -221,15 +224,9 @@ export class ExportService {
   }
 
   /**
-   * Generates an HTML A4 printable layout in a new window/tab and triggers the PDF/Print dialog.
+   * Generates a PDF file from table data using jsPDF and jspdf-autotable, then downloads it directly.
    */
   exportToPdf(options: PdfExportOptions): void {
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      alert('Please allow popups to print/export PDF.');
-      return;
-    }
-
     const {
       title,
       subtitle = '',
@@ -240,149 +237,121 @@ export class ExportService {
       headers,
       rows,
       footerRow = [],
-      columnAlignments = []
+      columnAlignments = [],
+      fileName = 'Report.pdf'
     } = options;
 
-    // Generate table header columns
-    const headerColsHtml = headers.map((header, idx) => {
-      const alignment = columnAlignments[idx] || 'left';
-      return `<th style="text-align: ${alignment};">${header}</th>`;
-    }).join('');
+    // Create a new jsPDF instance (Landscape A4)
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4'
+    });
 
-    // Generate table data rows
-    const rowsHtml = rows.map((row) => {
-      const cellsHtml = row.map((cell, colIdx) => {
-        const alignment = columnAlignments[colIdx] || 'left';
-        return `<td style="text-align: ${alignment};">${cell !== null && cell !== undefined ? cell : ''}</td>`;
-      }).join('');
-      return `<tr>${cellsHtml}</tr>`;
-    }).join('');
+    const pageWidth = doc.internal.pageSize.getWidth();
 
-    // Generate table footer row
-    let footerRowHtml = '';
-    if (footerRow && footerRow.length > 0) {
-      const footerCellsHtml = footerRow.map((cell, colIdx) => {
-        const alignment = columnAlignments[colIdx] || 'left';
-        const isBold = cell !== '';
-        return `<td style="text-align: ${alignment}; font-weight: ${isBold ? 'bold' : 'normal'};">${cell !== null && cell !== undefined ? cell : ''}</td>`;
-      }).join('');
-      footerRowHtml = `<tr class="totals-row">${footerCellsHtml}</tr>`;
-    }
+    // 1. Add Brand/Unit Name (Centered, Large, Bold, Blue text)
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.setTextColor(30, 58, 138); // #1E3A8A (Deep Blue)
+    doc.text(unitName, pageWidth / 2, 18, { align: 'center' });
 
-    // Build meta info block
-    let metaInfoHtml = '';
+    // 2. Add Title & Subtitle (Centered, Bold)
+    doc.setFontSize(13);
+    doc.setTextColor(75, 85, 99); // #4B5563
+    doc.text(title + (subtitle ? ' - ' + subtitle : ''), pageWidth / 2, 25, { align: 'center' });
+
+    // Draw horizontal separator line
+    doc.setDrawColor(229, 231, 235); // #E5E7EB
+    doc.setLineWidth(0.5);
+    doc.line(14, 29, pageWidth - 14, 29);
+
+    // 3. Add Metadata / Filters (aligned nicely)
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(75, 85, 99);
+
+    // Build filter string
+    let filterString = '';
     if (periodFrom || periodTo) {
       const formattedFrom = formatToDdMmYyyy(periodFrom);
       const formattedTo = formatToDdMmYyyy(periodTo);
-      metaInfoHtml += `<div><strong>Period:</strong> ${formattedFrom} to ${formattedTo}</div>`;
+      filterString += `Period: ${formattedFrom} to ${formattedTo}`;
     }
+    
     metaInfo.forEach(meta => {
-      metaInfoHtml += `<div><strong>${meta.label}:</strong> ${meta.value}</div>`;
+      if (filterString) filterString += '   |   ';
+      filterString += `${meta.label}: ${meta.value}`;
     });
-    metaInfoHtml += `<div><strong>Generated On:</strong> ${formatGeneratedOn()}</div>`;
 
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>${title}</title>
-          <style>
-            body {
-              font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-              color: #1F2937;
-              padding: 20px;
-              font-size: 11px;
-            }
-            .header {
-              text-align: center;
-              margin-bottom: 20px;
-              border-bottom: 2px solid #E5E7EB;
-              padding-bottom: 10px;
-            }
-            .header h1 {
-              font-size: 26px;
-              color: #1E3A8A;
-              margin: 0 0 5px 0;
-              font-weight: 800; /* Extra bold unit name */
-            }
-            .header p {
-              margin: 0;
-              color: #4B5563;
-              font-size: 13px;
-              font-weight: 600; /* Centered sub header text bold */
-            }
-            .meta-info {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 15px;
-              font-size: 11px;
-              color: #4B5563;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 10px;
-            }
-            th, td {
-              border: 1px solid #D1D5DB;
-              padding: 6px 8px;
-              text-align: left;
-            }
-            th {
-              background-color: #F3F4F6;
-              color: #374151;
-              font-weight: 600;
-              font-size: 10px;
-              text-transform: uppercase;
-            }
-            tr:nth-child(even) {
-              background-color: #F9FAFB;
-            }
-            .totals-row {
-              background-color: #EFF6FF !important;
-            }
-            .totals-row td {
-              border-top: 2px solid #3B82F6;
-              border-bottom: 2px solid #3B82F6;
-            }
-            @media print {
-              body {
-                padding: 0;
-              }
-              @page {
-                size: A4 landscape;
-                margin: 10mm;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <h1>${unitName}</h1>
-            <p>${title}${subtitle ? ' - ' + subtitle : ''}</p>
-          </div>
-          <div class="meta-info">
-            ${metaInfoHtml}
-          </div>
-          <table>
-            <thead>
-              <tr>
-                ${headerColsHtml}
-              </tr>
-            </thead>
-            <tbody>
-              ${rowsHtml}
-              ${footerRowHtml}
-            </tbody>
-          </table>
-          <script>
-            window.onload = function() {
-              window.print();
-              window.close();
-            };
-          </script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
+    // Left aligned filters
+    doc.setFont('helvetica', 'bold');
+    doc.text(filterString, 14, 35);
+
+    // Right aligned generated date
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Generated On: ${formatGeneratedOn()}`, pageWidth - 14, 35, { align: 'right' });
+
+    // 4. Build Table using jspdf-autotable
+    // Map cell text values and clean HTML tags if any (convert <br/> to \n)
+    const cleanRows = rows.map(row => 
+      row.map(cell => {
+        if (cell === null || cell === undefined) return '';
+        return String(cell)
+          .replace(/<br\s*\/?>/gi, '\n')
+          .replace(/<[^>]*>/g, '');
+      })
+    );
+
+    const cleanBody = [...cleanRows];
+    if (footerRow && footerRow.length > 0) {
+      const cleanFooter = footerRow.map(cell => (cell !== null && cell !== undefined ? String(cell) : ''));
+      cleanBody.push(cleanFooter);
+    }
+
+    autoTable(doc, {
+      startY: 38,
+      margin: { left: 14, right: 14 },
+      head: [headers],
+      body: cleanBody,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [243, 244, 246], // #F3F4F6 (Light Grey)
+        textColor: [55, 65, 81],    // #374151
+        fontStyle: 'bold',
+        fontSize: 8,
+        halign: 'left',
+        valign: 'middle',
+        lineColor: [209, 213, 219],
+        lineWidth: 0.1
+      },
+      bodyStyles: {
+        fontSize: 7.5,
+        textColor: [31, 41, 55],     // #1F2937
+        valign: 'middle',
+        lineColor: [209, 213, 219],
+        lineWidth: 0.1
+      },
+      alternateRowStyles: {
+        fillColor: [249, 250, 251] // #F9FAFB
+      },
+      columnStyles: columnAlignments.reduce((acc, align, idx) => {
+        acc[idx] = { halign: align };
+        return acc;
+      }, {} as any),
+      didParseCell: (data) => {
+        // Style the totals row at the bottom
+        if (footerRow && footerRow.length > 0 && data.row.index === cleanBody.length - 1) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = [239, 246, 255]; // #EFF6FF (Light Blue)
+          data.cell.styles.textColor = [30, 58, 138];    // #1E3A8A (Deep Blue)
+          data.cell.styles.lineColor = [59, 130, 246];   // #3B82F6
+        }
+      }
+    });
+
+    // Save and download directly
+    const cleanFileName = fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`;
+    doc.save(cleanFileName);
   }
 }

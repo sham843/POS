@@ -325,7 +325,16 @@ export class UserReport implements OnInit {
       this.totalRoundOff()
     ];
 
-    const selectedUser = this.selectedUser();
+    const selectedUserVal = this.selectedUser();
+    let selectedUserName = 'All Users';
+    if (selectedUserVal !== 'all') {
+      const foundUser = this.userList().find(u => String(u.id) === String(selectedUserVal));
+      if (foundUser) {
+        selectedUserName = foundUser.name;
+      } else {
+        selectedUserName = selectedUserVal;
+      }
+    }
     const unitName = this.currentUser()?.unitName || this.currentUser()?.UnitName || 'Hi-Tech Dairy Shop';
 
     this.exportService.exportToExcel({
@@ -334,7 +343,7 @@ export class UserReport implements OnInit {
       periodFrom: this.fromDate() || '-',
       periodTo: this.toDate() || '-',
       metaInfo: [
-        { label: 'User Filter', value: selectedUser === 'all' ? 'All Users' : selectedUser }
+        { label: 'User Filter', value: selectedUserName }
       ],
       headers,
       rows,
@@ -372,15 +381,15 @@ export class UserReport implements OnInit {
       `${item.bill_Number || '-'}<br/><small>${item.bill_Date || ''}</small>`,
       item.customer_Name || '-',
       this.getPaymentMode(item) || '-',
-      `₹${(Number(item.totalAmount || item.TotalAmount) || 0).toFixed(2)}`,
-      `₹${(Number(item.discount || item.Discount) || 0).toFixed(2)}`,
-      `₹${(Number(item.taxableAmount || item.TaxableAmount) || 0).toFixed(2)}`,
-      `₹${(Number(item.cgst || item.Cgst || item.CGST) || 0).toFixed(2)}`,
-      `₹${(Number(item.sgst || item.Sgst || item.SGST) || 0).toFixed(2)}`,
-      `₹${(Number(item.igst || item.Igst || item.IGST) || 0).toFixed(2)}`,
-      `₹${(Number(item.afterTaxTotal || item.AfterTaxTotal) || 0).toFixed(2)}`,
-      `₹${(Number(item.chargeableAmount || item.ChargeableAmount) || 0).toFixed(2)}`,
-      `₹${(Number(item.roundOff || item.RoundOff) || 0).toFixed(2)}`
+      `Rs. ${(Number(item.totalAmount || item.TotalAmount) || 0).toFixed(2)}`,
+      `Rs. ${(Number(item.discount || item.Discount) || 0).toFixed(2)}`,
+      `Rs. ${(Number(item.taxableAmount || item.TaxableAmount) || 0).toFixed(2)}`,
+      `Rs. ${(Number(item.cgst || item.Cgst || item.CGST) || 0).toFixed(2)}`,
+      `Rs. ${(Number(item.sgst || item.Sgst || item.SGST) || 0).toFixed(2)}`,
+      `Rs. ${(Number(item.igst || item.Igst || item.IGST) || 0).toFixed(2)}`,
+      `Rs. ${(Number(item.afterTaxTotal || item.AfterTaxTotal) || 0).toFixed(2)}`,
+      `Rs. ${(Number(item.chargeableAmount || item.ChargeableAmount) || 0).toFixed(2)}`,
+      `Rs. ${(Number(item.roundOff || item.RoundOff) || 0).toFixed(2)}`
     ]);
 
     const footerRow = [
@@ -389,15 +398,15 @@ export class UserReport implements OnInit {
       '',
       '',
       '',
-      `₹${this.totalBillAmount().toFixed(2)}`,
-      `₹${this.totalDiscount().toFixed(2)}`,
-      `₹${this.totalTaxableAmount().toFixed(2)}`,
-      `₹${this.totalCgst().toFixed(2)}`,
-      `₹${this.totalSgst().toFixed(2)}`,
-      `₹${this.totalIgst().toFixed(2)}`,
-      `₹${this.totalAfterTaxTotal().toFixed(2)}`,
-      `₹${this.totalChargeableAmount().toFixed(2)}`,
-      `₹${this.totalRoundOff().toFixed(2)}`
+      `Rs. ${this.totalBillAmount().toFixed(2)}`,
+      `Rs. ${this.totalDiscount().toFixed(2)}`,
+      `Rs. ${this.totalTaxableAmount().toFixed(2)}`,
+      `Rs. ${this.totalCgst().toFixed(2)}`,
+      `Rs. ${this.totalSgst().toFixed(2)}`,
+      `Rs. ${this.totalIgst().toFixed(2)}`,
+      `Rs. ${this.totalAfterTaxTotal().toFixed(2)}`,
+      `Rs. ${this.totalChargeableAmount().toFixed(2)}`,
+      `Rs. ${this.totalRoundOff().toFixed(2)}`
     ];
 
     const columnAlignments: ('left' | 'center' | 'right')[] = [
@@ -417,7 +426,16 @@ export class UserReport implements OnInit {
       'right'   // Round Off
     ];
 
-    const selectedUser = this.selectedUser();
+    const selectedUserVal = this.selectedUser();
+    let selectedUserName = 'All Users';
+    if (selectedUserVal !== 'all') {
+      const foundUser = this.userList().find(u => String(u.id) === String(selectedUserVal));
+      if (foundUser) {
+        selectedUserName = foundUser.name;
+      } else {
+        selectedUserName = selectedUserVal;
+      }
+    }
     const unitName = this.currentUser()?.unitName || this.currentUser()?.UnitName || 'Hi-Tech Dairy Shop';
 
     this.exportService.exportToPdf({
@@ -426,12 +444,13 @@ export class UserReport implements OnInit {
       periodFrom: this.fromDate() || '-',
       periodTo: this.toDate() || '-',
       metaInfo: [
-        { label: 'User Filter', value: selectedUser === 'all' ? 'All Users' : selectedUser }
+        { label: 'User Filter', value: selectedUserName }
       ],
       headers,
       rows,
       footerRow,
-      columnAlignments
+      columnAlignments,
+      fileName: `User_Wise_Sale_Report_${this.fromDate() || 'all'}_to_${this.toDate() || 'all'}.pdf`
     });
   }
 
