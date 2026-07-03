@@ -10,8 +10,8 @@
     <div class="sub-header-filters align-items-center">
       <!-- From Date Picker -->
       <div class="filter-item">
-        <label>From:</label>
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
+
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
           <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
             (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
             placeholder="From Date">
@@ -22,8 +22,8 @@
 
       <!-- To Date Picker -->
       <div class="filter-item">
-        <label>To:</label>
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
+
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
           <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
             (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date">
           <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
@@ -33,10 +33,9 @@
 
       <!-- User Selection Select Dropdown -->
       <div class="filter-item">
-        <label>User:</label>
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
+
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 200px;">
           <mat-select [ngModel]="selectedUser()" (ngModelChange)="selectedUser.set($event)" placeholder="Select User">
-            <mat-option value="all">All Users</mat-option>
             <mat-option *ngFor="let u of userList()" [value]="u.name">{{ u.name }}</mat-option>
           </mat-select>
         </mat-form-field>

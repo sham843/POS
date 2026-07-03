@@ -46,12 +46,12 @@ export class UserReport implements OnInit {
   readonly PdfIcon = FileText;
 
   // Filter Date Objects (for mat-datepicker)
-  fromDateObj = signal<Date>(new Date('2025-02-04'));
-  toDateObj = signal<Date>(new Date('2026-07-02'));
+  fromDateObj = signal<Date | null>(null);
+  toDateObj = signal<Date | null>(null);
 
   // Formatted Filter Strings (for API payload)
-  fromDate = signal<string>('2025-02-04');
-  toDate = signal<string>('2026-07-02');
+  fromDate = signal<string>('');
+  toDate = signal<string>('');
   selectedUser = signal<string>('all');
 
   // Computed properties for column totals
@@ -133,6 +133,7 @@ export class UserReport implements OnInit {
 
   ngOnInit() {
     const userStr = localStorage.getItem('UserDetails');
+    let orgId = 28; // Default orgId fallback
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
@@ -140,6 +141,7 @@ export class UserReport implements OnInit {
 
         const currentUserId = user.id || user.UserId || 620;
         const currentUserName = user.name || 'Pravin Varpe';
+        orgId = user.organizationId || user.organizationid || 28;
 
         this.userList.set([{ id: currentUserId, name: currentUserName }]);
       } catch (e) {
@@ -149,6 +151,32 @@ export class UserReport implements OnInit {
     } else {
       this.userList.set([{ id: 620, name: 'Pravin Varpe' }]);
     }
+
+    this.fetchUserList(orgId);
+  }
+
+  fetchUserList(orgId: number) {
+    this.apiService.get<any>(`api/v1/report/users?organizationId=${orgId}`).subscribe({
+      next: (response) => {
+        let usersData = [];
+        if (response && response.data) {
+          usersData = response.data;
+        } else if (response && Array.isArray(response)) {
+          usersData = response;
+        }
+
+        if (usersData && usersData.length > 0) {
+          const mappedUsers = usersData.map((u: any) => ({
+            id: u.id || u.Id || u.userId || u.UserId || 0,
+            name: u.name || u.Name || u.userName || u.UserName || ''
+          }));
+          this.userList.set(mappedUsers);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch user list from API:', err);
+      }
+    });
   }
 
   fetchReport() {
@@ -176,7 +204,22 @@ export class UserReport implements OnInit {
     this.apiService.post<any>('api/v1/report/user-wise-sale', payload, headers).subscribe({
       next: (response) => {
         if (response && response.data) {
+          console.log('API Response data sample:', response.data[0]);
+          console.log('All Response data:', response.data);
           this.reportData.set(response.data);
+          setTimeout(() => {
+            console.log('Computed Totals Debug:', {
+              totalBillAmount: this.totalBillAmount(),
+              totalDiscount: this.totalDiscount(),
+              totalTaxableAmount: this.totalTaxableAmount(),
+              totalCgst: this.totalCgst(),
+              totalSgst: this.totalSgst(),
+              totalIgst: this.totalIgst(),
+              totalAfterTaxTotal: this.totalAfterTaxTotal(),
+              totalChargeableAmount: this.totalChargeableAmount(),
+              totalRoundOff: this.totalRoundOff()
+            });
+          }, 200);
         } else {
           this.reportData.set([]);
         }
@@ -197,25 +240,29 @@ export class UserReport implements OnInit {
   }
 
   clearFilters() {
-    this.fromDateObj.set(new Date('2025-02-04'));
-    this.toDateObj.set(new Date('2026-07-02'));
-    this.fromDate.set('2025-02-04');
-    this.toDate.set('2026-07-02');
+    this.fromDateObj.set(null);
+    this.toDateObj.set(null);
+    this.fromDate.set('');
+    this.toDate.set('');
     this.selectedUser.set('all');
     this.reportData.set([]);
   }
 
-  onFromDateChange(date: Date) {
+  onFromDateChange(date: Date | null) {
+    this.fromDateObj.set(date);
     if (date) {
-      this.fromDateObj.set(date);
       this.fromDate.set(this.formatDate(date));
+    } else {
+      this.fromDate.set('');
     }
   }
 
-  onToDateChange(date: Date) {
+  onToDateChange(date: Date | null) {
+    this.toDateObj.set(date);
     if (date) {
-      this.toDateObj.set(date);
       this.toDate.set(this.formatDate(date));
+    } else {
+      this.toDate.set('');
     }
   }
 

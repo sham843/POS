@@ -1130,26 +1130,36 @@ td.mat-mdc-cell.text-end {
 
 .mat-mdc-paginator-range-label {
   font-size: 13.5px !important;
-  font-weight: 600 !important;
-  color: #0052CC !important;
+  font-weight: 500 !important;
+  color: #4B6584 !important; /* Muted blue-gray color matching screenshot */
   margin-right: 20px !important;
 }
 
 .mat-mdc-paginator-navigation-button {
-  color: #374151 !important;
-  background-color: #F3F4F6 !important;
-  border-radius: 8px !important;
-  margin: 0 4px !important;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  color: #4B5563 !important;
+  background-color: transparent !important; /* No background box */
+  border-radius: 50% !important; /* Circular ripple if clicked */
+  margin: 0 2px !important;
+  transition: all 0.2s ease;
 
   &:hover:not([disabled]) {
-    background-color: #E6F0FF !important;
-    color: #0052CC !important;
+    background-color: #F1F5F9 !important; /* Subtle hover highlight */
+    color: #1F2937 !important;
   }
 
   &[disabled] {
-    opacity: 0.4 !important;
+    opacity: 0.3 !important;
     background-color: transparent !important;
+    color: #9CA3AF !important;
+  }
+}
+
+/* Neutral Gray Datepicker Toggle Icon (Instead of Theme Blue) */
+.mat-datepicker-toggle {
+  color: #6B7280 !important;
+
+  &:hover {
+    color: #374151 !important;
   }
 }
 
