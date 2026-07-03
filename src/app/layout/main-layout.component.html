@@ -56,33 +56,33 @@
 
         <!-- Reports Dropdown Menu -->
         <div class="reports-dropdown" *ngIf="showReportsDropdown()">
-          <a [routerLink]="['reports/user-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/user-report']" routerLinkActive="active" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             User Report
           </a>
-          <a [routerLink]="['reports/product-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/product-report']" routerLinkActive="active" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             Product Report
           </a>
-          <a [routerLink]="['reports/bill-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/bill-report']" routerLinkActive="active" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             Bill Report
           </a>
-          <a [routerLink]="['reports/customer-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/customer-report']" routerLinkActive="active" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             Customer Report
           </a>
-          <a [routerLink]="['reports/all-party-balance']" class="dropdown-item"
+          <a [routerLink]="['reports/all-party-balance']" routerLinkActive="active" class="dropdown-item"
             (click)="showReportsDropdown.set(false)">
             All Party Balance
           </a>
-          <a [routerLink]="['reports/gst-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/gst-report']" routerLinkActive="active" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             GST Report
           </a>
-          <a [routerLink]="['reports/customer-payment-history']" class="dropdown-item"
+          <a [routerLink]="['reports/customer-payment-history']" routerLinkActive="active" class="dropdown-item"
             (click)="showReportsDropdown.set(false)">
             Customer Payment History
           </a>
-          <a [routerLink]="['reports/cash-report']" class="dropdown-item" (click)="showReportsDropdown.set(false)">
+          <a [routerLink]="['reports/cash-report']" routerLinkActive="active" class="dropdown-item" (click)="showReportsDropdown.set(false)">
             Cash Report
           </a>
-          <a [routerLink]="['reports/sales-invoice-report']" class="dropdown-item"
+          <a [routerLink]="['reports/sales-invoice-report']" routerLinkActive="active" class="dropdown-item"
             (click)="showReportsDropdown.set(false)">
             Sales Invoice Report
           </a>

@@ -164,7 +164,7 @@
       text-align: left;
       box-sizing: border-box;
 
-      &:hover {
+      &:hover, &.active {
         background: #EFF6FF;
         color: #0052CC;
         padding-left: 24px;
