@@ -172,9 +172,9 @@ export class ProductReport implements OnInit {
     }
     return [
       'productName',
-      'rate',
       'quantity',
       'unit',
+      'rate',
       'subTotal',
       'discount',
       'taxableAmount',
@@ -420,9 +420,9 @@ export class ProductReport implements OnInit {
     } else {
       headers = [
         'Product Name',
-        'Rate (INR)',
         'Quantity',
         'Unit',
+        'Rate (INR)',
         'Sub Total (INR)',
         'Discount (INR)',
         'Taxable Amount (INR)',
@@ -433,9 +433,9 @@ export class ProductReport implements OnInit {
       ];
       rows = data.map(item => [
         item.productName,
-        item.rate,
         item.quantity,
         item.unit,
+        item.rate,
         item.subTotal,
         item.discount,
         item.taxableAmount,
@@ -446,8 +446,8 @@ export class ProductReport implements OnInit {
       ]);
       footerRow = [
         'Total:',
-        '',
         this.totalQuantity(),
+        '',
         '',
         this.totalSubTotal(),
         this.totalDiscount(),
@@ -555,9 +555,9 @@ export class ProductReport implements OnInit {
       headers = [
         'Sr',
         'Product Name',
-        'Rate',
         'Qty',
         'Unit',
+        'Rate',
         'Sub Total',
         'Disc',
         'Taxable Amt',
@@ -569,9 +569,9 @@ export class ProductReport implements OnInit {
       rows = data.map((item, idx) => [
         idx + 1,
         item.productName,
-        `Rs. ${item.rate.toFixed(2)}`,
         item.quantity.toString(),
         item.unit,
+        `Rs. ${item.rate.toFixed(2)}`,
         `Rs. ${item.subTotal.toFixed(2)}`,
         `Rs. ${item.discount.toFixed(2)}`,
         `Rs. ${item.taxableAmount.toFixed(2)}`,
@@ -583,8 +583,8 @@ export class ProductReport implements OnInit {
       footerRow = [
         'Total:',
         '',
-        '',
         this.totalQuantity().toString(),
+        '',
         '',
         `Rs. ${this.totalSubTotal().toFixed(2)}`,
         `Rs. ${this.totalDiscount().toFixed(2)}`,
@@ -597,9 +597,9 @@ export class ProductReport implements OnInit {
       columnAlignments = [
         'center', // Sr
         'left',   // Product Name
-        'right',  // Rate
         'center', // Qty
         'center', // Unit
+        'right',  // Rate
         'right',  // Sub Total
         'right',  // Disc
         'right',  // Taxable Amt
