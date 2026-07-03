@@ -385,6 +385,13 @@ export class ExportService {
         return acc;
       }, {} as any),
       didParseCell: (data) => {
+        // Apply column-specific horizontal alignment to headers, body and footer
+        const colIdx = data.column.index;
+        const align = columnAlignments[colIdx];
+        if (align) {
+          data.cell.styles.halign = align;
+        }
+
         // Style the totals row at the bottom
         if (footerRow && footerRow.length > 0 && data.row.index === cleanBody.length - 1) {
           data.cell.styles.font = activeFont;
