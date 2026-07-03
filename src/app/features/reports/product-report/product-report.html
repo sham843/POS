@@ -96,6 +96,58 @@
       <div class="table-responsive flex-grow-1 overflow-auto">
         <table mat-table [dataSource]="paginatedData()" class="app-data-table table-hover">
 
+          <!-- Date Column (Summary Mode) -->
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef class="text-center" style="width: 180px; border-right: 1px solid #E5E7EB;"> Date </th>
+            <td mat-cell *matCellDef="let row" class="text-center fw-medium" style="border-right: 1px solid #E5E7EB; vertical-align: middle;">
+              {{ formatDateDisplay(row.date) }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef class="fw-bold" style="border-right: 1px solid #E5E7EB;"> Total </td>
+          </ng-container>
+
+          <!-- Products Column (Summary Mode) -->
+          <ng-container matColumnDef="products">
+            <th mat-header-cell *matHeaderCellDef style="padding: 0 !important;">
+              <table class="w-100" style="border-collapse: collapse; margin: 0; table-layout: fixed;">
+                <thead>
+                  <tr style="border-bottom: none;">
+                    <th style="padding: 6px 14px; font-weight: 700; text-align: left; font-size: 11px; border-right: 1px solid #E5E7EB; border-bottom: none !important; background: transparent !important; color: #4B5563 !important;">Product</th>
+                    <th style="padding: 6px 14px; font-weight: 700; text-align: center; font-size: 11px; border-right: 1px solid #E5E7EB; border-bottom: none !important; background: transparent !important; color: #4B5563 !important; width: 100px;">Unit</th>
+                    <th style="padding: 6px 14px; font-weight: 700; text-align: center; font-size: 11px; border-right: 1px solid #E5E7EB; border-bottom: none !important; background: transparent !important; color: #4B5563 !important; width: 100px;">Qty</th>
+                    <th style="padding: 6px 14px; font-weight: 700; text-align: right; font-size: 11px; border-right: 1px solid #E5E7EB; border-bottom: none !important; background: transparent !important; color: #4B5563 !important; width: 120px;">Rate</th>
+                    <th style="padding: 6px 14px; font-weight: 700; text-align: right; font-size: 11px; border-bottom: none !important; background: transparent !important; color: #4B5563 !important; width: 140px;">Total</th>
+                  </tr>
+                </thead>
+              </table>
+            </th>
+            <td mat-cell *matCellDef="let row" style="padding: 0 !important;">
+              <table class="w-100" style="border-collapse: collapse; margin: 0; table-layout: fixed;">
+                <tbody>
+                  <tr *ngFor="let p of row.products; let last = last" [style.border-bottom]="last ? 'none' : '1px solid #E5E7EB'">
+                    <td style="padding: 6px 14px; text-align: left; border-right: 1px solid #E5E7EB;" class="fw-semibold text-dark">{{ p.material_Name || p.productName || '' }}</td>
+                    <td style="padding: 6px 14px; text-align: center; border-right: 1px solid #E5E7EB; width: 100px;">{{ p.unit_Name || p.unit || '' }}</td>
+                    <td style="padding: 6px 14px; text-align: center; border-right: 1px solid #E5E7EB; width: 100px;">{{ (p.quantity || 0) | number:'1.0-2' }}</td>
+                    <td style="padding: 6px 14px; text-align: right; border-right: 1px solid #E5E7EB; width: 120px;">₹{{ (p.rate || 0).toFixed(2) }}</td>
+                    <td style="padding: 6px 14px; text-align: right; width: 140px;">₹{{ (p.total_Amount || 0).toFixed(2) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td mat-footer-cell *matFooterCellDef class="fw-bold text-primary" style="padding: 0 !important;">
+              <table class="w-100" style="border-collapse: collapse; margin: 0; table-layout: fixed;">
+                <tbody>
+                  <tr style="border-bottom: none;">
+                    <td style="padding: 6px 14px; text-align: left; border-right: 1px solid #E5E7EB;"></td>
+                    <td style="padding: 6px 14px; text-align: center; border-right: 1px solid #E5E7EB; width: 100px;"></td>
+                    <td style="padding: 6px 14px; text-align: center; border-right: 1px solid #E5E7EB; width: 100px; color: #374151 !important;">{{ summaryTotalQuantity() | number:'1.0-2' }}</td>
+                    <td style="padding: 6px 14px; text-align: right; border-right: 1px solid #E5E7EB; width: 120px;"></td>
+                    <td style="padding: 6px 14px; text-align: right; width: 140px;" class="text-primary fw-bold">₹{{ summaryTotalAmount().toFixed(2) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </ng-container>
+
           <!-- Product Name Column -->
           <ng-container matColumnDef="productName">
             <th mat-header-cell *matHeaderCellDef> Product Name </th>
@@ -113,8 +165,8 @@
           <!-- Quantity Column -->
           <ng-container matColumnDef="quantity">
             <th mat-header-cell *matHeaderCellDef class="text-center"> Quantity </th>
-            <td mat-cell *matCellDef="let item" class="text-center"> {{ item.quantity }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-center fw-bold"> {{ totalQuantity() }} </td>
+            <td mat-cell *matCellDef="let item" class="text-center"> {{ item.quantity | number:'1.0-2' }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-center fw-bold"> {{ totalQuantity() | number:'1.0-2' }} </td>
           </ng-container>
 
           <!-- Unit Column -->

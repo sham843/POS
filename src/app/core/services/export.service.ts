@@ -223,9 +223,33 @@ export class ExportService {
   }
 
   /**
+   * Helper to load font binary from assets relative to baseHref and convert to base64.
+   */
+  private async loadFontBase64(url: string): Promise<string> {
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        const blob = await response.blob();
+        return await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64data = reader.result as string;
+            resolve(base64data.split(',')[1]);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      }
+    } catch (e) {
+      console.error('Error fetching font from', url, e);
+    }
+    return '';
+  }
+
+  /**
    * Generates a PDF file from table data using jsPDF and jspdf-autotable, then downloads it directly.
    */
-  exportToPdf(options: PdfExportOptions): void {
+  async exportToPdf(options: PdfExportOptions): Promise<void> {
     const {
       title,
       subtitle = '',
@@ -249,8 +273,28 @@ export class ExportService {
 
     const pageWidth = doc.internal.pageSize.getWidth();
 
+    // Resolve base href dynamically to build safe absolute path for asset fetch
+    const baseHref = document.getElementsByTagName('base')[0]?.getAttribute('href') || '/';
+    const cleanBaseHref = baseHref.endsWith('/') ? baseHref : baseHref + '/';
+
+    const [regularBase64, boldBase64] = await Promise.all([
+      this.loadFontBase64(cleanBaseHref + 'assets/fonts/Poppins-Regular.ttf'),
+      this.loadFontBase64(cleanBaseHref + 'assets/fonts/Poppins-Bold.ttf')
+    ]);
+
+    const activeFont = regularBase64 ? 'Poppins' : 'helvetica';
+
+    if (regularBase64) {
+      doc.addFileToVFS('Poppins-Regular.ttf', regularBase64);
+      doc.addFont('Poppins-Regular.ttf', 'Poppins', 'normal');
+    }
+    if (boldBase64) {
+      doc.addFileToVFS('Poppins-Bold.ttf', boldBase64);
+      doc.addFont('Poppins-Bold.ttf', 'Poppins', 'bold');
+    }
+
     // 1. Add Brand/Unit Name (Centered, Large, Bold, Blue text)
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(activeFont, 'bold');
     doc.setFontSize(22);
     doc.setTextColor(30, 58, 138); // #1E3A8A (Deep Blue)
     doc.text(unitName, pageWidth / 2, 18, { align: 'center' });
@@ -267,7 +311,7 @@ export class ExportService {
 
     // 3. Add Metadata / Filters (aligned nicely)
     doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(activeFont, 'normal');
     doc.setTextColor(75, 85, 99);
 
     // Build filter string
@@ -284,11 +328,11 @@ export class ExportService {
     });
 
     // Left aligned filters
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(activeFont, 'bold');
     doc.text(filterString, 14, 35);
 
     // Right aligned generated date
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(activeFont, 'normal');
     doc.text(`Generated On: ${formatGeneratedOn()}`, pageWidth - 14, 35, { align: 'right' });
 
     // 4. Build Table using jspdf-autotable
@@ -315,6 +359,7 @@ export class ExportService {
       body: cleanBody,
       theme: 'grid',
       headStyles: {
+        font: activeFont,
         fillColor: [243, 244, 246], // #F3F4F6 (Light Grey)
         textColor: [55, 65, 81],    // #374151
         fontStyle: 'bold',
@@ -325,6 +370,7 @@ export class ExportService {
         lineWidth: 0.1
       },
       bodyStyles: {
+        font: activeFont,
         fontSize: 7.5,
         textColor: [31, 41, 55],     // #1F2937
         valign: 'middle',
@@ -341,6 +387,7 @@ export class ExportService {
       didParseCell: (data) => {
         // Style the totals row at the bottom
         if (footerRow && footerRow.length > 0 && data.row.index === cleanBody.length - 1) {
+          data.cell.styles.font = activeFont;
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.fillColor = [239, 246, 255]; // #EFF6FF (Light Blue)
           data.cell.styles.textColor = [30, 58, 138];    // #1E3A8A (Deep Blue)

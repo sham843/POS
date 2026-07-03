@@ -86,7 +86,7 @@ export class ProductReport implements OnInit {
 
   // Pagination State
   currentPage = signal<number>(0);
-  pageSize = signal<number>(5);
+  pageSize = signal<number>(3);
 
   // Dynamic product list for dropdown selector
   productList = signal<any[]>([]);
@@ -111,63 +111,91 @@ export class ProductReport implements OnInit {
     };
   }
 
-  // Normalized report data
+  // Normalized report data (Details only)
   normalizedData = computed<ProductSaleItem[]>(() => {
+    if (this.reportType() === 'summary') return [];
     return this.reportData().map(item => this.normalizeProductData(item));
   });
 
-  // Computed totals for footers
   totalQuantity = computed(() => {
-    return this.normalizedData().reduce((sum, item) => sum + item.quantity, 0);
+    if (this.reportType() === 'summary') return 0;
+    const total = this.normalizedData().reduce((sum, item) => sum + item.quantity, 0);
+    return Number(total.toFixed(2));
   });
 
   totalSubTotal = computed(() => {
+    if (this.reportType() === 'summary') return 0;
     return this.normalizedData().reduce((sum, item) => sum + item.subTotal, 0);
   });
 
   totalDiscount = computed(() => {
+    if (this.reportType() === 'summary') return 0;
     return this.normalizedData().reduce((sum, item) => sum + item.discount, 0);
   });
 
   totalTaxableAmount = computed(() => {
+    if (this.reportType() === 'summary') return 0;
     return this.normalizedData().reduce((sum, item) => sum + item.taxableAmount, 0);
   });
 
   totalSgst = computed(() => {
+    if (this.reportType() === 'summary') return 0;
     return this.normalizedData().reduce((sum, item) => sum + item.sgst, 0);
   });
 
   totalCgst = computed(() => {
+    if (this.reportType() === 'summary') return 0;
     return this.normalizedData().reduce((sum, item) => sum + item.cgst, 0);
   });
 
   totalIgst = computed(() => {
+    if (this.reportType() === 'summary') return 0;
     return this.normalizedData().reduce((sum, item) => sum + item.igst, 0);
   });
 
   totalAmount = computed(() => {
+    if (this.reportType() === 'summary') return 0;
     return this.normalizedData().reduce((sum, item) => sum + item.totalAmount, 0);
+  });
+
+  // Computed totals for Summary mode
+  summaryTotalQuantity = computed(() => {
+    if (this.reportType() !== 'summary') return 0;
+    let total = 0;
+    for (const row of this.reportData()) {
+      if (row.products && Array.isArray(row.products)) {
+        for (const p of row.products) {
+          total += Number(p.quantity || p.qty || 0);
+        }
+      }
+    }
+    return Number(total.toFixed(2));
+  });
+
+  summaryTotalAmount = computed(() => {
+    if (this.reportType() !== 'summary') return 0;
+    let total = 0;
+    for (const row of this.reportData()) {
+      if (row.products && Array.isArray(row.products)) {
+        for (const p of row.products) {
+          total += Number(p.total_Amount || p.totalAmount || p.total || 0);
+        }
+      }
+    }
+    return total;
   });
 
   // Dynamic active report length
   activeReportLength = computed(() => {
-    return this.normalizedData().length;
+    return this.reportData().length;
   });
 
   // Mat-table columns configuration
   displayedColumns = computed<string[]>(() => {
     if (this.reportType() === 'summary') {
       return [
-        'productName',
-        'quantity',
-        'unit',
-        'subTotal',
-        'discount',
-        'taxableAmount',
-        'sgst',
-        'cgst',
-        'igst',
-        'totalAmount'
+        'date',
+        'products'
       ];
     }
     return [
@@ -187,7 +215,7 @@ export class ProductReport implements OnInit {
 
   // Computed paginated view of active data
   paginatedData = computed(() => {
-    const data = this.normalizedData();
+    const data = this.reportType() === 'summary' ? this.reportData() : this.normalizedData();
     const size = this.pageSize();
     const pageIndex = this.currentPage();
     const start = pageIndex * size;
@@ -370,8 +398,8 @@ export class ProductReport implements OnInit {
   }
 
   exportToExcel() {
-    const data = this.normalizedData();
-    if (!data || data.length === 0) {
+    const rawData = this.reportData();
+    if (!rawData || rawData.length === 0) {
       return;
     }
 
@@ -382,42 +410,39 @@ export class ProductReport implements OnInit {
 
     if (isSummary) {
       headers = [
+        'Date',
         'Product Name',
-        'Quantity',
         'Unit',
-        'Sub Total (INR)',
-        'Discount (INR)',
-        'Taxable Amount (INR)',
-        'SGST (INR)',
-        'CGST (INR)',
-        'IGST (INR)',
+        'Quantity',
+        'Rate (INR)',
         'Total Amount (INR)'
       ];
-      rows = data.map(item => [
-        item.productName,
-        item.quantity,
-        item.unit,
-        item.subTotal,
-        item.discount,
-        item.taxableAmount,
-        item.sgst,
-        item.cgst,
-        item.igst,
-        item.totalAmount
-      ]);
+      rows = [];
+      rawData.forEach(row => {
+        const dateStr = this.formatDateDisplay(row.date);
+        if (row.products && Array.isArray(row.products)) {
+          row.products.forEach((p: any) => {
+            rows.push([
+              dateStr,
+              p.material_Name || p.productName || '',
+              p.unit_Name || p.unit || '',
+              p.quantity || 0,
+              p.rate || 0,
+              p.total_Amount || 0
+            ]);
+          });
+        }
+      });
       footerRow = [
         'Total:',
-        this.totalQuantity(),
         '',
-        this.totalSubTotal(),
-        this.totalDiscount(),
-        this.totalTaxableAmount(),
-        this.totalSgst(),
-        this.totalCgst(),
-        this.totalIgst(),
-        this.totalAmount()
+        '',
+        this.summaryTotalQuantity(),
+        '',
+        this.summaryTotalAmount()
       ];
     } else {
+      const data = this.normalizedData();
       headers = [
         'Product Name',
         'Quantity',
@@ -487,8 +512,8 @@ export class ProductReport implements OnInit {
   }
 
   exportToPdf() {
-    const data = this.normalizedData();
-    if (!data || data.length === 0) {
+    const rawData = this.reportData();
+    if (!rawData || rawData.length === 0) {
       return;
     }
 
@@ -501,57 +526,51 @@ export class ProductReport implements OnInit {
     if (isSummary) {
       headers = [
         'Sr',
+        'Date',
         'Product Name',
-        'Qty',
         'Unit',
-        'Sub Total',
-        'Disc',
-        'Taxable Amt',
-        'SGST',
-        'CGST',
-        'IGST',
+        'Qty',
+        'Rate',
         'Total Amt'
       ];
-      rows = data.map((item, idx) => [
-        idx + 1,
-        item.productName,
-        item.quantity.toString(),
-        item.unit,
-        `Rs. ${item.subTotal.toFixed(2)}`,
-        `Rs. ${item.discount.toFixed(2)}`,
-        `Rs. ${item.taxableAmount.toFixed(2)}`,
-        `Rs. ${item.sgst.toFixed(2)}`,
-        `Rs. ${item.cgst.toFixed(2)}`,
-        `Rs. ${item.igst.toFixed(2)}`,
-        `Rs. ${item.totalAmount.toFixed(2)}`
-      ]);
+      rows = [];
+      let srIndex = 1;
+      rawData.forEach(row => {
+        const dateStr = this.formatDateDisplay(row.date);
+        if (row.products && Array.isArray(row.products)) {
+          row.products.forEach((p: any) => {
+            rows.push([
+              srIndex++,
+              dateStr,
+              p.material_Name || p.productName || '',
+              p.unit_Name || p.unit || '',
+              (p.quantity || 0).toString(),
+              `Rs. ${(p.rate || 0).toFixed(2)}`,
+              `Rs. ${(p.total_Amount || 0).toFixed(2)}`
+            ]);
+          });
+        }
+      });
       footerRow = [
         'Total:',
         '',
-        this.totalQuantity().toString(),
         '',
-        `Rs. ${this.totalSubTotal().toFixed(2)}`,
-        `Rs. ${this.totalDiscount().toFixed(2)}`,
-        `Rs. ${this.totalTaxableAmount().toFixed(2)}`,
-        `Rs. ${this.totalSgst().toFixed(2)}`,
-        `Rs. ${this.totalCgst().toFixed(2)}`,
-        `Rs. ${this.totalIgst().toFixed(2)}`,
-        `Rs. ${this.totalAmount().toFixed(2)}`
+        '',
+        this.summaryTotalQuantity().toString(),
+        '',
+        `Rs. ${this.summaryTotalAmount().toFixed(2)}`
       ];
       columnAlignments = [
         'center', // Sr
+        'center', // Date
         'left',   // Product Name
-        'center', // Qty
         'center', // Unit
-        'right',  // Sub Total
-        'right',  // Disc
-        'right',  // Taxable Amt
-        'right',  // SGST
-        'right',  // CGST
-        'right',  // IGST
+        'center', // Qty
+        'right',  // Rate
         'right'   // Total Amt
       ];
     } else {
+      const data = this.normalizedData();
       headers = [
         'Sr',
         'Product Name',
@@ -636,5 +655,22 @@ export class ProductReport implements OnInit {
         ? `Product_Sale_Summary_Report_${this.fromDate() || 'all'}_to_${this.toDate() || 'all'}.pdf`
         : `Product_Wise_Sale_Report_${this.fromDate() || 'all'}_to_${this.toDate() || 'all'}.pdf`
     });
+  }
+
+  formatDateDisplay(dateStr: string): string {
+    if (!dateStr) return '';
+    try {
+      const parts = dateStr.split('T')[0].split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+      const d = new Date(dateStr);
+      const day = '' + d.getDate();
+      const month = '' + (d.getMonth() + 1);
+      const year = d.getFullYear();
+      return [day.padStart(2, '0'), month.padStart(2, '0'), year].join('-');
+    } catch (e) {
+      return dateStr;
+    }
   }
 }
