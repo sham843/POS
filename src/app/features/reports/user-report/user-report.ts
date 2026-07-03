@@ -117,8 +117,8 @@ export class UserReport implements OnInit {
     'sgst',
     'igst',
     'afterTaxTotal',
-    'chargeableAmount',
-    'roundOff'
+    'roundOff',
+    'chargeableAmount'
   ];
 
   // Computed paginated view of active data
