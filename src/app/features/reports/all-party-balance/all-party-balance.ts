@@ -70,6 +70,7 @@ export class AllPartyBalance implements OnInit {
   fromDate = signal<string>('');
   toDate = signal<string>('');
   customerId = signal<number>(0); // 0 means all customers
+  activeCustomerId = signal<number>(0); // Used for table layout updates on search
   maxDate = new Date();
 
   reportType = signal<string>('All Party Balance');
@@ -110,7 +111,7 @@ export class AllPartyBalance implements OnInit {
 
   // Computed Mat-table columns configuration
   displayedColumns = computed(() => {
-    if (this.customerId() === 0) {
+    if (this.activeCustomerId() === 0) {
       return ['srNo', 'partyName', 'mobileNumber', 'openingBalance', 'credit', 'debit', 'closingBalance'];
     } else {
       return ['srNo', 'transactionDate', 'description', 'debit', 'credit', 'closingBalance'];
@@ -119,9 +120,10 @@ export class AllPartyBalance implements OnInit {
 
   ngOnInit() {
     const today = new Date();
-    this.fromDateObj.set(today);
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.fromDateObj.set(firstDayOfMonth);
     this.toDateObj.set(today);
-    this.fromDate.set(this.formatToIsoString(today, false));
+    this.fromDate.set(this.formatToIsoString(firstDayOfMonth, false));
     this.toDate.set(this.formatToIsoString(today, true));
 
     const userStr = localStorage.getItem('user');
@@ -137,7 +139,7 @@ export class AllPartyBalance implements OnInit {
     }
 
     this.fetchCustomers(orgId);
-    
+
     // Automatically fetch reports on page load
     this.fetchReport();
   }
@@ -151,10 +153,10 @@ export class AllPartyBalance implements OnInit {
         } else if (Array.isArray(res)) {
           customers = res;
         }
-        
+
         // Prevent duplicate "All" options if the API already returns one
         const hasAllOption = customers.some((c: any) => c.id === 0 || (c.name && c.name.toLowerCase() === 'all') || (c.customerName && c.customerName.toLowerCase() === 'all'));
-        
+
         if (hasAllOption) {
           this.customersList.set([...customers]);
         } else {
@@ -176,6 +178,9 @@ export class AllPartyBalance implements OnInit {
     const cleanFromDate = fromDate.split('T')[0];
     const cleanToDate = toDate.split('T')[0];
     const custId = this.customerId();
+
+    // Update active customer ID so the table layout changes
+    this.activeCustomerId.set(custId);
 
     this.isLoading.set(true);
 
@@ -252,9 +257,9 @@ export class AllPartyBalance implements OnInit {
     const data = this.normalizedData();
     if (!data || data.length === 0) return;
 
-    const isAll = this.customerId() === 0;
+    const isAll = this.activeCustomerId() === 0;
 
-    const headers = isAll 
+    const headers = isAll
       ? ['Sr. No.', 'Party Name', 'Mobile No.', 'Opening Balance', 'Credit', 'Debit', 'Closing Balance']
       : ['Sr. No.', 'Transaction Date', 'Description', 'Debit', 'Credit', 'Closing Balance'];
 
@@ -309,9 +314,9 @@ export class AllPartyBalance implements OnInit {
     const data = this.normalizedData();
     if (!data || data.length === 0) return;
 
-    const isAll = this.customerId() === 0;
+    const isAll = this.activeCustomerId() === 0;
 
-    const headers = isAll 
+    const headers = isAll
       ? ['Sr. No.', 'Party Name', 'Mobile No.', 'Opening Balance', 'Credit', 'Debit', 'Closing Balance']
       : ['Sr. No.', 'Transaction Date', 'Description', 'Debit', 'Credit', 'Closing Balance'];
 

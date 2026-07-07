@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpHeaders } from '@angular/common/http';
 
 import { LucideAngularModule, Loader, Receipt, Calendar, Search, RotateCcw, FileSpreadsheet, FileText, User } from 'lucide-angular';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -163,9 +164,10 @@ export class CustomerReport implements OnInit {
 
   ngOnInit() {
     const today = new Date();
-    this.fromDateObj.set(today);
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.fromDateObj.set(firstDayOfMonth);
     this.toDateObj.set(today);
-    this.fromDate.set(this.formatToIsoString(today, false));
+    this.fromDate.set(this.formatToIsoString(firstDayOfMonth, false));
     this.toDate.set(this.formatToIsoString(today, true));
 
     const userStr = localStorage.getItem('user');
@@ -181,6 +183,9 @@ export class CustomerReport implements OnInit {
     }
 
     this.fetchCustomers(orgId);
+    
+    // Automatically fetch reports on page load
+    this.fetchReport();
   }
 
   fetchCustomers(orgId: number) {
@@ -215,7 +220,11 @@ export class CustomerReport implements OnInit {
 
     this.isLoading.set(true);
 
-    this.apiService.post<any>('api/v1/report/customer-wise-sale', payload).subscribe({
+    const headers = new HttpHeaders({
+      'X-Skip-Loader': 'true'
+    });
+
+    this.apiService.post<any>('api/v1/report/customer-wise-sale', payload, headers).subscribe({
       next: (response) => {
         if (response && response.data) {
           this.reportData.set(response.data);

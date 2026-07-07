@@ -189,6 +189,13 @@ export class BillReport implements OnInit {
   ];
 
   ngOnInit() {
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.fromDateObj.set(firstDayOfMonth);
+    this.toDateObj.set(today);
+    this.fromDate.set(this.formatToIsoString(firstDayOfMonth, false));
+    this.toDate.set(this.formatToIsoString(today, true));
+
     const userStr = localStorage.getItem('UserDetails');
     if (userStr) {
       try {
@@ -198,6 +205,9 @@ export class BillReport implements OnInit {
         console.error('Failed to parse user details:', e);
       }
     }
+    
+    // Automatically fetch reports on page load
+    this.fetchReport();
   }
 
   fetchReport() {

@@ -240,6 +240,13 @@ export class ProductReport implements OnInit {
   }
 
   ngOnInit() {
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.fromDateObj.set(firstDayOfMonth);
+    this.toDateObj.set(today);
+    this.fromDate.set(this.formatDate(firstDayOfMonth));
+    this.toDate.set(this.formatDate(today));
+
     let orgId = 28;
     const userStr = localStorage.getItem('UserDetails');
     if (userStr) {
@@ -253,6 +260,9 @@ export class ProductReport implements OnInit {
     }
 
     this.fetchProductList(orgId);
+    
+    // Automatically fetch reports on page load
+    this.fetchReport();
   }
 
   fetchProductList(orgId: number) {
