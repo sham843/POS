@@ -122,7 +122,7 @@
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> Total Amount (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> ₹{{ item.totalAmount | number:'1.2-2' }}
             </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totalAmountSum() |
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totals().totalAmount |
               number:'1.2-2' }} </td>
           </ng-container>
 
@@ -131,7 +131,7 @@
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> Discount (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> ₹{{ item.discount | number:'1.2-2' }}
             </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totalDiscountSum() |
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totals().discount |
               number:'1.2-2' }} </td>
           </ng-container>
 
@@ -139,21 +139,21 @@
           <ng-container matColumnDef="zero">
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> 0% (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.zero | number:'1.2-2' }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalZeroSum() | number:'1.2-2' }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totals().zero | number:'1.2-2' }} </td>
           </ng-container>
 
           <!-- 5 -->
           <ng-container matColumnDef="five">
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> 5% (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.five | number:'1.2-2' }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalFiveSum() | number:'1.2-2' }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totals().five | number:'1.2-2' }} </td>
           </ng-container>
 
           <!-- 12 -->
           <ng-container matColumnDef="twelve">
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> 12% (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.twelve | number:'1.2-2' }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalTwelveSum() | number:'1.2-2' }}
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totals().twelve | number:'1.2-2' }}
             </td>
           </ng-container>
 
@@ -161,7 +161,7 @@
           <ng-container matColumnDef="eighteen">
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> 18% (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.eighteen | number:'1.2-2' }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalEighteenSum() | number:'1.2-2' }}
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totals().eighteen | number:'1.2-2' }}
             </td>
           </ng-container>
 
@@ -170,7 +170,7 @@
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> Taxable (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> ₹{{ item.taxableAmount | number:'1.2-2' }}
             </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totalTaxableAmountSum() |
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totals().taxableAmount |
               number:'1.2-2' }} </td>
           </ng-container>
 
@@ -178,21 +178,21 @@
           <ng-container matColumnDef="cgst">
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> CGST (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.cgst | number:'1.2-2' }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalCgstSum() | number:'1.2-2' }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totals().cgst | number:'1.2-2' }} </td>
           </ng-container>
 
           <!-- SGST -->
           <ng-container matColumnDef="sgst">
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> SGST (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.sgst | number:'1.2-2' }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalSgstSum() | number:'1.2-2' }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totals().sgst | number:'1.2-2' }} </td>
           </ng-container>
 
           <!-- IGST -->
           <ng-container matColumnDef="igst">
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> IGST (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.igst | number:'1.2-2' }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalIgstSum() | number:'1.2-2' }} </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totals().igst | number:'1.2-2' }} </td>
           </ng-container>
 
           <!-- After Tax Total -->
@@ -200,7 +200,7 @@
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> After Tax (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> ₹{{ item.afterTaxTotal | number:'1.2-2' }}
             </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totalAfterTaxTotalSum() |
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totals().afterTaxTotal |
               number:'1.2-2' }} </td>
           </ng-container>
 
@@ -209,7 +209,7 @@
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> Chargeable (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> ₹{{ item.chargeableAmount | number:'1.2-2'
               }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totalChargeableAmountSum() |
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totals().chargeableAmount |
               number:'1.2-2' }} </td>
           </ng-container>
 
@@ -217,7 +217,7 @@
           <ng-container matColumnDef="roundOff">
             <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> RoundOff (₹) </th>
             <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.roundOff | number:'1.2-2' }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalRoundOffSum() | number:'1.2-2' }}
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totals().roundOff | number:'1.2-2' }}
             </td>
           </ng-container>
 
@@ -229,7 +229,7 @@
               class="text-end text-nowrap fw-medium text-success bg-light border-start"> ₹{{ item.chargeableAmount |
               number:'1.2-2' }} </td>
             <td mat-footer-cell *matFooterCellDef
-              class="text-end fw-bold text-nowrap text-success bg-light border-start"> ₹{{ totalChargeableAmountSum() |
+              class="text-end fw-bold text-nowrap text-success bg-light border-start"> ₹{{ totals().chargeableAmount |
               number:'1.2-2' }} </td>
           </ng-container>
 

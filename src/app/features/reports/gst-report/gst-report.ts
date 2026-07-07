@@ -123,23 +123,32 @@ export class GstReport implements OnInit {
   });
 
   totalAmountBadge = computed(() => {
-    return this.totalAmountSum();
+    return this.totals().totalAmount;
   });
 
-  // Computed totals for table footer
-  totalAmountSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.totalAmount, 0));
-  totalDiscountSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.discount, 0));
-  totalZeroSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.zero, 0));
-  totalFiveSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.five, 0));
-  totalTwelveSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.twelve, 0));
-  totalEighteenSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.eighteen, 0));
-  totalTaxableAmountSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.taxableAmount, 0));
-  totalCgstSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.cgst, 0));
-  totalSgstSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.sgst, 0));
-  totalIgstSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.igst, 0));
-  totalAfterTaxTotalSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.afterTaxTotal, 0));
-  totalChargeableAmountSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.chargeableAmount, 0));
-  totalRoundOffSum = computed(() => this.normalizedData().reduce((sum, item) => sum + item.roundOff, 0));
+  // Computed totals for table footer (Single Loop Optimization)
+  totals = computed(() => {
+    return this.normalizedData().reduce((acc, item) => {
+      acc.totalAmount += item.totalAmount;
+      acc.discount += item.discount;
+      acc.zero += item.zero;
+      acc.five += item.five;
+      acc.twelve += item.twelve;
+      acc.eighteen += item.eighteen;
+      acc.taxableAmount += item.taxableAmount;
+      acc.cgst += item.cgst;
+      acc.sgst += item.sgst;
+      acc.igst += item.igst;
+      acc.afterTaxTotal += item.afterTaxTotal;
+      acc.chargeableAmount += item.chargeableAmount;
+      acc.roundOff += item.roundOff;
+      return acc;
+    }, {
+      totalAmount: 0, discount: 0, zero: 0, five: 0, twelve: 0, eighteen: 0,
+      taxableAmount: 0, cgst: 0, sgst: 0, igst: 0, afterTaxTotal: 0,
+      chargeableAmount: 0, roundOff: 0
+    });
+  });
 
   // Computed paginated view of active data
   paginatedData = computed(() => {
@@ -335,20 +344,20 @@ export class GstReport implements OnInit {
 
     const footerRow = [
       'Total:', '', '',
-      this.totalAmountSum(),
-      this.totalDiscountSum(),
-      this.totalZeroSum(),
-      this.totalFiveSum(),
-      this.totalTwelveSum(),
-      this.totalEighteenSum(),
-      this.totalTaxableAmountSum(),
-      this.totalCgstSum(),
-      this.totalSgstSum(),
-      this.totalIgstSum(),
-      this.totalAfterTaxTotalSum(),
-      this.totalChargeableAmountSum(),
-      this.totalRoundOffSum(),
-      this.totalChargeableAmountSum(),
+      this.totals().totalAmount,
+      this.totals().discount,
+      this.totals().zero,
+      this.totals().five,
+      this.totals().twelve,
+      this.totals().eighteen,
+      this.totals().taxableAmount,
+      this.totals().cgst,
+      this.totals().sgst,
+      this.totals().igst,
+      this.totals().afterTaxTotal,
+      this.totals().chargeableAmount,
+      this.totals().roundOff,
+      this.totals().chargeableAmount,
       ''
     ];
 
@@ -390,7 +399,7 @@ export class GstReport implements OnInit {
 
     const rows = data.map((item, index) => [
       index + 1,
-      item.billDate ? new Date(item.billDate).toLocaleDateString('en-GB') : '-',
+      item.billDate ? new Date(item.billDate).toLocaleString('en-GB') : '-',
       item.billNo,
       item.totalAmount.toFixed(2),
       item.discount.toFixed(2),
@@ -411,20 +420,20 @@ export class GstReport implements OnInit {
 
     const footerRow = [
       'Total:', '', '',
-      this.totalAmountSum().toFixed(2),
-      this.totalDiscountSum().toFixed(2),
-      this.totalZeroSum().toFixed(2),
-      this.totalFiveSum().toFixed(2),
-      this.totalTwelveSum().toFixed(2),
-      this.totalEighteenSum().toFixed(2),
-      this.totalTaxableAmountSum().toFixed(2),
-      this.totalCgstSum().toFixed(2),
-      this.totalSgstSum().toFixed(2),
-      this.totalIgstSum().toFixed(2),
-      this.totalAfterTaxTotalSum().toFixed(2),
-      this.totalChargeableAmountSum().toFixed(2),
-      this.totalRoundOffSum().toFixed(2),
-      this.totalChargeableAmountSum().toFixed(2),
+      this.totals().totalAmount.toFixed(2),
+      this.totals().discount.toFixed(2),
+      this.totals().zero.toFixed(2),
+      this.totals().five.toFixed(2),
+      this.totals().twelve.toFixed(2),
+      this.totals().eighteen.toFixed(2),
+      this.totals().taxableAmount.toFixed(2),
+      this.totals().cgst.toFixed(2),
+      this.totals().sgst.toFixed(2),
+      this.totals().igst.toFixed(2),
+      this.totals().afterTaxTotal.toFixed(2),
+      this.totals().chargeableAmount.toFixed(2),
+      this.totals().roundOff.toFixed(2),
+      this.totals().chargeableAmount.toFixed(2),
       ''
     ];
 
