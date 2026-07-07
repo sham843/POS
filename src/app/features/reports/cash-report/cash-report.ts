@@ -304,6 +304,7 @@ export class CashReport implements OnInit {
 
     const cleanFromDate = this.fromDate().split('T')[0];
     const cleanToDate = this.toDate().split('T')[0];
+    const reportLabel = this.reportType() === 'summary' ? 'Summary' : 'Details';
 
     const metaInfo: any[] = [{ label: 'Total Records', value: String(data.length) }];
     const userObj = this.usersList().find(c => c.id === this.userId());
@@ -312,14 +313,14 @@ export class CashReport implements OnInit {
     }
 
     this.exportService.exportToExcel({
-      title: 'Cash Report',
+      title: `Cash Report - ${reportLabel}`,
       periodFrom: cleanFromDate || '-',
       periodTo: cleanToDate || '-',
       metaInfo,
       headers,
       rows,
       footerRow,
-      fileName: `Cash_Report_${cleanFromDate}_to_${cleanToDate}.xlsx`
+      fileName: `Cash_Report_${reportLabel}_${cleanFromDate}_to_${cleanToDate}.xlsx`
     });
   }
 
@@ -346,6 +347,7 @@ export class CashReport implements OnInit {
 
     const cleanFromDate = this.fromDate().split('T')[0];
     const cleanToDate = this.toDate().split('T')[0];
+    const reportLabel = this.reportType() === 'summary' ? 'Summary' : 'Details';
 
     // We don't have companyName in this component directly unless we get it from auth,
     // so we'll just pass a placeholder or get it if needed.
@@ -362,7 +364,7 @@ export class CashReport implements OnInit {
     ];
 
     this.exportService.exportToPdf({
-      title: 'Cash Report',
+      title: `Cash Report - ${reportLabel}`,
       unitName,
       periodFrom: cleanFromDate || '-',
       periodTo: cleanToDate || '-',
@@ -371,7 +373,7 @@ export class CashReport implements OnInit {
       rows,
       footerRow,
       columnAlignments,
-      fileName: `Cash_Report_${cleanFromDate}_to_${cleanToDate}.pdf`
+      fileName: `Cash_Report_${reportLabel}_${cleanFromDate}_to_${cleanToDate}.pdf`
     });
   }
 }
