@@ -67,7 +67,11 @@ export class CashReportViewComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<CashReportViewComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) {
+
+    console.log(data)
+
+  }
 
   ngOnInit(): void {
     const userStr = localStorage.getItem('UserDetails');
@@ -89,7 +93,7 @@ export class CashReportViewComponent implements OnInit {
 
   fetchReportDetails() {
     this.isLoading = true;
-    
+
     // Format date from DD-MM-YYYY to YYYY-MM-DD if needed
     let apiDate = this.data.rawDate;
     if (apiDate && apiDate.includes('-')) {
@@ -107,7 +111,7 @@ export class CashReportViewComponent implements OnInit {
       next: (response) => {
         if (response && response.data) {
           const resData = response.data;
-          
+
           this.saleOverview = {
             creditSale: resData.creditSale || 0,
             couponSale: resData.couponSale || 0,
@@ -128,10 +132,10 @@ export class CashReportViewComponent implements OnInit {
             nextShiftBalance: resData.openingBalanceNextShift || 0,
             actualCashReceived: resData.actualCashReceived || 0
           };
-          
+
           this.totalCollection = resData.totalCollection || resData.actualCashReceived || 0;
           this.remark = resData.remark || '';
-          
+
           // Parse denominations if available
           if (resData.denominations && Array.isArray(resData.denominations)) {
             // Update counts based on response
@@ -146,8 +150,8 @@ export class CashReportViewComponent implements OnInit {
               }
             });
           } else {
-             // Reset to 0 if not provided
-             this.denominations.forEach(d => { d.count = 0; d.total = 0; });
+            // Reset to 0 if not provided
+            this.denominations.forEach(d => { d.count = 0; d.total = 0; });
           }
         }
         this.isLoading = false;
