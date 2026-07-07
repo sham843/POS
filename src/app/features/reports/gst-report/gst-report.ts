@@ -5,6 +5,7 @@ import { LucideAngularModule, Loader, Receipt, Calendar, Search, RotateCcw, File
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { CustomDateAdapter, CUSTOM_DATE_FORMATS } from '../../../core/adapters/custom-date-adapter';
@@ -42,6 +43,7 @@ export interface GstReportItem {
     MatPaginatorModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatDatepickerModule,
     MatTableModule,
     EmptyState
@@ -79,6 +81,9 @@ export class GstReport implements OnInit {
 
   isLoading = signal<boolean>(false);
   currentUser = signal<any>(null);
+
+  // Invoices List
+  invoicesList = signal<any[]>([]);
 
   // Pagination State
   currentPage = signal<number>(0);
@@ -175,18 +180,42 @@ export class GstReport implements OnInit {
     this.fromDate.set(this.formatToIsoString(firstDayOfMonth, false));
     this.toDate.set(this.formatToIsoString(today, true));
 
+    let unitId = 0;
     const userStr = localStorage.getItem('UserDetails');
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
         this.currentUser.set(user);
+        unitId = user.unitid || 0;
       } catch (e) {
         console.error('Failed to parse user from local storage');
       }
     }
 
+    this.fetchInvoices(unitId);
+
     // Automatically fetch reports on page load
     this.fetchReport();
+  }
+
+  fetchInvoices(unitId: number) {
+    this.apiService.get<any>(`api/v1/report/GetInvoices?unitId=${unitId}`).subscribe({
+      next: (res) => {
+        let invoices = [];
+        if (res && res.data) {
+          invoices = res.data;
+        } else if (Array.isArray(res)) {
+          invoices = res;
+        }
+
+        // Add "All Invoices" option at the beginning
+        this.invoicesList.set([...invoices]);
+      },
+      error: (err) => {
+        console.error('Error fetching invoices:', err);
+        this.invoicesList.set([]);
+      }
+    });
   }
 
   fetchReport() {
