@@ -37,7 +37,7 @@
       <!-- User Dropdown -->
       <div class="filter-item">
         <mat-form-field appearance="outline" class="no-subscript" style="width: 300px;">
-          <mat-select [ngModel]="userId()" (ngModelChange)="userId.set($event)" placeholder="User List">
+          <mat-select [ngModel]="userId()" (ngModelChange)="userId.set($event)" placeholder="All Users">
             <mat-option *ngFor="let u of usersList()" [value]="u.id">
               {{ u.name }}
             </mat-option>

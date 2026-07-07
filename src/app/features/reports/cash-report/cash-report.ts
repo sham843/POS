@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Search, RotateCcw, Calendar, Loader, FileSpreadsheet, FileText, User, Receipt } from 'lucide-angular';
+import { LucideAngularModule, Search, RotateCcw, Calendar, Loader, FileSpreadsheet, FileText, User, Receipt, Clock } from 'lucide-angular';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -17,7 +17,9 @@ import { ExportService } from '../../../core/services/export.service';
 export interface CashReportItem {
   id?: number;
   depositDate: string;
-  userName: string;
+  startTime: string;
+  endTime: string;
+  personName: string;
   totalAmount: number | string;
 }
 
@@ -55,6 +57,11 @@ export class CashReport implements OnInit {
   readonly PdfIcon = FileText;
   readonly UserIcon = User;
   readonly ReceiptIcon = Receipt;
+  readonly ClockIcon = Clock;
+  readonly ListIcon = FileText;
+
+  // Report Type
+  reportType = signal<'details' | 'summary'>('details');
 
   // Filter Date Objects
   fromDateObj = signal<Date | null>(null);
@@ -64,6 +71,7 @@ export class CashReport implements OnInit {
   fromDate = signal<string>('');
   toDate = signal<string>('');
   userId = signal<number>(0);
+  currentUser = signal<any>(null);
 
   usersList = signal<any[]>([]);
   reportData = signal<CashReportItem[]>([]);
@@ -77,7 +85,9 @@ export class CashReport implements OnInit {
     return this.reportData().map((item: any) => ({
       id: item.id || item.Id || 0,
       depositDate: item.depositDate || item.DepositDate || item.date || item.Date || '',
-      userName: item.userName || item.UserName || item.user || item.User || '',
+      startTime: item.startTime || item.StartTime || '',
+      endTime: item.endTime || item.EndTime || '',
+      personName: item.personName || item.PersonName || item.userName || item.UserName || item.user || item.User || '',
       totalAmount: Number(item.totalAmount || item.TotalAmount || item.amount || item.Amount || 0)
     }));
   });
@@ -112,7 +122,7 @@ export class CashReport implements OnInit {
   displayedColumns = [
     'srNo',
     'depositDate',
-    'userName',
+    'personName',
     'totalAmount',
     'action'
   ];
@@ -124,13 +134,25 @@ export class CashReport implements OnInit {
     this.toDateObj.set(today);
     this.fromDate.set(this.formatDate(firstDayOfMonth));
     this.toDate.set(this.formatDate(today));
-    
-    this.fetchUsers();
+
+    const userStr = localStorage.getItem('UserDetails');
+    let orgId = 0;
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        this.currentUser.set(user);
+        orgId = user.organizationId || user.organizationid || user.OrganizationId || 0;
+      } catch (e) {
+        console.error('Failed to parse user details:', e);
+      }
+    }
+
+    this.fetchUsers(orgId);
     this.searchReport();
   }
 
-  fetchUsers() {
-    this.apiService.get<any>(`api/v1/auth/users`).subscribe({
+  fetchUsers(orgId: number) {
+    this.apiService.get<any>(`api/v1/report/users?organizationId=${orgId}`).subscribe({
       next: (res) => {
         let usersData = [];
         if (res && res.data) {
@@ -232,6 +254,11 @@ export class CashReport implements OnInit {
     this.pageSize.set(event.pageSize);
   }
 
+  setReportType(type: 'details' | 'summary') {
+    this.reportType.set(type);
+    this.currentPage.set(0);
+  }
+
   exportExcel() {
     const data = this.normalizedData();
     if (!data || data.length === 0) return;
@@ -243,7 +270,7 @@ export class CashReport implements OnInit {
     const rows = data.map((item, index) => [
       index + 1,
       item.depositDate || '-',
-      item.userName || '-',
+      item.personName || '-',
       Number(item.totalAmount).toFixed(2)
     ]);
 
@@ -285,7 +312,7 @@ export class CashReport implements OnInit {
     const rows = data.map((item, index) => [
       index + 1,
       item.depositDate || '-',
-      item.userName || '-',
+      item.personName || '-',
       Number(item.totalAmount).toFixed(2)
     ]);
 
@@ -297,17 +324,17 @@ export class CashReport implements OnInit {
 
     const cleanFromDate = this.fromDate().split('T')[0];
     const cleanToDate = this.toDate().split('T')[0];
-    
+
     // We don't have companyName in this component directly unless we get it from auth,
     // so we'll just pass a placeholder or get it if needed.
-    const unitName = 'Hi-Tech Dairy Shop'; 
-    
+    const unitName = 'Hi-Tech Dairy Shop';
+
     const metaInfo: any[] = [{ label: 'Total Records', value: String(data.length) }];
     const userObj = this.usersList().find(c => c.id === this.userId());
     if (userObj && userObj.id !== 0) {
       metaInfo.unshift({ label: 'User', value: userObj.name });
     }
-    
+
     const columnAlignments: ('center' | 'left' | 'right')[] = [
       'center', 'center', 'left', 'right'
     ];

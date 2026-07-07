@@ -1,11 +1,23 @@
 <div class="d-flex flex-column h-100 w-100 bg-white">
-  
+
   <!-- SUB HEADER -->
   <div class="pos-sub-header">
     <div class="d-flex align-items-center gap-3">
       <div class="sub-header-title border-end pe-3">
         <lucide-icon [img]="ReceiptIcon"></lucide-icon>
         <span>Cash Report</span>
+      </div>
+
+      <!-- Segmented Control for Details / Summary -->
+      <div class="app-segment-chips">
+        <div class="app-chip" [class.active]="reportType() === 'details'" (click)="setReportType('details')">
+          <lucide-icon [img]="ListIcon" class="chip-icon"></lucide-icon>
+          <span>Details</span>
+        </div>
+        <div class="app-chip" [class.active]="reportType() === 'summary'" (click)="setReportType('summary')">
+          <lucide-icon [img]="UserIcon" class="chip-icon"></lucide-icon>
+          <span>Summary</span>
+        </div>
       </div>
     </div>
 
@@ -34,7 +46,7 @@
 
       <!-- User Dropdown -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 200px;">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 300px;">
           <mat-select [ngModel]="userId()" (ngModelChange)="userId.set($event)" placeholder="All Users">
             <mat-option *ngFor="let u of usersList()" [value]="u.id">
               {{ u.name }}
@@ -72,15 +84,17 @@
 
   <!-- DATA AREA -->
   <div class="flex-grow-1 p-4 overflow-auto bg-light position-relative d-flex flex-column gap-3">
-    
+
     <!-- Loading Spinner -->
     <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm" *ngIf="isLoading()">
       <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
       <p>Loading cash report...</p>
     </div>
 
-    <div class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white" *ngIf="!isLoading()">
-      
+    <div
+      class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white"
+      *ngIf="!isLoading()">
+
       <div class="table-responsive flex-grow-1 overflow-auto">
         <table mat-table [dataSource]="paginatedData()" class="app-data-table table-hover">
 
@@ -93,25 +107,35 @@
             <td mat-footer-cell *matFooterCellDef class="fw-bold">Total</td>
           </ng-container>
 
-          <!-- Deposit Date -->
+          <!-- Deposit Date & Time -->
           <ng-container matColumnDef="depositDate">
-            <th mat-header-cell *matHeaderCellDef> Deposit Date </th>
+            <th mat-header-cell *matHeaderCellDef> Deposit Date & Time </th>
             <td mat-cell *matCellDef="let item">
-              <div class="d-flex align-items-center gap-1 text-muted">
-                <lucide-icon [img]="CalendarIcon"
-                  style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></lucide-icon>
-                <span>{{ item.depositDate || '-' }}</span>
+              <div class="d-flex align-items-center py-2 gap-3">
+                <div class="d-flex align-items-center gap-2">
+                  <lucide-icon [img]="CalendarIcon" class="text-primary" style="width: 15px; height: 15px;"></lucide-icon>
+                  <span class="text-dark fw-bold" style="font-size: 13px;">{{ item.depositDate || '-' }}</span>
+                </div>
+                
+                <div *ngIf="item.startTime || item.endTime" class="d-flex align-items-center gap-1 px-2 py-1 bg-light rounded-pill border" style="width: fit-content; font-size: 11px;">
+                  <lucide-icon [img]="ClockIcon" class="text-secondary" style="width: 12px; height: 12px;"></lucide-icon>
+                  <span class="text-secondary fw-medium">
+                    {{ item.startTime ? (item.startTime.split(' ')[1] + ' ' + (item.startTime.split(' ')[2] || '')) : '-' }} 
+                    <span class="mx-1 text-muted">to</span> 
+                    {{ item.endTime ? (item.endTime.split(' ')[1] + ' ' + (item.endTime.split(' ')[2] || '')) : '-' }}
+                  </span>
+                </div>
               </div>
             </td>
             <td mat-footer-cell *matFooterCellDef></td>
           </ng-container>
 
           <!-- User Name -->
-          <ng-container matColumnDef="userName">
+          <ng-container matColumnDef="personName">
             <th mat-header-cell *matHeaderCellDef> User Name </th>
             <td mat-cell *matCellDef="let item">
               <div class="d-flex flex-column align-items-start gap-1 py-1">
-                <span class="text-dark fw-medium">{{ item.userName }}</span>
+                <span class="text-dark fw-medium">{{ item.personName }}</span>
               </div>
             </td>
             <td mat-footer-cell *matFooterCellDef></td>
@@ -132,9 +156,9 @@
           <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef class="text-center"> Action </th>
             <td mat-cell *matCellDef="let item" class="text-center">
-               <button class="btn btn-sm btn-light" title="View details">
-                 View
-               </button>
+              <button class="btn btn-sm btn-light" title="View details">
+                View
+              </button>
             </td>
             <td mat-footer-cell *matFooterCellDef></td>
           </ng-container>
