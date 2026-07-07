@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Search, RotateCcw, Calendar, Loader, FileSpreadsheet, FileText, User, Receipt, Clock } from 'lucide-angular';
+import { LucideAngularModule, Search, RotateCcw, Calendar, Loader, FileSpreadsheet, FileText, User, Receipt, Clock, Eye } from 'lucide-angular';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -59,6 +59,7 @@ export class CashReport implements OnInit {
   readonly ReceiptIcon = Receipt;
   readonly ClockIcon = Clock;
   readonly ListIcon = FileText;
+  readonly EyeIcon = Eye;
 
   // Report Type
   reportType = signal<'details' | 'summary'>('details');
