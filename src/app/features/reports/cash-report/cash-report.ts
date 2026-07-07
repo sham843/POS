@@ -23,6 +23,8 @@ export interface CashReportItem {
   endTime: string;
   personName: string;
   totalAmount: number | string;
+  userId?: number;
+  rawDate?: string;
 }
 
 @Component({
@@ -104,7 +106,9 @@ export class CashReport implements OnInit {
         startTime: formatTime(item.startTime || item.StartTime),
         endTime: formatTime(item.endTime || item.EndTime),
         personName: item.personName || item.PersonName || item.userName || item.UserName || item.user || item.User || '',
-        totalAmount: Number(item.totalAmount || item.TotalAmount || item.totalSale || item.TotalSale || item.amount || item.Amount || 0)
+        totalAmount: Number(item.totalAmount || item.TotalAmount || item.totalSale || item.TotalSale || item.amount || item.Amount || 0),
+        userId: item.userId || item.UserId || this.userId(),
+        rawDate: item.date || item.Date || item.depositDate || item.DepositDate
       };
     });
   });
@@ -286,8 +290,8 @@ export class CashReport implements OnInit {
 
   viewDetails(item: CashReportItem) {
     this.dialog.open(CashReportViewComponent, {
-      width: '1000px',
-      maxWidth: '95vw',
+      width: '1200px',
+      maxWidth: '98vw',
       panelClass: 'modern-modal-panel',
       data: item
     });

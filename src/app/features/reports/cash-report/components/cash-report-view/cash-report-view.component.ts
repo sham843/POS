@@ -1,7 +1,8 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { LucideAngularModule, Receipt, User, Calendar, Clock, CreditCard, Banknote, Printer, X, Wallet, ChevronRight } from 'lucide-angular';
+import { ApiService } from '../../../../../core/services/api.service';
 
 @Component({
   selector: 'app-cash-report-view',
@@ -55,8 +56,11 @@ export class CashReportViewComponent implements OnInit {
     { value: 2, count: 4, total: 8 }
   ];
 
-  totalCollection = 9418;
-  remark = 'submited';
+  totalCollection = 0;
+  remark = '';
+  isLoading = true;
+
+  private apiService = inject(ApiService);
 
   constructor(
     public dialogRef: MatDialogRef<CashReportViewComponent>,
@@ -64,7 +68,83 @@ export class CashReportViewComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // We will bind API data to these properties later
+    if (this.data && this.data.userId && this.data.rawDate) {
+      this.fetchReportDetails();
+    } else {
+      this.isLoading = false;
+    }
+  }
+
+  fetchReportDetails() {
+    this.isLoading = true;
+    
+    // Format date from DD-MM-YYYY to YYYY-MM-DD if needed
+    let apiDate = this.data.rawDate;
+    if (apiDate && apiDate.includes('-')) {
+      const parts = apiDate.split('-');
+      if (parts[0].length === 2) {
+        apiDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // Convert DD-MM-YYYY to YYYY-MM-DD
+      }
+    } else if (apiDate && apiDate.includes('T')) {
+      apiDate = apiDate.split('T')[0];
+    }
+
+    const url = `api/v1/report/GetDailyCashierSummary?date=${apiDate}&userId=${this.data.userId}`;
+
+    this.apiService.get<any>(url).subscribe({
+      next: (response) => {
+        if (response && response.data) {
+          const resData = response.data;
+          
+          this.saleOverview = {
+            creditSale: resData.creditSale || 0,
+            couponSale: resData.couponSale || 0,
+            onlineSale: resData.onlineSale || 0,
+            cashSale: resData.cashSale || 0,
+            totalSale: resData.totalSale || 0,
+            totalBills: resData.totalBills || 0,
+            onlineSaleDetail: resData.onlineSale || 0,
+            customerDepositOnline: resData.customerDepositOnline || 0
+          };
+
+          this.cashOverview = {
+            cashSale: resData.cashSale || 0,
+            openingBalance: resData.openingBalance || 0,
+            couponAdvReceived: resData.couponCustAdvReceived || resData.couponAdvReceived || 0,
+            otherCash: resData.otherCash || 0,
+            expense: resData.expense || 0,
+            nextShiftBalance: resData.openingBalanceNextShift || 0,
+            actualCashReceived: resData.actualCashReceived || 0
+          };
+          
+          this.totalCollection = resData.totalCollection || resData.actualCashReceived || 0;
+          this.remark = resData.remark || '';
+          
+          // Parse denominations if available
+          if (resData.denominations && Array.isArray(resData.denominations)) {
+            // Update counts based on response
+            this.denominations.forEach(den => {
+              const matched = resData.denominations.find((d: any) => d.value === den.value);
+              if (matched) {
+                den.count = matched.count || 0;
+                den.total = den.value * den.count;
+              } else {
+                den.count = 0;
+                den.total = 0;
+              }
+            });
+          } else {
+             // Reset to 0 if not provided
+             this.denominations.forEach(d => { d.count = 0; d.total = 0; });
+          }
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching details', err);
+        this.isLoading = false;
+      }
+    });
   }
 
   close(): void {

@@ -39,3 +39,44 @@
 .fs-sm {
   font-size: 13px;
 }
+
+/* Custom Buttons */
+.btn-cancel {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    background: #ffffff;
+    color: #4B5563;
+    border: 1px solid #D1D5DB;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background: #F9FAFB;
+        border-color: #9CA3AF;
+        color: #111827;
+    }
+}
+
+.btn-confirm {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    background: #0052CC;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background: #0047b3;
+    }
+}
