@@ -70,8 +70,15 @@ export class CashReportViewComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const authObj = JSON.parse(localStorage.getItem('authObj') || '{}');
-    this.unitName = authObj.unitName || 'Dairy Shop';
+    const userStr = localStorage.getItem('UserDetails');
+    if (userStr) {
+      try {
+        const userDetails = JSON.parse(userStr);
+        this.unitName = userDetails.unitName || userDetails.UnitName || '';
+      } catch (e) {
+        console.error('Failed to parse UserDetails', e);
+      }
+    }
 
     if (this.data && this.data.userId && this.data.rawDate) {
       this.fetchReportDetails();
