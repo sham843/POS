@@ -354,10 +354,18 @@ export class GstReport implements OnInit {
 
     const cleanFromDate = this.fromDate().split('T')[0];
     const cleanToDate = this.toDate().split('T')[0];
-    const metaInfo = [
+    
+    const selectedInv = this.invoicesList().find(inv => inv.id === this.invoiceId());
+    const invName = selectedInv && selectedInv.id !== '' ? (selectedInv.invoiceNo || selectedInv.billNo || selectedInv.id) : null;
+
+    const metaInfo: any[] = [
       { label: 'Total Bills', value: String(this.totalBillsBadge()) },
       { label: 'Total Amount', value: 'Rs. ' + Number(this.totalAmountBadge()).toFixed(2) }
     ];
+    
+    if (invName) {
+      metaInfo.unshift({ label: 'Invoice No', value: String(invName) });
+    }
 
     this.exportService.exportToExcel({
       title: 'GST Report',
@@ -430,10 +438,17 @@ export class GstReport implements OnInit {
     const cleanToDate = this.toDate().split('T')[0];
     const unitName = this.currentUser()?.unitName || this.currentUser()?.UnitName || 'Hi-Tech Dairy Shop';
 
-    const metaInfo = [
+    const selectedInv = this.invoicesList().find(inv => inv.id === this.invoiceId());
+    const invName = selectedInv && selectedInv.id !== '' ? (selectedInv.invoiceNo || selectedInv.billNo || selectedInv.id) : null;
+
+    const metaInfo: any[] = [
       { label: 'Total Bills', value: String(this.totalBillsBadge()) },
       { label: 'Total Amount', value: 'Rs. ' + Number(this.totalAmountBadge()).toFixed(2) }
     ];
+    
+    if (invName) {
+      metaInfo.unshift({ label: 'Invoice No', value: String(invName) });
+    }
 
     this.exportService.exportToPdf({
       title: 'GST Report',
