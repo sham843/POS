@@ -163,7 +163,7 @@
           <!-- Payment Note -->
           <ng-container matColumnDef="paymentNote">
             <th mat-header-cell *matHeaderCellDef> Payment Note </th>
-            <td mat-cell *matCellDef="let item">
+            <td mat-cell *matCellDef="let item" class="text-truncate" style="max-width: 150px;" [title]="item.paymentNote || ''">
               {{ item.paymentNote || '-' }}
             </td>
             <td mat-footer-cell *matFooterCellDef></td>
