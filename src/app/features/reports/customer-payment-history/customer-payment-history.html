@@ -35,8 +35,9 @@
 
       <!-- Payment Mode Dropdown -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 250px;">
-          <mat-select [ngModel]="modeOfPaymentId()" (ngModelChange)="modeOfPaymentId.set($event)" placeholder="Payment Mode">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
+          <mat-select [ngModel]="modeOfPaymentId()" (ngModelChange)="modeOfPaymentId.set($event)"
+            placeholder="Payment Mode">
             <mat-option *ngFor="let m of paymentModes()" [value]="m.id">
               {{ m.name }}
             </mat-option>
@@ -45,8 +46,8 @@
       </div>
 
       <!-- Customer Dropdown -->
-      <div class="filter-item flex-grow-1">
-        <mat-form-field appearance="outline" class="no-subscript w-100" style="max-width: 600px;">
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 400px;">
           <mat-select [ngModel]="customerId()" (ngModelChange)="customerId.set($event)" placeholder="Customer List">
             <mat-option *ngFor="let c of customersList()" [value]="c.id">
               <span *ngIf="c.id !== 0">{{ c.id }} - </span>{{ c.name || c.customerName }}
@@ -121,7 +122,9 @@
                   <lucide-icon [img]="HashIcon"
                     style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></lucide-icon>
                   <span>{{ item.customerNo }}</span>
-                  <span class="badge ms-2" [ngClass]="getPaymentModeBadgeClass(item.modeOfPayment)" *ngIf="item.modeOfPayment" style="font-size: 0.60rem; padding: 2px 5px; font-weight: 600;">{{ item.modeOfPayment }}</span>
+                  <span class="badge ms-2" [ngClass]="getPaymentModeBadgeClass(item.modeOfPayment)"
+                    *ngIf="item.modeOfPayment" style="font-size: 0.60rem; padding: 2px 5px; font-weight: 600;">{{
+                    item.modeOfPayment }}</span>
                 </div>
               </div>
             </td>
@@ -180,7 +183,7 @@
           <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true" [hidden]="reportData().length === 0"
             class="bg-light-blue text-primary"></tr>
         </table>
-        
+
         <app-empty-state *ngIf="reportData().length === 0" [title]="'No Payment History Found'"
           message="Adjust the date range or filters and click Search." icon="search"
           class="py-5 bg-white border-top d-block">
