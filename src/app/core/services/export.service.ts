@@ -304,6 +304,11 @@ export class ExportService {
     doc.setTextColor(75, 85, 99); // #4B5563
     doc.text(title + (subtitle ? ' - ' + subtitle : ''), pageWidth / 2, 25, { align: 'center' });
 
+    // Right aligned generated date (above the line)
+    doc.setFontSize(9);
+    doc.setFont(activeFont, 'normal');
+    doc.text(`Generated On: ${formatGeneratedOn()}`, pageWidth - 14, 25, { align: 'right' });
+
     // Draw horizontal separator line
     doc.setDrawColor(229, 231, 235); // #E5E7EB
     doc.setLineWidth(0.5);
@@ -330,10 +335,6 @@ export class ExportService {
     // Left aligned filters
     doc.setFont(activeFont, 'bold');
     doc.text(filterString, 14, 35);
-
-    // Right aligned generated date
-    doc.setFont(activeFont, 'normal');
-    doc.text(`Generated On: ${formatGeneratedOn()}`, pageWidth - 14, 35, { align: 'right' });
 
     // 4. Build Table using jspdf-autotable
     // Map cell text values and clean HTML tags if any (convert <br/> to \n)

@@ -292,7 +292,18 @@ export class AllPartyBalance implements OnInit {
 
     const cleanFromDate = this.fromDate().split('T')[0];
     const cleanToDate = this.toDate().split('T')[0];
+
+    const selectedCustId = this.activeCustomerId();
+    let selectedPartyName = 'All Parties';
+    if (selectedCustId > 0) {
+      const found = this.customersList().find(c => c.id === selectedCustId);
+      if (found) {
+        selectedPartyName = found.name || found.customerName || selectedCustId.toString();
+      }
+    }
+
     const metaInfo = [
+      { label: 'Party Filter', value: selectedPartyName },
       { label: 'Total Parties', value: String(this.totalPartiesBadge()) },
       { label: 'Total Credit', value: 'Rs. ' + Number(this.totalCreditSum()).toFixed(2) },
       { label: 'Total Debit', value: 'Rs. ' + Number(this.totalDebitSum()).toFixed(2) }
@@ -354,7 +365,18 @@ export class AllPartyBalance implements OnInit {
     const cleanFromDate = this.fromDate().split('T')[0];
     const cleanToDate = this.toDate().split('T')[0];
     const unitName = this.currentUser()?.unitName || this.currentUser()?.UnitName || 'Hi-Tech Dairy Shop';
+
+    const selectedCustId = this.activeCustomerId();
+    let selectedPartyName = 'All Parties';
+    if (selectedCustId > 0) {
+      const found = this.customersList().find(c => c.id === selectedCustId);
+      if (found) {
+        selectedPartyName = found.name || found.customerName || selectedCustId.toString();
+      }
+    }
+
     const metaInfo = [
+      { label: 'Party Filter', value: selectedPartyName },
       { label: 'Total Parties', value: String(this.totalPartiesBadge()) },
       { label: 'Total Credit', value: 'Rs. ' + Number(this.totalCreditSum()).toFixed(2) },
       { label: 'Total Debit', value: 'Rs. ' + Number(this.totalDebitSum()).toFixed(2) }
