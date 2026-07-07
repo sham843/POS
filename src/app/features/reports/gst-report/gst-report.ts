@@ -175,7 +175,7 @@ export class GstReport implements OnInit {
     this.fromDate.set(this.formatToIsoString(firstDayOfMonth, false));
     this.toDate.set(this.formatToIsoString(today, true));
 
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem('UserDetails');
     if (userStr) {
       try {
         const user = JSON.parse(userStr);

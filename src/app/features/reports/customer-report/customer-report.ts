@@ -170,7 +170,7 @@ export class CustomerReport implements OnInit {
     this.fromDate.set(this.formatToIsoString(firstDayOfMonth, false));
     this.toDate.set(this.formatToIsoString(today, true));
 
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem('UserDetails');
     let orgId = 0;
     if (userStr) {
       try {
