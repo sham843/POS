@@ -23,6 +23,8 @@ export class CashReportViewComponent implements OnInit {
   readonly WalletIcon = Wallet;
   readonly ChevronRightIcon = ChevronRight;
 
+  unitName: string = '';
+
   // Mock data for UI design preview until API is integrated
   saleOverview = {
     creditSale: 54280,
@@ -68,6 +70,9 @@ export class CashReportViewComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const authObj = JSON.parse(localStorage.getItem('authObj') || '{}');
+    this.unitName = authObj.unitName || 'Dairy Shop';
+
     if (this.data && this.data.userId && this.data.rawDate) {
       this.fetchReportDetails();
     } else {

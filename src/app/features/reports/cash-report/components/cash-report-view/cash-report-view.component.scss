@@ -80,3 +80,71 @@
         background: #0047b3;
     }
 }
+
+/* Print Specific Styles */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body, html {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .modal-footer, .btn-close-custom {
+    display: none !important;
+  }
+  
+  .report-modal-container {
+    background: #fff;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .modal-body {
+    padding: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Fix horizontal scroll and cramping */
+  .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+
+  .col-4 {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+  
+  .data-card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    page-break-inside: avoid;
+  }
+
+  .list-group-item {
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+  }
+
+  .denomination-grid > div {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+  }
+  
+  .bg-light {
+    background: #f8fafc !important; /* Keep light gray in print */
+  }
+
+  .print-header h2 {
+    font-size: 20px !important;
+    margin-bottom: 4px !important;
+  }
+}

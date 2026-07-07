@@ -1,6 +1,12 @@
 <div class="report-modal-container">
-  <!-- Header -->
-  <div class="modal-header d-flex justify-content-between align-items-center bg-white border-bottom px-4 py-3">
+  <!-- Print Header (Hidden on screen) -->
+  <div class="print-header d-none d-print-block text-center border-bottom pb-3 mb-3">
+    <h2 class="fw-bold m-0 text-dark">{{ unitName }}</h2>
+    <p class="text-secondary m-0 mt-1">Cash Report Summary</p>
+  </div>
+  
+  <!-- Header (Hidden on print) -->
+  <div class="modal-header d-print-none d-flex justify-content-between align-items-center bg-white border-bottom px-4 py-3">
     <div class="d-flex align-items-center gap-3">
       <div class="icon-wrapper bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
         <lucide-icon [img]="ReceiptIcon" class="text-primary"></lucide-icon>
@@ -37,9 +43,9 @@
       </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-3 g-md-4 align-items-stretch">
       <!-- Column 1: Sale Overview -->
-      <div class="col-lg-4">
+      <div class="col-4">
         
         <!-- Sale Overview -->
         <div class="data-card bg-white rounded-4 shadow-sm border overflow-hidden">
@@ -92,7 +98,7 @@
       </div>
 
       <!-- Column 2: Cash Details -->
-      <div class="col-lg-4">
+      <div class="col-4">
         <div class="data-card bg-white rounded-4 shadow-sm border overflow-hidden">
           <div class="card-header bg-white border-bottom px-4 py-3">
             <h6 class="m-0 fw-bold text-dark d-flex align-items-center gap-2">
@@ -136,7 +142,7 @@
       </div>
 
       <!-- Column 3: Denominations -->
-      <div class="col-lg-4">
+      <div class="col-4">
         <div class="data-card bg-white rounded-4 shadow-sm border overflow-hidden h-100 d-flex flex-column">
           <div class="card-header bg-white border-bottom px-4 py-3">
             <h6 class="m-0 fw-bold text-dark d-flex align-items-center gap-2">
