@@ -83,7 +83,7 @@ export class CustomerPaymentHistory implements OnInit {
 
   customersList = signal<any[]>([]);
   paymentModes = signal<any[]>([
-    { id: 0, name: 'All' },
+    { id: 0, name: 'All Payment Modes' },
     { id: 1, name: 'Cash' },
     { id: 2, name: 'Cheque' },
     { id: 3, name: 'NEFT/RTGS' },
@@ -188,13 +188,18 @@ export class CustomerPaymentHistory implements OnInit {
           customers = res;
         }
 
-        const hasAllOption = customers.some((c: any) => c.id === 0 || (c.name && c.name.toLowerCase() === 'all') || (c.customerName && c.customerName.toLowerCase() === 'all'));
+        let finalCustomers = [...customers];
+        const allIndex = finalCustomers.findIndex((c: any) => c.id === 0 || (c.name && c.name.toLowerCase() === 'all') || (c.customerName && c.customerName.toLowerCase() === 'all'));
 
-        if (hasAllOption) {
-          this.customersList.set([...customers]);
+        if (allIndex !== -1) {
+          // Update the existing 'All' option from API
+          finalCustomers[allIndex] = { ...finalCustomers[allIndex], name: 'All Customers', customerName: 'All Customers' };
         } else {
-          this.customersList.set([{ id: 0, name: 'All' }, ...customers]);
+          // Prepend if not found
+          finalCustomers = [{ id: 0, name: 'All Customers', customerName: 'All Customers' }, ...finalCustomers];
         }
+
+        this.customersList.set(finalCustomers);
       },
       error: (err) => console.error('Error fetching customers', err)
     });
