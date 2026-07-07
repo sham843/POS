@@ -1,277 +1,240 @@
-<div class="report-container flex-column h-100">
-  <!-- Header Section -->
-  <div class="report-header d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-column h-100 w-100 bg-white">
+
+  <!-- SUB HEADER -->
+  <div class="pos-sub-header">
     <div class="d-flex align-items-center gap-3">
-      <div class="icon-wrapper primary-bg-light rounded-circle p-2 d-flex align-items-center justify-content-center">
-        <lucide-icon [img]="HeaderIcon" class="text-primary" size="24"></lucide-icon>
+      <div class="sub-header-title border-end pe-3">
+        <lucide-icon [img]="HeaderIcon"></lucide-icon>
+        <span>GST Report</span>
       </div>
-      <div>
-        <h2 class="mb-1 fw-bold text-dark">GST Report</h2>
-        <p class="text-muted mb-0 small">View detailed GST sales and invoices</p>
+    </div>
+
+    <div class="sub-header-filters align-items-center">
+
+      <!-- From Date Picker -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
+          <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
+            (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
+            placeholder="From Date" [max]="toDateObj() || maxDate">
+          <mat-datepicker-toggle matSuffix [for]="fromDateStrPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromDateStrPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- To Date Picker -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
+          <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
+            (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date"
+            [min]="fromDateObj()" [max]="maxDate">
+          <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toDateStrPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- Invoice Input -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 200px;">
+          <input matInput [ngModel]="invoiceId()" (ngModelChange)="invoiceId.set($event)" placeholder="Invoice ID (Optional)">
+        </mat-form-field>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2"
+        style="border-color: #BFDBFE !important;">
+        <button class="btn btn-icon-only btn-search" (click)="searchReport()" title="Search Report">
+          <lucide-icon [img]="SearchIcon" class="btn-icon-large"></lucide-icon>
+        </button>
+
+        <button class="btn btn-icon-only btn-clear" (click)="clearFilters()" title="Clear Filters">
+          <lucide-icon [img]="ClearIcon" class="btn-icon-large"></lucide-icon>
+        </button>
+
+        <button class="btn btn-excel d-flex align-items-center gap-1" (click)="exportToExcel()"
+          [disabled]="reportData().length === 0" title="Export to Excel">
+          <lucide-icon [img]="ExcelIcon" class="btn-icon"></lucide-icon>
+          <span>Excel</span>
+        </button>
+
+        <button class="btn btn-pdf d-flex align-items-center gap-1" (click)="exportToPdf()"
+          [disabled]="reportData().length === 0" title="Export to PDF">
+          <lucide-icon [img]="PdfIcon" class="btn-icon"></lucide-icon>
+          <span>PDF</span>
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Filters Section -->
-  <div class="filters-card card border-0 shadow-sm mb-4">
-    <div class="card-body p-3">
-      <div class="sub-header-filters d-flex flex-wrap align-items-center gap-3">
 
-        <!-- From Date Picker -->
-        <div class="filter-item">
-          <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
-            <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
-              (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
-              placeholder="From Date" [max]="toDateObj() || maxDate">
-            <mat-datepicker-toggle matSuffix [for]="fromDateStrPicker"></mat-datepicker-toggle>
-            <mat-datepicker #fromDateStrPicker></mat-datepicker>
-          </mat-form-field>
-        </div>
+  <!-- DATA AREA -->
+  <div class="flex-grow-1 p-4 overflow-auto bg-light position-relative d-flex flex-column gap-3">
 
-        <!-- To Date Picker -->
-        <div class="filter-item">
-          <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
-            <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
-              (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date"
-              [min]="fromDateObj()" [max]="maxDate">
-            <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
-            <mat-datepicker #toDateStrPicker></mat-datepicker>
-          </mat-form-field>
-        </div>
-
-        <!-- Invoice Input -->
-        <div class="filter-item">
-          <mat-form-field appearance="outline" class="no-subscript" style="width: 200px;">
-            <input matInput [ngModel]="invoiceId()" (ngModelChange)="invoiceId.set($event)" placeholder="Invoice ID (Optional)">
-          </mat-form-field>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2"
-          style="border-color: #BFDBFE !important;">
-          <button class="btn btn-primary d-flex align-items-center gap-2" (click)="searchReport()"
-            [disabled]="isLoading()">
-            <lucide-icon [img]="SearchIcon" size="18"></lucide-icon>
-            Search
-          </button>
-          
-          <button class="btn btn-outline-secondary d-flex align-items-center gap-2" (click)="clearFilters()">
-            <lucide-icon [img]="ClearIcon" size="18"></lucide-icon>
-            Clear
-          </button>
-        </div>
-
-        <div class="flex-grow-1"></div>
-        <div class="export-actions d-flex gap-2">
-          <button class="btn btn-success d-flex align-items-center gap-2" (click)="exportToExcel()"
-            [disabled]="normalizedData().length === 0">
-            <lucide-icon [img]="ExcelIcon" size="18"></lucide-icon>
-            Excel
-          </button>
-          <button class="btn btn-danger d-flex align-items-center gap-2" (click)="exportToPdf()"
-            [disabled]="normalizedData().length === 0">
-            <lucide-icon [img]="PdfIcon" size="18"></lucide-icon>
-            PDF
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Stats Cards -->
-  <div class="row g-3 mb-4" *ngIf="normalizedData().length > 0 && !isLoading()">
-    <div class="col-md-6 col-lg-3">
-      <div class="card stat-card border-0 shadow-sm">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="text-muted mb-0 fw-semibold">Total Bills</h6>
-            <div class="icon-bg bg-primary bg-opacity-10 rounded p-2">
-              <lucide-icon [img]="ReceiptIcon" class="text-primary" size="20"></lucide-icon>
-            </div>
-          </div>
-          <h3 class="mb-0 fw-bold text-dark">{{ totalBillsBadge() }}</h3>
-        </div>
-      </div>
-    </div>
-    
-    <div class="col-md-6 col-lg-3">
-      <div class="card stat-card border-0 shadow-sm">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="text-muted mb-0 fw-semibold">Total Amount</h6>
-            <div class="icon-bg bg-success bg-opacity-10 rounded p-2">
-              <span class="fs-5 text-success fw-bold">₹</span>
-            </div>
-          </div>
-          <h3 class="mb-0 fw-bold text-dark">₹{{ totalAmountBadge() | number:'1.2-2' }}</h3>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Report Data Container -->
-  <div class="report-content flex-grow-1 card border-0 shadow-sm overflow-hidden d-flex flex-column"
-    style="min-height: 400px;">
-    
-    <!-- Loader overlay -->
-    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75 z-2"
-      *ngIf="isLoading()">
-      <div class="text-center">
-        <lucide-icon [img]="LoaderIcon" class="spin text-primary mb-2" size="32"></lucide-icon>
-        <p class="text-muted mb-0 fw-medium">Loading report data...</p>
-      </div>
+    <!-- Loading Spinner -->
+    <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm" *ngIf="isLoading()">
+      <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
+      <p>Loading GST reports...</p>
     </div>
 
-    <!-- Empty State -->
-    <app-empty-state *ngIf="normalizedData().length === 0 && !isLoading()" icon="search" title="No GST Data Found"
-      description="There are no records for the selected filters. Please try different dates or invoice ID."
-      (actionClick)="clearFilters()">
-    </app-empty-state>
+    <!-- Table Wrapper -->
+    <div
+      class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white"
+      *ngIf="!isLoading()">
+      <div class="table-responsive flex-grow-1 overflow-auto">
+        <table mat-table [dataSource]="paginatedData()" class="app-data-table table-hover" [hidden]="normalizedData().length === 0">
 
-    <!-- Table Container -->
-    <div class="table-responsive flex-grow-1" *ngIf="normalizedData().length > 0">
-      <table mat-table [dataSource]="paginatedData()" class="w-100 border-bottom">
-        
         <!-- Sr. No. -->
-        <ng-container matColumnDef="srNo">
-          <th mat-header-cell *matHeaderCellDef class="text-center fw-bold text-nowrap" style="width: 60px;"> Sr. No. </th>
+        <ng-container matColumnDef="srNo" sticky>
+          <th mat-header-cell *matHeaderCellDef class="text-center"> Sr. No. </th>
           <td mat-cell *matCellDef="let item; let i = index" class="text-center">
             {{ (currentPage() * pageSize()) + i + 1 }}
           </td>
           <td mat-footer-cell *matFooterCellDef class="fw-bold"> Total: </td>
         </ng-container>
 
-        <!-- Bill Date -->
-        <ng-container matColumnDef="billDate">
-          <th mat-header-cell *matHeaderCellDef class="fw-bold text-nowrap"> Bill Date </th>
-          <td mat-cell *matCellDef="let item" class="text-nowrap"> {{ item.billDate | date:'dd-MM-yyyy HH:mm:ss' }} </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-        </ng-container>
-
-        <!-- Bill No -->
-        <ng-container matColumnDef="billNo">
-          <th mat-header-cell *matHeaderCellDef class="fw-bold text-center text-nowrap"> Bill No </th>
-          <td mat-cell *matCellDef="let item" class="text-center"> {{ item.billNo }} </td>
+        <!-- Bill Details (Merged Number & Date) -->
+        <ng-container matColumnDef="billDetails" sticky>
+          <th mat-header-cell *matHeaderCellDef class="text-nowrap pe-4"> Bill No / Date </th>
+          <td mat-cell *matCellDef="let item">
+            <div class="d-flex flex-column py-1 gap-1">
+              <div class="d-flex align-items-center gap-1">
+                <lucide-icon [img]="ReceiptIcon" class="text-primary"
+                  style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></lucide-icon>
+                <span class="fw-semibold text-dark">{{ item.billNo || '-' }}</span>
+              </div>
+              <div class="d-flex align-items-center gap-1 text-muted text-nowrap" style="font-size: 11.5px;">
+                <lucide-icon [img]="CalendarIcon"
+                  style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></lucide-icon>
+                <span>{{ item.billDate | date:'dd-MM-yyyy HH:mm:ss' }}</span>
+              </div>
+            </div>
+          </td>
           <td mat-footer-cell *matFooterCellDef></td>
         </ng-container>
 
         <!-- Total Amount -->
         <ng-container matColumnDef="totalAmount">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> Total Amount </th>
-          <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> {{ item.totalAmount | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap text-primary"> {{ totalAmountSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> Total Amount (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> ₹{{ item.totalAmount | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totalAmountSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- Discount -->
         <ng-container matColumnDef="discount">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> Discount </th>
-          <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> {{ item.discount | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> {{ totalDiscountSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> Discount (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> ₹{{ item.discount | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totalDiscountSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- 0 -->
         <ng-container matColumnDef="zero">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> 0 </th>
-          <td mat-cell *matCellDef="let item" class="text-end"> {{ item.zero | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> {{ totalZeroSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> 0% (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.zero | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalZeroSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- 5 -->
         <ng-container matColumnDef="five">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> 5 </th>
-          <td mat-cell *matCellDef="let item" class="text-end"> {{ item.five | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> {{ totalFiveSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> 5% (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.five | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalFiveSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- 12 -->
         <ng-container matColumnDef="twelve">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> 12 </th>
-          <td mat-cell *matCellDef="let item" class="text-end"> {{ item.twelve | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> {{ totalTwelveSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> 12% (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.twelve | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalTwelveSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- 18 -->
         <ng-container matColumnDef="eighteen">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> 18 </th>
-          <td mat-cell *matCellDef="let item" class="text-end"> {{ item.eighteen | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> {{ totalEighteenSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> 18% (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.eighteen | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalEighteenSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- Taxable Amount -->
         <ng-container matColumnDef="taxableAmount">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> Taxable Amount </th>
-          <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> {{ item.taxableAmount | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> {{ totalTaxableAmountSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> Taxable (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> ₹{{ item.taxableAmount | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totalTaxableAmountSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- CGST -->
         <ng-container matColumnDef="cgst">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> CGST </th>
-          <td mat-cell *matCellDef="let item" class="text-end"> {{ item.cgst | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> {{ totalCgstSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> CGST (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.cgst | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalCgstSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- SGST -->
         <ng-container matColumnDef="sgst">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> SGST </th>
-          <td mat-cell *matCellDef="let item" class="text-end"> {{ item.sgst | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> {{ totalSgstSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> SGST (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.sgst | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalSgstSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- IGST -->
         <ng-container matColumnDef="igst">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> IGST </th>
-          <td mat-cell *matCellDef="let item" class="text-end"> {{ item.igst | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> {{ totalIgstSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> IGST (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.igst | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalIgstSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- After Tax Total -->
         <ng-container matColumnDef="afterTaxTotal">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> After Tax Total </th>
-          <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> {{ item.afterTaxTotal | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> {{ totalAfterTaxTotalSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> After Tax (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> ₹{{ item.afterTaxTotal | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totalAfterTaxTotalSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- Chargeable Amount -->
         <ng-container matColumnDef="chargeableAmount">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> Chargeable Amount </th>
-          <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> {{ item.chargeableAmount | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> {{ totalChargeableAmountSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> Chargeable (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end text-nowrap"> ₹{{ item.chargeableAmount | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap"> ₹{{ totalChargeableAmountSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- RoundOff -->
         <ng-container matColumnDef="roundOff">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> RoundOff </th>
-          <td mat-cell *matCellDef="let item" class="text-end"> {{ item.roundOff | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> {{ totalRoundOffSum() | number:'1.2-2' }} </td>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> RoundOff (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.roundOff | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalRoundOffSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- Final Total -->
-        <ng-container matColumnDef="finalTotal">
-          <th mat-header-cell *matHeaderCellDef class="text-end fw-bold text-nowrap"> Final Total </th>
-          <td mat-cell *matCellDef="let item" class="text-end text-nowrap fw-medium text-success"> {{ item.chargeableAmount | number:'1.2-2' }} </td>
-          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap text-success"> {{ totalChargeableAmountSum() | number:'1.2-2' }} </td>
+        <ng-container matColumnDef="finalTotal" stickyEnd>
+          <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> Final Total (₹) </th>
+          <td mat-cell *matCellDef="let item" class="text-end text-nowrap fw-medium text-success"> ₹{{ item.chargeableAmount | number:'1.2-2' }} </td>
+          <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-nowrap text-success"> ₹{{ totalChargeableAmountSum() | number:'1.2-2' }} </td>
         </ng-container>
 
         <!-- User Name -->
-        <ng-container matColumnDef="userName">
-          <th mat-header-cell *matHeaderCellDef class="fw-bold text-nowrap ps-3"> User Name </th>
+        <ng-container matColumnDef="userName" stickyEnd>
+          <th mat-header-cell *matHeaderCellDef class="text-nowrap ps-3"> User Name </th>
           <td mat-cell *matCellDef="let item" class="text-nowrap ps-3"> {{ item.userName }} </td>
           <td mat-footer-cell *matFooterCellDef></td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="bg-light"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
-        <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true" class="bg-light footer-row"></tr>
-      </table>
-    </div>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true" [hidden]="reportData().length === 0"
+            class="bg-light-blue text-primary"></tr>
+        </table>
 
-    <!-- Paginator -->
-    <div class="mt-auto border-top bg-white" [class.d-none]="normalizedData().length === 0">
-      <mat-paginator [length]="normalizedData().length" [pageSize]="pageSize()" [pageSizeOptions]="[5, 10, 25, 50]"
-        (page)="onPageChange($event)" showFirstLastButtons class="bg-transparent">
+        <app-empty-state *ngIf="normalizedData().length === 0" icon="search" title="No GST Data Found"
+          description="There are no records for the selected filters."
+          (actionClick)="clearFilters()">
+        </app-empty-state>
+      </div>
+
+      <!-- Paginator -->
+      <mat-paginator [length]="normalizedData().length" [pageSize]="pageSize()" hidePageSize="true"
+        showFirstLastButtons="true" [pageIndex]="currentPage()" (page)="onPageChange($event)" aria-label="Select page"
+        class="border-top">
       </mat-paginator>
-    </div>
 
+    </div>
   </div>
 </div>

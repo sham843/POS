@@ -1,8 +1,6 @@
 import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpHeaders } from '@angular/common/http';
-
 import { LucideAngularModule, Loader, Receipt, Calendar, Search, RotateCcw, FileSpreadsheet, FileText } from 'lucide-angular';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -84,7 +82,7 @@ export class GstReport implements OnInit {
 
   // Pagination State
   currentPage = signal<number>(0);
-  pageSize = signal<number>(10); // Standard is 10 as per UI screenshot
+  pageSize = signal<number>(5); // Standard is 10 as per UI screenshot
 
   // Report results from API
   reportData = signal<any[]>([]);
@@ -151,8 +149,7 @@ export class GstReport implements OnInit {
   // Mat-table columns configuration
   displayedColumns: string[] = [
     'srNo',
-    'billDate',
-    'billNo',
+    'billDetails',
     'totalAmount',
     'discount',
     'zero',
@@ -187,7 +184,7 @@ export class GstReport implements OnInit {
         console.error('Failed to parse user from local storage');
       }
     }
-    
+
     // Automatically fetch reports on page load
     this.fetchReport();
   }
@@ -282,7 +279,7 @@ export class GstReport implements OnInit {
     if (!data || data.length === 0) return;
 
     const headers = [
-      'Sr. No.', 'Bill Date', 'Bill No', 'Total Amount', 'Discount', '0%', '5%', '12%', '18%', 
+      'Sr. No.', 'Bill Date', 'Bill No', 'Total Amount', 'Discount', '0%', '5%', '12%', '18%',
       'Taxable Amount', 'CGST', 'SGST', 'IGST', 'After Tax Total', 'Chargeable Amount', 'RoundOff', 'Final Total', 'User Name'
     ];
 
@@ -350,7 +347,7 @@ export class GstReport implements OnInit {
     if (!data || data.length === 0) return;
 
     const headers = [
-      'Sr No.', 'Date', 'Bill No', 'Total', 'Disc', '0%', '5%', '12%', '18%', 
+      'Sr No.', 'Date', 'Bill No', 'Total', 'Disc', '0%', '5%', '12%', '18%',
       'Taxable', 'CGST', 'SGST', 'IGST', 'After Tax', 'Chargeable', 'RoundOff', 'Final', 'User'
     ];
 
@@ -396,14 +393,14 @@ export class GstReport implements OnInit {
 
     // Align all numerical columns to the right
     const columnAlignments: ('center' | 'left' | 'right')[] = [
-      'center', 'left', 'center', 'right', 'right', 'right', 'right', 'right', 'right', 
+      'center', 'left', 'center', 'right', 'right', 'right', 'right', 'right', 'right',
       'right', 'right', 'right', 'right', 'right', 'right', 'right', 'right', 'left'
     ];
 
     const cleanFromDate = this.fromDate().split('T')[0];
     const cleanToDate = this.toDate().split('T')[0];
     const unitName = this.currentUser()?.unitName || this.currentUser()?.UnitName || 'Hi-Tech Dairy Shop';
-    
+
     const metaInfo = [
       { label: 'Total Bills', value: String(this.totalBillsBadge()) },
       { label: 'Total Amount', value: 'Rs. ' + Number(this.totalAmountBadge()).toFixed(2) }
