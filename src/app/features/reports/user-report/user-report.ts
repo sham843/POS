@@ -335,12 +335,14 @@ export class UserReport implements OnInit {
   }
 
   clearFilters() {
-    this.fromDateObj.set(null);
-    this.toDateObj.set(null);
-    this.fromDate.set('');
-    this.toDate.set('');
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.fromDateObj.set(firstDayOfMonth);
+    this.toDateObj.set(today);
+    this.fromDate.set(this.formatDate(firstDayOfMonth));
+    this.toDate.set(this.formatDate(today));
     this.selectedUser.set('all');
-    this.reportData.set([]);
+    this.fetchReport();
   }
 
   onFromDateChange(date: Date | null) {

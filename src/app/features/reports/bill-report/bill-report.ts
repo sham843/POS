@@ -262,12 +262,13 @@ export class BillReport implements OnInit {
   }
 
   clearFilters() {
-    this.fromDateObj.set(null);
-    this.toDateObj.set(null);
-    this.fromDate.set('');
-    this.toDate.set('');
-    this.reportData.set([]);
-    this.summaryInfo.set(null);
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.fromDateObj.set(firstDayOfMonth);
+    this.toDateObj.set(today);
+    this.fromDate.set(this.formatToIsoString(firstDayOfMonth, false));
+    this.toDate.set(this.formatToIsoString(today, true));
+    this.fetchReport();
   }
 
   formatToIsoString(date: Date, isEndDate: boolean): string {

@@ -250,12 +250,14 @@ export class CustomerReport implements OnInit {
   }
 
   clearFilters() {
-    this.fromDateObj.set(null);
-    this.toDateObj.set(null);
-    this.fromDate.set('');
-    this.toDate.set('');
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.fromDateObj.set(firstDayOfMonth);
+    this.toDateObj.set(today);
+    this.fromDate.set(this.formatToIsoString(firstDayOfMonth, false));
+    this.toDate.set(this.formatToIsoString(today, true));
     this.customerId.set(0);
-    this.reportData.set([]);
+    this.fetchReport();
   }
 
   formatToIsoString(date: Date, isEndDate: boolean): string {
