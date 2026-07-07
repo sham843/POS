@@ -176,14 +176,14 @@ export class CustomerReport implements OnInit {
       try {
         const user = JSON.parse(userStr);
         this.currentUser.set(user);
-        orgId = user.organizationId || user.organizationid || user.OrganizationId || 0;
+        orgId = user.organizationId || 0;
       } catch (e) {
         console.error('Failed to parse user from local storage');
       }
     }
 
     this.fetchCustomers(orgId);
-    
+
     // Automatically fetch reports on page load
     this.fetchReport();
   }
