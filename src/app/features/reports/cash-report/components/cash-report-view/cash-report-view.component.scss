@@ -161,6 +161,9 @@
   }
 
   .col-4 {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    width: 50% !important;
     padding-left: 10px !important;
     padding-right: 10px !important;
   }
