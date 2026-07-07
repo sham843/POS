@@ -171,12 +171,12 @@ export class CustomerReport implements OnInit {
     this.toDate.set(this.formatToIsoString(today, true));
 
     const userStr = localStorage.getItem('user');
-    let orgId = 28;
+    let orgId = 0;
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
         this.currentUser.set(user);
-        orgId = user.organizationId || user.organizationid || 28;
+        orgId = user.organizationId || user.organizationid || user.OrganizationId || 0;
       } catch (e) {
         console.error('Failed to parse user from local storage');
       }
@@ -209,7 +209,7 @@ export class CustomerReport implements OnInit {
       return;
     }
 
-    const userId = this.currentUser()?.userId || this.currentUser()?.userid || 620;
+    const userId = this.currentUser()?.userId || this.currentUser()?.userid || 0;
 
     const payload = {
       FromDate: fromDate.split('T')[0],

@@ -236,23 +236,23 @@ export class UserReport implements OnInit {
     this.toDate.set(this.formatDate(today));
 
     const userStr = localStorage.getItem('UserDetails');
-    let orgId = 28; // Default orgId fallback
+    let orgId = 0; // Default orgId fallback
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
         this.currentUser.set(user);
 
-        const currentUserId = user.id || user.UserId || 620;
-        const currentUserName = user.name || 'Pravin Varpe';
-        orgId = user.organizationId || user.organizationid || 28;
+        const currentUserId = user.id || user.UserId || 0;
+        const currentUserName = user.name || '';
+        orgId = user.organizationId || user.organizationid || user.OrganizationId || 0;
 
         this.userList.set([{ id: currentUserId, name: currentUserName }]);
       } catch (e) {
         console.error('Failed to parse user details:', e);
-        this.userList.set([{ id: 620, name: 'Pravin Varpe' }]);
+        this.userList.set([]);
       }
     } else {
-      this.userList.set([{ id: 620, name: 'Pravin Varpe' }]);
+      this.userList.set([]);
     }
 
     this.fetchUserList(orgId);
@@ -294,7 +294,7 @@ export class UserReport implements OnInit {
     let targetUserId = 0;
     if (selected !== 'all') {
       const found = this.userList().find(u => u.name === selected);
-      targetUserId = found ? found.id : (this.currentUser()?.id || this.currentUser()?.UserId || 620);
+      targetUserId = found ? found.id : (this.currentUser()?.id || this.currentUser()?.UserId || 0);
     }
 
     const payload = {

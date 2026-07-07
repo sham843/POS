@@ -247,15 +247,16 @@ export class ProductReport implements OnInit {
     this.fromDate.set(this.formatDate(firstDayOfMonth));
     this.toDate.set(this.formatDate(today));
 
-    let orgId = 28;
+    let orgId = 0;
     const userStr = localStorage.getItem('UserDetails');
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
         this.currentUser.set(user);
-        orgId = user.organizationId || user.OrganizationId || 28;
+        // Accommodate potential casing differences in local storage
+        orgId = user.organizationId || user.organizationid || user.OrganizationId || 0;
       } catch (e) {
-        console.error('Failed to parse user details:', e);
+        console.error('Failed to parse user from local storage');
       }
     }
 
