@@ -8,11 +8,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { CustomDateAdapter, CUSTOM_DATE_FORMATS } from '../../../core/adapters/custom-date-adapter';
 import { ApiService } from '../../../core/services/api.service';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ExportService } from '../../../core/services/export.service';
+import { CashReportViewComponent } from './components/cash-report-view/cash-report-view.component';
 
 export interface CashReportItem {
   id?: number;
@@ -48,6 +50,7 @@ export interface CashReportItem {
 export class CashReport implements OnInit {
   private apiService = inject(ApiService);
   private exportService = inject(ExportService);
+  private dialog = inject(MatDialog);
 
   readonly LoaderIcon = Loader;
   readonly CalendarIcon = Calendar;
@@ -279,6 +282,15 @@ export class CashReport implements OnInit {
     
     // Reset filters (which also clears page, sets default dates, and auto-searches)
     this.clearFilters();
+  }
+
+  viewDetails(item: CashReportItem) {
+    this.dialog.open(CashReportViewComponent, {
+      width: '1000px',
+      maxWidth: '95vw',
+      panelClass: 'modern-modal-panel',
+      data: item
+    });
   }
 
   exportExcel() {

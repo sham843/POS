@@ -1,0 +1,41 @@
+.report-modal-container {
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+  font-family: 'Inter', sans-serif;
+}
+
+.modal-header {
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+}
+
+.btn-close-custom {
+  &:hover {
+    background: #e2e8f0 !important;
+    transform: rotate(90deg);
+  }
+}
+
+.data-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025) !important;
+  }
+}
+
+.list-group-item {
+  font-size: 14.5px;
+}
+
+.denomination-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fs-sm {
+  font-size: 13px;
+}
