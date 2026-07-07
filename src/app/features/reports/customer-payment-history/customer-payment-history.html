@@ -1,1 +1,197 @@
-<p>customer-payment-history works!</p>
+<div class="d-flex flex-column h-100 w-100 bg-white">
+
+  <!-- SUB HEADER -->
+  <div class="pos-sub-header">
+    <div class="d-flex align-items-center gap-3">
+      <div class="sub-header-title border-end pe-3">
+        <lucide-icon [img]="HistoryIcon"></lucide-icon>
+        <span>Customer Payment History</span>
+      </div>
+    </div>
+
+    <div class="sub-header-filters align-items-center">
+
+      <!-- From Date Picker -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
+          <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
+            (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
+            placeholder="From Date" [max]="toDateObj() || maxDate">
+          <mat-datepicker-toggle matSuffix [for]="fromDateStrPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromDateStrPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- To Date Picker -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
+          <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
+            (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date"
+            [min]="fromDateObj()" [max]="maxDate">
+          <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toDateStrPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- Payment Mode Dropdown -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 250px;">
+          <mat-select [ngModel]="modeOfPaymentId()" (ngModelChange)="modeOfPaymentId.set($event)" placeholder="Payment Mode">
+            <mat-option *ngFor="let m of paymentModes()" [value]="m.id">
+              {{ m.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Customer Dropdown -->
+      <div class="filter-item flex-grow-1">
+        <mat-form-field appearance="outline" class="no-subscript w-100" style="max-width: 600px;">
+          <mat-select [ngModel]="customerId()" (ngModelChange)="customerId.set($event)" placeholder="Customer List">
+            <mat-option *ngFor="let c of customersList()" [value]="c.id">
+              <span *ngIf="c.id !== 0">{{ c.id }} - </span>{{ c.name || c.customerName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2 ms-auto"
+        style="border-color: #BFDBFE !important;">
+        <button class="btn btn-icon-only btn-search" (click)="searchReport()" title="Search Report">
+          <lucide-icon [img]="SearchIcon" class="btn-icon-large"></lucide-icon>
+        </button>
+
+        <button class="btn btn-icon-only btn-clear" (click)="clearFilters()" title="Clear Filters">
+          <lucide-icon [img]="ClearIcon" class="btn-icon-large"></lucide-icon>
+        </button>
+
+        <button class="btn btn-excel d-flex align-items-center gap-1" (click)="exportToExcel()"
+          [disabled]="reportData().length === 0" title="Export to Excel">
+          <lucide-icon [img]="ExcelIcon" class="btn-icon"></lucide-icon>
+          <span>Excel</span>
+        </button>
+
+        <button class="btn btn-pdf d-flex align-items-center gap-1" (click)="exportToPdf()"
+          [disabled]="reportData().length === 0" title="Export to PDF">
+          <lucide-icon [img]="PdfIcon" class="btn-icon"></lucide-icon>
+          <span>PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- DATA AREA -->
+  <div class="flex-grow-1 p-4 overflow-auto bg-light position-relative d-flex flex-column gap-3">
+
+    <!-- Loading Spinner -->
+    <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm" *ngIf="isLoading()">
+      <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
+      <p>Loading deposit history...</p>
+    </div>
+
+    <!-- Table Wrapper -->
+    <div
+      class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white"
+      *ngIf="!isLoading()">
+      <div class="table-responsive flex-grow-1 overflow-auto">
+        <table mat-table [dataSource]="paginatedData()" class="app-data-table table-hover">
+
+          <!-- Sr. No. -->
+          <ng-container matColumnDef="srNo">
+            <th mat-header-cell *matHeaderCellDef class="text-center"> Sr. No. </th>
+            <td mat-cell *matCellDef="let item; let i = index" class="text-center">
+              {{ (currentPage() * pageSize()) + i + 1 }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef class="fw-bold"> Total: </td>
+          </ng-container>
+
+          <!-- Customer Details (Merged Number & Name) -->
+          <ng-container matColumnDef="customerDetails">
+            <th mat-header-cell *matHeaderCellDef class="pe-4"> Customer Details </th>
+            <td mat-cell *matCellDef="let item" class="text-nowrap">
+              <div class="d-flex flex-column py-1 gap-1">
+                <div class="d-flex align-items-center gap-1">
+                  <lucide-icon [img]="UsersIcon" class="text-primary"
+                    style="width: 14px; height: 14px; display: inline-block; vertical-align: middle;"></lucide-icon>
+                  <span class="fw-semibold text-dark">{{ item.customerName }}</span>
+                </div>
+                <div class="d-flex align-items-center gap-1 text-muted" style="font-size: 11.5px;">
+                  <lucide-icon [img]="HashIcon"
+                    style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></lucide-icon>
+                  <span>{{ item.customerNo }}</span>
+                  <span class="badge ms-2" [ngClass]="getPaymentModeBadgeClass(item.modeOfPayment)" *ngIf="item.modeOfPayment" style="font-size: 0.60rem; padding: 2px 5px; font-weight: 600;">{{ item.modeOfPayment }}</span>
+                </div>
+              </div>
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+
+          <!-- Bank/Cash Leger -->
+          <ng-container matColumnDef="bankLeger">
+            <th mat-header-cell *matHeaderCellDef> Bank/Cash Leger </th>
+            <td mat-cell *matCellDef="let item">
+              {{ item.bankLeger || '-' }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+
+          <!-- Payment Date -->
+          <ng-container matColumnDef="paymentDate">
+            <th mat-header-cell *matHeaderCellDef class="text-nowrap"> Payment Date </th>
+            <td mat-cell *matCellDef="let item" class="text-nowrap text-muted">
+              {{ item.paymentDate | date:'dd-MM-yyyy HH:mm:ss' }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+
+          <!-- Total Credit -->
+          <ng-container matColumnDef="totalCredit">
+            <th mat-header-cell *matHeaderCellDef class="text-end text-nowrap"> Total Credit (₹) </th>
+            <td mat-cell *matCellDef="let item" class="text-end fw-medium text-success text-nowrap">
+              ₹{{ item.totalCredit | number:'1.2-2' }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-success text-nowrap">
+              ₹{{ totals().totalCredit | number:'1.2-2' }}
+            </td>
+          </ng-container>
+
+          <!-- Payment Note -->
+          <ng-container matColumnDef="paymentNote">
+            <th mat-header-cell *matHeaderCellDef> Payment Note </th>
+            <td mat-cell *matCellDef="let item">
+              {{ item.paymentNote || '-' }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+
+          <!-- User Name -->
+          <ng-container matColumnDef="userName">
+            <th mat-header-cell *matHeaderCellDef class="ps-3 text-nowrap"> User Name </th>
+            <td mat-cell *matCellDef="let item" class="ps-3 text-nowrap">
+              {{ item.userName || '-' }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef class="ps-3"></td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true" [hidden]="reportData().length === 0"
+            class="bg-light-blue text-primary"></tr>
+        </table>
+        
+        <app-empty-state *ngIf="reportData().length === 0" [title]="'No Payment History Found'"
+          message="Adjust the date range or filters and click Search." icon="search"
+          class="py-5 bg-white border-top d-block">
+        </app-empty-state>
+      </div>
+
+      <!-- Paginator -->
+      <mat-paginator [length]="reportData().length" [pageSize]="pageSize()" hidePageSize="true"
+        showFirstLastButtons="true" [pageIndex]="currentPage()" (page)="onPageChange($event)" aria-label="Select page"
+        class="border-top">
+      </mat-paginator>
+    </div>
+  </div>
+</div>
