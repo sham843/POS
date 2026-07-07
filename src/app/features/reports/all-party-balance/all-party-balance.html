@@ -12,17 +12,6 @@
 
     <div class="sub-header-filters align-items-center">
 
-      <!-- Customer Dropdown -->
-      <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 300px;">
-          <mat-select [ngModel]="customerId()" (ngModelChange)="customerId.set($event)" placeholder="Select Party">
-            <mat-option *ngFor="let c of customersList()" [value]="c.id">
-              <span *ngIf="c.id !== 0">{{ c.id }} - </span>{{ c.name || c.customerName }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
       <!-- From Date Picker -->
       <div class="filter-item">
         <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
@@ -42,6 +31,17 @@
             [min]="fromDateObj()" [max]="maxDate">
           <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
           <mat-datepicker #toDateStrPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- Customer Dropdown -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 300px;">
+          <mat-select [ngModel]="customerId()" (ngModelChange)="customerId.set($event)" placeholder="Select Party">
+            <mat-option *ngFor="let c of customersList()" [value]="c.id">
+              <span *ngIf="c.id !== 0">{{ c.id }} - </span>{{ c.name || c.customerName }}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
 
