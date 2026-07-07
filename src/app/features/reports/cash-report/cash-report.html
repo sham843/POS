@@ -34,7 +34,7 @@
       </div>
 
       <!-- To Date Picker -->
-      <div class="filter-item">
+      <div class="filter-item" *ngIf="reportType() === 'details'">
         <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
           <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
             (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date"
@@ -120,9 +120,9 @@
                 <div *ngIf="item.startTime || item.endTime" class="d-flex align-items-center gap-1 px-2 py-1 bg-light rounded-pill border" style="width: fit-content; font-size: 11px;">
                   <lucide-icon [img]="ClockIcon" class="text-secondary" style="width: 12px; height: 12px;"></lucide-icon>
                   <span class="text-secondary fw-medium">
-                    {{ item.startTime ? (item.startTime.split(' ')[1] + ' ' + (item.startTime.split(' ')[2] || '')) : '-' }} 
+                    {{ item.startTime || '-' }} 
                     <span class="mx-1 text-muted">to</span> 
-                    {{ item.endTime ? (item.endTime.split(' ')[1] + ' ' + (item.endTime.split(' ')[2] || '')) : '-' }}
+                    {{ item.endTime || '-' }}
                   </span>
                 </div>
               </div>

@@ -83,14 +83,27 @@ export class CashReport implements OnInit {
   pageSize = signal<number>(10);
 
   normalizedData = computed<CashReportItem[]>(() => {
-    return this.reportData().map((item: any) => ({
-      id: item.id || item.Id || 0,
-      depositDate: item.depositDate || item.DepositDate || item.date || item.Date || '',
-      startTime: item.startTime || item.StartTime || '',
-      endTime: item.endTime || item.EndTime || '',
-      personName: item.personName || item.PersonName || item.userName || item.UserName || item.user || item.User || '',
-      totalAmount: Number(item.totalAmount || item.TotalAmount || item.amount || item.Amount || 0)
-    }));
+    return this.reportData().map((item: any) => {
+      // Extract just the time part if startTime/endTime includes a date
+      const formatTime = (timeStr: string) => {
+        if (!timeStr) return '';
+        const parts = timeStr.trim().split(' ');
+        if (parts.length >= 3) {
+          // Like '02-07-26 04:53 PM' -> return '04:53 PM'
+          return `${parts[1]} ${parts[2]}`;
+        }
+        return timeStr; // Already just time '12:50 PM'
+      };
+
+      return {
+        id: item.id || item.Id || 0,
+        depositDate: item.depositDate || item.DepositDate || item.date || item.Date || '',
+        startTime: formatTime(item.startTime || item.StartTime),
+        endTime: formatTime(item.endTime || item.EndTime),
+        personName: item.personName || item.PersonName || item.userName || item.UserName || item.user || item.User || '',
+        totalAmount: Number(item.totalAmount || item.TotalAmount || item.totalSale || item.TotalSale || item.amount || item.Amount || 0)
+      };
+    });
   });
 
   // Computed Totals for Footer
@@ -215,7 +228,12 @@ export class CashReport implements OnInit {
     const to = this.toDate();
     const userId = this.userId();
 
-    const url = `api/v1/report/GetDateWiseSessions?userId=${userId}&fromDate=${from}&toDate=${to}`;
+    let url = '';
+    if (this.reportType() === 'summary') {
+      url = `api/v1/report/GetDailySessionSummary?userId=${userId}&date=${from}`;
+    } else {
+      url = `api/v1/report/GetDateWiseSessions?userId=${userId}&fromDate=${from}&toDate=${to}`;
+    }
 
     this.apiService.get<any>(url).subscribe({
       next: (response) => {
@@ -256,8 +274,11 @@ export class CashReport implements OnInit {
   }
 
   setReportType(type: 'details' | 'summary') {
+    if (this.reportType() === type) return;
     this.reportType.set(type);
-    this.currentPage.set(0);
+    
+    // Reset filters (which also clears page, sets default dates, and auto-searches)
+    this.clearFilters();
   }
 
   exportExcel() {
