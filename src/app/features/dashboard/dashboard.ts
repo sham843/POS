@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { LucideAngularModule, LayoutDashboard, Search, RotateCcw, IndianRupee, Receipt, Banknote, Ticket, CreditCard, Smartphone, Calculator, TrendingUp } from 'lucide-angular';
 import { ApiService } from '../../core/services/api.service';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,7 +19,8 @@ import { ApiService } from '../../core/services/api.service';
     MatNativeDateModule,
     MatInputModule,
     MatFormFieldModule,
-    LucideAngularModule
+    LucideAngularModule,
+    NgApexchartsModule
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -55,7 +57,11 @@ export class Dashboard implements OnInit {
   
   userId = signal<number>(0);
 
+  public last7DaysChartOptions: any;
+  public monthlyChartOptions: any;
+
   ngOnInit() {
+    this.initCharts();
     const today = new Date();
     this.fromDateObj.set(today);
     this.toDateObj.set(today);
@@ -127,8 +133,96 @@ export class Dashboard implements OnInit {
   }
 
   clearFilters() {
-    this.fromDateObj.set(new Date());
-    this.toDateObj.set(new Date());
+    const today = new Date();
+    this.fromDateObj.set(today);
+    this.toDateObj.set(today);
     this.fetchSummary();
+  }
+
+  initCharts() {
+    this.last7DaysChartOptions = {
+      series: [
+        {
+          name: "Sales",
+          data: [1200, 2100, 800, 3200, 1500, 2800, 3900]
+        }
+      ],
+      chart: {
+        height: 350,
+        type: "area",
+        toolbar: { show: false }
+      },
+      title: {
+        text: "Last 7 Days Sales",
+        align: "left",
+        style: {
+          fontWeight: "600",
+          fontSize: "15px",
+          color: "#4B5563"
+        }
+      },
+      xaxis: {
+        categories: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"]
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value: number) {
+            return "₹" + value;
+          }
+        }
+      },
+      tooltip: {
+        y: {
+          formatter: function (val: number) {
+            return "₹" + val;
+          }
+        }
+      },
+      colors: ["#0052CC"],
+      dataLabels: { enabled: false },
+      stroke: { curve: "smooth" }
+    };
+
+    this.monthlyChartOptions = {
+      series: [
+        {
+          name: "Sales",
+          data: [15000, 22000, 18000, 26000, 21000, 32000, 28000, 35000, 30000, 24000, 38000, 42000]
+        }
+      ],
+      chart: {
+        height: 350,
+        type: "bar",
+        toolbar: { show: false }
+      },
+      title: {
+        text: "Monthly Sales",
+        align: "left",
+        style: {
+          fontWeight: "600",
+          fontSize: "15px",
+          color: "#4B5563"
+        }
+      },
+      xaxis: {
+        categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value: number) {
+            return "₹" + value;
+          }
+        }
+      },
+      tooltip: {
+        y: {
+          formatter: function (val: number) {
+            return "₹" + val;
+          }
+        }
+      },
+      colors: ["#0052CC"],
+      dataLabels: { enabled: false }
+    };
   }
 }
