@@ -82,12 +82,12 @@
   
   .num-btn {
     height: 100%;
-    min-height: 32px; /* Decreased min-height */
+    min-height: 48px;
     border-radius: 4px;
     border: 1px solid #E5E7EB;
     background: #ffffff;
     color: #111827;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -131,7 +131,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 4px; /* Decreased padding */
+    padding: 8px; /* Increased padding */
     border-radius: 6px;
     border: none;
     cursor: pointer;
@@ -149,15 +149,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px; /* Decreased gap */
+      gap: 4px; /* Increased gap */
       
       lucide-icon {
-        width: 18px;
-        height: 18px;
+        width: 22px;
+        height: 22px;
       }
       
       .label {
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 600;
       }
     }
