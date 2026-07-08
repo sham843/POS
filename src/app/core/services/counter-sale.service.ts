@@ -512,6 +512,10 @@ export class CounterSaleService {
       },
       error: (err) => {
         console.error('Failed to load invoice:', err);
+        this.invoiceHeader.loadedInvoiceDate.set(null);
+        this.invoiceHeader.invoiceDate.set(null);
+        this.invoiceHeader.invoiceNo.set(null);
+        this.invoiceHeader.invoiceId.set(null);
         this.notificationService.showError(`Failed to load Invoice #${billNo}`);
       }
     });
