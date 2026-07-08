@@ -107,6 +107,10 @@ export class AddBalanceComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['isOpen']?.currentValue === true || (this.isOpen && changes['customer']?.currentValue) || changes['partiesList']) {
       this.initFormState();
+    } else if (changes['cashLedgersList'] || changes['bankAccountsList']) {
+      if (!this.ledgerForm.get('ledger2')?.value) {
+        this.updateBankCashLedgerDefault();
+      }
     }
   }
 
