@@ -26,11 +26,13 @@
 
         <!-- Customer selected chip -->
         @if (selectedCustomer()) {
-        <div class="selected-customer-chip" [class.mini-mode]="searchType() !== 'customer'" (click)="openCustomerDrawer()" style="cursor: pointer;">
+        <div class="selected-customer-chip" [class.mini-mode]="searchType() !== 'customer'"
+          (click)="openCustomerDrawer()" style="cursor: pointer;">
           <div class="chip-avatar">{{ (selectedCustomer()?.customerName || selectedCustomer()?.name ||
             '?')[0].toUpperCase() }}</div>
           <span class="chip-name">{{ selectedCustomer()?.customerName || selectedCustomer()?.name }}</span>
-          <button class="chip-clear" (click)="clearSelectedCustomer(); $event.stopPropagation()" matTooltip="Remove customer">
+          <button class="chip-clear" (click)="clearSelectedCustomer(); $event.stopPropagation()"
+            matTooltip="Remove customer">
             <lucide-icon [img]="X"></lucide-icon>
           </button>
         </div>
@@ -40,7 +42,7 @@
         @if (searchType() !== 'customer' || !selectedCustomer()) {
         <!-- Normal search input -->
         <input type="text" #searchInput [value]="searchQuery()"
-          [placeholder]="searchType() === 'product' ? 'Search by Product Name' : (searchType() === 'bill' ? 'Search by Bill №.' : 'Search by Customer Name')"
+          [placeholder]="searchType() === 'product' ? 'Search by Product Name / Code' : (searchType() === 'bill' ? 'Search by Bill №.' : 'Search by Customer Name')"
           (input)="onSearchChange($event)" (keydown.enter)="onSearchEnter()">
         @if (searchQuery()) {
         <button class="clear-search-btn" (click)="clearSearch(searchInput)">
@@ -138,6 +140,7 @@
   <app-order-drawer [isOpen]="isOrderDrawerOpen()" (close)="closeOrderDrawer()"></app-order-drawer>
 
   <!-- CUSTOMER LEDGER DRAWER OVERLAY -->
-  <app-customer-ledger [isOpen]="isLedgerDrawerOpen()" [customer]="selectedCustomer()" (close)="closeLedgerDrawer()" (balanceAdded)="onBalanceAdded()"></app-customer-ledger>
+  <app-customer-ledger [isOpen]="isLedgerDrawerOpen()" [customer]="selectedCustomer()" (close)="closeLedgerDrawer()"
+    (balanceAdded)="onBalanceAdded()"></app-customer-ledger>
 
 </div>
