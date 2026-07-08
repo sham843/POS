@@ -2,12 +2,38 @@ import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { LucideAngularModule, LayoutDashboard, Search, RotateCcw, IndianRupee, Receipt, Banknote, Ticket, CreditCard, Smartphone, Calculator, TrendingUp } from 'lucide-angular';
 import { ApiService } from '../../core/services/api.service';
 import { NgApexchartsModule } from 'ng-apexcharts';
+
+export class CustomDateAdapter extends NativeDateAdapter {
+  override format(date: Date, displayFormat: Object): string {
+    if (displayFormat === 'input') {
+      let day: string = date.getDate().toString();
+      day = +day < 10 ? '0' + day : day;
+      let month: string = (date.getMonth() + 1).toString();
+      month = +month < 10 ? '0' + month : month;
+      let year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    }
+    return date.toDateString();
+  }
+}
+
+export const CUSTOM_DATE_FORMATS = {
+  parse: {
+    dateInput: { month: 'short', year: 'numeric', day: 'numeric' },
+  },
+  display: {
+    dateInput: 'input',
+    monthYearLabel: { year: 'numeric', month: 'short' },
+    dateA11yLabel: { year: 'numeric', month: 'long', day: 'numeric' },
+    monthYearA11yLabel: { year: 'numeric', month: 'long' },
+  }
+};
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +50,11 @@ import { NgApexchartsModule } from 'ng-apexcharts';
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
+  ]
 })
 export class Dashboard implements OnInit {
   private apiService = inject(ApiService);
@@ -132,8 +162,6 @@ export class Dashboard implements OnInit {
 
   searchReport() {
     this.fetchSummary();
-    this.fetchLast7DaysSale();
-    this.fetchMonthlySales();
   }
 
   clearFilters() {
@@ -141,8 +169,6 @@ export class Dashboard implements OnInit {
     this.fromDateObj.set(today);
     this.toDateObj.set(today);
     this.fetchSummary();
-    this.fetchLast7DaysSale();
-    this.fetchMonthlySales();
   }
 
   fetchLast7DaysSale() {
