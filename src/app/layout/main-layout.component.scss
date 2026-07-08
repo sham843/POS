@@ -12,7 +12,7 @@
 
 /* TOP HEADER */
 .pos-top-header {
-  height: 74px;
+  height: 65px;
   background: #ffffff;
   display: flex;
   align-items: center;
@@ -51,10 +51,11 @@
     line-height: 1.1;
 
     .brand-name {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 600;
       color: #111827;
-      margin-bottom: 5px;
+      // margin-bottom: 5px;
+      margin-bottom: 2px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -164,7 +165,8 @@
       text-align: left;
       box-sizing: border-box;
 
-      &:hover, &.active {
+      &:hover,
+      &.active {
         background: #EFF6FF;
         color: #0052CC;
         padding-left: 24px;
