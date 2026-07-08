@@ -242,9 +242,25 @@ export class CounterSaleService {
     }
   }
 
+  numpadSearchAction = new Subject<string>();
+
   handleNumpadInput(val: string) {
     const idx = this.selectedItemIndex();
-    if (idx === null || idx < 0 || idx >= this.cartItems().length) return;
+    
+    // If no cart item is selected, route numpad input to the search bar
+    if (idx === null || idx < 0 || idx >= this.cartItems().length) {
+      let q = this.searchQuery();
+      if (val === 'backspace') {
+        q = q.slice(0, -1);
+      } else if (val === 'clear') {
+        q = '';
+      } else {
+        q = q + val;
+      }
+      this.searchQuery.set(q);
+      this.numpadSearchAction.next(q);
+      return;
+    }
 
     const result = this.counterNumpadService.calculateNumpadInput(
       val,

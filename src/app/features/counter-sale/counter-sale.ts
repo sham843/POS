@@ -63,6 +63,7 @@ export class CounterSale implements OnInit, OnDestroy {
   private timer: any;
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
+  private numpadSub?: Subscription;
 
   // Expose icons to the template
   readonly Package = Package;
@@ -88,6 +89,10 @@ export class CounterSale implements OnInit, OnDestroy {
     this.timer = setInterval(() => {
       this.currentTime.set(new Date());
     }, 1000);
+
+    this.numpadSub = this.counterSaleService.numpadSearchAction.subscribe(query => {
+      this.searchSubject.next(query);
+    });
 
     this.searchSubscription = this.searchSubject.pipe(
       debounce(() => timer(800))
@@ -126,6 +131,9 @@ export class CounterSale implements OnInit, OnDestroy {
     }
     if (this.searchSubscription) {
       this.searchSubscription.unsubscribe();
+    }
+    if (this.numpadSub) {
+      this.numpadSub.unsubscribe();
     }
   }
 
