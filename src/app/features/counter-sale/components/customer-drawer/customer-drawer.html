@@ -90,7 +90,10 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.selected-row]="selectedCustomer()?.id === row.id"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              [class.selected-row]="selectedCustomer()?.id === row.id"
+              (click)="selectCustomer(row)"
+              style="cursor: pointer;"></tr>
         </table>
 
         <!-- EMPTY STATE -->
