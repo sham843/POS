@@ -206,6 +206,7 @@ export class CounterSaleService {
   }
 
   updateSearchQuery(query: string) {
+    this.searchQuery.set(query);
     this.searchSubject.next(query);
   }
 

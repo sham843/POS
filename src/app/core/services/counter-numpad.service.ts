@@ -128,7 +128,7 @@ export class CounterNumpadService {
   ): CartItem {
     const updatedItem = { ...item };
     const valNum = parseFloat(numpadValue) || 0;
-    const isExcluded = (updatedItem.product?.computationMethod || '').toUpperCase().includes('EXCLUDED');
+    const isExcluded = (updatedItem.product?.['computationMethod'] || '').toUpperCase().includes('EXCLUDED');
 
     if (mode === 'quantity') {
       updatedItem.quantity = valNum;
