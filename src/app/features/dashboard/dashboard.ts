@@ -81,6 +81,7 @@ export class Dashboard implements OnInit {
     }
     this.fetchSummary();
     this.fetchLast7DaysSale();
+    this.fetchMonthlySales();
   }
 
   formatToIsoString(date: Date, isEndDate: boolean): string {
@@ -132,6 +133,7 @@ export class Dashboard implements OnInit {
   searchReport() {
     this.fetchSummary();
     this.fetchLast7DaysSale();
+    this.fetchMonthlySales();
   }
 
   clearFilters() {
@@ -140,6 +142,7 @@ export class Dashboard implements OnInit {
     this.toDateObj.set(today);
     this.fetchSummary();
     this.fetchLast7DaysSale();
+    this.fetchMonthlySales();
   }
 
   fetchLast7DaysSale() {
@@ -179,6 +182,43 @@ export class Dashboard implements OnInit {
     });
   }
 
+  fetchMonthlySales() {
+    const fromDateObj = this.fromDateObj();
+    const toDateObj = this.toDateObj();
+    
+    if (!fromDateObj || !toDateObj) return;
+
+    const fromDateStr = this.formatToIsoString(fromDateObj, false);
+    const toDateStr = this.formatToIsoString(toDateObj, true);
+
+    this.apiService.get<any>(`api/v1/dashboard/monthly-sales?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+      next: (res) => {
+        let arr: any[] = [];
+        if (Array.isArray(res)) {
+          arr = res;
+        } else if (res && Array.isArray(res.data)) {
+          arr = res.data;
+        }
+
+        if (arr.length > 0) {
+          const categories = arr.map(item => item.month ? item.month.substring(0, 3) : '');
+          const data = arr.map(item => item.totalSale || 0);
+
+          this.monthlyChartOptions = {
+            ...this.monthlyChartOptions,
+            series: [{ name: "Sales", data: data }],
+            xaxis: {
+              ...this.monthlyChartOptions.xaxis,
+              categories: categories
+            }
+          };
+          this.cdr.markForCheck();
+        }
+      },
+      error: (err) => console.error('Error fetching monthly sales:', err)
+    });
+  }
+
   initCharts() {
     this.last7DaysChartOptions = {
       series: [
@@ -207,14 +247,14 @@ export class Dashboard implements OnInit {
       yaxis: {
         labels: {
           formatter: function (value: number) {
-            return "₹" + value;
+            return "₹" + (value || 0).toLocaleString('en-IN');
           }
         }
       },
       tooltip: {
         y: {
           formatter: function (val: number) {
-            return "₹" + val;
+            return "₹" + (val || 0).toLocaleString('en-IN');
           }
         }
       },
@@ -222,7 +262,7 @@ export class Dashboard implements OnInit {
       dataLabels: { 
         enabled: true,
         formatter: function (val: number) {
-          return "₹" + val;
+          return "₹" + (val || 0).toLocaleString('en-IN');
         }
       },
       stroke: { curve: "smooth" }
@@ -240,6 +280,13 @@ export class Dashboard implements OnInit {
         type: "bar",
         toolbar: { show: false }
       },
+      plotOptions: {
+        bar: {
+          dataLabels: {
+            position: 'top'
+          }
+        }
+      },
       title: {
         text: "Monthly Sales",
         align: "left",
@@ -255,19 +302,29 @@ export class Dashboard implements OnInit {
       yaxis: {
         labels: {
           formatter: function (value: number) {
-            return "₹" + value;
+            return "₹" + (value || 0).toLocaleString('en-IN');
           }
         }
       },
       tooltip: {
         y: {
           formatter: function (val: number) {
-            return "₹" + val;
+            return "₹" + (val || 0).toLocaleString('en-IN');
           }
         }
       },
       colors: ["#0052CC"],
-      dataLabels: { enabled: false }
+      dataLabels: { 
+        enabled: true,
+        formatter: function (val: number) {
+          return "₹" + (val || 0).toLocaleString('en-IN');
+        },
+        offsetY: -20,
+        style: {
+          fontSize: '12px',
+          colors: ["#304758"]
+        }
+      }
     };
   }
 }
