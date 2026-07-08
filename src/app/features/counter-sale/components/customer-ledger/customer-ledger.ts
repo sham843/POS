@@ -50,7 +50,7 @@ export class CustomerLedger implements OnInit, OnChanges {
   readonly ClipboardListIcon = ClipboardList;
 
   ngOnInit() {
-    this.loadDropdownData();
+    // Initialization handled in ngOnChanges when drawer opens
   }
 
   ngOnChanges(changes: SimpleChanges) {
