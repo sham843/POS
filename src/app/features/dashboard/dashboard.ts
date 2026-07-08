@@ -90,6 +90,8 @@ export class Dashboard implements OnInit {
 
   public last7DaysChartOptions: any;
   public monthlyChartOptions: any;
+  public leastSellingChartOptions: any;
+  public leastSellingHasData = signal(false);
 
   ngOnInit() {
     this.initCharts();
@@ -112,6 +114,7 @@ export class Dashboard implements OnInit {
     this.fetchSummary();
     this.fetchLast7DaysSale();
     this.fetchMonthlySales();
+    this.fetchLeastSellingProducts();
   }
 
   formatToIsoString(date: Date, isEndDate: boolean): string {
@@ -162,6 +165,7 @@ export class Dashboard implements OnInit {
 
   searchReport() {
     this.fetchSummary();
+    this.fetchLeastSellingProducts();
   }
 
   clearFilters() {
@@ -169,6 +173,7 @@ export class Dashboard implements OnInit {
     this.fromDateObj.set(today);
     this.toDateObj.set(today);
     this.fetchSummary();
+    this.fetchLeastSellingProducts();
   }
 
   fetchLast7DaysSale() {
@@ -242,6 +247,46 @@ export class Dashboard implements OnInit {
         }
       },
       error: (err) => console.error('Error fetching monthly sales:', err)
+    });
+  }
+
+  fetchLeastSellingProducts() {
+    const fromDateObj = this.fromDateObj();
+    const toDateObj = this.toDateObj();
+    
+    if (!fromDateObj || !toDateObj) return;
+
+    const fromDateStr = this.formatToIsoString(fromDateObj, false);
+    const toDateStr = this.formatToIsoString(toDateObj, true);
+
+    this.apiService.get<any>(`api/v1/dashboard/least-selling-products?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+      next: (res) => {
+        let arr: any[] = [];
+        if (Array.isArray(res)) {
+          arr = res;
+        } else if (res && Array.isArray(res.data)) {
+          arr = res.data;
+        }
+
+        if (arr.length > 0) {
+          const labels = arr.map(item => item.productName || item.category || 'Unknown');
+          const data = arr.map(item => item.amount || 0);
+
+          this.leastSellingChartOptions = {
+            ...this.leastSellingChartOptions,
+            series: data,
+            labels: labels
+          };
+          this.leastSellingHasData.set(true);
+        } else {
+          this.leastSellingHasData.set(false);
+        }
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.leastSellingHasData.set(false);
+        console.error('Error fetching least selling products:', err);
+      }
     });
   }
 
@@ -351,6 +396,43 @@ export class Dashboard implements OnInit {
           colors: ["#304758"]
         }
       }
+    };
+
+    this.leastSellingChartOptions = {
+      series: [],
+      labels: [],
+      chart: {
+        height: 350,
+        type: "donut",
+        toolbar: { show: false }
+      },
+      title: {
+        text: "Least Selling Products",
+        align: "left",
+        style: {
+          fontWeight: "600",
+          fontSize: "15px",
+          color: "#4B5563"
+        }
+      },
+      plotOptions: {
+        pie: {
+          donut: {
+            size: '65%'
+          }
+        }
+      },
+      dataLabels: {
+        enabled: true
+      },
+      tooltip: {
+        y: {
+          formatter: function(val: number) {
+            return "₹" + (val || 0).toLocaleString('en-IN');
+          }
+        }
+      },
+      colors: ["#0052CC", "#34d399", "#f59e0b", "#ef4444", "#8b5cf6"]
     };
   }
 }

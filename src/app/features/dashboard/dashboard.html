@@ -46,7 +46,7 @@
   </div>
 
   <!-- DATA AREA -->
-  <div class="flex-grow-1 p-4 overflow-auto bg-light position-relative d-flex flex-column gap-4">
+  <div class="flex-grow-1 p-4 pb-5 overflow-auto bg-light position-relative d-flex flex-column gap-4 custom-scrollbar" style="min-height: 0;">
 
     <!-- STATS CARDS GRID -->
     <div class="d-flex w-100 flex-nowrap gap-2">
@@ -176,6 +176,22 @@
             [colors]="monthlyChartOptions.colors"
             [dataLabels]="monthlyChartOptions.dataLabels"
             [plotOptions]="monthlyChartOptions.plotOptions"
+          ></apx-chart>
+        </div>
+      </div>
+
+      <!-- Least Selling Products -->
+      <div class="col-md-6 mt-4" *ngIf="leastSellingHasData()">
+        <div class="card shadow-sm border-0 rounded-4 p-3 h-100">
+          <apx-chart
+            [series]="leastSellingChartOptions.series"
+            [chart]="leastSellingChartOptions.chart"
+            [labels]="leastSellingChartOptions.labels"
+            [title]="leastSellingChartOptions.title"
+            [plotOptions]="leastSellingChartOptions.plotOptions"
+            [colors]="leastSellingChartOptions.colors"
+            [dataLabels]="leastSellingChartOptions.dataLabels"
+            [tooltip]="leastSellingChartOptions.tooltip"
           ></apx-chart>
         </div>
       </div>
