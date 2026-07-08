@@ -88,9 +88,11 @@
     }
   </div>
   } @else {
-  <app-empty-state title="Product list not available" message="We couldn't find any products in this category."
-    icon="product">
-  </app-empty-state>
+  <div class="empty-state-container">
+    <app-empty-state title="Product list not available" message="We couldn't find any products in this category."
+      icon="product">
+    </app-empty-state>
+  </div>
   }
 
   <div class="pl-footer">

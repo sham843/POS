@@ -1,7 +1,16 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
 .custom-product-list {
   display: flex;
   flex-direction: column;
   height: 100%;
+  flex: 1;
   background: transparent;
 }
 
@@ -224,6 +233,13 @@
   }
 }
 
+.empty-state-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .prod-card {
   background: #ffffff;
   border: 1px solid transparent;
@@ -387,7 +403,7 @@
 
 /* Footer / Pagination */
 .pl-footer {
-  margin-top: 14px;
+  margin-top: auto;
   border-top: 1px solid #E5E7EB;
   display: flex;
   justify-content: space-between;
