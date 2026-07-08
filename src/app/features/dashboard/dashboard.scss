@@ -1,0 +1,137 @@
+.stat-card-modern {
+  background: white;
+  border-radius: 8px;
+  padding: 20px 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.stat-icon-square {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* Colors for the square background and icon */
+.stat-primary .stat-icon-square {
+  background-color: #e0e7ff;
+  color: #4f46e5;
+}
+
+.stat-info .stat-icon-square {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.stat-success .stat-icon-square {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.stat-warning .stat-icon-square {
+  background-color: #fef9c3;
+  color: #ca8a04;
+}
+
+.stat-danger .stat-icon-square {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.stat-purple .stat-icon-square {
+  background-color: #f3e8ff;
+  color: #9333ea;
+}
+
+.stat-secondary .stat-icon-square {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.stat-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stat-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #4b5563;
+  font-weight: 500;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-trend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.trend-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.trend-text {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+/* Custom scrollbar for horizontal scrolling */
+.stats-scroll-container {
+  padding-bottom: 12px;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}

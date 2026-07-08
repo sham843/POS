@@ -1,1 +1,148 @@
-<p>dashboard works!</p>
+<div class="d-flex flex-column h-100 w-100 bg-white">
+  <!-- SUB HEADER -->
+  <div class="pos-sub-header">
+    <div class="d-flex align-items-center gap-3">
+      <div class="sub-header-title border-end pe-3">
+        <lucide-icon [img]="LayoutDashboardIcon"></lucide-icon>
+        <span>Dashboard</span>
+      </div>
+    </div>
+
+    <div class="sub-header-filters align-items-center">
+      <!-- From Date Picker -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
+          <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
+            (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
+            placeholder="From Date" [max]="toDateObj() || maxDate">
+          <mat-datepicker-toggle matSuffix [for]="fromDateStrPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromDateStrPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- To Date Picker -->
+      <div class="filter-item">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
+          <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
+            (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date"
+            [min]="fromDateObj()" [max]="maxDate">
+          <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toDateStrPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2"
+        style="border-color: #BFDBFE !important;">
+        <button class="btn btn-icon-only btn-search" (click)="searchReport()" title="Search Dashboard">
+          <lucide-icon [img]="SearchIcon" class="btn-icon-large"></lucide-icon>
+        </button>
+
+        <button class="btn btn-icon-only btn-clear" (click)="clearFilters()" title="Clear Filters">
+          <lucide-icon [img]="ClearIcon" class="btn-icon-large"></lucide-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA AREA -->
+  <div class="flex-grow-1 p-4 overflow-auto bg-light position-relative d-flex flex-column gap-4">
+
+    <!-- STATS CARDS GRID -->
+    <div class="d-flex w-100 flex-nowrap gap-2">
+      
+      <!-- Total Sale -->
+      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
+        <div class="stat-card-modern stat-primary">
+          <div class="stat-icon-square">
+            <lucide-icon [img]="IndianRupeeIcon" style="width: 20px; height: 20px;"></lucide-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-label">Total Sale</div>
+            <div class="stat-value">₹{{ totalSale() | number:'1.2-2' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Bills -->
+      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
+        <div class="stat-card-modern stat-info">
+          <div class="stat-icon-square">
+            <lucide-icon [img]="ReceiptIcon" style="width: 20px; height: 20px;"></lucide-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-label">Total Bills</div>
+            <div class="stat-value">{{ totalBills() }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cash Sale -->
+      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
+        <div class="stat-card-modern stat-success">
+          <div class="stat-icon-square">
+            <lucide-icon [img]="BanknoteIcon" style="width: 20px; height: 20px;"></lucide-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-label">Cash Sale</div>
+            <div class="stat-value text-success">₹{{ cashSale() | number:'1.2-2' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coupon Sale -->
+      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
+        <div class="stat-card-modern stat-warning">
+          <div class="stat-icon-square">
+            <lucide-icon [img]="TicketIcon" style="width: 20px; height: 20px;"></lucide-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-label">Coupon Sale</div>
+            <div class="stat-value text-warning">₹{{ couponSale() | number:'1.2-2' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Credit Sale -->
+      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
+        <div class="stat-card-modern stat-danger">
+          <div class="stat-icon-square">
+            <lucide-icon [img]="CreditCardIcon" style="width: 20px; height: 20px;"></lucide-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-label">Credit Sale</div>
+            <div class="stat-value text-danger">₹{{ creditSale() | number:'1.2-2' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Online Sale -->
+      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
+        <div class="stat-card-modern stat-purple">
+          <div class="stat-icon-square">
+            <lucide-icon [img]="SmartphoneIcon" style="width: 20px; height: 20px;"></lucide-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-label">Online Sale</div>
+            <div class="stat-value" style="color: #6f42c1;">₹{{ onlineSale() | number:'1.2-2' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Average Sale -->
+      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
+        <div class="stat-card-modern stat-secondary">
+          <div class="stat-icon-square">
+            <lucide-icon [img]="CalculatorIcon" style="width: 20px; height: 20px;"></lucide-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-label">Avg. Sale</div>
+            <div class="stat-value text-secondary">₹{{ averageSale() | number:'1.2-2' }}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
