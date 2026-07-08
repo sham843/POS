@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -28,6 +28,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 })
 export class Dashboard implements OnInit {
   private apiService = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
 
   LayoutDashboardIcon = LayoutDashboard;
   SearchIcon = Search;
@@ -78,8 +79,8 @@ export class Dashboard implements OnInit {
     } else {
       this.userId.set(620);
     }
-    
     this.fetchSummary();
+    this.fetchLast7DaysSale();
   }
 
   formatToIsoString(date: Date, isEndDate: boolean): string {
@@ -130,6 +131,7 @@ export class Dashboard implements OnInit {
 
   searchReport() {
     this.fetchSummary();
+    this.fetchLast7DaysSale();
   }
 
   clearFilters() {
@@ -137,6 +139,44 @@ export class Dashboard implements OnInit {
     this.fromDateObj.set(today);
     this.toDateObj.set(today);
     this.fetchSummary();
+    this.fetchLast7DaysSale();
+  }
+
+  fetchLast7DaysSale() {
+    const fromDateObj = this.fromDateObj();
+    const toDateObj = this.toDateObj();
+    
+    if (!fromDateObj || !toDateObj) return;
+
+    const fromDateStr = this.formatToIsoString(fromDateObj, false);
+    const toDateStr = this.formatToIsoString(toDateObj, true);
+
+    this.apiService.get<any>(`api/v1/dashboard/last-7-days-sale?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+      next: (res) => {
+        let arr: any[] = [];
+        if (Array.isArray(res)) {
+          arr = res;
+        } else if (res && Array.isArray(res.data)) {
+          arr = res.data;
+        }
+
+        if (arr.length > 0) {
+          const categories = arr.map(item => item.date);
+          const data = arr.map(item => item.amount);
+
+          this.last7DaysChartOptions = {
+            ...this.last7DaysChartOptions,
+            series: [{ name: "Sales", data: data }],
+            xaxis: {
+              ...this.last7DaysChartOptions.xaxis,
+              categories: categories
+            }
+          };
+          this.cdr.markForCheck();
+        }
+      },
+      error: (err) => console.error('Error fetching last 7 days sale:', err)
+    });
   }
 
   initCharts() {
@@ -179,7 +219,12 @@ export class Dashboard implements OnInit {
         }
       },
       colors: ["#0052CC"],
-      dataLabels: { enabled: false },
+      dataLabels: { 
+        enabled: true,
+        formatter: function (val: number) {
+          return "₹" + val;
+        }
+      },
       stroke: { curve: "smooth" }
     };
 
