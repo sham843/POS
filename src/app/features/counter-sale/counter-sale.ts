@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal, OnInit, OnDestroy, inject, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp, CheckCircle, List, ShoppingBag } from 'lucide-angular';
+import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp, CheckCircle, List, ShoppingBag, RefreshCw } from 'lucide-angular';
 import { ProductList } from './components/product-list/product-list';
 import { Cart } from './components/cart/cart';
 import { BillSummary } from './components/bill-summary/bill-summary';
@@ -14,6 +14,7 @@ import { NotificationService } from '../../core/services/notification.service';
 import { DbService } from '../../core/services/db.service';
 import { CounterInvoiceService } from '../../core/services/counter-invoice.service';
 import { ConfigService } from '../../core/services/config.service';
+import { MasterDataService } from '../../core/services/master-data.service';
 import { Subject, Subscription, timer } from 'rxjs';
 import { debounce } from 'rxjs/operators';
 
@@ -44,10 +45,13 @@ export class CounterSale implements OnInit, OnDestroy {
   private dbService = inject(DbService);
   private counterInvoiceService = inject(CounterInvoiceService);
   private configService = inject(ConfigService);
+  private masterDataService = inject(MasterDataService);
 
   isCustomerDrawerOpen = signal<boolean>(false);
   isOrderDrawerOpen = signal<boolean>(false);
   isLedgerDrawerOpen = signal<boolean>(false);
+  isSyncingData = signal<boolean>(false);
+  lastSyncedTime = signal<Date | null>(new Date());
   selectedCustomer = this.counterSaleService.selectedCustomer;
 
   upcomingOrdersCount = signal<number>(0);
@@ -72,6 +76,7 @@ export class CounterSale implements OnInit, OnDestroy {
   readonly CheckCircle = CheckCircle;
   readonly ListIcon = List;
   readonly ShoppingBag = ShoppingBag;
+  readonly RefreshCw = RefreshCw;
 
   sessionBillStats = this.counterSaleService.sessionBillStats;
 
@@ -97,6 +102,21 @@ export class CounterSale implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  async syncMasterData() {
+    if (this.isSyncingData()) return;
+    this.isSyncingData.set(true);
+    try {
+      await this.masterDataService.loadAndStoreMasterData();
+      this.lastSyncedTime.set(new Date());
+      this.notificationService.showSuccess('Data synced successfully');
+    } catch (error) {
+      console.error('Data sync failed', error);
+      this.notificationService.showError('Failed to sync data');
+    } finally {
+      this.isSyncingData.set(false);
+    }
   }
 
   ngOnDestroy() {

@@ -99,14 +99,24 @@
         matTooltip="Maximum 5 bills allowed">
         <lucide-icon [img]="Plus"></lucide-icon>
       </button>
-      <button class="order-list-btn ms-3" [disabled]="upcomingOrdersCount() < 0" (click)="openOrderDrawer()"
+      <button class="order-list-btn ms-2" [disabled]="upcomingOrdersCount() < 0" (click)="openOrderDrawer()"
         matTooltip="Orders">
         <lucide-icon [img]="ShoppingBag"></lucide-icon>
-        <span class="btn-text">Orders</span>
         @if (upcomingOrdersCount() > 0) {
         <span class="upcoming-count-badge">{{ upcomingOrdersCount() }}</span>
         }
       </button>
+      <div class="sync-container ms-1">
+        @if (lastSyncedTime()) {
+        <div class="sync-info">
+          <span class="sync-label">Last Sync</span>
+          <span class="sync-time">{{ lastSyncedTime() | date:'hh:mm a' }}</span>
+        </div>
+        }
+        <button class="sync-data-btn" (click)="syncMasterData()" [disabled]="isSyncingData()" matTooltip="Sync Data">
+          <lucide-icon [img]="RefreshCw" [class.spin]="isSyncingData()"></lucide-icon>
+        </button>
+      </div>
     </div>
 
   </div>

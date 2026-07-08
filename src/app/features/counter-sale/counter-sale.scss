@@ -322,8 +322,8 @@
 .bill-tab {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 12px;
+  gap: 5px;
+  padding: 0 11px;
   height: 36px;
   border-radius: 8px;
   /* Rounded rectangle instead of pill */
@@ -409,9 +409,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 14px;
+  width: 36px;
   height: 36px;
+  padding: 0;
   border-radius: 8px;
   background: #ECFDF5;
   border: 1px solid #A7F3D0;
@@ -474,6 +474,77 @@
   }
 }
 
+.sync-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  padding-left: 12px;
+
+  .sync-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+
+    .sync-label {
+      font-size: 9px;
+      font-weight: 600;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .sync-time {
+      font-size: 11px;
+      font-weight: 700;
+      color: #4B5563;
+      line-height: 1;
+    }
+  }
+
+  .sync-data-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 0 8px 8px 0;
+    background: #ffffff;
+    border: none;
+    border-left: 1px solid #E5E7EB;
+    color: #4B5563;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    lucide-icon {
+      width: 16px;
+      height: 16px;
+      color: #4B5563;
+    }
+
+    &:hover:not(:disabled) {
+      background: #F3F4F6;
+      color: #111827;
+
+      lucide-icon {
+        color: #111827;
+      }
+    }
+
+    &:disabled {
+      color: #9CA3AF;
+      cursor: not-allowed;
+
+      lucide-icon {
+        color: #9CA3AF;
+      }
+    }
+  }
+}
 
 .pos-main-content {
   flex: 1;
@@ -700,4 +771,14 @@
       color: #ffffff;
     }
   }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
 }
