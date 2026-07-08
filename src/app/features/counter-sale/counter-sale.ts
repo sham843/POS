@@ -51,7 +51,13 @@ export class CounterSale implements OnInit, OnDestroy {
   isOrderDrawerOpen = signal<boolean>(false);
   isLedgerDrawerOpen = signal<boolean>(false);
   isSyncingData = signal<boolean>(false);
-  lastSyncedTime = signal<Date | null>(new Date());
+  lastSyncedTime = signal<Date | null>((() => {
+    const stored = localStorage.getItem('lastSyncedTime');
+    if (stored) return new Date(stored);
+    const now = new Date();
+    localStorage.setItem('lastSyncedTime', now.toISOString());
+    return now;
+  })());
   selectedCustomer = this.counterSaleService.selectedCustomer;
 
   upcomingOrdersCount = signal<number>(0);
@@ -114,7 +120,9 @@ export class CounterSale implements OnInit, OnDestroy {
     this.isSyncingData.set(true);
     try {
       await this.masterDataService.loadAndStoreMasterData();
-      this.lastSyncedTime.set(new Date());
+      const now = new Date();
+      this.lastSyncedTime.set(now);
+      localStorage.setItem('lastSyncedTime', now.toISOString());
       this.notificationService.showSuccess('Data synced successfully');
     } catch (error) {
       console.error('Data sync failed', error);

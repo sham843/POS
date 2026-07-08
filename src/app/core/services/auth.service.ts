@@ -30,6 +30,7 @@ export class AuthService {
     localStorage.removeItem('tk_9xf1BzX');
     localStorage.removeItem('UserDetails');
     localStorage.removeItem('sessionId');
+    localStorage.removeItem('lastSyncedTime');
   }
 
   getToken(): string | null {
