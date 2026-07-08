@@ -18,12 +18,12 @@
   
   .n-tab {
     flex: 1;
-    height: 28px; /* Decreased height */
+    height: 40px;
     border-radius: 4px;
     border: 1px solid #D1D5DB;
     background: #F3F4F6;
     color: #374151;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
@@ -48,12 +48,12 @@
   
   .qw-btn {
     flex: 1;
-    height: 28px; /* Decreased height */
+    height: 40px;
     border-radius: 4px;
     border: 1px solid #BFDBFE; /* Light blue border */
     background: #EFF6FF; /* Very light blue background */
     color: #1D4ED8; /* Blue text */
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
