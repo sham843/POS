@@ -25,38 +25,18 @@ export class CashReportViewComponent implements OnInit {
 
   unitName: string = '';
 
-  // Mock data for UI design preview until API is integrated
-  saleOverview = {
-    creditSale: 54280,
-    couponSale: 8422,
-    onlineSale: 100,
-    cashSale: 0,
-    totalSale: 62802,
-    totalBills: 47,
-    onlineSaleDetail: 100,
-    customerDepositOnline: 171
+  // Initial empty data to prevent ExpressionChangedAfterItHasBeenCheckedError
+  saleOverview: any = {
+    creditSale: 0, couponSale: 0, onlineSale: 0, cashSale: 0,
+    totalSale: 0, totalBills: 0, onlineSaleDetail: 0, customerDepositOnline: 0
   };
 
-  cashOverview = {
-    cashSale: 0,
-    openingBalance: 0,
-    couponAdvReceived: 21596,
-    otherCash: 220,
-    expense: 100,
-    nextShiftBalance: 1000,
-    actualCashReceived: 9418
+  cashOverview: any = {
+    cashSale: 0, openingBalance: 0, couponAdvReceived: 0, otherCash: 0,
+    expense: 0, nextShiftBalance: 0, actualCashReceived: 0
   };
 
-  denominations = [
-    { value: 500, count: 13, total: 6500 },
-    { value: 200, count: 7, total: 1400 },
-    { value: 100, count: 10, total: 1000 },
-    { value: 50, count: 5, total: 250 },
-    { value: 20, count: 10, total: 200 },
-    { value: 10, count: 5, total: 50 },
-    { value: 5, count: 2, total: 10 },
-    { value: 2, count: 4, total: 8 }
-  ];
+  denominations: any[] = [];
 
   totalCollection = 0;
   remark = '';
@@ -68,8 +48,6 @@ export class CashReportViewComponent implements OnInit {
     public dialogRef: MatDialogRef<CashReportViewComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-
-    console.log(data)
 
   }
 
@@ -84,7 +62,7 @@ export class CashReportViewComponent implements OnInit {
       }
     }
 
-    if (this.data && this.data.userId && this.data.rawDate) {
+    if (this.data) {
       this.fetchReportDetails();
     } else {
       this.isLoading = false;
@@ -94,73 +72,108 @@ export class CashReportViewComponent implements OnInit {
   fetchReportDetails() {
     this.isLoading = true;
 
-    // Format date from DD-MM-YYYY to YYYY-MM-DD if needed
-    let apiDate = this.data.rawDate;
-    if (apiDate && apiDate.includes('-')) {
-      const parts = apiDate.split('-');
-      if (parts[0].length === 2) {
-        apiDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // Convert DD-MM-YYYY to YYYY-MM-DD
+    if (this.data.reportType !== 'summary' && this.data.sessionId) {
+      const url = `api/v1/report/GetCashierReport?SessionId=${this.data.sessionId}`;
+      this.apiService.get<any>(url).subscribe({
+        next: (response) => {
+          const resData = response.data ? response.data : response;
+          if (resData && (resData.id || resData.totalSale !== undefined || resData.cashDemo)) {
+            this.bindData(resData);
+          } else {
+            this.isLoading = false;
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching session details', err);
+          this.isLoading = false;
+        }
+      });
+    } else if (this.data.reportType === 'summary' && this.data.rawDate && this.data.userId !== undefined) {
+      // Format date from DD-MM-YYYY to YYYY-MM-DD if needed
+      let apiDate = this.data.rawDate;
+      if (apiDate && apiDate.includes('-')) {
+        const parts = apiDate.split('-');
+        if (parts[0].length === 2) {
+          apiDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // Convert DD-MM-YYYY to YYYY-MM-DD
+        }
+      } else if (apiDate && apiDate.includes('T')) {
+        apiDate = apiDate.split('T')[0];
       }
-    } else if (apiDate && apiDate.includes('T')) {
-      apiDate = apiDate.split('T')[0];
+
+      const url = `api/v1/report/GetDailyCashierSummary?date=${apiDate}&userId=${this.data.userId}`;
+      this.apiService.get<any>(url).subscribe({
+        next: (response) => {
+          const resData = response.data ? response.data : response;
+          if (resData && (resData.id || resData.totalSale !== undefined || resData.cashDemo)) {
+            this.bindData(resData);
+          } else {
+            this.isLoading = false;
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching summary details', err);
+          this.isLoading = false;
+        }
+      });
+    } else {
+      console.warn('Missing required data for API call', this.data);
+      this.isLoading = false;
+    }
+  }
+
+  private bindData(resData: any) {
+    this.saleOverview = {
+      creditSale: resData.creditSale || 0,
+      couponSale: resData.couponSale || 0,
+      onlineSale: resData.onlineSale || 0,
+      cashSale: resData.cashSale || 0,
+      totalSale: resData.totalSale || 0,
+      totalBills: resData.totalBill || resData.totalBills || 0,
+      onlineSaleDetail: resData.onlineSale || 0,
+      customerDepositOnline: resData.custDepositOnline || resData.customerDepositOnline || 0
+    };
+
+    this.cashOverview = {
+      cashSale: resData.cashSale || 0,
+      openingBalance: resData.openingBalanceOfCurrentShift || resData.openingBalance || 0,
+      couponAdvReceived: resData.couponCustAdvReceived || resData.couponAdvReceived || 0,
+      otherCash: resData.otherCash || 0,
+      expense: resData.expense || 0,
+      nextShiftBalance: resData.openingBalanceForNextShift || resData.openingBalanceNextShift || 0,
+      actualCashReceived: resData.actualCashReceived || 0
+    };
+
+    this.remark = resData.remark || '';
+    let calculatedTotal = 0;
+
+    // Parse denominations if available
+    const denoms = resData.cashDemo || resData.denominations || [];
+    if (denoms && Array.isArray(denoms) && denoms.length > 0) {
+      // Update counts based on response
+      this.denominations.forEach(den => {
+        const matched = denoms.find((d: any) => d.denomination === den.value || d.value === den.value);
+        if (matched) {
+          den.count = matched.quantity || matched.count || 0;
+          den.total = matched.amount || matched.total || (den.value * den.count);
+          calculatedTotal += den.total;
+        } else {
+          den.count = 0;
+          den.total = 0;
+        }
+      });
+    } else {
+      // Reset to 0 if not provided
+      this.denominations.forEach(d => { d.count = 0; d.total = 0; });
+    }
+    
+    this.totalCollection = resData.totalCollection || calculatedTotal || 0;
+    
+    // If actualCashReceived is missing from API, fallback to totalCollection (which matches the cash counted)
+    if (!this.cashOverview.actualCashReceived) {
+      this.cashOverview.actualCashReceived = this.totalCollection;
     }
 
-    const url = `api/v1/report/GetDailyCashierSummary?date=${apiDate}&userId=${this.data.userId}`;
-
-    this.apiService.get<any>(url).subscribe({
-      next: (response) => {
-        if (response && response.data) {
-          const resData = response.data;
-
-          this.saleOverview = {
-            creditSale: resData.creditSale || 0,
-            couponSale: resData.couponSale || 0,
-            onlineSale: resData.onlineSale || 0,
-            cashSale: resData.cashSale || 0,
-            totalSale: resData.totalSale || 0,
-            totalBills: resData.totalBills || 0,
-            onlineSaleDetail: resData.onlineSale || 0,
-            customerDepositOnline: resData.customerDepositOnline || 0
-          };
-
-          this.cashOverview = {
-            cashSale: resData.cashSale || 0,
-            openingBalance: resData.openingBalance || 0,
-            couponAdvReceived: resData.couponCustAdvReceived || resData.couponAdvReceived || 0,
-            otherCash: resData.otherCash || 0,
-            expense: resData.expense || 0,
-            nextShiftBalance: resData.openingBalanceNextShift || 0,
-            actualCashReceived: resData.actualCashReceived || 0
-          };
-
-          this.totalCollection = resData.totalCollection || resData.actualCashReceived || 0;
-          this.remark = resData.remark || '';
-
-          // Parse denominations if available
-          if (resData.denominations && Array.isArray(resData.denominations)) {
-            // Update counts based on response
-            this.denominations.forEach(den => {
-              const matched = resData.denominations.find((d: any) => d.value === den.value);
-              if (matched) {
-                den.count = matched.count || 0;
-                den.total = den.value * den.count;
-              } else {
-                den.count = 0;
-                den.total = 0;
-              }
-            });
-          } else {
-            // Reset to 0 if not provided
-            this.denominations.forEach(d => { d.count = 0; d.total = 0; });
-          }
-        }
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching details', err);
-        this.isLoading = false;
-      }
-    });
+    this.isLoading = false;
   }
 
   close(): void {

@@ -107,8 +107,9 @@ export class CashReport implements OnInit {
         endTime: formatTime(item.endTime || item.EndTime),
         personName: item.personName || item.PersonName || item.userName || item.UserName || item.user || item.User || '',
         totalAmount: Number(item.totalAmount || item.TotalAmount || item.totalSale || item.TotalSale || item.amount || item.Amount || 0),
-        userId: item.userId || item.UserId || this.userId(),
-        rawDate: item.date || item.Date || item.depositDate || item.DepositDate
+        userId: item.userId !== undefined ? item.userId : (item.UserId !== undefined ? item.UserId : this.userId()),
+        rawDate: item.date || item.Date || item.depositDate || item.DepositDate || item.createdDate || item.CreatedDate || '',
+        sessionId: item.sessionId || item.SessionId || item.id || item.Id
       };
     });
   });
@@ -293,7 +294,7 @@ export class CashReport implements OnInit {
       width: '1200px',
       maxWidth: '98vw',
       panelClass: 'modern-modal-panel',
-      data: item
+      data: { ...item, reportType: this.reportType() }
     });
   }
 
