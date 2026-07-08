@@ -253,7 +253,7 @@ export class AddBalanceComponent implements OnInit, OnChanges {
     };
 
     this.counterInvoiceService.addCustomerBalance(payload).subscribe({
-      next: () => {
+      next: async () => {
         this.notificationService.showSuccess(`₹${amt} added successfully.`);
         this.isSaving.set(false);
         this.ledgerForm.patchValue({
@@ -261,7 +261,7 @@ export class AddBalanceComponent implements OnInit, OnChanges {
           remarks: ''
         });
 
-        this.updateIndexedDbBalance(amt, Number(partyId));
+        await this.updateIndexedDbBalance(amt, Number(partyId));
         this.balanceAdded.emit();
         this.closeDrawer();
       },
@@ -278,7 +278,8 @@ export class AddBalanceComponent implements OnInit, OnChanges {
       const currentCust = await this.dbService.customerList.get(partyId);
       if (currentCust) {
         const currentBalance = currentCust.balanceAtDairy || currentCust.balance || 0;
-        const newBalance = currentBalance - amt;
+        // The API treats this as adding to the balance (e.g. adding previous due)
+        const newBalance = currentBalance + amt;
 
         await this.dbService.customerList.update(partyId, {
           balanceAtDairy: newBalance,
