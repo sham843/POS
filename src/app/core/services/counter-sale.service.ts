@@ -74,10 +74,15 @@ export class CounterSaleService {
     this.counterInvoiceService.fetchSessionBillStats(userId).subscribe({
       next: (res) => {
         const data = res?.data || res || {};
+        let prevBillNo = data.previousBillNo ?? data.lastBillNo ?? data.previousBill ?? data.lastInvoiceNo ?? '';
+        if (typeof prevBillNo === 'string' && prevBillNo.includes('/')) {
+          prevBillNo = prevBillNo.split('/')[0];
+        }
+
         this.sessionBillStats.set({
           bills: data.billsCount ?? data.totalBills ?? data.bills ?? 0,
           totalAmount: data.totalAmount ?? data.totalSales ?? data.salesAmount ?? data.sales ?? 0,
-          previousBillNo: data.previousBillNo ?? data.lastBillNo ?? data.previousBill ?? data.lastInvoiceNo ?? ''
+          previousBillNo: prevBillNo
         });
       },
       error: (err) => console.error('Failed to fetch session bill stats', err)

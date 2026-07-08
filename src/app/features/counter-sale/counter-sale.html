@@ -62,8 +62,8 @@
       <div class="bill-loaded-info">
         <div class="bill-info-pill">
           <lucide-icon [img]="ReceiptText"></lucide-icon>
-          <strong>{{ invoiceSummary.invoiceId() }}/{{ invoiceSummary.invoiceNo() }}</strong> &nbsp;·&nbsp; <span>{{
-            invoiceSummary.invoiceDate() | date:'dd MMM yyyy' }}</span>
+          <strong>{{ invoiceSummary.invoiceId() || invoiceSummary.invoiceNo() }}</strong> &nbsp;&middot;&nbsp; <span>{{
+            invoiceSummary.invoiceDate() | date:'dd MMM yyyy, hh:mm a' }}</span>
         </div>
       </div>
       }
