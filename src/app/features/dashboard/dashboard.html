@@ -180,7 +180,7 @@
         </div>
       </div>
 
-      <!-- Least Selling Products -->
+      <!-- Least Selling Products Chart -->
       <div class="col-md-6 mt-4" *ngIf="leastSellingHasData()">
         <div class="card shadow-sm border-0 rounded-4 p-3 h-100">
           <apx-chart
@@ -194,6 +194,70 @@
             [tooltip]="leastSellingChartOptions.tooltip"
           ></apx-chart>
         </div>
+      </div>
+      <!-- Product Sales Accordion -->
+      <div class="col-md-6 mt-4 mb-5 pb-5">
+        <mat-accordion multi="true">
+          <mat-expansion-panel [expanded]="true" class="shadow-sm border-0 rounded-4 mb-3" style="background: white;">
+            <mat-expansion-panel-header>
+              <mat-panel-title style="font-weight: 600; font-size: 15px; color: #4B5563;">
+                Top Selling Products
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            
+            <div class="table-responsive">
+              <table class="table app-data-table mb-0">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th class="text-end">Qty</th>
+                    <th class="text-end">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of topSellingProducts()">
+                    <td class="text-truncate" style="max-width: 150px;" [title]="item.productName || item.category">{{ item.productName || item.category }}</td>
+                    <td class="text-end">{{ item.quantity || 0 }}</td>
+                    <td class="text-end fw-bold text-success">₹{{ (item.amount || 0) | number }}</td>
+                  </tr>
+                  <tr *ngIf="topSellingProducts().length === 0">
+                    <td colspan="3" class="text-center text-muted py-3">No data available</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel class="shadow-sm border-0 rounded-4" style="background: white;">
+            <mat-expansion-panel-header>
+              <mat-panel-title style="font-weight: 600; font-size: 15px; color: #4B5563;">
+                Least Selling Products
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            
+            <div class="table-responsive">
+              <table class="table app-data-table mb-0">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th class="text-end">Qty</th>
+                    <th class="text-end">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of leastSellingProductsList()">
+                    <td class="text-truncate" style="max-width: 150px;" [title]="item.productName || item.category">{{ item.productName || item.category }}</td>
+                    <td class="text-end">{{ item.quantity || 0 }}</td>
+                    <td class="text-end fw-bold text-danger">₹{{ (item.amount || 0) | number }}</td>
+                  </tr>
+                  <tr *ngIf="leastSellingProductsList().length === 0">
+                    <td colspan="3" class="text-center text-muted py-3">No data available</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
       </div>
     </div>
 

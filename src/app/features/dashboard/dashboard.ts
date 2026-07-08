@@ -5,6 +5,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { LucideAngularModule, LayoutDashboard, Search, RotateCcw, IndianRupee, Receipt, Banknote, Ticket, CreditCard, Smartphone, Calculator, TrendingUp } from 'lucide-angular';
 import { ApiService } from '../../core/services/api.service';
 import { NgApexchartsModule } from 'ng-apexcharts';
@@ -46,7 +47,8 @@ export const CUSTOM_DATE_FORMATS = {
     MatInputModule,
     MatFormFieldModule,
     LucideAngularModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    MatExpansionModule
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -85,7 +87,7 @@ export class Dashboard implements OnInit {
   creditSale = signal<number>(0);
   onlineSale = signal<number>(0);
   averageSale = signal<number>(0);
-  
+
   userId = signal<number>(0);
 
   public last7DaysChartOptions: any;
@@ -93,12 +95,16 @@ export class Dashboard implements OnInit {
   public leastSellingChartOptions: any;
   public leastSellingHasData = signal(false);
 
+  // Table data
+  public topSellingProducts = signal<any[]>([]);
+  public leastSellingProductsList = signal<any[]>([]);
+
   ngOnInit() {
     this.initCharts();
     const today = new Date();
     this.fromDateObj.set(today);
     this.toDateObj.set(today);
-    
+
     const userStr = localStorage.getItem('UserDetails');
     if (userStr) {
       try {
@@ -115,6 +121,7 @@ export class Dashboard implements OnInit {
     this.fetchLast7DaysSale();
     this.fetchMonthlySales();
     this.fetchLeastSellingProducts();
+    this.fetchTopSellingProducts();
   }
 
   formatToIsoString(date: Date, isEndDate: boolean): string {
@@ -131,7 +138,7 @@ export class Dashboard implements OnInit {
   fetchSummary() {
     const fromDateObj = this.fromDateObj();
     const toDateObj = this.toDateObj();
-    
+
     if (!fromDateObj || !toDateObj) return;
 
     const fromDateStr = this.formatToIsoString(fromDateObj, false);
@@ -166,6 +173,7 @@ export class Dashboard implements OnInit {
   searchReport() {
     this.fetchSummary();
     this.fetchLeastSellingProducts();
+    this.fetchTopSellingProducts();
   }
 
   clearFilters() {
@@ -174,12 +182,13 @@ export class Dashboard implements OnInit {
     this.toDateObj.set(today);
     this.fetchSummary();
     this.fetchLeastSellingProducts();
+    this.fetchTopSellingProducts();
   }
 
   fetchLast7DaysSale() {
     const fromDateObj = this.fromDateObj();
     const toDateObj = this.toDateObj();
-    
+
     if (!fromDateObj || !toDateObj) return;
 
     const fromDateStr = this.formatToIsoString(fromDateObj, false);
@@ -216,7 +225,7 @@ export class Dashboard implements OnInit {
   fetchMonthlySales() {
     const fromDateObj = this.fromDateObj();
     const toDateObj = this.toDateObj();
-    
+
     if (!fromDateObj || !toDateObj) return;
 
     const fromDateStr = this.formatToIsoString(fromDateObj, false);
@@ -253,7 +262,7 @@ export class Dashboard implements OnInit {
   fetchLeastSellingProducts() {
     const fromDateObj = this.fromDateObj();
     const toDateObj = this.toDateObj();
-    
+
     if (!fromDateObj || !toDateObj) return;
 
     const fromDateStr = this.formatToIsoString(fromDateObj, false);
@@ -269,6 +278,8 @@ export class Dashboard implements OnInit {
         }
 
         if (arr.length > 0) {
+          this.leastSellingProductsList.set(arr);
+          
           const labels = arr.map(item => item.productName || item.category || 'Unknown');
           const data = arr.map(item => item.amount || 0);
 
@@ -279,13 +290,39 @@ export class Dashboard implements OnInit {
           };
           this.leastSellingHasData.set(true);
         } else {
+          this.leastSellingProductsList.set([]);
           this.leastSellingHasData.set(false);
         }
         this.cdr.markForCheck();
       },
       error: (err) => {
+        this.leastSellingProductsList.set([]);
         this.leastSellingHasData.set(false);
         console.error('Error fetching least selling products:', err);
+      }
+    });
+  }
+
+  fetchTopSellingProducts() {
+    const fromDateObj = this.fromDateObj();
+    const toDateObj = this.toDateObj();
+    if (!fromDateObj || !toDateObj) return;
+
+    const fromDateStr = this.formatToIsoString(fromDateObj, false);
+    const toDateStr = this.formatToIsoString(toDateObj, true);
+
+    this.apiService.get<any>(`api/v1/dashboard/top-selling-products?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+      next: (res) => {
+        let arr: any[] = [];
+        if (Array.isArray(res)) arr = res;
+        else if (res && Array.isArray(res.data)) arr = res.data;
+
+        this.topSellingProducts.set(arr);
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.topSellingProducts.set([]);
+        console.error('Error fetching top selling products:', err);
       }
     });
   }
@@ -330,7 +367,7 @@ export class Dashboard implements OnInit {
         }
       },
       colors: ["#0052CC"],
-      dataLabels: { 
+      dataLabels: {
         enabled: true,
         formatter: function (val: number) {
           return "₹" + (val || 0).toLocaleString('en-IN');
@@ -385,7 +422,7 @@ export class Dashboard implements OnInit {
         }
       },
       colors: ["#0052CC"],
-      dataLabels: { 
+      dataLabels: {
         enabled: true,
         formatter: function (val: number) {
           return "₹" + (val || 0).toLocaleString('en-IN');
@@ -407,7 +444,7 @@ export class Dashboard implements OnInit {
         toolbar: { show: false }
       },
       title: {
-        text: "Least Selling Products",
+        text: "Category wise Sales",
         align: "left",
         style: {
           fontWeight: "600",
@@ -427,7 +464,7 @@ export class Dashboard implements OnInit {
       },
       tooltip: {
         y: {
-          formatter: function(val: number) {
+          formatter: function (val: number) {
             return "₹" + (val || 0).toLocaleString('en-IN');
           }
         }
