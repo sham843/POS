@@ -35,7 +35,7 @@
       </div>
       <div class="item-controls-row">
         <div class="item-qty-control" (click)="counterSaleService.setNumpadMode('quantity')">
-          <button class="qty-btn minus" (click)="updateQuantity($index, item.quantity, -1)"><lucide-icon
+          <button class="qty-btn minus" [disabled]="item.quantity <= 0" (click)="updateQuantity($index, item.quantity, -1)"><lucide-icon
               [img]="Minus"></lucide-icon></button>
           <span class="qty-val">{{ (counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode()
             === 'quantity') ? counterSaleService.numpadValue() : (item.quantity | number:'1.0-2') }}

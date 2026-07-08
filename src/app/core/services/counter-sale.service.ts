@@ -338,7 +338,7 @@ export class CounterSaleService {
       const newItem: CartItem = {
         product: product,
         details: product.productName || product.materialName || product.name || 'Unknown Product',
-        quantity: 1,
+        quantity: 0,
         rate: rate,
         discount: 0,
         amount: 0,
@@ -349,7 +349,7 @@ export class CounterSaleService {
         unit: product.unit || product.uom || product.unitName || product.mensurationUnit || ''
       };
 
-      const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', '1');
+      const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', '0');
       items.push(calculatedItem);
       this.updateActiveBill({ cartItems: items });
       this.selectItem(items.length - 1);
@@ -357,7 +357,7 @@ export class CounterSaleService {
   }
 
   updateQuantity(index: number, quantity: number) {
-    if (quantity <= 0) {
+    if (quantity < 0) {
       this.removeItem(index);
       return;
     }
@@ -644,14 +644,16 @@ export class CounterSaleService {
   }
 
   async saveInvoice(paymentMode: 'cash' | 'online' | 'card', printAutomatically: boolean) {
-    if (this.cartItems().length === 0 || this.totalPayable() === 0) {
-      this.notificationService.showError("The invoice total is ₹0. Please select a product before payment.");
+    const invalidItems = this.cartItems().filter(item => item.quantity <= 0);
+    if (invalidItems.length > 0) {
+      this.notificationService.showError("One or more items have quantity 0. Please update the quantity or remove them before saving the bill.");
       return;
     }
 
-    const invalidItems = this.cartItems().filter(item => item.quantity <= 0);
-    if (invalidItems.length > 0) {
-      this.notificationService.showError("One or more items have quantity 0. Please correct them before proceeding.");
+    const validItems = this.cartItems().filter(item => item.quantity > 0);
+
+    if (validItems.length === 0 || this.totalPayable() === 0) {
+      this.notificationService.showError("The invoice total is ₹0. Please add a product with quantity before payment.");
       return;
     }
 
@@ -675,7 +677,7 @@ export class CounterSaleService {
 
     try {
       const res = await this.counterInvoiceService.saveInvoice(
-        this.cartItems(),
+        validItems,
         totals,
         this.selectedCustomer(),
         paymentMode,

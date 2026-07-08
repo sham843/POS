@@ -59,6 +59,12 @@ export class Payment {
       return;
     }
 
+    const invalidItems = this.counterSaleService.cartItems().filter(item => item.quantity <= 0);
+    if (invalidItems.length > 0) {
+      this.notificationService.showError("One or more items have quantity 0. Please update the quantity or remove them before payment.");
+      return;
+    }
+
     if (paymentMode === 'card') {
       const customer = this.counterSaleService.selectedCustomer();
       if (customer?.billingType?.toLowerCase() === 'prepaid') {
