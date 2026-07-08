@@ -7,8 +7,34 @@ import { SessionService } from './session.service';
 import { CounterInvoiceService } from './counter-invoice.service';
 import { CounterNumpadService } from './counter-numpad.service';
 
+export interface Product {
+  id?: string | number;
+  productCode?: string;
+  code?: string | number;
+  materialCode?: string;
+  unitId?: string | number;
+  materialUnitId?: string | number;
+  productName?: string;
+  materialName?: string;
+  name?: string;
+  salePrice?: number;
+  mrp?: number;
+  rate?: number;
+  price?: number;
+  saleRate?: number;
+  gst?: number;
+  taxPercentage?: number;
+  unit?: string;
+  uom?: string;
+  unitName?: string;
+  mensurationUnit?: string;
+  image?: string;
+  imageUrl?: string;
+  [key: string]: any;
+}
+
 export interface CartItem {
-  product: any;
+  product: Product;
   details: string;
   quantity: number;
   rate: number;
@@ -311,7 +337,7 @@ export class CounterSaleService {
     this.updateActiveBill({ cartItems: items });
   }
 
-  addToCart(product: any) {
+  addToCart(product: Product) {
     const items = [...this.cartItems()];
     const existingItemIndex = items.findIndex(item =>
       (item.product.id && item.product.id === product.id) ||

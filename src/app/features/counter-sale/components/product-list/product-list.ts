@@ -6,7 +6,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { DbService } from '../../../../core/services/db.service';
 import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
-import { CounterSaleService } from '../../../../core/services/counter-sale.service';
+import { CounterSaleService, Product } from '../../../../core/services/counter-sale.service';
 
 @Component({
   selector: 'app-product-list',
@@ -308,7 +308,7 @@ export class ProductList implements OnInit, AfterViewInit {
     }
   }
 
-  addToCart(product: any) {
+  addToCart(product: Product) {
     this.counterSaleService.addToCart(product);
   }
 
@@ -323,12 +323,14 @@ export class ProductList implements OnInit, AfterViewInit {
     return ids;
   });
 
-  isInCart(product: any): boolean {
+  isInCart(product: Product): boolean {
     const ids = this.cartProductIds();
     return (
       (product.id && ids.has(product.id)) ||
       (product.productCode && ids.has(product.productCode)) ||
-      ids.has(product.productName || product.materialName || product.name)
+      (product.productName && ids.has(product.productName)) ||
+      (product.materialName && ids.has(product.materialName)) ||
+      (product.name && ids.has(product.name)) || false
     );
   }
 

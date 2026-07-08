@@ -56,7 +56,7 @@
   @if (paginatedProducts().length > 0) {
   <div class="products-grid">
     @for (p of paginatedProducts(); track p.id || $index) {
-    <div class="prod-card" (click)="addToCart(p)" style="cursor: pointer;" [class.in-cart]="isInCart(p)">
+    <div class="prod-card" (click)="addToCart(p)" [class.in-cart]="isInCart(p)">
       @if (p.materialCode) {
       <div class="prod-material-badge">#{{ p.materialCode }}</div>
       }
