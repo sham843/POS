@@ -374,7 +374,7 @@ export class Dashboard implements OnInit {
       },
       error: (err) => {
         this.categoryWiseSalesHasData.set(false);
-        console.error('Error fetching category wise sales:', err);
+        console.error('Error fetching Product Category Distribution:', err);
       }
     });
   }
@@ -493,13 +493,13 @@ export class Dashboard implements OnInit {
       series: [],
       labels: [],
       chart: {
-        height: 384,
+        height: 390,
         type: "donut",
         toolbar: { show: false },
         fontFamily: 'inherit'
       },
       title: {
-        text: "Category wise Sales",
+        text: "Product Category Distribution",
         align: "left",
         style: {
           fontWeight: "600",
