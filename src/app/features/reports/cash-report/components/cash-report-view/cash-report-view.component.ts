@@ -148,6 +148,16 @@ export class CashReportViewComponent implements OnInit {
       actualCashReceived: 0 // Will be calculated from denominations
     };
 
+    if (resData.createdDate) {
+      this.data.depositDate = resData.createdDate;
+    } else if (this.data.depositDate && this.data.depositDate.length === 8) {
+      // Convert DD-MM-YY to DD-MM-YYYY
+      const parts = this.data.depositDate.split('-');
+      if (parts.length === 3 && parts[2].length === 2) {
+        this.data.depositDate = `${parts[0]}-${parts[1]}-20${parts[2]}`;
+      }
+    }
+
     this.remark = resData.remark || '';
     let calculatedTotal = 0;
 

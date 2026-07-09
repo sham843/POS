@@ -101,9 +101,18 @@ export class CashReport implements OnInit {
         return timeStr; // Already just time '12:50 PM'
       };
 
+      const formatDepositDate = (dateStr: string) => {
+        if (!dateStr) return '';
+        const parts = dateStr.split('-');
+        if (parts.length === 3 && parts[2].length === 2) {
+          return `${parts[0]}-${parts[1]}-20${parts[2]}`;
+        }
+        return dateStr;
+      };
+
       return {
         id: item.id || item.Id || 0,
-        depositDate: item.depositDate || item.DepositDate || item.date || item.Date || '',
+        depositDate: formatDepositDate(item.depositDate || item.DepositDate || item.date || item.Date || ''),
         startTime: formatTime(item.startTime || item.StartTime),
         endTime: formatTime(item.endTime || item.EndTime),
         personName: item.personName || item.PersonName || item.userName || item.UserName || item.user || item.User || '',
