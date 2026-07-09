@@ -157,3 +157,29 @@
   }
 
 }
+/* LOADING STATES */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 16px;
+  color: #6B7280;
+
+  p {
+    margin: 12px 0 0 0;
+    font-size: 13.5px;
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    color: #0052CC;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

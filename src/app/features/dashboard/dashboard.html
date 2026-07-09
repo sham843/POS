@@ -1,4 +1,5 @@
 <div class="d-flex flex-column h-100 w-100 bg-white">
+
   <!-- SUB HEADER -->
   <div class="pos-sub-header">
     <div class="d-flex align-items-center gap-3">
@@ -63,7 +64,14 @@
   <div class="flex-grow-1 p-4 pb-5 overflow-auto bg-light position-relative d-flex flex-column custom-scrollbar"
     style="min-height: 0;">
 
-    <!-- STATS CARDS GRID -->
+    <!-- Loading Spinner -->
+    <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm" *ngIf="isLoading()">
+      <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
+      <p>Loading dashboard data...</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading()">
+      <!-- STATS CARDS GRID -->
     <div class="d-flex w-100 flex-nowrap gap-2">
 
       <!-- Total Sale -->
@@ -306,7 +314,6 @@
         </div>
 
       </div>
-    </div>
-
+    </ng-container>
   </div>
 </div>

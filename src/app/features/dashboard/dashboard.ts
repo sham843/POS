@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, inject, OnInit, OnDestroy, ChangeDetectorRef, computed } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
@@ -8,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
-import { LucideAngularModule, LayoutDashboard, Search, RotateCcw, IndianRupee, Receipt, Banknote, Ticket, CreditCard, Smartphone, Calculator, TrendingUp, TrendingDown, Package } from 'lucide-angular';
+import { LucideAngularModule, LayoutDashboard, Search, RotateCcw, IndianRupee, Receipt, Banknote, Ticket, CreditCard, Smartphone, Calculator, TrendingUp, TrendingDown, Package, Loader } from 'lucide-angular';
 import { ApiService } from '../../core/services/api.service';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
@@ -64,6 +66,23 @@ export const CUSTOM_DATE_FORMATS = {
 export class Dashboard implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+
+  isLoading = signal(false);
+  private apiCounter = 0;
+
+  private incrementLoading() {
+    this.apiCounter++;
+    this.isLoading.set(true);
+  }
+
+  private decrementLoading() {
+    this.apiCounter--;
+    if (this.apiCounter <= 0) {
+      this.apiCounter = 0;
+      this.isLoading.set(false);
+    }
+  }
 
   private summarySub?: Subscription;
   private last7DaysSub?: Subscription;
@@ -86,6 +105,7 @@ export class Dashboard implements OnInit, OnDestroy {
   TrendingUpIcon = TrendingUp;
   TrendingDownIcon = TrendingDown;
   PackageIcon = Package;
+  LoaderIcon = Loader;
 
   maxDate = new Date();
 
@@ -135,13 +155,20 @@ export class Dashboard implements OnInit, OnDestroy {
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
-        this.userId.set(user.id || user.userId || 620); // Fallback to 620 if not found
+        if (user.id || user.userId) {
+          this.userId.set(user.id || user.userId);
+        } else {
+          this.router.navigate(['/login']);
+          return;
+        }
       } catch (e) {
         console.error('Failed to parse user from local storage');
-        this.userId.set(620);
+        this.router.navigate(['/login']);
+        return;
       }
     } else {
-      this.userId.set(620);
+      this.router.navigate(['/login']);
+      return;
     }
     this.fetchSummary();
     this.fetchLast7DaysSale();
@@ -179,7 +206,10 @@ export class Dashboard implements OnInit, OnDestroy {
     const uId = this.userId();
 
     if (this.summarySub) this.summarySub.unsubscribe();
-    this.summarySub = this.apiService.get<any>(`api/v1/dashboard/totalsummery?fromDate=${fromDateStr}&toDate=${toDateStr}&userId=${uId}`).subscribe({
+    this.incrementLoading();
+    this.summarySub = this.apiService.get<any>(`api/v1/dashboard/totalsummery?fromDate=${fromDateStr}&toDate=${toDateStr}&userId=${uId}`)
+      .pipe(finalize(() => { this.decrementLoading(); this.cdr.markForCheck(); }))
+      .subscribe({
       next: (res) => {
         if (res && res.data) {
           const d = res.data;
@@ -235,7 +265,10 @@ export class Dashboard implements OnInit, OnDestroy {
     const toDateStr = this.formatToIsoString(toDateObj, true);
 
     if (this.last7DaysSub) this.last7DaysSub.unsubscribe();
-    this.last7DaysSub = this.apiService.get<any>(`api/v1/dashboard/last-7-days-sale?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+    this.incrementLoading();
+    this.last7DaysSub = this.apiService.get<any>(`api/v1/dashboard/last-7-days-sale?fromDate=${fromDateStr}&toDate=${toDateStr}`)
+      .pipe(finalize(() => { this.decrementLoading(); this.cdr.markForCheck(); }))
+      .subscribe({
       next: (res) => {
         let arr: any[] = [];
         if (Array.isArray(res)) {
@@ -273,7 +306,10 @@ export class Dashboard implements OnInit, OnDestroy {
     const toDateStr = this.formatToIsoString(toDateObj, true);
 
     if (this.monthlySub) this.monthlySub.unsubscribe();
-    this.monthlySub = this.apiService.get<any>(`api/v1/dashboard/monthly-sales?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+    this.incrementLoading();
+    this.monthlySub = this.apiService.get<any>(`api/v1/dashboard/monthly-sales?fromDate=${fromDateStr}&toDate=${toDateStr}`)
+      .pipe(finalize(() => { this.decrementLoading(); this.cdr.markForCheck(); }))
+      .subscribe({
       next: (res) => {
         let arr: any[] = [];
         if (Array.isArray(res)) {
@@ -311,7 +347,10 @@ export class Dashboard implements OnInit, OnDestroy {
     const toDateStr = this.formatToIsoString(toDateObj, true);
 
     if (this.leastSellingSub) this.leastSellingSub.unsubscribe();
-    this.leastSellingSub = this.apiService.get<any>(`api/v1/dashboard/least-selling-products?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+    this.incrementLoading();
+    this.leastSellingSub = this.apiService.get<any>(`api/v1/dashboard/least-selling-products?fromDate=${fromDateStr}&toDate=${toDateStr}`)
+      .pipe(finalize(() => { this.decrementLoading(); this.cdr.markForCheck(); }))
+      .subscribe({
       next: (res) => {
         let arr: any[] = [];
         if (Array.isArray(res)) {
@@ -348,7 +387,10 @@ export class Dashboard implements OnInit, OnDestroy {
     const toDateStr = this.formatToIsoString(toDateObj, true);
 
     if (this.topSellingSub) this.topSellingSub.unsubscribe();
-    this.topSellingSub = this.apiService.get<any>(`api/v1/dashboard/top-selling-products?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+    this.incrementLoading();
+    this.topSellingSub = this.apiService.get<any>(`api/v1/dashboard/top-selling-products?fromDate=${fromDateStr}&toDate=${toDateStr}`)
+      .pipe(finalize(() => { this.decrementLoading(); this.cdr.markForCheck(); }))
+      .subscribe({
       next: (res) => {
         let arr: any[] = [];
         if (Array.isArray(res)) arr = res;
@@ -376,7 +418,10 @@ export class Dashboard implements OnInit, OnDestroy {
     const toDateStr = this.formatToIsoString(toDateObj, true);
 
     if (this.categorySub) this.categorySub.unsubscribe();
-    this.categorySub = this.apiService.get<any>(`api/v1/dashboard/category-wise-sales?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+    this.incrementLoading();
+    this.categorySub = this.apiService.get<any>(`api/v1/dashboard/category-wise-sales?fromDate=${fromDateStr}&toDate=${toDateStr}`)
+      .pipe(finalize(() => { this.decrementLoading(); this.cdr.markForCheck(); }))
+      .subscribe({
       next: (res) => {
         let arr: any[] = [];
         if (Array.isArray(res)) arr = res;
