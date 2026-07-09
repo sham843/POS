@@ -71,14 +71,13 @@ export class CashReportViewComponent implements OnInit {
 
   fetchReportDetails() {
     this.isLoading = true;
-
-    if (this.data.reportType !== 'summary' && this.data.sessionId) {
-      const url = `api/v1/report/GetCashierReport?SessionId=${this.data.sessionId}`;
+    if (this.data.reportType !== 'summary' && this.data.sessionIds) {
+      const url = `api/v1/report/GetCashierReport?SessionId=${this.data.sessionIds}`;
       this.apiService.get<any>(url).subscribe({
         next: (response) => {
           const resData = response.data ? response.data : response;
-          if (resData && (resData.id || resData.totalSale !== undefined || resData.cashDemo)) {
-            this.bindData(resData);
+          if (resData) {
+            this.bindData(resData[0]);
           } else {
             this.isLoading = false;
           }
@@ -122,6 +121,7 @@ export class CashReportViewComponent implements OnInit {
   }
 
   private bindData(resData: any) {
+    debugger
     this.saleOverview = {
       creditSale: resData.creditSale || 0,
       couponSale: resData.couponSale || 0,
@@ -165,9 +165,9 @@ export class CashReportViewComponent implements OnInit {
       // Reset to 0 if not provided
       this.denominations.forEach(d => { d.count = 0; d.total = 0; });
     }
-    
+
     this.totalCollection = resData.totalCollection || calculatedTotal || 0;
-    
+
     // If actualCashReceived is missing from API, fallback to totalCollection (which matches the cash counted)
     if (!this.cashOverview.actualCashReceived) {
       this.cashOverview.actualCashReceived = this.totalCollection;

@@ -1,5 +1,12 @@
 // cash-report.scss
 
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+
 ::ng-deep .pos-table th.mat-mdc-header-cell {
   background-color: #f8f9fa !important;
   font-weight: 600;

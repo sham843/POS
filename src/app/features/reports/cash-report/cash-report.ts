@@ -25,6 +25,7 @@ export interface CashReportItem {
   totalAmount: number | string;
   userId?: number;
   rawDate?: string;
+  sessionIds: string;
 }
 
 @Component({
@@ -109,7 +110,7 @@ export class CashReport implements OnInit {
         totalAmount: Number(item.totalAmount || item.TotalAmount || item.totalSale || item.TotalSale || item.amount || item.Amount || 0),
         userId: item.userId !== undefined ? item.userId : (item.UserId !== undefined ? item.UserId : this.userId()),
         rawDate: item.date || item.Date || item.depositDate || item.DepositDate || item.createdDate || item.CreatedDate || '',
-        sessionId: item.sessionId || item.SessionId || item.id || item.Id
+        sessionIds: item.sessionIds || item.SessionIds || item.sessionId || item.SessionId || item.id || item.Id || ''
       };
     });
   });
@@ -284,12 +285,13 @@ export class CashReport implements OnInit {
   setReportType(type: 'details' | 'summary') {
     if (this.reportType() === type) return;
     this.reportType.set(type);
-    
+
     // Reset filters (which also clears page, sets default dates, and auto-searches)
     this.clearFilters();
   }
 
   viewDetails(item: CashReportItem) {
+    debugger
     this.dialog.open(CashReportViewComponent, {
       width: '1200px',
       maxWidth: '98vw',
