@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,6 +7,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule, X, Settings as SettingsIcon, Save as SaveIcon } from 'lucide-angular';
 import { DbService } from '../../core/services/db.service';
+import { ApiService } from '../../core/services/api.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-settings',
@@ -27,6 +29,8 @@ import { DbService } from '../../core/services/db.service';
 export class Settings implements OnInit {
   dialogRef = inject(MatDialogRef<Settings>);
   dbService = inject(DbService);
+  apiService = inject(ApiService);
+  cdr = inject(ChangeDetectorRef);
   
   readonly X = X;
   readonly SettingsIcon = SettingsIcon;
@@ -58,15 +62,30 @@ export class Settings implements OnInit {
     if (this.cashlist.length === 1) {
       this.selectedCashAccount = this.cashlist[0];
     }
-    if (this.godownlist.length === 1) {
-      this.selectedGodown = this.godownlist[0];
-    }
 
     // Set default or previously selected values if they exist in localStorage
     const savedDiscountType = localStorage.getItem('discountType');
     if (savedDiscountType) {
       this.discountType = savedDiscountType;
     }
+
+    try {
+      let unitId = '578';
+      const userStr = localStorage.getItem('UserDetails');
+      if (userStr) {
+        const userDetails = JSON.parse(userStr);
+        if (userDetails.unitid) unitId = userDetails.unitid;
+      }
+      const godownRes = await firstValueFrom(this.apiService.get<any>(`api/v1/customer/godown-list?unitId=${unitId}`));
+      this.godownlist = Array.isArray(godownRes) ? godownRes : (godownRes?.data || []);
+      
+      if (this.godownlist.length === 1) {
+        this.selectedGodown = this.godownlist[0];
+      }
+    } catch (e) {
+      console.error('Failed to load godown list', e);
+    }
+    this.cdr.markForCheck();
   }
 
   save() {
