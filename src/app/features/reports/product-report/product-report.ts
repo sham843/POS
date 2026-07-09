@@ -223,20 +223,22 @@ export class ProductReport implements OnInit {
     return data.slice(start, end);
   });
 
-  // Toggle report type method
   setReportType(type: 'details' | 'summary') {
+    if (this.reportType() === type) return;
     this.reportType.set(type);
+    
+    if (type === 'summary') {
+      this.pageSize.set(2);
+    } else {
+      this.pageSize.set(3);
+    }
+    
     this.currentPage.set(0);
-    this.resetFiltersAndData();
+    this.clearFilters();
   }
 
   resetFiltersAndData() {
-    this.fromDateObj.set(null);
-    this.toDateObj.set(null);
-    this.fromDate.set('');
-    this.toDate.set('');
-    this.selectedProduct.set(0);
-    this.reportData.set([]);
+    this.clearFilters();
   }
 
   ngOnInit() {

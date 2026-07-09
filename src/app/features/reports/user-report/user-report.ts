@@ -211,20 +211,15 @@ export class UserReport implements OnInit {
     return data.slice(start, end);
   });
 
-  // Toggle report type method
   setReportType(type: 'details' | 'summary') {
+    if (this.reportType() === type) return;
     this.reportType.set(type);
     this.currentPage.set(0);
-    this.resetFiltersAndData();
+    this.clearFilters();
   }
 
   resetFiltersAndData() {
-    this.fromDateObj.set(null);
-    this.toDateObj.set(null);
-    this.fromDate.set('');
-    this.toDate.set('');
-    this.selectedUser.set('all');
-    this.reportData.set([]);
+    this.clearFilters();
   }
 
   ngOnInit() {
