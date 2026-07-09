@@ -5,7 +5,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { LucideAngularModule, X, Settings as SettingsIcon, Save as SaveIcon } from 'lucide-angular';
 import { DbService } from '../../core/services/db.service';
 
 @Component({
@@ -18,7 +18,7 @@ import { DbService } from '../../core/services/db.service';
     MatFormFieldModule,
     MatSelectModule,
     MatButtonModule,
-    MatIconModule
+    LucideAngularModule
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
@@ -27,7 +27,10 @@ import { DbService } from '../../core/services/db.service';
 export class Settings implements OnInit {
   dialogRef = inject(MatDialogRef<Settings>);
   dbService = inject(DbService);
-
+  
+  readonly X = X;
+  readonly SettingsIcon = SettingsIcon;
+  readonly SaveIcon = SaveIcon;
   companyLedgerList: any[] = [];
   saleLedgerList: any[] = [];
   cashlist: any[] = [];
@@ -45,6 +48,20 @@ export class Settings implements OnInit {
     this.saleLedgerList = await this.dbService.saleLedgerList.toArray();
     this.cashlist = await this.dbService.cashLedger.toArray();
     
+    // Auto-select if there is exactly 1 item
+    if (this.companyLedgerList.length === 1) {
+      this.selectedCompanyLedger = this.companyLedgerList[0];
+    }
+    if (this.saleLedgerList.length === 1) {
+      this.selectedSaleLedger = this.saleLedgerList[0];
+    }
+    if (this.cashlist.length === 1) {
+      this.selectedCashAccount = this.cashlist[0];
+    }
+    if (this.godownlist.length === 1) {
+      this.selectedGodown = this.godownlist[0];
+    }
+
     // Set default or previously selected values if they exist in localStorage
     const savedDiscountType = localStorage.getItem('discountType');
     if (savedDiscountType) {

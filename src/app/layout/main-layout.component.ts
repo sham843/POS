@@ -150,9 +150,11 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   openSettingsDialog() {
     this.dialog.open(SettingsComponent, {
-      width: '600px',
-      disableClose: false,
-      panelClass: 'custom-dialog-container'
+      width: '450px',
+      height: '100vh',
+      position: { right: '0', top: '0' },
+      disableClose: true,
+      panelClass: 'settings-drawer-container'
     });
   }
 
