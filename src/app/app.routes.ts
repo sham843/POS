@@ -25,9 +25,7 @@ export const routes: Routes = [
       { path: 'reports/gst-report', loadComponent: () => import('./features/reports/gst-report/gst-report').then(m => m.GstReport) },
       { path: 'reports/customer-payment-history', loadComponent: () => import('./features/reports/customer-payment-history/customer-payment-history').then(m => m.CustomerPaymentHistory) },
       { path: 'reports/cash-report', loadComponent: () => import('./features/reports/cash-report/cash-report').then(m => m.CashReport) },
-      { path: 'reports/sales-invoice-report', loadComponent: () => import('./features/reports/sales-invoice-report/sales-invoice-report').then(m => m.SalesInvoiceReport) },
-
-      { path: 'settings', loadComponent: () => import('./features/settings/settings').then(m => m.Settings) }
+      { path: 'reports/sales-invoice-report', loadComponent: () => import('./features/reports/sales-invoice-report/sales-invoice-report').then(m => m.SalesInvoiceReport) }
     ]
   },
 

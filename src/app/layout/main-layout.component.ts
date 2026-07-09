@@ -8,6 +8,8 @@ import { filter } from 'rxjs/operators';
 import { NetworkStatusComponent } from '../shared/components/network-status/network-status';
 import { UpdateConfirmModalComponent } from '../shared/components/update-confirm-modal/update-confirm-modal';
 import packageInfo from '../../../package.json';
+import { MatDialog } from '@angular/material/dialog';
+import { Settings as SettingsComponent } from '../features/settings/settings';
 
 @Component({
   selector: 'app-main-layout',
@@ -33,6 +35,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   healthService = inject(HealthService);
   private swUpdate = inject(SwUpdate);
   private elementRef = inject(ElementRef);
+  private dialog = inject(MatDialog);
   currentTime = signal(new Date());
   showProfileMenu = signal(false);
   showReportsDropdown = signal(false);
@@ -143,6 +146,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   endSession() {
     this.showProfileMenu.set(false);
     this.router.navigate(['/session-end']);
+  }
+
+  openSettingsDialog() {
+    this.dialog.open(SettingsComponent, {
+      width: '600px',
+      disableClose: false,
+      panelClass: 'custom-dialog-container'
+    });
   }
 
   onVersionBadgeClick() {

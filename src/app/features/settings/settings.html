@@ -1,1 +1,67 @@
-<p>settings works!</p>
+<div mat-dialog-title class="modal-header">
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="text-center w-100">Settings</div>
+    <button mat-icon-button class="btn-modal-close" (click)="close()">
+      <mat-icon class="material-symbols-outlined">close</mat-icon>
+    </button>
+  </div>
+</div>
+
+<mat-dialog-content class="dialog-content">
+  <div class="form-group">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Select Company Ledger</mat-label>
+      <mat-select [(ngModel)]="selectedCompanyLedger">
+        <mat-option *ngFor="let ledger of companyLedgerList" [value]="ledger">
+          {{ ledger.customerName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="form-group">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Select Sale Ledger</mat-label>
+      <mat-select [(ngModel)]="selectedSaleLedger">
+        <mat-option *ngFor="let ledger of saleLedgerList" [value]="ledger">
+          {{ ledger.customerName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+   <div class="form-group">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Select Cash Account</mat-label>
+      <mat-select [(ngModel)]="selectedCashAccount">
+        <mat-option *ngFor="let cash of cashlist" [value]="cash">
+          {{ cash.customerName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="form-group">
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Discount Type</mat-label>
+    <mat-select [(ngModel)]="discountType">
+      <mat-option class="teal small"  value="percent">Percentage (%)</mat-option>
+      <!-- <mat-option class="teal small" value="amount">Fixed Amount</mat-option> -->    <!-- DISABLE AS PER REQUIREMENT (11-11-2025) -->
+    </mat-select>
+  </mat-form-field>
+</div>
+<div class="form-group">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Select Godown</mat-label>
+      <mat-select [(ngModel)]="selectedGodown">
+        <mat-option *ngFor="let godown of godownlist" [value]="godown">
+          {{ godown.stockYardName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center" class="dialog-actions">
+  <button mat-stroked-button class="btn-main-light" (click)="close()">Cancel</button>
+  <button mat-flat-button class="btn-main" (click)="save()">Save</button>
+</mat-dialog-actions>

@@ -1,0 +1,98 @@
+:root {
+  --teal: #1abc9c;
+  --gray-bg: #f4f6f8;
+  --radius: 12px;
+  --dropdown-width: 90%; 
+}
+
+.modal-header {
+  background-color: #e9fdfa;
+  padding: 12px 16px;
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+  z-index: 3; 
+
+  .text-center {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    width: 100%;
+    text-align: center;
+  }
+
+  .btn-modal-close {
+    position:absolute;
+    align-items: center;
+    right: 12px;
+    top: 10px;
+  }
+}
+
+.dialog-content {
+  margin-top: 16px;
+  z-index: 1; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 20px;
+  padding-top: 1rem;
+}
+
+.form-group:first-child {
+  margin-top: 8px;
+}
+
+.form-group {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.full-width {
+  width: var(--dropdown-width);
+  max-width: 800px;
+}
+
+mat-form-field {
+  width:100%;
+  background-color: #fff;
+  border-radius: var(--radius);
+
+  ::ng-deep .mat-form-field-outline {
+    border-radius: var(--radius);
+  }
+
+  .mat-select-value {
+    font-size: 0.95rem;
+  }
+}
+
+::ng-deep .cdk-overlay-container,
+::ng-deep .cdk-overlay-pane {
+  z-index: 1003 !important; 
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  button {
+    min-width: 100px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: var(--radius);
+  }
+
+  .btn-cancel {
+    color: #333;
+    border: 1px solid #ccc;
+  }
+
+  .btn-save {
+    background-color: #1abc9c !important;
+    color: #fff !important;
+  }
+}

@@ -88,7 +88,7 @@
           </a>
         </div>
       </div>
-      <a routerLink="/settings" routerLinkActive="active" class="nav-link">
+      <a (click)="openSettingsDialog()" class="nav-link" style="cursor: pointer;">
         <lucide-icon [img]="Settings"></lucide-icon>
         <span class="nav-text">Settings</span>
       </a>
