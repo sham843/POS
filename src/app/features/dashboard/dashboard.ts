@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, signal, inject, OnInit, ChangeDetectorRef, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, OnInit, OnDestroy, ChangeDetectorRef, computed } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
@@ -60,9 +61,16 @@ export const CUSTOM_DATE_FORMATS = {
     { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
   ]
 })
-export class Dashboard implements OnInit {
+export class Dashboard implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private cdr = inject(ChangeDetectorRef);
+
+  private summarySub?: Subscription;
+  private last7DaysSub?: Subscription;
+  private monthlySub?: Subscription;
+  private leastSellingSub?: Subscription;
+  private topSellingSub?: Subscription;
+  private categorySub?: Subscription;
 
   LayoutDashboardIcon = LayoutDashboard;
   SearchIcon = Search;
@@ -143,6 +151,15 @@ export class Dashboard implements OnInit {
     this.fetchCategoryWiseSales();
   }
 
+  ngOnDestroy() {
+    this.summarySub?.unsubscribe();
+    this.last7DaysSub?.unsubscribe();
+    this.monthlySub?.unsubscribe();
+    this.leastSellingSub?.unsubscribe();
+    this.topSellingSub?.unsubscribe();
+    this.categorySub?.unsubscribe();
+  }
+
   formatToIsoString(date: Date, _isEndDate: boolean): string {
     const d = new Date(date);
     // Since we only need the date portion (YYYY-MM-DD) for the API, 
@@ -161,7 +178,8 @@ export class Dashboard implements OnInit {
     const toDateStr = this.formatToIsoString(toDateObj, true);
     const uId = this.userId();
 
-    this.apiService.get<any>(`api/v1/dashboard/totalsummery?fromDate=${fromDateStr}&toDate=${toDateStr}&userId=${uId}`).subscribe({
+    if (this.summarySub) this.summarySub.unsubscribe();
+    this.summarySub = this.apiService.get<any>(`api/v1/dashboard/totalsummery?fromDate=${fromDateStr}&toDate=${toDateStr}&userId=${uId}`).subscribe({
       next: (res) => {
         if (res && res.data) {
           const d = res.data;
@@ -216,7 +234,8 @@ export class Dashboard implements OnInit {
     const fromDateStr = this.formatToIsoString(fromDateObj, false);
     const toDateStr = this.formatToIsoString(toDateObj, true);
 
-    this.apiService.get<any>(`api/v1/dashboard/last-7-days-sale?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+    if (this.last7DaysSub) this.last7DaysSub.unsubscribe();
+    this.last7DaysSub = this.apiService.get<any>(`api/v1/dashboard/last-7-days-sale?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
       next: (res) => {
         let arr: any[] = [];
         if (Array.isArray(res)) {
@@ -253,7 +272,8 @@ export class Dashboard implements OnInit {
     const fromDateStr = this.formatToIsoString(fromDateObj, false);
     const toDateStr = this.formatToIsoString(toDateObj, true);
 
-    this.apiService.get<any>(`api/v1/dashboard/monthly-sales?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+    if (this.monthlySub) this.monthlySub.unsubscribe();
+    this.monthlySub = this.apiService.get<any>(`api/v1/dashboard/monthly-sales?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
       next: (res) => {
         let arr: any[] = [];
         if (Array.isArray(res)) {
@@ -290,7 +310,8 @@ export class Dashboard implements OnInit {
     const fromDateStr = this.formatToIsoString(fromDateObj, false);
     const toDateStr = this.formatToIsoString(toDateObj, true);
 
-    this.apiService.get<any>(`api/v1/dashboard/least-selling-products?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+    if (this.leastSellingSub) this.leastSellingSub.unsubscribe();
+    this.leastSellingSub = this.apiService.get<any>(`api/v1/dashboard/least-selling-products?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
       next: (res) => {
         let arr: any[] = [];
         if (Array.isArray(res)) {
@@ -326,7 +347,8 @@ export class Dashboard implements OnInit {
     const fromDateStr = this.formatToIsoString(fromDateObj, false);
     const toDateStr = this.formatToIsoString(toDateObj, true);
 
-    this.apiService.get<any>(`api/v1/dashboard/top-selling-products?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+    if (this.topSellingSub) this.topSellingSub.unsubscribe();
+    this.topSellingSub = this.apiService.get<any>(`api/v1/dashboard/top-selling-products?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
       next: (res) => {
         let arr: any[] = [];
         if (Array.isArray(res)) arr = res;
@@ -353,7 +375,8 @@ export class Dashboard implements OnInit {
     const fromDateStr = this.formatToIsoString(fromDateObj, false);
     const toDateStr = this.formatToIsoString(toDateObj, true);
 
-    this.apiService.get<any>(`api/v1/dashboard/category-wise-sales?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+    if (this.categorySub) this.categorySub.unsubscribe();
+    this.categorySub = this.apiService.get<any>(`api/v1/dashboard/category-wise-sales?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
       next: (res) => {
         let arr: any[] = [];
         if (Array.isArray(res)) arr = res;
