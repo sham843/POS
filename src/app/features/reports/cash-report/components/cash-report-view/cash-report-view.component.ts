@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { Component, Inject, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { LucideAngularModule, Receipt, User, Calendar, Clock, CreditCard, Banknote, Printer, X, Wallet, ChevronRight } from 'lucide-angular';
@@ -43,6 +43,7 @@ export class CashReportViewComponent implements OnInit {
   isLoading = true;
 
   private apiService = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
 
   constructor(
     public dialogRef: MatDialogRef<CashReportViewComponent>,
@@ -76,8 +77,9 @@ export class CashReportViewComponent implements OnInit {
       this.apiService.get<any>(url).subscribe({
         next: (response) => {
           const resData = response.data ? response.data : response;
-          if (resData) {
-            this.bindData(resData[0]);
+          const finalData = Array.isArray(resData) ? resData[0] : resData;
+          if (finalData) {
+            this.bindData(finalData);
           } else {
             this.isLoading = false;
           }
@@ -103,8 +105,9 @@ export class CashReportViewComponent implements OnInit {
       this.apiService.get<any>(url).subscribe({
         next: (response) => {
           const resData = response.data ? response.data : response;
-          if (resData && (resData.id || resData.totalSale !== undefined || resData.cashDemo)) {
-            this.bindData(resData);
+          const finalData = Array.isArray(resData) ? resData[0] : resData;
+          if (finalData) {
+            this.bindData(finalData);
           } else {
             this.isLoading = false;
           }
@@ -122,58 +125,55 @@ export class CashReportViewComponent implements OnInit {
 
   private bindData(resData: any) {
     debugger
+    if (!resData) return;
+
     this.saleOverview = {
       creditSale: resData.creditSale || 0,
       couponSale: resData.couponSale || 0,
       onlineSale: resData.onlineSale || 0,
       cashSale: resData.cashSale || 0,
       totalSale: resData.totalSale || 0,
-      totalBills: resData.totalBill || resData.totalBills || 0,
+      totalBills: resData.totalBill || 0,
       onlineSaleDetail: resData.onlineSale || 0,
-      customerDepositOnline: resData.custDepositOnline || resData.customerDepositOnline || 0
+      customerDepositOnline: resData.custDepositOnline || 0
     };
 
     this.cashOverview = {
       cashSale: resData.cashSale || 0,
-      openingBalance: resData.openingBalanceOfCurrentShift || resData.openingBalance || 0,
-      couponAdvReceived: resData.couponCustAdvReceived || resData.couponAdvReceived || 0,
+      openingBalance: resData.openingBalanceOfCurrentShift || 0,
+      couponAdvReceived: resData.couponCustAdvReceived || 0,
       otherCash: resData.otherCash || 0,
       expense: resData.expense || 0,
-      nextShiftBalance: resData.openingBalanceForNextShift || resData.openingBalanceNextShift || 0,
-      actualCashReceived: resData.actualCashReceived || 0
+      nextShiftBalance: resData.openingBalanceForNextShift || 0,
+      actualCashReceived: 0 // Will be calculated from denominations
     };
 
     this.remark = resData.remark || '';
     let calculatedTotal = 0;
 
     // Parse denominations if available
-    const denoms = resData.cashDemo || resData.denominations || [];
+    const denoms = resData.cashDemo || [];
+    this.denominations = [];
     if (denoms && Array.isArray(denoms) && denoms.length > 0) {
-      // Update counts based on response
-      this.denominations.forEach(den => {
-        const matched = denoms.find((d: any) => d.denomination === den.value || d.value === den.value);
-        if (matched) {
-          den.count = matched.quantity || matched.count || 0;
-          den.total = matched.amount || matched.total || (den.value * den.count);
-          calculatedTotal += den.total;
-        } else {
-          den.count = 0;
-          den.total = 0;
-        }
+      denoms.forEach((d: any) => {
+        const count = d.quantity || 0;
+        const total = d.amount || (d.denomination * count);
+        this.denominations.push({
+          value: d.denomination,
+          count: count,
+          total: total
+        });
+        calculatedTotal += total;
       });
-    } else {
-      // Reset to 0 if not provided
-      this.denominations.forEach(d => { d.count = 0; d.total = 0; });
     }
 
-    this.totalCollection = resData.totalCollection || calculatedTotal || 0;
-
-    // If actualCashReceived is missing from API, fallback to totalCollection (which matches the cash counted)
-    if (!this.cashOverview.actualCashReceived) {
-      this.cashOverview.actualCashReceived = this.totalCollection;
-    }
+    this.totalCollection = calculatedTotal;
+    
+    // Actual cash received is exactly the total collection in the drawer
+    this.cashOverview.actualCashReceived = this.totalCollection;
 
     this.isLoading = false;
+    this.cdr.detectChanges();
   }
 
   close(): void {

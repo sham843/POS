@@ -291,7 +291,6 @@ export class CashReport implements OnInit {
   }
 
   viewDetails(item: CashReportItem) {
-    debugger
     this.dialog.open(CashReportViewComponent, {
       width: '1200px',
       maxWidth: '98vw',
