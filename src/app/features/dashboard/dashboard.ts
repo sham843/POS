@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
-import { LucideAngularModule, LayoutDashboard, Search, RotateCcw, IndianRupee, Receipt, Banknote, Ticket, CreditCard, Smartphone, Calculator, TrendingUp, Package } from 'lucide-angular';
+import { LucideAngularModule, LayoutDashboard, Search, RotateCcw, IndianRupee, Receipt, Banknote, Ticket, CreditCard, Smartphone, Calculator, TrendingUp, TrendingDown, Package } from 'lucide-angular';
 import { ApiService } from '../../core/services/api.service';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
@@ -76,6 +76,7 @@ export class Dashboard implements OnInit {
   SmartphoneIcon = Smartphone;
   CalculatorIcon = Calculator;
   TrendingUpIcon = TrendingUp;
+  TrendingDownIcon = TrendingDown;
   PackageIcon = Package;
 
   maxDate = new Date();
@@ -142,13 +143,10 @@ export class Dashboard implements OnInit {
     this.fetchCategoryWiseSales();
   }
 
-  formatToIsoString(date: Date, isEndDate: boolean): string {
+  formatToIsoString(date: Date, _isEndDate: boolean): string {
     const d = new Date(date);
-    if (isEndDate) {
-      d.setHours(23, 59, 59, 999);
-    } else {
-      d.setHours(0, 0, 0, 0);
-    }
+    // Since we only need the date portion (YYYY-MM-DD) for the API, 
+    // setting hours is unnecessary as it gets discarded anyway.
     const tzOffset = d.getTimezoneOffset() * 60000;
     return new Date(d.getTime() - tzOffset).toISOString().split('T')[0];
   }
@@ -193,6 +191,8 @@ export class Dashboard implements OnInit {
     this.fetchLeastSellingProducts();
     this.fetchTopSellingProducts();
     this.fetchCategoryWiseSales();
+    this.fetchLast7DaysSale();
+    this.fetchMonthlySales();
   }
 
   clearFilters() {
@@ -203,6 +203,8 @@ export class Dashboard implements OnInit {
     this.fetchLeastSellingProducts();
     this.fetchTopSellingProducts();
     this.fetchCategoryWiseSales();
+    this.fetchLast7DaysSale();
+    this.fetchMonthlySales();
   }
 
   fetchLast7DaysSale() {

@@ -234,9 +234,12 @@
                 <ng-container matColumnDef="percentage">
                   <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
                     style="font-size: 11px; background-color: #f3f4f6;"> SALE (%) </th>
-                  <td mat-cell *matCellDef="let item" class="text-end border-bottom fw-bold"
+                  <td mat-cell *matCellDef="let item" class="border-bottom fw-bold"
                     style="color: #16a34a !important;">
-                    {{ totalSale() ? ((item.amount / totalSale()) * 100 | number:'1.1-2') + '%' : '0%' }}
+                    <div class="d-flex align-items-center justify-content-end gap-1">
+                      {{ totalSale() ? ((item.amount / totalSale()) * 100 | number:'1.1-2') : '0' }}
+                      <lucide-icon [img]="TrendingUpIcon" style="width: 14px; height: 14px;"></lucide-icon>
+                    </div>
                   </td>
                 </ng-container>
 
@@ -286,9 +289,12 @@
                 <ng-container matColumnDef="percentage">
                   <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
                     style="font-size: 11px; background-color: #f3f4f6;"> SALE (%) </th>
-                  <td mat-cell *matCellDef="let item" class="text-end border-bottom fw-bold"
+                  <td mat-cell *matCellDef="let item" class="border-bottom fw-bold"
                     style="color: #dc2626 !important;">
-                    {{ totalSale() ? ((item.amount / totalSale()) * 100 | number:'1.1-2') + '%' : '0%' }}
+                    <div class="d-flex align-items-center justify-content-end gap-1">
+                      {{ totalSale() ? ((item.amount / totalSale()) * 100 | number:'1.1-2') : '0' }}
+                      <lucide-icon [img]="TrendingDownIcon" style="width: 14px; height: 14px;"></lucide-icon>
+                    </div>
                   </td>
                 </ng-container>
 
