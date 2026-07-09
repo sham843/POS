@@ -86,7 +86,7 @@ export class CashReport implements OnInit {
 
   // Pagination
   currentPage = signal<number>(0);
-  pageSize = signal<number>(10);
+  pageSize = signal<number>(5);
 
   normalizedData = computed<CashReportItem[]>(() => {
     return this.reportData().map((item: any) => {
@@ -282,7 +282,7 @@ export class CashReport implements OnInit {
       this.fromDateObj.set(firstDayOfMonth);
       this.fromDate.set(this.formatDate(firstDayOfMonth));
     }
-    
+
     this.toDateObj.set(today);
     this.toDate.set(this.formatDate(today));
     this.userId.set(0);
