@@ -198,13 +198,18 @@
 
         <!-- Top Selling Products -->
         <div class="card shadow-sm border-0 rounded-4 p-3" *ngIf="topSellingProducts()?.length">
-          <h5 style="font-weight: 600; font-size: 15px; color: #4B5563; margin-bottom: 1rem;">Top Selling Products</h5>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 style="font-weight: 600; font-size: 15px; color: #4B5563; margin-bottom: 0;">Top Selling Products</h5>
+            <span class="badge rounded-pill" style="background-color: #dcfce7; color: #166534; font-size: 11px; font-weight: 600; padding: 5px 10px;">
+              Total: {{ topSellingProducts()?.length || 0 }}
+            </span>
+          </div>
           <div class="app-table-wrapper shadow-none border rounded-3 overflow-hidden">
             <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
               <table mat-table [dataSource]="topSellingProducts()" class="app-data-table table-hover w-100">
                 <ng-container matColumnDef="productName">
                   <th mat-header-cell *matHeaderCellDef class="text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px;"> PRODUCT </th>
+                    style="font-size: 11px; background-color: #f3f4f6;"> PRODUCT </th>
                   <td mat-cell *matCellDef="let item" class="text-truncate border-bottom text-secondary"
                     style="max-width: 150px; font-weight: 500;" [title]="item.productName || item.category">
                     {{ item.productName || item.category }}
@@ -213,27 +218,27 @@
 
                 <ng-container matColumnDef="quantity">
                   <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px;"> QTY </th>
+                    style="font-size: 11px; background-color: #f3f4f6;"> QTY </th>
                   <td mat-cell *matCellDef="let item" class="text-end border-bottom text-secondary"> {{ item.quantity ||
                     0 }} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="amount">
                   <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px;"> AMOUNT </th>
+                    style="font-size: 11px; background-color: #f3f4f6;"> AMOUNT </th>
                   <td mat-cell *matCellDef="let item" class="text-end fw-bold border-bottom text-dark"> ₹{{ (item.amount
                     || 0) | number }} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="percentage">
                   <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px;"> SALE (%) </th>
+                    style="font-size: 11px; background-color: #f3f4f6;"> SALE (%) </th>
                   <td mat-cell *matCellDef="let item" class="text-end border-bottom text-secondary">
                     {{ totalSale() ? ((item.amount / totalSale()) * 100 | number:'1.1-2') + '%' : '0%' }}
                   </td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="displayedColumns" style="background-color: #f3f4f6;"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
               </table>
             </div>
@@ -243,14 +248,18 @@
       <div class="col-md-4 mt-4 mb-5 pb-5 d-flex flex-column gap-3" *ngIf="activeView() === 'products'">
         <!-- Least Selling Products -->
         <div class="card shadow-sm border-0 rounded-4 p-3" *ngIf="leastSellingProductsList()?.length">
-          <h5 style="font-weight: 600; font-size: 15px; color: #4B5563; margin-bottom: 1rem;">Least Selling Products
-          </h5>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 style="font-weight: 600; font-size: 15px; color: #4B5563; margin-bottom: 0;">Least Selling Products</h5>
+            <span class="badge rounded-pill" style="background-color: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 600; padding: 5px 10px;">
+              Total: {{ leastSellingProductsList()?.length || 0 }}
+            </span>
+          </div>
           <div class="app-table-wrapper shadow-none border rounded-3 overflow-hidden">
             <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
               <table mat-table [dataSource]="leastSellingProductsList()" class="app-data-table table-hover w-100">
                 <ng-container matColumnDef="productName">
                   <th mat-header-cell *matHeaderCellDef class="text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px;"> PRODUCT </th>
+                    style="font-size: 11px; background-color: #f3f4f6;"> PRODUCT </th>
                   <td mat-cell *matCellDef="let item" class="text-truncate border-bottom text-secondary"
                     style="max-width: 150px; font-weight: 500;" [title]="item.productName || item.category">
                     {{ item.productName || item.category }}
@@ -259,27 +268,27 @@
 
                 <ng-container matColumnDef="quantity">
                   <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px;"> QTY </th>
+                    style="font-size: 11px; background-color: #f3f4f6;"> QTY </th>
                   <td mat-cell *matCellDef="let item" class="text-end border-bottom text-secondary"> {{ item.quantity ||
                     0 }} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="amount">
                   <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px;"> AMOUNT </th>
+                    style="font-size: 11px; background-color: #f3f4f6;"> AMOUNT </th>
                   <td mat-cell *matCellDef="let item" class="text-end fw-bold border-bottom text-dark"> ₹{{ (item.amount
                     || 0) | number }} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="percentage">
                   <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px;"> SALE (%) </th>
+                    style="font-size: 11px; background-color: #f3f4f6;"> SALE (%) </th>
                   <td mat-cell *matCellDef="let item" class="text-end border-bottom text-secondary">
                     {{ totalSale() ? ((item.amount / totalSale()) * 100 | number:'1.1-2') + '%' : '0%' }}
                   </td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="displayedColumns" style="background-color: #f3f4f6;"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
               </table>
             </div>

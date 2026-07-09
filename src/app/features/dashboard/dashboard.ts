@@ -107,9 +107,9 @@ export class Dashboard implements OnInit {
   activeView = signal<'sales' | 'products'>('sales');
 
   hasProductsData = computed(() => {
-    return (this.topSellingProducts()?.length || 0) > 0 || 
-           (this.leastSellingProductsList()?.length || 0) > 0 || 
-           this.categoryWiseSalesHasData();
+    return (this.topSellingProducts()?.length || 0) > 0 ||
+      (this.leastSellingProductsList()?.length || 0) > 0 ||
+      this.categoryWiseSalesHasData();
   });
 
   setView(view: 'sales' | 'products') {
@@ -298,6 +298,8 @@ export class Dashboard implements OnInit {
         }
 
         if (arr.length > 0) {
+          // Sort least selling by amount ascending (lowest first)
+          arr.sort((a, b) => (a.amount || 0) - (b.amount || 0));
           this.leastSellingProductsList.set(arr);
           this.leastSellingHasData.set(true);
         } else {
@@ -327,6 +329,9 @@ export class Dashboard implements OnInit {
         let arr: any[] = [];
         if (Array.isArray(res)) arr = res;
         else if (res && Array.isArray(res.data)) arr = res.data;
+
+        // Sort top selling by amount descending (highest first)
+        arr.sort((a, b) => (b.amount || 0) - (a.amount || 0));
 
         this.topSellingProducts.set(arr);
         this.cdr.markForCheck();
@@ -385,7 +390,8 @@ export class Dashboard implements OnInit {
       chart: {
         height: 350,
         type: "area",
-        toolbar: { show: false }
+        toolbar: { show: false },
+        fontFamily: 'inherit'
       },
       title: {
         text: "Last 7 Days Sales",
@@ -433,7 +439,8 @@ export class Dashboard implements OnInit {
       chart: {
         height: 350,
         type: "bar",
-        toolbar: { show: false }
+        toolbar: { show: false },
+        fontFamily: 'inherit'
       },
       plotOptions: {
         bar: {
@@ -488,7 +495,8 @@ export class Dashboard implements OnInit {
       chart: {
         height: 384,
         type: "donut",
-        toolbar: { show: false }
+        toolbar: { show: false },
+        fontFamily: 'inherit'
       },
       title: {
         text: "Category wise Sales",
