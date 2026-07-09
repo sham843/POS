@@ -6,6 +6,7 @@ import { MatNativeDateModule, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS }
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTableModule } from '@angular/material/table';
 import { LucideAngularModule, LayoutDashboard, Search, RotateCcw, IndianRupee, Receipt, Banknote, Ticket, CreditCard, Smartphone, Calculator, TrendingUp, Package } from 'lucide-angular';
 import { ApiService } from '../../core/services/api.service';
 import { NgApexchartsModule } from 'ng-apexcharts';
@@ -48,7 +49,8 @@ export const CUSTOM_DATE_FORMATS = {
     MatFormFieldModule,
     LucideAngularModule,
     NgApexchartsModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatTableModule
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -100,6 +102,7 @@ export class Dashboard implements OnInit {
   // Table data
   public topSellingProducts = signal<any[]>([]);
   public leastSellingProductsList = signal<any[]>([]);
+  public displayedColumns: string[] = ['productName', 'quantity', 'amount', 'percentage'];
 
   activeView = signal<'sales' | 'products'>('sales');
 
@@ -483,7 +486,7 @@ export class Dashboard implements OnInit {
       series: [],
       labels: [],
       chart: {
-        height: 350,
+        height: 384,
         type: "donut",
         toolbar: { show: false }
       },
