@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, signal, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, OnInit, ChangeDetectorRef, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { LucideAngularModule, LayoutDashboard, Search, RotateCcw, IndianRupee, Receipt, Banknote, Ticket, CreditCard, Smartphone, Calculator, TrendingUp } from 'lucide-angular';
+import { LucideAngularModule, LayoutDashboard, Search, RotateCcw, IndianRupee, Receipt, Banknote, Ticket, CreditCard, Smartphone, Calculator, TrendingUp, Package } from 'lucide-angular';
 import { ApiService } from '../../core/services/api.service';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
@@ -74,6 +74,7 @@ export class Dashboard implements OnInit {
   SmartphoneIcon = Smartphone;
   CalculatorIcon = Calculator;
   TrendingUpIcon = TrendingUp;
+  PackageIcon = Package;
 
   maxDate = new Date();
 
@@ -92,12 +93,25 @@ export class Dashboard implements OnInit {
 
   public last7DaysChartOptions: any;
   public monthlyChartOptions: any;
-  public leastSellingChartOptions: any;
+  public categoryWiseSalesChartOptions: any;
+  public categoryWiseSalesHasData = signal(false);
   public leastSellingHasData = signal(false);
 
   // Table data
   public topSellingProducts = signal<any[]>([]);
   public leastSellingProductsList = signal<any[]>([]);
+
+  activeView = signal<'sales' | 'products'>('sales');
+
+  hasProductsData = computed(() => {
+    return (this.topSellingProducts()?.length || 0) > 0 || 
+           (this.leastSellingProductsList()?.length || 0) > 0 || 
+           this.categoryWiseSalesHasData();
+  });
+
+  setView(view: 'sales' | 'products') {
+    this.activeView.set(view);
+  }
 
   ngOnInit() {
     this.initCharts();
@@ -122,6 +136,7 @@ export class Dashboard implements OnInit {
     this.fetchMonthlySales();
     this.fetchLeastSellingProducts();
     this.fetchTopSellingProducts();
+    this.fetchCategoryWiseSales();
   }
 
   formatToIsoString(date: Date, isEndDate: boolean): string {
@@ -174,6 +189,7 @@ export class Dashboard implements OnInit {
     this.fetchSummary();
     this.fetchLeastSellingProducts();
     this.fetchTopSellingProducts();
+    this.fetchCategoryWiseSales();
   }
 
   clearFilters() {
@@ -183,6 +199,7 @@ export class Dashboard implements OnInit {
     this.fetchSummary();
     this.fetchLeastSellingProducts();
     this.fetchTopSellingProducts();
+    this.fetchCategoryWiseSales();
   }
 
   fetchLast7DaysSale() {
@@ -279,15 +296,6 @@ export class Dashboard implements OnInit {
 
         if (arr.length > 0) {
           this.leastSellingProductsList.set(arr);
-          
-          const labels = arr.map(item => item.productName || item.category || 'Unknown');
-          const data = arr.map(item => item.amount || 0);
-
-          this.leastSellingChartOptions = {
-            ...this.leastSellingChartOptions,
-            series: data,
-            labels: labels
-          };
           this.leastSellingHasData.set(true);
         } else {
           this.leastSellingProductsList.set([]);
@@ -323,6 +331,42 @@ export class Dashboard implements OnInit {
       error: (err) => {
         this.topSellingProducts.set([]);
         console.error('Error fetching top selling products:', err);
+      }
+    });
+  }
+
+  fetchCategoryWiseSales() {
+    const fromDateObj = this.fromDateObj();
+    const toDateObj = this.toDateObj();
+    if (!fromDateObj || !toDateObj) return;
+
+    const fromDateStr = this.formatToIsoString(fromDateObj, false);
+    const toDateStr = this.formatToIsoString(toDateObj, true);
+
+    this.apiService.get<any>(`api/v1/dashboard/category-wise-sales?fromDate=${fromDateStr}&toDate=${toDateStr}`).subscribe({
+      next: (res) => {
+        let arr: any[] = [];
+        if (Array.isArray(res)) arr = res;
+        else if (res && Array.isArray(res.data)) arr = res.data;
+
+        if (arr.length > 0) {
+          const labels = arr.map(item => item.categoryName || item.category || 'Unknown');
+          const data = arr.map(item => item.amount || item.totalSale || 0);
+
+          this.categoryWiseSalesChartOptions = {
+            ...this.categoryWiseSalesChartOptions,
+            series: data,
+            labels: labels
+          };
+          this.categoryWiseSalesHasData.set(true);
+        } else {
+          this.categoryWiseSalesHasData.set(false);
+        }
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.categoryWiseSalesHasData.set(false);
+        console.error('Error fetching category wise sales:', err);
       }
     });
   }
@@ -435,7 +479,7 @@ export class Dashboard implements OnInit {
       }
     };
 
-    this.leastSellingChartOptions = {
+    this.categoryWiseSalesChartOptions = {
       series: [],
       labels: [],
       chart: {
@@ -468,6 +512,9 @@ export class Dashboard implements OnInit {
             return "₹" + (val || 0).toLocaleString('en-IN');
           }
         }
+      },
+      fill: {
+        type: 'gradient'
       },
       colors: ["#0052CC", "#34d399", "#f59e0b", "#ef4444", "#8b5cf6"]
     };

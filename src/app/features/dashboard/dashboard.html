@@ -6,6 +6,20 @@
         <lucide-icon [img]="LayoutDashboardIcon"></lucide-icon>
         <span>Dashboard</span>
       </div>
+
+      <!-- View Toggles -->
+      <div class="app-segment-chips">
+        <div class="app-chip" [class.active]="activeView() === 'sales'" (click)="setView('sales')">
+          <lucide-icon [img]="TrendingUpIcon" class="chip-icon"></lucide-icon>
+          <span>Sales</span>
+        </div>
+        <div class="app-chip" [class.active]="activeView() === 'products'" [class.disabled]="!hasProductsData()"
+          [style.pointer-events]="hasProductsData() ? 'auto' : 'none'" [style.opacity]="hasProductsData() ? '1' : '0.5'"
+          (click)="hasProductsData() && setView('products')">
+          <lucide-icon [img]="PackageIcon" class="chip-icon"></lucide-icon>
+          <span>Products</span>
+        </div>
+      </div>
     </div>
 
     <div class="sub-header-filters align-items-center">
@@ -46,11 +60,12 @@
   </div>
 
   <!-- DATA AREA -->
-  <div class="flex-grow-1 p-4 pb-5 overflow-auto bg-light position-relative d-flex flex-column gap-4 custom-scrollbar" style="min-height: 0;">
+  <div class="flex-grow-1 p-4 pb-5 overflow-auto bg-light position-relative d-flex flex-column custom-scrollbar"
+    style="min-height: 0;">
 
     <!-- STATS CARDS GRID -->
     <div class="d-flex w-100 flex-nowrap gap-2">
-      
+
       <!-- Total Sale -->
       <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
         <div class="stat-card-modern stat-primary">
@@ -147,111 +162,114 @@
     <!-- CHARTS GRID -->
     <div class="row g-4 mt-1">
       <!-- Last 7 Days Sales -->
-      <div class="col-md-6">
+      <div class="col-md-6" *ngIf="activeView() === 'sales'">
         <div class="card shadow-sm border-0 rounded-4 p-3 h-100">
-          <apx-chart
-            [series]="last7DaysChartOptions.series"
-            [chart]="last7DaysChartOptions.chart"
-            [xaxis]="last7DaysChartOptions.xaxis"
-            [yaxis]="last7DaysChartOptions.yaxis"
-            [tooltip]="last7DaysChartOptions.tooltip"
-            [title]="last7DaysChartOptions.title"
-            [colors]="last7DaysChartOptions.colors"
-            [dataLabels]="last7DaysChartOptions.dataLabels"
-            [stroke]="last7DaysChartOptions.stroke"
-          ></apx-chart>
+          <apx-chart [series]="last7DaysChartOptions.series" [chart]="last7DaysChartOptions.chart"
+            [xaxis]="last7DaysChartOptions.xaxis" [yaxis]="last7DaysChartOptions.yaxis"
+            [tooltip]="last7DaysChartOptions.tooltip" [title]="last7DaysChartOptions.title"
+            [colors]="last7DaysChartOptions.colors" [dataLabels]="last7DaysChartOptions.dataLabels"
+            [stroke]="last7DaysChartOptions.stroke"></apx-chart>
         </div>
       </div>
 
       <!-- Monthly Sales -->
-      <div class="col-md-6">
+      <div class="col-md-6" *ngIf="activeView() === 'sales'">
         <div class="card shadow-sm border-0 rounded-4 p-3 h-100">
-          <apx-chart
-            [series]="monthlyChartOptions.series"
-            [chart]="monthlyChartOptions.chart"
-            [xaxis]="monthlyChartOptions.xaxis"
-            [yaxis]="monthlyChartOptions.yaxis"
-            [tooltip]="monthlyChartOptions.tooltip"
-            [title]="monthlyChartOptions.title"
-            [colors]="monthlyChartOptions.colors"
-            [dataLabels]="monthlyChartOptions.dataLabels"
-            [plotOptions]="monthlyChartOptions.plotOptions"
-          ></apx-chart>
+          <apx-chart [series]="monthlyChartOptions.series" [chart]="monthlyChartOptions.chart"
+            [xaxis]="monthlyChartOptions.xaxis" [yaxis]="monthlyChartOptions.yaxis"
+            [tooltip]="monthlyChartOptions.tooltip" [title]="monthlyChartOptions.title"
+            [colors]="monthlyChartOptions.colors" [dataLabels]="monthlyChartOptions.dataLabels"
+            [plotOptions]="monthlyChartOptions.plotOptions"></apx-chart>
         </div>
       </div>
 
-      <!-- Least Selling Products Chart -->
-      <div class="col-md-6 mt-4" *ngIf="leastSellingHasData()">
+      <!-- Category Wise Sales Chart -->
+      <div class="col-md-4 mt-4" *ngIf="activeView() === 'products' && categoryWiseSalesHasData()">
         <div class="card shadow-sm border-0 rounded-4 p-3 h-100">
-          <apx-chart
-            [series]="leastSellingChartOptions.series"
-            [chart]="leastSellingChartOptions.chart"
-            [labels]="leastSellingChartOptions.labels"
-            [title]="leastSellingChartOptions.title"
-            [plotOptions]="leastSellingChartOptions.plotOptions"
-            [colors]="leastSellingChartOptions.colors"
-            [dataLabels]="leastSellingChartOptions.dataLabels"
-            [tooltip]="leastSellingChartOptions.tooltip"
-          ></apx-chart>
+          <apx-chart [series]="categoryWiseSalesChartOptions.series" [chart]="categoryWiseSalesChartOptions.chart"
+            [labels]="categoryWiseSalesChartOptions.labels" [title]="categoryWiseSalesChartOptions.title"
+            [plotOptions]="categoryWiseSalesChartOptions.plotOptions" [colors]="categoryWiseSalesChartOptions.colors"
+            [fill]="categoryWiseSalesChartOptions.fill" [dataLabels]="categoryWiseSalesChartOptions.dataLabels"
+            [tooltip]="categoryWiseSalesChartOptions.tooltip"></apx-chart>
         </div>
       </div>
       <!-- Product Sales Accordion -->
-      <div class="col-md-6 mt-4 mb-5 pb-5">
+      <div class="col-md-4 mt-4 mb-5 pb-5" *ngIf="activeView() === 'products'">
         <mat-accordion multi="true">
-          <mat-expansion-panel [expanded]="true" class="shadow-sm border-0 rounded-4 mb-3" style="background: white;">
+          <mat-expansion-panel *ngIf="topSellingProducts()?.length" [expanded]="true"
+            class="shadow-sm border-0 rounded-4 mb-3" style="background: white;">
             <mat-expansion-panel-header>
               <mat-panel-title style="font-weight: 600; font-size: 15px; color: #4B5563;">
                 Top Selling Products
               </mat-panel-title>
             </mat-expansion-panel-header>
-            
-            <div class="table-responsive">
-              <table class="table app-data-table mb-0">
-                <thead>
+
+            <div class="table-responsive mt-2 px-2 pb-2">
+              <table class="table align-middle mb-0" style="font-size: 13px;">
+                <thead style="background-color: #f3f4f6;">
                   <tr>
-                    <th>Product</th>
-                    <th class="text-end">Qty</th>
-                    <th class="text-end">Amount</th>
+                    <th class="text-uppercase text-muted fw-bold border-0 py-2"
+                      style="font-size: 11px; border-radius: 4px 0 0 4px;">PRODUCT</th>
+                    <th class="text-end text-uppercase text-muted fw-bold border-0 py-2" style="font-size: 11px;">QTY
+                    </th>
+                    <th class="text-end text-uppercase text-muted fw-bold border-0 py-2" style="font-size: 11px;">AMOUNT
+                    </th>
+                    <th class="text-end text-uppercase text-muted fw-bold border-0 py-2"
+                      style="font-size: 11px; border-radius: 0 4px 4px 0;"> Sale (%)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let item of topSellingProducts()">
-                    <td class="text-truncate" style="max-width: 150px;" [title]="item.productName || item.category">{{ item.productName || item.category }}</td>
-                    <td class="text-end">{{ item.quantity || 0 }}</td>
-                    <td class="text-end fw-bold text-success">₹{{ (item.amount || 0) | number }}</td>
+                    <td class="text-truncate border-bottom text-secondary" style="max-width: 150px; font-weight: 500;"
+                      [title]="item.productName || item.category">{{
+                      item.productName || item.category }}</td>
+                    <td class="text-end border-bottom text-secondary">{{ item.quantity || 0 }}</td>
+                    <td class="text-end fw-bold border-bottom text-dark">₹{{ (item.amount || 0) | number }}</td>
+                    <td class="text-end border-bottom text-secondary">{{ totalSale() ? ((item.amount / totalSale()) *
+                      100 | number:'1.1-2') + '%' : '0%' }}</td>
                   </tr>
                   <tr *ngIf="topSellingProducts().length === 0">
-                    <td colspan="3" class="text-center text-muted py-3">No data available</td>
+                    <td colspan="4" class="text-center text-muted py-3 border-bottom">No data available</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </mat-expansion-panel>
 
-          <mat-expansion-panel class="shadow-sm border-0 rounded-4" style="background: white;">
+          <mat-expansion-panel *ngIf="leastSellingProductsList()?.length" class="shadow-sm border-0 rounded-4"
+            style="background: white;">
             <mat-expansion-panel-header>
               <mat-panel-title style="font-weight: 600; font-size: 15px; color: #4B5563;">
                 Least Selling Products
               </mat-panel-title>
             </mat-expansion-panel-header>
-            
-            <div class="table-responsive">
-              <table class="table app-data-table mb-0">
-                <thead>
+
+            <div class="table-responsive mt-2 px-2 pb-2">
+              <table class="table align-middle mb-0" style="font-size: 13px;">
+                <thead style="background-color: #f3f4f6;">
                   <tr>
-                    <th>Product</th>
-                    <th class="text-end">Qty</th>
-                    <th class="text-end">Amount</th>
+                    <th class="text-uppercase text-muted fw-bold border-0 py-2"
+                      style="font-size: 11px; border-radius: 4px 0 0 4px;">PRODUCT</th>
+                    <th class="text-end text-uppercase text-muted fw-bold border-0 py-2" style="font-size: 11px;">QTY
+                    </th>
+                    <th class="text-end text-uppercase text-muted fw-bold border-0 py-2" style="font-size: 11px;">AMOUNT
+                    </th>
+                    <th class="text-end text-uppercase text-muted fw-bold border-0 py-2"
+                      style="font-size: 11px; border-radius: 0 4px 4px 0;">%</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let item of leastSellingProductsList()">
-                    <td class="text-truncate" style="max-width: 150px;" [title]="item.productName || item.category">{{ item.productName || item.category }}</td>
-                    <td class="text-end">{{ item.quantity || 0 }}</td>
-                    <td class="text-end fw-bold text-danger">₹{{ (item.amount || 0) | number }}</td>
+                    <td class="text-truncate border-bottom text-secondary" style="max-width: 150px; font-weight: 500;"
+                      [title]="item.productName || item.category">{{
+                      item.productName || item.category }}</td>
+                    <td class="text-end border-bottom text-secondary">{{ item.quantity || 0 }}</td>
+                    <td class="text-end fw-bold border-bottom text-dark">₹{{ (item.amount || 0) | number }}</td>
+                    <td class="text-end border-bottom text-secondary">{{ totalSale() ? ((item.amount / totalSale()) *
+                      100 | number:'1.1-2') + '%' : '0%' }}</td>
                   </tr>
                   <tr *ngIf="leastSellingProductsList().length === 0">
-                    <td colspan="3" class="text-center text-muted py-3">No data available</td>
+                    <td colspan="4" class="text-center text-muted py-3 border-bottom">No data available</td>
                   </tr>
                 </tbody>
               </table>
