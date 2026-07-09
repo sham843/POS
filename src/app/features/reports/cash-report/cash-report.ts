@@ -274,10 +274,16 @@ export class CashReport implements OnInit {
 
   clearFilters() {
     const today = new Date();
-    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    this.fromDateObj.set(firstDayOfMonth);
+    if (this.reportType() === 'summary') {
+      this.fromDateObj.set(today);
+      this.fromDate.set(this.formatDate(today));
+    } else {
+      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      this.fromDateObj.set(firstDayOfMonth);
+      this.fromDate.set(this.formatDate(firstDayOfMonth));
+    }
+    
     this.toDateObj.set(today);
-    this.fromDate.set(this.formatDate(firstDayOfMonth));
     this.toDate.set(this.formatDate(today));
     this.userId.set(0);
 

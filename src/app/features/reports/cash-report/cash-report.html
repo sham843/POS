@@ -27,7 +27,7 @@
         <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
           <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
             (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
-            placeholder="From Date" [max]="toDateObj()">
+            [placeholder]="reportType() === 'summary' ? 'Date' : 'From Date'" [max]="toDateObj()">
           <mat-datepicker-toggle matSuffix [for]="fromDateStrPicker"></mat-datepicker-toggle>
           <mat-datepicker #fromDateStrPicker></mat-datepicker>
         </mat-form-field>
