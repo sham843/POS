@@ -79,7 +79,18 @@ export class Settings implements OnInit {
       const godownRes = await firstValueFrom(this.apiService.get<any>(`api/v1/customer/godown-list?unitId=${unitId}`));
       this.godownlist = Array.isArray(godownRes) ? godownRes : (godownRes?.data || []);
       
-      if (this.godownlist.length === 1) {
+      const savedGodownStr = localStorage.getItem('selectedGodown');
+      let foundGodown = null;
+      if (savedGodownStr) {
+        try {
+          const parsed = JSON.parse(savedGodownStr);
+          foundGodown = this.godownlist.find(g => g.stockYardId === parsed.stockYardId || g.stockYardName === parsed.stockYardName);
+        } catch (e) {}
+      }
+
+      if (foundGodown) {
+        this.selectedGodown = foundGodown;
+      } else if (this.godownlist.length > 0) {
         this.selectedGodown = this.godownlist[0];
       }
     } catch (e) {
@@ -90,6 +101,9 @@ export class Settings implements OnInit {
 
   save() {
     localStorage.setItem('discountType', this.discountType);
+    if (this.selectedGodown) {
+      localStorage.setItem('selectedGodown', JSON.stringify(this.selectedGodown));
+    }
     this.dialogRef.close({
       companyLedger: this.selectedCompanyLedger,
       saleLedger: this.selectedSaleLedger,
