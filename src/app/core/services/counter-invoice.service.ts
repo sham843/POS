@@ -255,9 +255,14 @@ export class CounterInvoiceService {
         groupIdForBulk: 0,
         upiId: ""
       }
-    };
+    }
 
-    const endpoint = isUpdate ? 'api/v1/invoice/update-sale' : 'api/v1/invoice/sale';
+
+    console.log(payload);
+
+    return
+
+    const endpoint = isUpdate ? 'api/v1/invoice/UpdateSale_V1' : 'api/v1/invoice/Sale_V1';
     return this.apiService.post<any>(endpoint, payload).toPromise();
   }
 
