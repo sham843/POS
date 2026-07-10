@@ -94,12 +94,30 @@ export class CustomerDrawer implements OnInit, OnDestroy {
   selectCustomer(c: any) {
     const current = this.selectedCustomer();
     if (current?.id === c.id) {
-      this.counterSaleService.updateActiveBill({ selectedCustomer: null });
+      this.counterSaleService.updateActiveBill({ 
+        selectedCustomer: null,
+        cartItems: [],
+        selectedItemIndex: null,
+        numpadMode: 'quantity',
+        numpadValue: '',
+        numpadShouldReplace: false,
+        numpadHasQuickWeight: false
+      });
+      this.closeDrawer();
     } else {
-      this.counterSaleService.updateActiveBill({ selectedCustomer: c });
+      this.counterSaleService.updateActiveBill({ 
+        selectedCustomer: c,
+        cartItems: [],
+        selectedItemIndex: null,
+        numpadMode: 'quantity',
+        numpadValue: '',
+        numpadShouldReplace: false,
+        numpadHasQuickWeight: false
+      });
       this.counterSaleService.searchType.set('customer');
+      this.counterSaleService.updateSearchQuery(c.customerName || c.name || '');
+      this.close.emit();
     }
-    this.closeDrawer();
   }
 
   closeDrawer() {

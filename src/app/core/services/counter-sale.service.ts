@@ -446,16 +446,36 @@ export class CounterSaleService {
     });
   }
 
-  addToCart(product: Product) {
+  async addToCart(product: Product) {
+    const cust = this.selectedCustomer();
+    let finalProduct = { ...product };
+    if (cust && cust.id) {
+      try {
+        const orgId = this.Userdetails?.organizationId || this.Userdetails?.orgId || 511;
+        const materialId = finalProduct.id || finalProduct.productId || finalProduct.code || 0;
+        const res = await this.counterInvoiceService.getRateList(orgId, cust.id, Number(materialId)).toPromise();
+        if (res?.responseData && res.responseData.length > 0 && res.responseData[0].rate) {
+          finalProduct.salePrice = res.responseData[0].rate;
+          finalProduct.rate = res.responseData[0].rate;
+          finalProduct.mrp = res.responseData[0].rate;
+        }
+      } catch (e) {
+        console.error('Failed to fetch rate list', e);
+      }
+    }
+
     const items = [...this.cartItems()];
     const existingItemIndex = items.findIndex(item =>
-      (item.product.id && item.product.id === product.id) ||
-      (item.product.productCode && item.product.productCode === product.productCode) ||
-      (item.details === (product.productName || product.materialName || product.name))
+      (item.product.id && item.product.id === finalProduct.id) ||
+      (item.product.productCode && item.product.productCode === finalProduct.productCode) ||
+      (item.details === (finalProduct.productName || finalProduct.materialName || finalProduct.name))
     );
 
     if (existingItemIndex > -1) {
       const existingItem = { ...items[existingItemIndex] };
+      // Update rate just in case it changed
+      existingItem.rate = finalProduct.salePrice || finalProduct.mrp || finalProduct.rate || finalProduct.price || finalProduct.saleRate || existingItem.rate;
+      
       const nextItem = this.counterNumpadService.updateCartItemFromNumpad(
         existingItem,
         'quantity',
@@ -469,12 +489,12 @@ export class CounterSaleService {
       this.selectItem(items.length - 1);
       this.syncItemTaxAsync(items.length - 1, nextItem);
     } else {
-      const rate = product.salePrice || product.mrp || product.rate || product.price || product.saleRate || 0;
+      const rate = finalProduct.salePrice || finalProduct.mrp || finalProduct.rate || finalProduct.price || finalProduct.saleRate || 0;
       // Do not calculate tax from local DB, wait for API
       const gst = 0;
       const newItem: CartItem = {
-        product: product,
-        details: product.productName || product.materialName || product.name || 'Unknown Product',
+        product: finalProduct,
+        details: finalProduct.productName || finalProduct.materialName || finalProduct.name || 'Unknown Product',
         quantity: 0,
         rate: rate,
         discount: 0,

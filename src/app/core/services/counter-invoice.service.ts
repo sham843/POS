@@ -39,6 +39,10 @@ export class CounterInvoiceService {
     return this.apiService.get<any>(`api/v1/invoice/GetComputeTax?MaterialId=${materialId}&TotalPrice=${totalPrice}&CustStateCode=${custStateCode}&OrgStateCode=${orgStateCode}`);
   }
 
+  getRateList(organizationId: number, customerId: number, materialId: number): Observable<any> {
+    return this.apiService.get<any>(`api/v1/pricelist/GetRateList?OrganizationId=${organizationId}&CustomerId=${customerId}&MaterialId=${materialId}`);
+  }
+
   async saveInvoice(
     cartItems: CartItem[],
     totals: {

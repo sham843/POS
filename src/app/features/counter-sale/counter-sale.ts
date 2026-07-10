@@ -181,7 +181,15 @@ export class CounterSale implements OnInit, OnDestroy {
   }
 
   clearSelectedCustomer() {
-    this.counterSaleService.updateActiveBill({ selectedCustomer: null });
+    this.counterSaleService.updateActiveBill({ 
+      selectedCustomer: null,
+      cartItems: [],
+      selectedItemIndex: null,
+      numpadMode: 'quantity',
+      numpadValue: '',
+      numpadShouldReplace: false,
+      numpadHasQuickWeight: false
+    });
     this.searchSubject.next('');
   }
 
@@ -222,7 +230,15 @@ export class CounterSale implements OnInit, OnDestroy {
       });
 
       if (found) {
-        this.counterSaleService.updateActiveBill({ selectedCustomer: found });
+        this.counterSaleService.updateActiveBill({ 
+          selectedCustomer: found,
+          cartItems: [],
+          selectedItemIndex: null,
+          numpadMode: 'quantity',
+          numpadValue: '',
+          numpadShouldReplace: false,
+          numpadHasQuickWeight: false
+        });
         this.counterSaleService.updateSearchQuery('');
       } else if (showSnackbar) {
         this.notificationService.showError('Customer not found matching "' + query + '"');
