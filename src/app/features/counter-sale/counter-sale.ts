@@ -232,6 +232,15 @@ export class CounterSale implements OnInit, OnDestroy {
       if (!query) return;
 
       const cleanBillNo = query.split('/')[0];
+      
+      // Prevent backend 500 error if string is not a valid number
+      if (!/^\d+$/.test(cleanBillNo)) {
+        if (showSnackbar) {
+          this.notificationService.showError('Bill number must be numeric');
+        }
+        return;
+      }
+      
       this.counterSaleService.loadInvoiceByBillNo(cleanBillNo);
     }
   }
