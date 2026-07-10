@@ -28,7 +28,7 @@
       <div class="item-details">
         <div class="item-name">{{ item.details }}</div>
         <div class="item-price">₹{{ item.rate | number:'1.2-2' }}
-          @if (item.gst) {
+          @if (item.gst && item.quantity > 0) {
           <span class="item-gst">(+ {{ item.gst }}% GST: ₹{{ item.gstAmount | number:'1.2-2' }})</span>
           }
         </div>

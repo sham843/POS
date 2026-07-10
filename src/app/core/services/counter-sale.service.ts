@@ -170,7 +170,7 @@ export class CounterSaleService {
       mergeMap(group => group.pipe(
         debounceTime(300),
         switchMap(async req => {
-          const materialId = req.item.product.id || 0;
+          const materialId = req.item.product.id;
           let totalPrice = 0;
 
           totalPrice = (req.item.quantity * req.item.rate) - (req.item.discountRupee || 0);
@@ -452,7 +452,8 @@ export class CounterSaleService {
       this.syncItemTaxAsync(items.length - 1, nextItem);
     } else {
       const rate = product.salePrice || product.mrp || product.rate || product.price || product.saleRate || 0;
-      const gst = product.gst || product.taxPercentage || 0;
+      // Do not calculate tax from local DB, wait for API
+      const gst = 0;
       const newItem: CartItem = {
         product: product,
         details: product.productName || product.materialName || product.name || 'Unknown Product',

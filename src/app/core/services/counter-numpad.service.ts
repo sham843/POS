@@ -128,13 +128,18 @@ export class CounterNumpadService {
   ): CartItem {
     const updatedItem = { ...item };
     const valNum = parseFloat(numpadValue) || 0;
-    const isExcluded = (updatedItem.product?.['computationMethod'] || '').toUpperCase().includes('EXCLUDED');
+    let isExcluded = false;
+    if (updatedItem.isTaxIncluded !== undefined) {
+      isExcluded = !updatedItem.isTaxIncluded;
+    } else {
+      isExcluded = (updatedItem.product?.['computationMethod'] || '').toUpperCase().includes('EXCLUDED');
+    }
 
     if (mode === 'quantity') {
       updatedItem.quantity = valNum;
       updatedItem.amount = isExcluded
         ? Math.round((updatedItem.rate * updatedItem.quantity) * 100) / 100
-        : Math.round(((updatedItem.rate * updatedItem.quantity) / (1 + updatedItem.gst / 100)) * 100) / 100;
+        : Math.round((updatedItem.rate * updatedItem.quantity) / (1 + updatedItem.gst / 100));
     } else if (mode === 'amount') {
       if (updatedItem.product?.mensurationUnit === 'Nos') {
         return updatedItem;
@@ -173,8 +178,11 @@ export class CounterNumpadService {
 
     if (mode !== 'amount' || isExcluded) {
       updatedItem.netAmount = Math.round((updatedItem.amount - (updatedItem.amount * updatedItem.discount / 100)) * 100) / 100;
-      updatedItem.gstAmount = Math.round((updatedItem.netAmount * updatedItem.gst / 100) * 100) / 100;
-      updatedItem.total = Math.round((updatedItem.netAmount + updatedItem.gstAmount) * 100) / 100;
+      updatedItem.total = Math.round((updatedItem.rate * updatedItem.quantity - (updatedItem.discountRupee || 0)) * 100) / 100;
+      if (updatedItem.discount > 0) {
+        updatedItem.total = Math.round((updatedItem.total - (updatedItem.total * updatedItem.discount / 100)) * 100) / 100;
+      }
+      updatedItem.gstAmount = Math.round((updatedItem.total - updatedItem.netAmount) * 100) / 100;
     }
 
     return updatedItem;
