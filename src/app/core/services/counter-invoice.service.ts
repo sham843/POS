@@ -90,15 +90,27 @@ export class CounterInvoiceService {
       isPaymentReceived = 0;
     }
 
+    const savedSettingsStr = localStorage.getItem('posSettings');
+    let savedSettings: any = null;
+    if (savedSettingsStr) {
+      try {
+        savedSettings = JSON.parse(savedSettingsStr);
+      } catch (e) {}
+    }
+
     const customer = selectedCustomer;
     let partyId = 0;
     if (customer && customer.id) {
       partyId = customer.id;
     } else {
       try {
-        const saleLedgers = await this.dbService.saleLedgerList.toArray();
-        if (saleLedgers && saleLedgers.length > 0) {
-          partyId = saleLedgers[0].id || 0;
+        if (savedSettings?.saleLedger?.id) {
+          partyId = savedSettings.saleLedger.id;
+        } else {
+          const saleLedgers = await this.dbService.saleLedgerList.toArray();
+          if (saleLedgers && saleLedgers.length > 0) {
+            partyId = saleLedgers[0].id || 0;
+          }
         }
       } catch (e) {
         console.error('Failed to load SaleLedgerList from indexedDB', e);
@@ -106,9 +118,13 @@ export class CounterInvoiceService {
     }
     let companyLedgerId = 0;
     try {
-      const companyLedgers = await this.dbService.companyLedgerList.toArray();
-      if (companyLedgers && companyLedgers.length > 0) {
-        companyLedgerId = companyLedgers[0].id || 0;
+      if (savedSettings?.companyLedger?.id) {
+        companyLedgerId = savedSettings.companyLedger.id;
+      } else {
+        const companyLedgers = await this.dbService.companyLedgerList.toArray();
+        if (companyLedgers && companyLedgers.length > 0) {
+          companyLedgerId = companyLedgers[0].id || 0;
+        }
       }
     } catch (e) {
       console.error('Failed to load CompanyLedgerList from indexedDB', e);
@@ -117,10 +133,15 @@ export class CounterInvoiceService {
     let bankCashLedgerName = "";
     try {
       if (paymentMode === 'cash') {
-        const cashLedgers = await this.dbService.cashLedger.toArray();
-        if (cashLedgers && cashLedgers.length > 0) {
-          bankCashLedger = cashLedgers[0].id || 0;
-          bankCashLedgerName = cashLedgers[0].customerName || "";
+        if (savedSettings?.cashAccount?.id) {
+          bankCashLedger = savedSettings.cashAccount.id;
+          bankCashLedgerName = savedSettings.cashAccount.name || "";
+        } else {
+          const cashLedgers = await this.dbService.cashLedger.toArray();
+          if (cashLedgers && cashLedgers.length > 0) {
+            bankCashLedger = cashLedgers[0].id || 0;
+            bankCashLedgerName = cashLedgers[0].customerName || "";
+          }
         }
       } else {
         const bankAccountsList = await this.dbService.bankAccounts.toArray();
