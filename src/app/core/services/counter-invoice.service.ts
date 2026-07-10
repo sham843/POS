@@ -156,7 +156,12 @@ export class CounterInvoiceService {
         subTotal: totals.totalPayable.toFixed(2),
         unitId: unitId,
         serverId: 0,
-        StockHistoryLocalId: 0
+        StockHistoryLocalId: 0,
+        invoiceDetailsTaxComponent: item.dynamicTaxes && item.dynamicTaxes.length > 0 ? item.dynamicTaxes.map(t => ({
+          amount: t.taxAmount || 0,
+          componentId: t.id || 1,
+          taxLabel: t.componentName || 'CGST 0%'
+        })) : []
       };
     });
 
@@ -208,6 +213,7 @@ export class CounterInvoiceService {
       sgst: (totals.totalSgst || (totals.totalGst / 2)).toFixed(2),
       stateFlag: 1,
       isPaymentReceived: isPaymentReceived,
+      isOrder: 0,
       isPrint: false, // Managed programmatically in print receipt
       spinvoicedetailsModel: invoiceDetails,
       ledgerTransaction: {
