@@ -208,6 +208,14 @@ export class CounterSaleService {
       if ((item.product.id || item.product.code) !== (req.item.product.id || req.item.product.code)) return;
 
       item.netAmount = data.taxableAmount ?? item.netAmount;
+      item.netAmount = data.taxableAmount ?? item.netAmount;
+      if (item.discount > 0) {
+        item.amount = Math.round((item.netAmount / (1 - (item.discount / 100))) * 100) / 100;
+      } else if ((item.discountRupee || 0) > 0) {
+        item.amount = item.netAmount + (item.discountRupee || 0);
+      } else {
+        item.amount = item.netAmount;
+      }
       item.total = data.afterTaxTotal ?? item.total;
       item.isTaxIncluded = data.isTaxIncluded ?? item.isTaxIncluded;
 
