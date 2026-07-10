@@ -370,6 +370,16 @@ export class CounterSaleService {
       return;
     }
 
+    const item = this.cartItems()[idx];
+    
+    // Do not allow decimal point in quantity if product mensurationType is 'Count'
+    if (val === '.' && this.numpadMode() === 'quantity') {
+      const mensurationType = item.product?.['mensurationType'];
+      if (mensurationType && String(mensurationType).toLowerCase() === 'count') {
+        return;
+      }
+    }
+
     const result = this.counterNumpadService.calculateNumpadInput(
       val,
       this.numpadValue(),

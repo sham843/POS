@@ -136,7 +136,12 @@ export class CounterNumpadService {
     }
 
     if (mode === 'quantity') {
-      updatedItem.quantity = valNum;
+      const mensurationType = updatedItem.product?.['mensurationType'];
+      if (mensurationType && String(mensurationType).toLowerCase() === 'count') {
+        updatedItem.quantity = Math.floor(valNum);
+      } else {
+        updatedItem.quantity = valNum;
+      }
       updatedItem.amount = isExcluded
         ? Math.round((updatedItem.rate * updatedItem.quantity) * 100) / 100
         : Math.round((updatedItem.rate * updatedItem.quantity) / (1 + updatedItem.gst / 100));

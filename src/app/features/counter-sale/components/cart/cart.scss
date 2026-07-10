@@ -161,6 +161,14 @@
         font-size: 10px;
         color: #9CA3AF;
         margin-left: 4px;
+
+        &.tax-inclusive {
+          color: #10B981; // Tailwind emerald-500 (green)
+        }
+
+        &.tax-exclusive {
+          color: #EF4444; // Tailwind red-500 (red)
+        }
       }
     }
   }

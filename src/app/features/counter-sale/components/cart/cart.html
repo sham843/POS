@@ -29,14 +29,16 @@
         <div class="item-name">{{ item.details }}</div>
         <div class="item-price">₹{{ item.rate | number:'1.2-2' }}
           @if (item.gst && item.quantity > 0) {
-          <span class="item-gst">(+ {{ item.gst }}% GST: ₹{{ item.gstAmount | number:'1.2-2' }})</span>
+          <span class="item-gst"
+            [ngClass]="{'tax-inclusive': item.isTaxIncluded === true, 'tax-exclusive': item.isTaxIncluded === false}">(+{{
+            item.gst }}% GST: ₹{{ item.gstAmount | number:'1.2-2' }})</span>
           }
         </div>
       </div>
       <div class="item-controls-row">
         <div class="item-qty-control" (click)="counterSaleService.setNumpadMode('quantity')">
-          <button class="qty-btn minus" [disabled]="item.quantity <= 0" (click)="updateQuantity($index, item.quantity, -1)"><lucide-icon
-              [img]="Minus"></lucide-icon></button>
+          <button class="qty-btn minus" [disabled]="item.quantity <= 0"
+            (click)="updateQuantity($index, item.quantity, -1)"><lucide-icon [img]="Minus"></lucide-icon></button>
           <span class="qty-val">{{ (counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode()
             === 'quantity') ? counterSaleService.numpadValue() : (item.quantity | number:'1.0-2') }}
           </span>
