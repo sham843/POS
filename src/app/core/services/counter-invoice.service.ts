@@ -35,6 +35,10 @@ export class CounterInvoiceService {
     return this.apiService.get<any>(`api/v1/invoice/byId?billNo=${billNo}`);
   }
 
+  computeTax(materialId: number, totalPrice: number, custStateCode: Number, orgStateCode: number): Observable<any> {
+    return this.apiService.get<any>(`api/v1/invoice/GetComputeTax?MaterialId=${materialId}&TotalPrice=${totalPrice}&CustStateCode=${custStateCode}&OrgStateCode=${orgStateCode}`);
+  }
+
   async saveInvoice(
     cartItems: CartItem[],
     totals: {
@@ -44,6 +48,9 @@ export class CounterInvoiceService {
       billAmount: number;
       roundOff: number;
       totalPayable: number;
+      totalCgst?: number;
+      totalSgst?: number;
+      totalIgst?: number;
     },
     selectedCustomer: any | null,
     paymentMode: 'cash' | 'online' | 'card',
@@ -139,9 +146,9 @@ export class CounterInvoiceService {
         purchaseOrderId: 0,
         discountAmount: discountAmount,
         gstonAmount: gstonAmount,
-        igst: "0.00",
-        cgst: (item.gstAmount / 2).toFixed(2),
-        sgst: (item.gstAmount / 2).toFixed(2),
+        igst: (item.dynamicTaxes?.find(t => t.componentName.includes('IGST'))?.taxAmount || 0).toFixed(2),
+        cgst: (item.dynamicTaxes?.find(t => t.componentName.includes('CGST'))?.taxAmount || (item.gstAmount / 2)).toFixed(2),
+        sgst: (item.dynamicTaxes?.find(t => t.componentName.includes('SGST'))?.taxAmount || (item.gstAmount / 2)).toFixed(2),
         subTotal: totals.totalPayable.toFixed(2),
         unitId: unitId,
         serverId: 0,
@@ -192,9 +199,9 @@ export class CounterInvoiceService {
       chalanNo: 0,
       invoiceNo: isUpdate ? (existingInvoiceHeader?.invoiceNo ?? "") : "",
       fYearId: 0,
-      igst: 0,
-      cgst: (totals.totalGst / 2).toFixed(2),
-      sgst: (totals.totalGst / 2).toFixed(2),
+      igst: (totals.totalIgst || 0).toFixed(2),
+      cgst: (totals.totalCgst || (totals.totalGst / 2)).toFixed(2),
+      sgst: (totals.totalSgst || (totals.totalGst / 2)).toFixed(2),
       stateFlag: 1,
       isPaymentReceived: isPaymentReceived,
       isPrint: false, // Managed programmatically in print receipt
@@ -260,6 +267,9 @@ export class CounterInvoiceService {
       billAmount: number;
       roundOff: number;
       totalPayable: number;
+      totalCgst?: number;
+      totalSgst?: number;
+      totalIgst?: number;
     }
   ) {
     const userDetails = this.Userdetails;
@@ -290,9 +300,9 @@ export class CounterInvoiceService {
         subTotal: totals.subTotal.toFixed(2),
         discountPercent: '',
         discount: totals.totalDiscount.toFixed(2),
-        sgst: (totals.totalGst / 2).toFixed(2),
-        cgst: (totals.totalGst / 2).toFixed(2),
-        igst: '0.00',
+        sgst: (totals.totalSgst || (totals.totalGst / 2)).toFixed(2),
+        cgst: (totals.totalCgst || (totals.totalGst / 2)).toFixed(2),
+        igst: (totals.totalIgst || 0).toFixed(2),
         billAmount: totals.billAmount.toFixed(2),
         roundOff: totals.roundOff.toFixed(2),
         totalPayable: totals.totalPayable.toFixed(2)

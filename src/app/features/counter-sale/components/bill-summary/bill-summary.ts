@@ -18,6 +18,9 @@ export class BillSummary {
   totalDiscount = this.counterSaleService.totalDiscount;
   taxableAmount = this.counterSaleService.taxableAmount;
   totalGst = this.counterSaleService.totalGst;
+  totalCgst = this.counterSaleService.totalCgst;
+  totalSgst = this.counterSaleService.totalSgst;
+  totalIgst = this.counterSaleService.totalIgst;
   billAmount = this.counterSaleService.billAmount;
   roundOff = this.counterSaleService.roundOff;
   totalPayable = this.counterSaleService.totalPayable;

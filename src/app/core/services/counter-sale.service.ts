@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, groupBy, mergeMap } from 'rxjs/operators';
 import { NotificationService } from './notification.service';
 import { DbService } from './db.service';
 import { SessionService } from './session.service';
@@ -9,6 +9,7 @@ import { CounterNumpadService } from './counter-numpad.service';
 
 export interface Product {
   id?: string | number;
+  productId?: string | number;
   productCode?: string;
   code?: string | number;
   materialCode?: string;
@@ -33,18 +34,28 @@ export interface Product {
   [key: string]: any;
 }
 
+export interface DynamicTax {
+  id: number;
+  componentName: string;
+  taxAmount: number;
+  taxPercentage: number;
+}
+
 export interface CartItem {
   product: Product;
   details: string;
   quantity: number;
   rate: number;
   discount: number;
+  discountRupee?: number;
   amount: number;
   netAmount: number;
   gst: number;
   gstAmount: number;
   total: number;
   unit?: string;
+  isTaxIncluded?: boolean;
+  dynamicTaxes?: DynamicTax[];
 }
 
 export interface BillState {
@@ -134,12 +145,16 @@ export class CounterSaleService {
   totalDiscount = computed(() => this.cartItems().reduce((acc, item) => acc + (item.amount * item.discount / 100), 0));
   taxableAmount = computed(() => this.subTotal() - this.totalDiscount());
   totalGst = computed(() => this.cartItems().reduce((acc, item) => acc + item.gstAmount, 0));
+  totalCgst = computed(() => this.cartItems().reduce((acc, item) => acc + (item.dynamicTaxes?.find(t => t.componentName.includes('CGST'))?.taxAmount || (item.gstAmount / 2)), 0));
+  totalSgst = computed(() => this.cartItems().reduce((acc, item) => acc + (item.dynamicTaxes?.find(t => t.componentName.includes('SGST'))?.taxAmount || (item.gstAmount / 2)), 0));
+  totalIgst = computed(() => this.cartItems().reduce((acc, item) => acc + (item.dynamicTaxes?.find(t => t.componentName.includes('IGST'))?.taxAmount || 0), 0));
   billAmount = computed(() => this.taxableAmount() + this.totalGst());
   total = computed(() => this.cartItems().reduce((acc, item) => acc + item.total, 0));
   roundOff = computed(() => Math.ceil(this.billAmount()) - this.billAmount());
   totalPayable = computed(() => Math.ceil(this.billAmount()));
 
   private searchSubject = new Subject<string>();
+  private taxSyncSubject = new Subject<{ billId: number, idx: number, item: CartItem, custStateCode: number, orgStateCode: number }>();
 
   constructor() {
     this.bills.set([this.createEmptyBill(1)]);
@@ -148,6 +163,64 @@ export class CounterSaleService {
       distinctUntilChanged()
     ).subscribe(query => {
       this.searchQuery.set(query);
+    });
+
+    this.taxSyncSubject.pipe(
+      groupBy(req => `${req.billId}-${req.idx}`),
+      mergeMap(group => group.pipe(
+        debounceTime(300),
+        switchMap(async req => {
+          const materialId = req.item.product.id || 0;
+          let totalPrice = 0;
+
+          totalPrice = (req.item.quantity * req.item.rate) - (req.item.discountRupee || 0);
+
+          if (this.numpadMode() === 'amount') {
+            totalPrice = req.item.total || req.item.amount;
+          }
+
+          try {
+            const res = await this.counterInvoiceService.computeTax(
+              Number(materialId),
+              totalPrice,
+              req.custStateCode,
+              req.orgStateCode
+            ).toPromise();
+            return { req, res };
+          } catch (e) {
+            console.error('Tax API failed', e);
+            return { req, res: null };
+          }
+        })
+      ))
+    ).subscribe(({ req, res }) => {
+      if (!res) return;
+      const data = res.data || res;
+
+      const bills = this.bills();
+      const billIdx = bills.findIndex(b => b.id === req.billId);
+      if (billIdx === -1) return;
+
+      const bill = bills[billIdx];
+      if (req.idx >= bill.cartItems.length) return;
+
+      const item = { ...bill.cartItems[req.idx] };
+      if ((item.product.id || item.product.code) !== (req.item.product.id || req.item.product.code)) return;
+
+      item.netAmount = data.taxableAmount ?? item.netAmount;
+      item.total = data.afterTaxTotal ?? item.total;
+      item.isTaxIncluded = data.isTaxIncluded ?? item.isTaxIncluded;
+
+      if (data.dynamicTaxes && Array.isArray(data.dynamicTaxes)) {
+        item.dynamicTaxes = data.dynamicTaxes;
+        item.gstAmount = data.dynamicTaxes.reduce((sum: number, t: any) => sum + (t.taxAmount || 0), 0);
+        item.gst = data.dynamicTaxes.reduce((sum: number, t: any) => sum + (t.taxPercentage || 0), 0);
+      }
+
+      const updatedCartItems = [...bill.cartItems];
+      updatedCartItems[req.idx] = item;
+
+      this.bills.update(allBills => allBills.map(b => b.id === req.billId ? { ...b, cartItems: updatedCartItems } : b));
     });
   }
 
@@ -273,7 +346,7 @@ export class CounterSaleService {
 
   handleNumpadInput(val: string) {
     const idx = this.selectedItemIndex();
-    
+
     // If no cart item is selected, route numpad input to the search bar
     if (idx === null || idx < 0 || idx >= this.cartItems().length) {
       let q = this.searchQuery();
@@ -336,6 +409,23 @@ export class CounterSaleService {
 
     items[idx] = updatedItem;
     this.updateActiveBill({ cartItems: items });
+
+    // Sync tax with API
+    this.syncItemTaxAsync(idx, updatedItem);
+  }
+
+  private syncItemTaxAsync(idx: number, item: CartItem) {
+    if (!item.quantity && !item.amount) return;
+
+    const custStateCode = this.selectedCustomer()?.stateCode || 27;
+    const orgStateCode = this.Userdetails?.stateCode || 27;
+    this.taxSyncSubject.next({
+      billId: this.activeBillId(),
+      idx,
+      item,
+      custStateCode,
+      orgStateCode
+    });
   }
 
   addToCart(product: Product) {
@@ -359,6 +449,7 @@ export class CounterSaleService {
       items.push(nextItem);
       this.updateActiveBill({ cartItems: items });
       this.selectItem(items.length - 1);
+      this.syncItemTaxAsync(items.length - 1, nextItem);
     } else {
       const rate = product.salePrice || product.mrp || product.rate || product.price || product.saleRate || 0;
       const gst = product.gst || product.taxPercentage || 0;
@@ -380,6 +471,7 @@ export class CounterSaleService {
       items.push(calculatedItem);
       this.updateActiveBill({ cartItems: items });
       this.selectItem(items.length - 1);
+      this.syncItemTaxAsync(items.length - 1, calculatedItem);
     }
   }
 
@@ -389,8 +481,10 @@ export class CounterSaleService {
       return;
     }
     const items = [...this.cartItems()];
-    items[index] = this.counterNumpadService.updateCartItemFromNumpad(items[index], 'quantity', quantity.toString());
+    const updatedItem = this.counterNumpadService.updateCartItemFromNumpad(items[index], 'quantity', quantity.toString());
+    items[index] = updatedItem;
     this.updateActiveBill({ cartItems: items });
+    this.syncItemTaxAsync(index, updatedItem);
 
     if (this.selectedItemIndex() === index) {
       this.syncNumpadFromCart();
@@ -403,8 +497,10 @@ export class CounterSaleService {
       this.syncNumpadFromCart();
       return;
     }
-    items[index] = this.counterNumpadService.updateCartItemFromNumpad(items[index], 'amount', amount.toString());
+    const updatedItem = this.counterNumpadService.updateCartItemFromNumpad(items[index], 'amount', amount.toString());
+    items[index] = updatedItem;
     this.updateActiveBill({ cartItems: items });
+    this.syncItemTaxAsync(index, updatedItem);
 
     if (this.selectedItemIndex() === index) {
       this.syncNumpadFromCart();
@@ -413,8 +509,10 @@ export class CounterSaleService {
 
   updateDiscount(index: number, discount: number) {
     const items = [...this.cartItems()];
-    items[index] = this.counterNumpadService.updateCartItemFromNumpad(items[index], 'discount', discount.toString());
+    const updatedItem = this.counterNumpadService.updateCartItemFromNumpad(items[index], 'discount', discount.toString());
+    items[index] = updatedItem;
     this.updateActiveBill({ cartItems: items });
+    this.syncItemTaxAsync(index, updatedItem);
 
     if (this.selectedItemIndex() === index) {
       this.syncNumpadFromCart();
@@ -691,7 +789,10 @@ export class CounterSaleService {
       totalGst: this.totalGst(),
       billAmount: this.billAmount(),
       roundOff: this.roundOff(),
-      totalPayable: amountPaid
+      totalPayable: amountPaid,
+      totalCgst: this.totalCgst(),
+      totalSgst: this.totalSgst(),
+      totalIgst: this.totalIgst()
     };
 
     let modeString = "Cash";

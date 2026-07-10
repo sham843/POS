@@ -18,16 +18,16 @@
 
     <div class="summary-row">
       <span class="label">SGST :</span>
-      <span class="value">₹ {{ (totalGst() / 2) | number:'1.2-2' }}</span>
+      <span class="value">₹ {{ totalSgst() | number:'1.2-2' }}</span>
     </div>
 
     <div class="summary-row">
       <span class="label">CGST :</span>
-      <span class="value">₹ {{ (totalGst() / 2) | number:'1.2-2' }}</span>
+      <span class="value">₹ {{ totalCgst() | number:'1.2-2' }}</span>
     </div>
     <div class="summary-row">
       <span class="label">IGST :</span>
-      <span class="value">₹ 0</span>
+      <span class="value">₹ {{ totalIgst() | number:'1.2-2' }}</span>
     </div>
 
     <div class="summary-row fw-bold" style="border-top: 1px dashed #E5E7EB; padding-top: 8px; margin-top: 4px;">
