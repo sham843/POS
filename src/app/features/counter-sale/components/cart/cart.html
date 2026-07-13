@@ -50,7 +50,7 @@
               [img]="Plus"></lucide-icon></button>
         </div>
         <input type="text" inputmode="decimal" placeholder="Amt" class="tiny-input amt-input"
-          [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'amount') ? counterSaleService.numpadValue() : item.netAmount"
+          [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'amount') ? counterSaleService.numpadValue() : item.amount"
           (input)="restrictDecimals($event)"
           (change)="onAmountChange($index, $event)" (focus)="counterSaleService.setNumpadMode('amount')"
           (click)="counterSaleService.setNumpadMode('amount')" [readonly]="item.product.mensurationUnit === 'Nos'" />
