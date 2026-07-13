@@ -11,6 +11,47 @@
   padding: 16px;
   border-bottom: 1px solid #E5E7EB;
 
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .order-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-right: 12px;
+
+      .order-id {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 13px;
+        font-weight: 600;
+        color: #0052cc;
+        background-color: #eff6ff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        border: 1px solid #bfdbfe;
+        white-space: nowrap;
+      }
+
+      .order-date {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #4b5563;
+        white-space: nowrap;
+
+        lucide-icon {
+          width: 14px;
+          height: 14px;
+          color: #0052cc;
+        }
+      }
+    }
+  }
+
   .cart-title {
     display: flex;
     align-items: baseline;

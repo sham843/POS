@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, ChangeDetectionStrategy, effect, ElementRef } from '@angular/core';
-import { LucideAngularModule, Trash2, Package, Minus, Plus } from 'lucide-angular';
+import { LucideAngularModule, Trash2, Package, Minus, Plus, Calendar } from 'lucide-angular';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
@@ -37,6 +37,15 @@ export class Cart {
   notificationService = inject(NotificationService);
   private el = inject(ElementRef);
 
+  loadedOrder = this.counterSaleService.loadedOrder;
+
+  get loadedOrderDate(): string {
+    debugger
+    const order = this.loadedOrder();
+    if (!order) return '';
+    return order.orderDate || order.deliveryDate || order.createdDate || order.date || '';
+  }
+
   get discountPlaceholder(): string {
     const posSettingsStr = localStorage.getItem('posSettings');
     let discountType = 'percent';
@@ -44,7 +53,7 @@ export class Cart {
       try {
         const settings = JSON.parse(posSettingsStr);
         if (settings.discountType === 'amount') discountType = 'amount';
-      } catch (e) {}
+      } catch (e) { }
     }
     return discountType === 'amount' ? 'Disc ₹' : 'Disc %';
   }
@@ -81,6 +90,7 @@ export class Cart {
   readonly Package = Package;
   readonly Minus = Minus;
   readonly Plus = Plus;
+  readonly Calendar = Calendar;
 
   trackByIdx(index: number, _item: any): number {
     return index;
@@ -94,7 +104,7 @@ export class Cart {
     const item = this.counterSaleService.cartItems()[index];
     const originalVal = parseFloat(event.target.value) || 0;
     let val = originalVal;
-    
+
     if (item?.product?.mensurationUnit === 'Nos') {
       val = Math.round(val);
       event.target.value = val.toString();
@@ -118,7 +128,7 @@ export class Cart {
       try {
         const settings = JSON.parse(posSettingsStr);
         if (settings.discountType === 'amount') discountType = 'amount';
-      } catch (e) {}
+      } catch (e) { }
     }
 
     if (discountType !== 'amount' && val > environment.maxDiscount) {

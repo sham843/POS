@@ -68,6 +68,7 @@ export interface BillState {
   numpadValue: string;
   numpadShouldReplace: boolean;
   numpadHasQuickWeight: boolean;
+  loadedOrder?: any | null;
 }
 
 @Injectable({
@@ -129,6 +130,7 @@ export class CounterSaleService {
   activeBill = computed(() => this.bills().find(b => b.id === this.activeBillId()) || this.bills()[0]);
 
   cartItems = computed(() => this.activeBill()?.cartItems || []);
+  loadedOrder = computed(() => this.activeBill()?.loadedOrder || null);
   selectedItemIndex = computed(() => this.activeBill()?.selectedItemIndex ?? null);
   numpadMode = computed(() => this.activeBill()?.numpadMode || 'quantity');
   numpadValue = computed(() => this.activeBill()?.numpadValue || '');
@@ -245,7 +247,8 @@ export class CounterSaleService {
       numpadMode: 'quantity',
       numpadValue: '',
       numpadShouldReplace: false,
-      numpadHasQuickWeight: false
+      numpadHasQuickWeight: false,
+      loadedOrder: null
     };
   }
 
@@ -588,7 +591,8 @@ export class CounterSaleService {
       numpadMode: 'quantity',
       numpadValue: '',
       numpadShouldReplace: false,
-      numpadHasQuickWeight: false
+      numpadHasQuickWeight: false,
+      loadedOrder: null
     });
   }
 
@@ -802,7 +806,8 @@ export class CounterSaleService {
       numpadMode: 'quantity',
       numpadValue: cartItems.length > 0 ? cartItems[0].quantity.toString() : '',
       numpadShouldReplace: true,
-      numpadHasQuickWeight: false
+      numpadHasQuickWeight: false,
+      loadedOrder: order
     });
 
     if (selectedCustomer) {

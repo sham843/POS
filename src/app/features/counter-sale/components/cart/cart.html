@@ -5,13 +5,25 @@
       @if (dataSource().length > 0) {
       <span class="item-count">({{ dataSource().length }} {{ dataSource().length === 1 ? 'Item' : 'Items' }})</span>
       }
-
     </div>
-    @if (dataSource().length > 0) {
-    <button class="clear-cart-btn" (click)="clearCart()">
-      <lucide-icon [img]="Trash2"></lucide-icon> Clear Cart
-    </button>
-    }
+
+    <div class="header-right">
+      @if (loadedOrder()) {
+      <div class="order-badge">
+        <span class="order-id">#{{ loadedOrder().orderId || loadedOrder().orderNo || loadedOrder().id }}</span>
+        <span class="order-date">
+          <lucide-icon [img]="Calendar"></lucide-icon>
+          {{ loadedOrderDate }}
+        </span>
+      </div>
+      }
+
+      @if (dataSource().length > 0) {
+      <button class="clear-cart-btn" (click)="clearCart()">
+        <lucide-icon [img]="Trash2"></lucide-icon> Clear Cart
+      </button>
+      }
+    </div>
   </div>
 
   <div class="cart-items-list">
@@ -26,7 +38,8 @@
         <lucide-icon [img]="Package" class="item-icon-milk"></lucide-icon>
       </div>
       <div class="item-details">
-        <div class="item-name">{{ item.details }} ({{ item.product.mensurationUnit || item.product.unitName || item.unit || '' }})</div>
+        <div class="item-name">{{ item.details }} ({{ item.product.mensurationUnit || item.product.unitName || item.unit
+          || '' }})</div>
         <div class="item-price">₹{{ item.rate | number:'1.2-2' }}
           @if (item.gst && item.quantity > 0) {
           <span class="item-gst"
@@ -41,8 +54,7 @@
             (click)="updateQuantity($index, item.quantity, -1)"><lucide-icon [img]="Minus"></lucide-icon></button>
           <input type="text" inputmode="decimal" class="qty-val-input"
             [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'quantity') ? counterSaleService.numpadValue() : item.quantity"
-            (input)="restrictDecimals($event)"
-            (change)="onQuantityChange($index, $event)"
+            (input)="restrictDecimals($event)" (change)="onQuantityChange($index, $event)"
             (focus)="counterSaleService.setNumpadMode('quantity')"
             (click)="counterSaleService.setNumpadMode('quantity'); $event.stopPropagation()"
             style="width: 40px; text-align: center; border: none; outline: none; background: transparent; font-weight: 500; font-size: 12px;" />
@@ -51,13 +63,13 @@
         </div>
         <input type="text" inputmode="decimal" placeholder="Amt" class="tiny-input amt-input"
           [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'amount') ? counterSaleService.numpadValue() : item.amount"
-          (input)="restrictDecimals($event)"
-          (change)="onAmountChange($index, $event)" (focus)="counterSaleService.setNumpadMode('amount')"
-          (click)="counterSaleService.setNumpadMode('amount')" [readonly]="item.product.mensurationUnit === 'Nos'" />
+          (input)="restrictDecimals($event)" (change)="onAmountChange($index, $event)"
+          (focus)="counterSaleService.setNumpadMode('amount')" (click)="counterSaleService.setNumpadMode('amount')"
+          [readonly]="item.product.mensurationUnit === 'Nos'" />
         <input type="text" inputmode="decimal" [placeholder]="discountPlaceholder" class="tiny-input disc-input"
           [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'discount') ? counterSaleService.numpadValue() : ((item.discount > 0 ? item.discount : (item.discountRupee || 0)) > 0 ? (item.discount > 0 ? item.discount : (item.discountRupee || 0)) : '')"
-          (input)="restrictDecimals($event)"
-          (change)="onDiscountChange($index, $event)" (focus)="counterSaleService.setNumpadMode('discount')"
+          (input)="restrictDecimals($event)" (change)="onDiscountChange($index, $event)"
+          (focus)="counterSaleService.setNumpadMode('discount')"
           (click)="counterSaleService.setNumpadMode('discount')" />
       </div>
       <div class="item-total">₹{{ item.total | number:'1.2-2' }}</div>
