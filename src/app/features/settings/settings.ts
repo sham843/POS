@@ -47,10 +47,32 @@ export class Settings implements OnInit {
   discountType: string = '';
 
   async ngOnInit() {
-    // Load lists from IndexedDB
-    this.companyLedgerList = await this.dbService.companyLedgerList.toArray();
-    this.saleLedgerList = await this.dbService.saleLedgerList.toArray();
-    this.cashlist = await this.dbService.bankAccounts.toArray();
+    let unitId: any = 0;
+    let organizationId: any = 0;
+    const userStr = localStorage.getItem('UserDetails');
+    if (userStr) {
+      try {
+        const userDetails = JSON.parse(userStr);
+        unitId = userDetails.unitid || userDetails.unitId || 0;
+        organizationId = userDetails.organizationId || 0;
+      } catch (e) { }
+    }
+
+    try {
+      const [compRes, saleRes, cashRes, godownRes] = await Promise.all([
+        firstValueFrom(this.apiService.get<any>(`api/v1/customer/company-ledger?organizationId=${organizationId}&unitId=${unitId}`)),
+        firstValueFrom(this.apiService.get<any>(`api/v1/customer/sale-ledger?organizationId=${organizationId}&unitId=${unitId}`)),
+        firstValueFrom(this.apiService.get<any>(`api/v1/customer/cash-ledger?organizationId=${organizationId}&unitId=${unitId}`)),
+        firstValueFrom(this.apiService.get<any>(`api/v1/customer/godown-list?unitId=${unitId}`))
+      ]);
+
+      this.companyLedgerList = Array.isArray(compRes) ? compRes : (compRes?.data || []);
+      this.saleLedgerList = Array.isArray(saleRes) ? saleRes : (saleRes?.data || []);
+      this.cashlist = Array.isArray(cashRes) ? cashRes : (cashRes?.data || []);
+      this.godownlist = Array.isArray(godownRes) ? godownRes : (godownRes?.data || []);
+    } catch (e) {
+      console.error('Failed to load settings dropdowns', e);
+    }
 
     const savedSettingsStr = localStorage.getItem('posSettings');
     let savedSettings: any = null;
@@ -76,23 +98,10 @@ export class Settings implements OnInit {
       this.selectedCashAccount = this.cashlist.find(x => x.id == savedSettings.cashAccount.id) || null;
     }
 
-    try {
-      let unitId: any = 0;
-      const userStr = localStorage.getItem('UserDetails');
-      if (userStr) {
-        const userDetails = JSON.parse(userStr);
-        if (userDetails.unitid) unitId = userDetails.unitid;
-      }
-      const godownRes = await firstValueFrom(this.apiService.get<any>(`api/v1/customer/godown-list?unitId=${unitId}`));
-      this.godownlist = Array.isArray(godownRes) ? godownRes : (godownRes?.data || []);
-
-      if (savedSettings?.godown?.id) {
-        this.selectedGodown = this.godownlist.find((g: any) => g.id == savedSettings.godown.id) || null;
-      }
-
-    } catch (e) {
-      console.error('Failed to load godown list', e);
+    if (savedSettings?.godown?.id) {
+      this.selectedGodown = this.godownlist.find((g: any) => g.id == savedSettings.godown.id) || null;
     }
+
     this.cdr.markForCheck();
   }
 
