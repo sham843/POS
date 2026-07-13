@@ -91,6 +91,10 @@ export class CustomerDrawer implements OnInit, OnDestroy {
     return name[0].toUpperCase();
   }
 
+  getCustomerBalance(c: any): number {
+    return c.balanceAtDairy || c.balance || 0;
+  }
+
   selectCustomer(c: any) {
     const current = this.selectedCustomer();
     if (current?.id === c.id) {

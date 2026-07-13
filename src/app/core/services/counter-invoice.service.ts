@@ -7,6 +7,14 @@ import { ElectronService } from './electron.service';
 import { CartItem } from './counter-sale.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+const DEFAULT_CONSTANTS = {
+  VOUCHER_TYPE_SALE: 1,
+  SERVER_ID: 0,
+  F_YEAR_ID: 0,
+  IS_DELETED: 0,
+  IS_TALLY_EXPORT: 0
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,7 +30,9 @@ export class CounterInvoiceService {
     if (userStr) {
       try {
         return JSON.parse(userStr);
-      } catch (e) { }
+      } catch (e) {
+        console.error('Failed to parse UserDetails from localStorage:', e);
+      }
     }
     return { id: 0 };
   }
@@ -41,6 +51,12 @@ export class CounterInvoiceService {
 
   getRateList(organizationId: number, customerId: number, materialId: number): Observable<any> {
     return this.apiService.get<any>(`api/v1/pricelist/GetRateList?OrganizationId=${organizationId}&CustomerId=${customerId}&MaterialId=${materialId}`);
+  }
+
+  private getParticularsText(mode: string): string {
+    if (mode === 'Credit' || mode === 'Coupon') return 'Credit/Coupon Payment';
+    if (mode === 'Online') return 'Bank Payment';
+    return `${mode} Entry`;
   }
 
   async saveInvoice(
@@ -227,26 +243,26 @@ export class CounterInvoiceService {
         transactionType: "",
         transactionId: isUpdate ? (existingInvoiceHeader?.invoiceId ?? 0) : 0,
         transactionNo: "",
-        narration: modeString == 'Credit' || modeString == 'Coupon' ? "Credit/Coupon Payment" : modeString == 'Online' ? "Bank Payment" : modeString + " Entry",
+        narration: this.getParticularsText(modeString),
         referenceId: 0,
         groupId: 0,
         chequeDate: now,
-        isTallyExport: 0,
+        isTallyExport: DEFAULT_CONSTANTS.IS_TALLY_EXPORT,
         tallyReferenceId: 0,
-        particularsText: modeString == 'Credit' || modeString == 'Coupon' ? "Credit/Coupon Payment" : modeString == 'Online' ? "Bank Payment" : modeString + " Entry",
-        voucherTypeId: 1,
+        particularsText: this.getParticularsText(modeString),
+        voucherTypeId: DEFAULT_CONSTANTS.VOUCHER_TYPE_SALE,
         voucherSubTypeId: 0,
         voucherSubType: "",
-        fYearId: 0,
+        fYearId: DEFAULT_CONSTANTS.F_YEAR_ID,
         unitId: unitId,
         organizationId: organizationId,
-        serverId: 0,
+        serverId: DEFAULT_CONSTANTS.SERVER_ID,
         createdBy: userId,
         createdDate: now,
         modifiedBy: userId,
         isOpeningBalance: 0,
         showDate: now,
-        isDeleted: 0,
+        isDeleted: DEFAULT_CONSTANTS.IS_DELETED,
         billNumber: isUpdate ? (existingInvoiceHeader?.invoiceNo ?? "") : "",
         fBillId: 0,
         selectedPartyName: customer ? (customer.customerName || customer.name) : 'Daily Cash Counter Party',

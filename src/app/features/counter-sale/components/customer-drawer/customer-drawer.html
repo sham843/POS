@@ -69,9 +69,9 @@
             <th mat-header-cell *matHeaderCellDef class="col-balance"> Balance </th>
             <td mat-cell *matCellDef="let row" class="col-balance">
               <span class="balance-badge"
-                    [class.balance-due]="(row.balanceAtDairy || row.balance || 0) > 0"
-                    [class.balance-zero]="(row.balanceAtDairy || row.balance || 0) === 0">
-                ₹{{ (row.balanceAtDairy || row.balance || 0) | number:'1.0-2' }}
+                    [class.balance-due]="getCustomerBalance(row) > 0"
+                    [class.balance-zero]="getCustomerBalance(row) === 0">
+                ₹{{ getCustomerBalance(row) | number:'1.0-2' }}
               </span>
             </td>
           </ng-container>
