@@ -372,10 +372,13 @@ export class CounterSaleService {
 
     const item = this.cartItems()[idx];
     
-    // Do not allow decimal point in quantity if product mensurationType is 'Count'
-    if (val === '.' && this.numpadMode() === 'quantity') {
+    // Do not allow decimal point or quick weights in quantity if product mensurationType is 'Count' or mensurationUnit is 'Nos'
+    if (val.startsWith('.') && this.numpadMode() === 'quantity') {
       const mensurationType = item.product?.['mensurationType'];
-      if (mensurationType && String(mensurationType).toLowerCase() === 'count') {
+      const mensurationUnit = item.product?.['mensurationUnit'];
+      if ((mensurationType && String(mensurationType).toLowerCase() === 'count') || 
+          (mensurationUnit && String(mensurationUnit) === 'Nos')) {
+        this.notificationService.showError(`Decimal values are not allowed for ${mensurationUnit || 'Count'}`);
         return;
       }
     }

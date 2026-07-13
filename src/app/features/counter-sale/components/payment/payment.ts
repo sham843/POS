@@ -41,6 +41,21 @@ export class Payment {
     return this.counterSaleService.numpadValue;
   }
 
+  get isDecimalAllowed() {
+    const idx = this.counterSaleService.selectedItemIndex();
+    if (idx === null || idx < 0) return true;
+    const item = this.counterSaleService.cartItems()[idx];
+    if (!item) return true;
+    
+    const mensurationType = item.product?.['mensurationType'];
+    const mensurationUnit = item.product?.['mensurationUnit'];
+    if ((mensurationType && String(mensurationType).toLowerCase() === 'count') || 
+        (mensurationUnit && String(mensurationUnit) === 'Nos')) {
+      return false;
+    }
+    return true;
+  }
+
   setMode(mode: 'quantity' | 'amount' | 'discount') {
     this.counterSaleService.setNumpadMode(mode);
   }

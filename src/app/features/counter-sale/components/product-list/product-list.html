@@ -70,7 +70,7 @@
         </div>
       </div>
       <div class="prod-info">
-        <div class="prod-name">{{ p.productName || p.materialName || p.name }}</div>
+        <div class="prod-name">{{ p.productName || p.materialName || p.name }} ({{ p.mensurationUnit || p.unitName || p.unit || '' }})</div>
         <div class="prod-price-row">
           <div class="prod-price">₹{{ (p.salePrice || p.mrp || p.rate || p.price || p.saleRate || 0) | number:'1.2-2'
             }}

@@ -78,6 +78,24 @@ export class Cart {
     this.counterSaleService.updateQuantity(index, currentQty + change);
   }
 
+  onQuantityChange(index: number, event: any) {
+    const item = this.counterSaleService.cartItems()[index];
+    const originalVal = parseFloat(event.target.value) || 0;
+    let val = originalVal;
+    
+    if (item?.product?.mensurationUnit === 'Nos') {
+      val = Math.round(val);
+      event.target.value = val.toString();
+      if (val !== originalVal) {
+        this.notificationService.showError(`Decimal values are not allowed for 'Nos'. Quantity changed to ${val}.`);
+      }
+    }
+
+    if (val >= 0) {
+      this.counterSaleService.updateQuantity(index, val);
+    }
+  }
+
   onDiscountChange(index: number, event: any) {
     let val = parseFloat(event.target.value) || 0;
     val = parseFloat(val.toFixed(2));
@@ -107,6 +125,15 @@ export class Cart {
     }
     event.target.value = val.toString();
     this.counterSaleService.updateAmount(index, val);
+  }
+  restrictDecimals(event: any) {
+    let val = event.target.value;
+    if (val && val.includes('.')) {
+      const parts = val.split('.');
+      if (parts[1] && parts[1].length > 2) {
+        event.target.value = parts[0] + '.' + parts[1].substring(0, 2);
+      }
+    }
   }
 
   removeItem(index: number) {

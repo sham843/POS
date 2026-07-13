@@ -8,10 +8,10 @@
     </div>
 
     <div class="quick-weights">
-      <button class="qw-btn" (click)="handleInput('.125')" [disabled]="mode() !== 'quantity'">0.125</button>
-      <button class="qw-btn" (click)="handleInput('.250')" [disabled]="mode() !== 'quantity'">0.250</button>
-      <button class="qw-btn" (click)="handleInput('.500')" [disabled]="mode() !== 'quantity'">0.500</button>
-      <button class="qw-btn" (click)="handleInput('.750')" [disabled]="mode() !== 'quantity'">0.750</button>
+      <button class="qw-btn" (click)="handleInput('.125')" [disabled]="mode() !== 'quantity' || !isDecimalAllowed">0.125</button>
+      <button class="qw-btn" (click)="handleInput('.250')" [disabled]="mode() !== 'quantity' || !isDecimalAllowed">0.250</button>
+      <button class="qw-btn" (click)="handleInput('.500')" [disabled]="mode() !== 'quantity' || !isDecimalAllowed">0.500</button>
+      <button class="qw-btn" (click)="handleInput('.750')" [disabled]="mode() !== 'quantity' || !isDecimalAllowed">0.750</button>
     </div>
 
     <div class="numpad-grid">
@@ -24,7 +24,7 @@
       <button class="num-btn" (click)="handleInput('7')">7</button>
       <button class="num-btn" (click)="handleInput('8')">8</button>
       <button class="num-btn" (click)="handleInput('9')">9</button>
-      <button class="num-btn" (click)="handleInput('.')">.</button>
+      <button class="num-btn dot" (click)="handleInput('.')" [disabled]="mode() === 'quantity' && !isDecimalAllowed">.</button>
       <button class="num-btn" (click)="handleInput('0')">0</button>
       <button class="num-btn backspace" (click)="handleInput('backspace')"><lucide-icon [img]="Delete"></lucide-icon></button>
     </div>

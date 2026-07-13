@@ -26,7 +26,7 @@
         <lucide-icon [img]="Package" class="item-icon-milk"></lucide-icon>
       </div>
       <div class="item-details">
-        <div class="item-name">{{ item.details }}</div>
+        <div class="item-name">{{ item.details }} ({{ item.product.mensurationUnit || item.product.unitName || item.unit || '' }})</div>
         <div class="item-price">₹{{ item.rate | number:'1.2-2' }}
           @if (item.gst && item.quantity > 0) {
           <span class="item-gst"
@@ -39,18 +39,24 @@
         <div class="item-qty-control" (click)="counterSaleService.setNumpadMode('quantity')">
           <button class="qty-btn minus" [disabled]="item.quantity <= 0"
             (click)="updateQuantity($index, item.quantity, -1)"><lucide-icon [img]="Minus"></lucide-icon></button>
-          <span class="qty-val">{{ (counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode()
-            === 'quantity') ? counterSaleService.numpadValue() : (item.quantity | number:'1.0-2') }}
-          </span>
+          <input type="text" inputmode="decimal" class="qty-val-input"
+            [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'quantity') ? counterSaleService.numpadValue() : item.quantity"
+            (input)="restrictDecimals($event)"
+            (change)="onQuantityChange($index, $event)"
+            (focus)="counterSaleService.setNumpadMode('quantity')"
+            (click)="counterSaleService.setNumpadMode('quantity'); $event.stopPropagation()"
+            style="width: 40px; text-align: center; border: none; outline: none; background: transparent; font-weight: 500; font-size: 12px;" />
           <button class="qty-btn plus" (click)="updateQuantity($index, item.quantity, 1)"><lucide-icon
               [img]="Plus"></lucide-icon></button>
         </div>
         <input type="text" inputmode="decimal" placeholder="Amt" class="tiny-input amt-input"
           [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'amount') ? counterSaleService.numpadValue() : item.netAmount"
+          (input)="restrictDecimals($event)"
           (change)="onAmountChange($index, $event)" (focus)="counterSaleService.setNumpadMode('amount')"
           (click)="counterSaleService.setNumpadMode('amount')" [readonly]="item.product.mensurationUnit === 'Nos'" />
         <input type="text" inputmode="decimal" placeholder="Disc %" class="tiny-input disc-input"
           [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'discount') ? counterSaleService.numpadValue() : (item.discount > 0 ? item.discount : '')"
+          (input)="restrictDecimals($event)"
           (change)="onDiscountChange($index, $event)" (focus)="counterSaleService.setNumpadMode('discount')"
           (click)="counterSaleService.setNumpadMode('discount')" />
       </div>
