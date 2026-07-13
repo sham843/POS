@@ -142,8 +142,8 @@ export class CounterSaleService {
 
   // Computed totals for bill summary
   subTotal = computed(() => this.cartItems().reduce((acc, item) => acc + item.amount, 0));
-  totalDiscount = computed(() => this.cartItems().reduce((acc, item) => acc + (item.amount * item.discount / 100), 0));
-  taxableAmount = computed(() => this.subTotal() - this.totalDiscount());
+  taxableAmount = computed(() => this.cartItems().reduce((acc, item) => acc + item.netAmount, 0));
+  totalDiscount = computed(() => this.subTotal() - this.taxableAmount());
   totalGst = computed(() => this.cartItems().reduce((acc, item) => acc + item.gstAmount, 0));
   totalCgst = computed(() => this.cartItems().reduce((acc, item) => acc + (item.dynamicTaxes?.find(t => t.componentName.includes('CGST'))?.taxAmount || (item.gstAmount / 2)), 0));
   totalSgst = computed(() => this.cartItems().reduce((acc, item) => acc + (item.dynamicTaxes?.find(t => t.componentName.includes('SGST'))?.taxAmount || (item.gstAmount / 2)), 0));
