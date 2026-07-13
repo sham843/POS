@@ -282,6 +282,7 @@
 
   .app-btn {
     display: flex;
+    flex-direction: row !important;
     align-items: center;
     justify-content: center;
     gap: 8px;

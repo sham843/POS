@@ -190,7 +190,11 @@ export class CounterSale implements OnInit, OnDestroy {
       numpadShouldReplace: false,
       numpadHasQuickWeight: false
     });
+    this.counterSaleService.updateSearchQuery('');
     this.searchSubject.next('');
+    if (this.searchInput?.nativeElement) {
+      this.searchInput.nativeElement.value = '';
+    }
   }
 
   openAddBalance() {
