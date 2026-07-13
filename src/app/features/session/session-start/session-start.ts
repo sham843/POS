@@ -146,6 +146,8 @@ export class SessionStart {
     this.sessionService.clearSessionId();
     localStorage.removeItem('UserDetails');
     localStorage.removeItem('tk_9xf1BzX');
+    localStorage.removeItem('lastSyncedTime');
+    localStorage.removeItem('app-theme');
     this.router.navigate(['/login']);
   }
 

@@ -352,9 +352,11 @@ export class SessionEnd {
       // Clear IndexedDB
       await this.dbService.clearAllData();
 
-      // Clear all storage
       this.sessionService.clearSessionId();
-      localStorage.clear();
+      localStorage.removeItem('UserDetails');
+      localStorage.removeItem('tk_9xf1BzX');
+      localStorage.removeItem('lastSyncedTime');
+      localStorage.removeItem('app-theme');
       sessionStorage.clear();
 
       // Navigate to login
