@@ -8,7 +8,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule, X, Settings as SettingsIcon, Save as SaveIcon } from 'lucide-angular';
 import { DbService } from '../../core/services/db.service';
 import { ApiService } from '../../core/services/api.service';
-import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-settings',
