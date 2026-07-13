@@ -46,26 +46,6 @@
       </mat-form-field>
     </div>
 
-    <div class="form-group">
-      <label class="field-label">Discount Type <span class="required">*</span></label>
-      <mat-form-field appearance="outline" class="full-width no-subscript">
-        <mat-select [(ngModel)]="discountType" placeholder="Discount Type">
-          <mat-option class="teal small" value="percent">Percentage (%)</mat-option>
-          <!-- <mat-option class="teal small" value="amount">Fixed Amount</mat-option> -->
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <div class="form-group">
-      <label class="field-label">Select Godown <span class="required">*</span></label>
-      <mat-form-field appearance="outline" class="full-width no-subscript">
-        <mat-select [(ngModel)]="selectedGodown" placeholder="Select Godown" [compareWith]="compareById">
-          <mat-option *ngFor="let godown of godownlist" [value]="godown">
-            {{ godown.stockYardName }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
   </div>
 </div>
 

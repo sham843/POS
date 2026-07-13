@@ -38,13 +38,10 @@ export class Settings implements OnInit {
   companyLedgerList: any[] = [];
   saleLedgerList: any[] = [];
   cashlist: any[] = [];
-  godownlist: any[] = []; // Mocked for now until API is available
 
   selectedCompanyLedger: any;
   selectedSaleLedger: any;
   selectedCashAccount: any;
-  selectedGodown: any;
-  discountType: string = '';
 
   async ngOnInit() {
     // Load lists from IndexedDB
@@ -60,10 +57,6 @@ export class Settings implements OnInit {
       } catch (e) { }
     }
 
-    if (savedSettings?.discountType) {
-      this.discountType = savedSettings.discountType;
-    }
-
     if (savedSettings?.companyLedger?.id) {
       this.selectedCompanyLedger = this.companyLedgerList.find(x => x.id == savedSettings.companyLedger.id) || null;
     }
@@ -76,23 +69,6 @@ export class Settings implements OnInit {
       this.selectedCashAccount = this.cashlist.find(x => x.id == savedSettings.cashAccount.id) || null;
     }
 
-    try {
-      let unitId: any = 0;
-      const userStr = localStorage.getItem('UserDetails');
-      if (userStr) {
-        const userDetails = JSON.parse(userStr);
-        if (userDetails.unitid) unitId = userDetails.unitid;
-      }
-      const godownRes = await firstValueFrom(this.apiService.get<any>(`api/v1/customer/godown-list?unitId=${unitId}`));
-      this.godownlist = Array.isArray(godownRes) ? godownRes : (godownRes?.data || []);
-
-      if (savedSettings?.godown?.id) {
-        this.selectedGodown = this.godownlist.find((g: any) => g.id == savedSettings.godown.id) || null;
-      }
-
-    } catch (e) {
-      console.error('Failed to load godown list', e);
-    }
     this.cdr.markForCheck();
   }
 
@@ -100,9 +76,7 @@ export class Settings implements OnInit {
     let obj = {
       companyLedger: this.selectedCompanyLedger ? { id: this.selectedCompanyLedger.id, name: this.selectedCompanyLedger.customerName } : null,
       saleLedger: this.selectedSaleLedger ? { id: this.selectedSaleLedger.id, name: this.selectedSaleLedger.customerName } : null,
-      cashAccount: this.selectedCashAccount ? { id: this.selectedCashAccount.id, name: this.selectedCashAccount.bankName || this.selectedCashAccount.customerName } : null,
-      godown: this.selectedGodown || null,
-      discountType: this.discountType
+      cashAccount: this.selectedCashAccount ? { id: this.selectedCashAccount.id, name: this.selectedCashAccount.bankName || this.selectedCashAccount.customerName } : null
     };
 
     localStorage.setItem('posSettings', JSON.stringify(obj));
