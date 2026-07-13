@@ -902,9 +902,10 @@ export class CounterSaleService {
         `Payment of ₹${amountPaid} received via ${modeString}. Bill No: ${newBillNo}`,
         'Bill Generated Successfully!'
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to generate bill:', err);
-      this.notificationService.showError('Failed to generate bill');
+      const errorMessage = typeof err === 'string' ? err : (err?.message || 'Failed to generate bill');
+      this.notificationService.showError(errorMessage);
     }
   }
 }

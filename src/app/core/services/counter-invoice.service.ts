@@ -100,9 +100,9 @@ export class CounterInvoiceService {
       } catch (e) {}
     }
 
-    if (!savedSettings || !savedSettings.saleLedger || !savedSettings.companyLedger || !savedSettings.cashAccount) {
-      this.snackBar.open("Please configure POS Settings first.", "Close", { duration: 3000 });
-      return Promise.reject("POS Settings are missing");
+    if (!savedSettings || !savedSettings.saleLedger || !savedSettings.companyLedger || !savedSettings.cashAccount || !savedSettings.godown || !savedSettings.discountType) {
+      this.snackBar.open("Please complete POS Settings first, then save the form.", "Close", { duration: 3000 });
+      return Promise.reject("Please complete POS Settings first, then save the form.");
     }
 
     const customer = selectedCustomer;
