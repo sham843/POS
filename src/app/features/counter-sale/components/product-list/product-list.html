@@ -64,8 +64,8 @@
         [class.active]="isInCart(p)"></lucide-icon>
       <div class="prod-image">
         <div class="img-placeholder">
-          <img [src]="p.image || p.imageUrl || 'https://placehold.co/100x100?text=No+Image'"
-            onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=No+Image'"
+          <img [ngSrc]="p.image || p.imageUrl || 'https://placehold.co/100x100?text=No+Image'"
+            width="100" height="100"
             [alt]="p.productName || p.materialName || p.name">
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule, LogOut, Phone, Wallet, Receipt, Banknote, Calendar, Clock, Wifi, WifiOff, RefreshCw } from 'lucide-angular';
@@ -15,7 +15,7 @@ import { SessionService } from '../../../core/services/session.service';
 
 @Component({
   selector: 'app-session-start',
-  imports: [CommonModule, MatButtonModule, LucideAngularModule, TranslatePipe, NetworkStatusComponent, UpdateConfirmModalComponent],
+  imports: [CommonModule, NgOptimizedImage, MatButtonModule, LucideAngularModule, TranslatePipe, NetworkStatusComponent, UpdateConfirmModalComponent],
   standalone: true,
   templateUrl: './session-start.html',
   styleUrl: './session-start.scss',

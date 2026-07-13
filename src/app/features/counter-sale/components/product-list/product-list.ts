@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Component, OnInit, AfterViewInit, inject, signal, computed, ViewChild, ElementRef, HostListener, ChangeDetectionStrategy, effect } from '@angular/core';
 import { LucideAngularModule, Package, Ellipsis, Star, Search, PlusCircle, CheckCircle, ArrowUp } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +17,8 @@ import { CounterSaleService, Product } from '../../../../core/services/counter-s
     MatButtonModule,
     MatMenuModule,
     MatPaginatorModule,
-    EmptyState
+    EmptyState,
+    NgOptimizedImage
   ],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',

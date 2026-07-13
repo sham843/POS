@@ -172,33 +172,51 @@
       <!-- Last 7 Days Sales -->
       <div class="col-md-6 d-flex flex-column" *ngIf="activeView() === 'sales'">
         <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1">
-          <apx-chart [series]="last7DaysChartOptions.series" [chart]="last7DaysChartOptions.chart"
-            [xaxis]="last7DaysChartOptions.xaxis" [yaxis]="last7DaysChartOptions.yaxis"
-            [tooltip]="last7DaysChartOptions.tooltip" [title]="last7DaysChartOptions.title"
-            [colors]="last7DaysChartOptions.colors" [dataLabels]="last7DaysChartOptions.dataLabels"
-            [stroke]="last7DaysChartOptions.stroke" class="w-100 h-100"></apx-chart>
+          @defer (on viewport) {
+            <apx-chart [series]="last7DaysChartOptions.series" [chart]="last7DaysChartOptions.chart"
+              [xaxis]="last7DaysChartOptions.xaxis" [yaxis]="last7DaysChartOptions.yaxis"
+              [tooltip]="last7DaysChartOptions.tooltip" [title]="last7DaysChartOptions.title"
+              [colors]="last7DaysChartOptions.colors" [dataLabels]="last7DaysChartOptions.dataLabels"
+              [stroke]="last7DaysChartOptions.stroke" class="w-100 h-100"></apx-chart>
+          } @placeholder {
+            <div class="d-flex align-items-center justify-content-center w-100 h-100 text-muted" style="min-height: 300px;">
+              Loading chart...
+            </div>
+          }
         </div>
       </div>
 
       <!-- Monthly Sales -->
       <div class="col-md-6 d-flex flex-column" *ngIf="activeView() === 'sales'">
         <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1">
-          <apx-chart [series]="monthlyChartOptions.series" [chart]="monthlyChartOptions.chart"
-            [xaxis]="monthlyChartOptions.xaxis" [yaxis]="monthlyChartOptions.yaxis"
-            [tooltip]="monthlyChartOptions.tooltip" [title]="monthlyChartOptions.title"
-            [colors]="monthlyChartOptions.colors" [dataLabels]="monthlyChartOptions.dataLabels"
-            [plotOptions]="monthlyChartOptions.plotOptions" class="w-100 h-100"></apx-chart>
+          @defer (on viewport) {
+            <apx-chart [series]="monthlyChartOptions.series" [chart]="monthlyChartOptions.chart"
+              [xaxis]="monthlyChartOptions.xaxis" [yaxis]="monthlyChartOptions.yaxis"
+              [tooltip]="monthlyChartOptions.tooltip" [title]="monthlyChartOptions.title"
+              [colors]="monthlyChartOptions.colors" [dataLabels]="monthlyChartOptions.dataLabels"
+              [plotOptions]="monthlyChartOptions.plotOptions" class="w-100 h-100"></apx-chart>
+          } @placeholder {
+            <div class="d-flex align-items-center justify-content-center w-100 h-100 text-muted" style="min-height: 300px;">
+              Loading chart...
+            </div>
+          }
         </div>
       </div>
 
       <!-- Product Category Distribution Chart -->
       <div class="col-md-4 mt-4 mb-5 pb-5 d-flex flex-column gap-3" *ngIf="activeView() === 'products' && categoryWiseSalesHasData()">
         <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1">
-          <apx-chart [series]="categoryWiseSalesChartOptions.series" [chart]="categoryWiseSalesChartOptions.chart"
-            [labels]="categoryWiseSalesChartOptions.labels" [title]="categoryWiseSalesChartOptions.title"
-            [plotOptions]="categoryWiseSalesChartOptions.plotOptions" [colors]="categoryWiseSalesChartOptions.colors"
-            [fill]="categoryWiseSalesChartOptions.fill" [dataLabels]="categoryWiseSalesChartOptions.dataLabels"
-            [tooltip]="categoryWiseSalesChartOptions.tooltip" class="w-100 h-100"></apx-chart>
+          @defer (on viewport) {
+            <apx-chart [series]="categoryWiseSalesChartOptions.series" [chart]="categoryWiseSalesChartOptions.chart"
+              [labels]="categoryWiseSalesChartOptions.labels" [title]="categoryWiseSalesChartOptions.title"
+              [plotOptions]="categoryWiseSalesChartOptions.plotOptions" [colors]="categoryWiseSalesChartOptions.colors"
+              [fill]="categoryWiseSalesChartOptions.fill" [dataLabels]="categoryWiseSalesChartOptions.dataLabels"
+              [tooltip]="categoryWiseSalesChartOptions.tooltip" class="w-100 h-100"></apx-chart>
+          } @placeholder {
+            <div class="d-flex align-items-center justify-content-center w-100 h-100 text-muted" style="min-height: 300px;">
+              Loading chart...
+            </div>
+          }
         </div>
       </div>
       <!-- Product Sales Cards -->
