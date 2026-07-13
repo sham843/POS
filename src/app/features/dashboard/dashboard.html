@@ -260,12 +260,12 @@
       </div>
       <div class="col-md-4 mt-4 mb-5 pb-5 d-flex flex-column gap-3" *ngIf="activeView() === 'products'">
         <!-- Least Selling Products -->
-        <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1 d-flex flex-column" *ngIf="leastSellingProductsList()?.length">
+        <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1 d-flex flex-column" *ngIf="leastSellingProductsList().length">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 style="font-weight: 600; font-size: 15px; color: #4B5563; margin-bottom: 0;">Least Selling Products</h5>
             <span class="badge rounded-pill"
               style="background-color: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 600; padding: 5px 10px;">
-              Total: {{ leastSellingProductsList()?.length || 0 }}
+              Total: {{ leastSellingProductsList().length || 0 }}
             </span>
           </div>
           <div class="app-table-wrapper shadow-none border rounded-3 overflow-hidden">

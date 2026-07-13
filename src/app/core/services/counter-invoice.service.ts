@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { ApiService } from './api.service';
-import { DbService } from './db.service';
 import { SessionService } from './session.service';
 import { ElectronService } from './electron.service';
 import { CartItem } from './counter-sale.service';
@@ -13,7 +12,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class CounterInvoiceService {
   private apiService = inject(ApiService);
-  private dbService = inject(DbService);
   private sessionService = inject(SessionService);
   private electronService = inject(ElectronService);
   private snackBar = inject(MatSnackBar);
@@ -122,10 +120,9 @@ export class CounterInvoiceService {
         bankCashLedger = savedSettings.cashAccount.id;
         bankCashLedgerName = savedSettings.cashAccount.name || "";
       } else {
-        const bankAccountsList = await this.dbService.bankAccounts.toArray();
-        if (bankAccountsList && bankAccountsList.length > 0) {
-          bankCashLedger = bankAccountsList[0].id || 0;
-          bankCashLedgerName = bankAccountsList[0].bankName || "";
+        if (savedSettings.bankAccount) {
+          bankCashLedger = savedSettings.bankAccount.id || 0;
+          bankCashLedgerName = savedSettings.bankAccount.name || "";
         }
       }
     } catch (e) {
