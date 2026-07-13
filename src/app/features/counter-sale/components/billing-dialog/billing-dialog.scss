@@ -280,5 +280,16 @@
     margin-right: auto;
   }
 
-
+  .app-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 36px;
+    
+    lucide-icon {
+      width: 18px;
+      height: 18px;
+    }
+  }
 }

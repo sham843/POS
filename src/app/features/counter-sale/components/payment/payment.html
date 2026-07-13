@@ -31,13 +31,13 @@
   </div>
 
   <div class="payment-methods-grid">
-    <button class="pay-card cash" [disabled]="!!counterSaleService.selectedCustomer() && !isCreditInsufficient()" (click)="openBillingDialog('cash')">
+    <button class="pay-card cash" [disabled]="!!counterSaleService.selectedCustomer()" (click)="openBillingDialog('cash')">
       <div class="card-content">
         <lucide-icon [img]="Banknote"></lucide-icon>
         <span class="label">Cash</span>
       </div>
     </button>
-    <button class="pay-card upi" [disabled]="!!counterSaleService.selectedCustomer() && !isCreditInsufficient()" (click)="openBillingDialog('online')">
+    <button class="pay-card upi" [disabled]="!!counterSaleService.selectedCustomer()" (click)="openBillingDialog('online')">
       <div class="card-content">
         <lucide-icon [img]="Globe"></lucide-icon>
         <span class="label">Online</span>
