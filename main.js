@@ -18,7 +18,7 @@ function startLocalServer() {
 
       // Handle Proxy request (starts with /api)
       if (urlPath.startsWith('/api/')) {
-        const targetUrlStr = 'https://uatposapi.hitechdairy.in';
+        const targetUrlStr = 'https://demoposapi.hitechdairy.in';
         const parsedTarget = new URL(targetUrlStr);
         const options = {
           hostname: parsedTarget.hostname,

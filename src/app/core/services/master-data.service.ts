@@ -76,6 +76,7 @@ export class MasterDataService {
           if (responses.products?.data?.length) await this.dbService.categories.bulkAdd(responses.products.data);
         });
 
+      localStorage.setItem('lastSyncedTime', new Date().toISOString());
       console.log('All master data successfully loaded into IndexedDB.');
     } catch (error) {
       console.error('Failed to load master data into IndexedDB:', error);
