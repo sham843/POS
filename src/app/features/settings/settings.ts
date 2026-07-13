@@ -39,11 +39,13 @@ export class Settings implements OnInit {
   saleLedgerList: any[] = [];
   cashlist: any[] = [];
   godownlist: any[] = []; // Mocked for now until API is available
+  bankAccountList: any[] = [];
 
   selectedCompanyLedger: any;
   selectedSaleLedger: any;
   selectedCashAccount: any;
   selectedGodown: any;
+  selectedBankAccount: any;
   discountType: string = '';
 
   async ngOnInit() {
@@ -70,6 +72,7 @@ export class Settings implements OnInit {
       this.saleLedgerList = Array.isArray(saleRes) ? saleRes : (saleRes?.data || []);
       this.cashlist = Array.isArray(cashRes) ? cashRes : (cashRes?.data || []);
       this.godownlist = Array.isArray(godownRes) ? godownRes : (godownRes?.data || []);
+      this.bankAccountList = await this.dbService.bankAccounts.toArray();
     } catch (e) {
       console.error('Failed to load settings dropdowns', e);
     }
@@ -98,6 +101,10 @@ export class Settings implements OnInit {
       this.selectedCashAccount = this.cashlist.find(x => x.id == savedSettings.cashAccount.id) || null;
     }
 
+    if (savedSettings?.bankAccount?.id) {
+      this.selectedBankAccount = this.bankAccountList.find(x => x.id == savedSettings.bankAccount.id) || null;
+    }
+
     if (savedSettings?.godown?.id) {
       this.selectedGodown = this.godownlist.find((g: any) => g.id == savedSettings.godown.id) || null;
     }
@@ -110,6 +117,7 @@ export class Settings implements OnInit {
       companyLedger: this.selectedCompanyLedger ? { id: this.selectedCompanyLedger.id, name: this.selectedCompanyLedger.customerName } : null,
       saleLedger: this.selectedSaleLedger ? { id: this.selectedSaleLedger.id, name: this.selectedSaleLedger.customerName } : null,
       cashAccount: this.selectedCashAccount ? { id: this.selectedCashAccount.id, name: this.selectedCashAccount.bankName || this.selectedCashAccount.customerName } : null,
+      bankAccount: this.selectedBankAccount ? { id: this.selectedBankAccount.id, name: this.selectedBankAccount.bankName || this.selectedBankAccount.customerName } : null,
       godown: this.selectedGodown || null,
       discountType: this.discountType
     };

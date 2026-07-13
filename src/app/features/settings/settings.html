@@ -36,6 +36,17 @@
     </div>
 
     <div class="form-group">
+      <label class="field-label">Select Bank Account <span class="required">*</span></label>
+      <mat-form-field appearance="outline" class="full-width no-subscript">
+        <mat-select [(ngModel)]="selectedBankAccount" placeholder="Select Bank Account" [compareWith]="compareById">
+          <mat-option *ngFor="let bank of bankAccountList" [value]="bank">
+            {{ bank.bankName || bank.customerName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="form-group">
       <label class="field-label">Select Cash Account <span class="required">*</span></label>
       <mat-form-field appearance="outline" class="full-width no-subscript">
         <mat-select [(ngModel)]="selectedCashAccount" placeholder="Select Cash Account" [compareWith]="compareById">
