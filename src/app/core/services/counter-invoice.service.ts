@@ -6,6 +6,7 @@ import { DbService } from './db.service';
 import { SessionService } from './session.service';
 import { ElectronService } from './electron.service';
 import { CartItem } from './counter-sale.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class CounterInvoiceService {
   private dbService = inject(DbService);
   private sessionService = inject(SessionService);
   private electronService = inject(ElectronService);
+  private snackBar = inject(MatSnackBar);
   private paymentList$?: Observable<any>;
 
   get Userdetails() {
@@ -98,60 +100,36 @@ export class CounterInvoiceService {
       } catch (e) {}
     }
 
+    if (!savedSettings || !savedSettings.saleLedger || !savedSettings.companyLedger || !savedSettings.cashAccount) {
+      this.snackBar.open("Please configure POS Settings first.", "Close", { duration: 3000 });
+      return Promise.reject("POS Settings are missing");
+    }
+
     const customer = selectedCustomer;
     let partyId = 0;
     if (customer && customer.id) {
       partyId = customer.id;
     } else {
-      try {
-        if (savedSettings?.saleLedger?.id) {
-          partyId = savedSettings.saleLedger.id;
-        } else {
-          const saleLedgers = await this.dbService.saleLedgerList.toArray();
-          if (saleLedgers && saleLedgers.length > 0) {
-            partyId = saleLedgers[0].id || 0;
-          }
-        }
-      } catch (e) {
-        console.error('Failed to load SaleLedgerList from indexedDB', e);
-      }
+      partyId = savedSettings.saleLedger.id;
     }
-    let companyLedgerId = 0;
-    try {
-      if (savedSettings?.companyLedger?.id) {
-        companyLedgerId = savedSettings.companyLedger.id;
-      } else {
-        const companyLedgers = await this.dbService.companyLedgerList.toArray();
-        if (companyLedgers && companyLedgers.length > 0) {
-          companyLedgerId = companyLedgers[0].id || 0;
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load CompanyLedgerList from indexedDB', e);
-    }
+
+    let companyLedgerId = savedSettings.companyLedger.id;
+
     let bankCashLedger = 0;
     let bankCashLedgerName = "";
     try {
       if (paymentMode === 'cash') {
-        if (savedSettings?.cashAccount?.id) {
-          bankCashLedger = savedSettings.cashAccount.id;
-          bankCashLedgerName = savedSettings.cashAccount.name || "";
-        } else {
-          const cashLedgers = await this.dbService.cashLedger.toArray();
-          if (cashLedgers && cashLedgers.length > 0) {
-            bankCashLedger = cashLedgers[0].id || 0;
-            bankCashLedgerName = cashLedgers[0].customerName || "";
-          }
-        }
+        bankCashLedger = savedSettings.cashAccount.id;
+        bankCashLedgerName = savedSettings.cashAccount.name || "";
       } else {
         const bankAccountsList = await this.dbService.bankAccounts.toArray();
         if (bankAccountsList && bankAccountsList.length > 0) {
           bankCashLedger = bankAccountsList[0].id || 0;
-          bankCashLedgerName = bankAccountsList[0].customerName || "";
+          bankCashLedgerName = bankAccountsList[0].bankName || "";
         }
       }
     } catch (e) {
-      console.error('Failed to load bank/cash ledger from indexedDB', e);
+      console.error('Failed to load BankAccounts from indexedDB', e);
     }
 
     const invoiceDetails = cartItems.map(item => {
