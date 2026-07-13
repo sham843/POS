@@ -76,7 +76,7 @@
 
       <ng-container matColumnDef="amount">
         <th mat-header-cell *matHeaderCellDef>Amount</th>
-        <td mat-cell *matCellDef="let row">₹{{ row.netAmount | number:'1.2-2' }}</td>
+        <td mat-cell *matCellDef="let row">₹{{ row.amount | number:'1.2-2' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="total">
@@ -96,12 +96,17 @@
   <!-- SUMMARY SECTION -->
   <div class="summary-section">
     <div class="summary-row">
-      <span>Taxable Amount</span>
-      <span>₹{{ data.taxableAmount | number:'1.2-2' }}</span>
+      <span>Sub Total</span>
+      <span>₹{{ data.subTotal | number:'1.2-2' }}</span>
     </div>
     <div class="summary-row">
       <span>Discount</span>
-      <span [class.red]="data.totalDiscount > 0">₹{{ data.totalDiscount | number:'1.2-2' }}</span>
+      <span [class.red]="data.totalDiscount > 0" *ngIf="data.totalDiscount > 0">- ₹{{ data.totalDiscount | number:'1.2-2' }}</span>
+      <span *ngIf="data.totalDiscount <= 0">₹0.00</span>
+    </div>
+    <div class="summary-row">
+      <span>Taxable Amount</span>
+      <span>₹{{ data.taxableAmount | number:'1.2-2' }}</span>
     </div>
     <mat-divider></mat-divider>
     <div class="summary-row tax-row" *ngIf="sgst > 0">
