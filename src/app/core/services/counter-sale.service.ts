@@ -171,9 +171,12 @@ export class CounterSaleService {
         debounceTime(300),
         switchMap(async req => {
           const materialId = req.item.product.id;
-          let totalPrice = 0;
-
-          totalPrice = (req.item.quantity * req.item.rate) - (req.item.discountRupee || 0);
+          let totalPrice = req.item.quantity * req.item.rate;
+          if (req.item.discount > 0) {
+            totalPrice = totalPrice - (totalPrice * req.item.discount / 100);
+          } else {
+            totalPrice = totalPrice - (req.item.discountRupee || 0);
+          }
 
           if (this.numpadMode() === 'amount') {
             totalPrice = req.item.total || req.item.amount;
