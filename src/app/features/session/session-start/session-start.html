@@ -21,8 +21,7 @@
         <div
             class="profile-section d-flex flex-column align-items-center text-center px-3 pt-0 pb-3 position-relative z-1">
             <div class="profile-avatar mb-3">
-                <img src="assets/images/avatar.png" alt="Profile" class="rounded-circle shadow" width="75" height="75"
-                    (error)="onAvatarError($event)">
+                <img [src]="getAvatarUrl()" alt="Profile" class="rounded-circle shadow" width="75" height="75">
             </div>
             <span class="role-badge mb-2">{{ userDetails()?.userType | translate | titlecase }}</span>
             <h3 class="fw-bold mb-1 user-name d-flex align-items-center justify-content-center gap-2">

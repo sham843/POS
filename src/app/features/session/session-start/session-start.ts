@@ -137,9 +137,9 @@ export class SessionStart {
     });
   }
 
-  onAvatarError(event: any) {
+  getAvatarUrl(): string {
     const name = this.userDetails()?.name || 'User';
-    event.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0052CC&color=fff&rounded=true&size=90`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0052CC&color=fff&rounded=true&size=90`;
   }
 
   logout() {
