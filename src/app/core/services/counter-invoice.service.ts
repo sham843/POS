@@ -97,7 +97,7 @@ export class CounterInvoiceService {
     if (savedSettingsStr) {
       try {
         savedSettings = JSON.parse(savedSettingsStr);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     if (!savedSettings || !savedSettings.saleLedger || !savedSettings.companyLedger || !savedSettings.cashAccount || !savedSettings.godown || !savedSettings.discountType) {
@@ -152,10 +152,10 @@ export class CounterInvoiceService {
         igst: (item.dynamicTaxes?.find(t => t.componentName.includes('IGST'))?.taxAmount || 0).toFixed(2),
         cgst: (item.dynamicTaxes?.find(t => t.componentName.includes('CGST'))?.taxAmount || (item.gstAmount / 2)).toFixed(2),
         sgst: (item.dynamicTaxes?.find(t => t.componentName.includes('SGST'))?.taxAmount || (item.gstAmount / 2)).toFixed(2),
-        subTotal: totals.totalPayable.toFixed(2),
+        subTotal: Number(totals.totalPayable.toFixed(2)),
         unitId: unitId,
         serverId: 0,
-        StockHistoryLocalId: 0,
+        StockHistoryLocalId: savedSettings.godown.id || 0,
         invoiceDetailsTaxComponent: item.dynamicTaxes && item.dynamicTaxes.length > 0 ? item.dynamicTaxes.map(t => ({
           amount: t.taxAmount || 0,
           componentId: t.id || 1,
@@ -220,8 +220,8 @@ export class CounterInvoiceService {
         ledger1: partyId,
         ledger2: companyLedgerId,
         bankCashLedger: bankCashLedger,
-        credit: 0,
-        debit: 0,
+        credit: parseFloat(totals.totalPayable.toFixed(2)),
+        debit: parseFloat(totals.totalPayable.toFixed(2)),
         ledgerAmount: parseFloat(totals.totalPayable.toFixed(2)),
         transactionDate: now,
         modeOfPaymentId: modeOfPaymentId,
