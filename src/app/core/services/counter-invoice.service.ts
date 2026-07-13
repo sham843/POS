@@ -275,11 +275,6 @@ export class CounterInvoiceService {
       }
     }
 
-
-    console.log(payload);
-
-    return
-
     const endpoint = isUpdate ? 'api/v1/invoice/UpdateSale_V1' : 'api/v1/invoice/Sale_V1';
     return this.apiService.post<any>(endpoint, payload).toPromise();
   }
