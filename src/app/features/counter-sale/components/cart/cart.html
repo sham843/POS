@@ -54,8 +54,8 @@
           (input)="restrictDecimals($event)"
           (change)="onAmountChange($index, $event)" (focus)="counterSaleService.setNumpadMode('amount')"
           (click)="counterSaleService.setNumpadMode('amount')" [readonly]="item.product.mensurationUnit === 'Nos'" />
-        <input type="text" inputmode="decimal" placeholder="Disc %" class="tiny-input disc-input"
-          [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'discount') ? counterSaleService.numpadValue() : (item.discount > 0 ? item.discount : '')"
+        <input type="text" inputmode="decimal" [placeholder]="discountPlaceholder" class="tiny-input disc-input"
+          [value]="(counterSaleService.selectedItemIndex() === $index && counterSaleService.numpadMode() === 'discount') ? counterSaleService.numpadValue() : ((item.discount > 0 ? item.discount : (item.discountRupee || 0)) > 0 ? (item.discount > 0 ? item.discount : (item.discountRupee || 0)) : '')"
           (input)="restrictDecimals($event)"
           (change)="onDiscountChange($index, $event)" (focus)="counterSaleService.setNumpadMode('discount')"
           (click)="counterSaleService.setNumpadMode('discount')" />

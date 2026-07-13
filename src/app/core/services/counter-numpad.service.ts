@@ -107,7 +107,15 @@ export class CounterNumpadService {
     }
 
     if (mode === 'discount') {
-      if (parseFloat(nextVal) > environment.maxDiscount) {
+      const posSettingsStr = localStorage.getItem('posSettings');
+      let discountType = 'percent';
+      if (posSettingsStr) {
+        try {
+          const settings = JSON.parse(posSettingsStr);
+          if (settings.discountType === 'amount') discountType = 'amount';
+        } catch (e) {}
+      }
+      if (discountType !== 'amount' && parseFloat(nextVal) > environment.maxDiscount) {
         nextVal = environment.maxDiscount.toString();
         errorMessage = `Discount cannot exceed ${environment.maxDiscount}%`;
       }
@@ -178,15 +186,40 @@ export class CounterNumpadService {
         updatedItem.total = enteredVal;
       }
     } else if (mode === 'discount') {
-      updatedItem.discount = valNum;
+      const posSettingsStr = localStorage.getItem('posSettings');
+      let discountType = 'percent';
+      if (posSettingsStr) {
+        try {
+          const settings = JSON.parse(posSettingsStr);
+          if (settings.discountType === 'amount') discountType = 'amount';
+        } catch (e) {}
+      }
+
+      if (discountType === 'amount') {
+        updatedItem.discountRupee = valNum;
+        updatedItem.discount = 0;
+      } else {
+        updatedItem.discount = valNum;
+        updatedItem.discountRupee = 0;
+      }
     }
 
     if (mode !== 'amount' || isExcluded) {
-      updatedItem.netAmount = Math.round((updatedItem.amount - (updatedItem.amount * updatedItem.discount / 100)) * 100) / 100;
-      updatedItem.total = Math.round((updatedItem.rate * updatedItem.quantity - (updatedItem.discountRupee || 0)) * 100) / 100;
+      if (updatedItem.discount > 0) {
+        updatedItem.netAmount = Math.round((updatedItem.amount - (updatedItem.amount * updatedItem.discount / 100)) * 100) / 100;
+      } else if ((updatedItem.discountRupee || 0) > 0) {
+        updatedItem.netAmount = Math.round((updatedItem.amount - (updatedItem.discountRupee || 0)) * 100) / 100;
+      } else {
+        updatedItem.netAmount = Math.round(updatedItem.amount * 100) / 100;
+      }
+
+      updatedItem.total = Math.round((updatedItem.rate * updatedItem.quantity) * 100) / 100;
       if (updatedItem.discount > 0) {
         updatedItem.total = Math.round((updatedItem.total - (updatedItem.total * updatedItem.discount / 100)) * 100) / 100;
+      } else if ((updatedItem.discountRupee || 0) > 0) {
+        updatedItem.total = Math.round((updatedItem.total - (updatedItem.discountRupee || 0)) * 100) / 100;
       }
+      
       updatedItem.gstAmount = Math.round((updatedItem.total - updatedItem.netAmount) * 100) / 100;
     }
 

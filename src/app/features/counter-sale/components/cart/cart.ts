@@ -37,6 +37,18 @@ export class Cart {
   notificationService = inject(NotificationService);
   private el = inject(ElementRef);
 
+  get discountPlaceholder(): string {
+    const posSettingsStr = localStorage.getItem('posSettings');
+    let discountType = 'percent';
+    if (posSettingsStr) {
+      try {
+        const settings = JSON.parse(posSettingsStr);
+        if (settings.discountType === 'amount') discountType = 'amount';
+      } catch (e) {}
+    }
+    return discountType === 'amount' ? 'Disc ₹' : 'Disc %';
+  }
+
   displayedColumns: string[] = ['details', 'quantity', 'rate', 'discount', 'amount', 'gst', 'total'];
 
   // Data source for the table uses the shared cart state
@@ -99,7 +111,17 @@ export class Cart {
   onDiscountChange(index: number, event: any) {
     let val = parseFloat(event.target.value) || 0;
     val = parseFloat(val.toFixed(2));
-    if (val > environment.maxDiscount) {
+
+    const posSettingsStr = localStorage.getItem('posSettings');
+    let discountType = 'percent';
+    if (posSettingsStr) {
+      try {
+        const settings = JSON.parse(posSettingsStr);
+        if (settings.discountType === 'amount') discountType = 'amount';
+      } catch (e) {}
+    }
+
+    if (discountType !== 'amount' && val > environment.maxDiscount) {
       val = environment.maxDiscount;
       event.target.value = environment.maxDiscount.toString();
       this.notificationService.showError(`Discount cannot exceed ${environment.maxDiscount}%`);
