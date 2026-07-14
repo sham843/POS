@@ -41,7 +41,7 @@ export class MasterDataService {
         companyLedgers: this.apiService.get<any>(`api/v1/customer/company-ledger${queryString}`),
         customers: this.apiService.get<any>(`api/v1/customer/customers?organizationId=${organizationId}`),
         saleLedgers: this.apiService.get<any>(`api/v1/customer/sale-ledger${queryString}`),
-        variants: this.apiService.get<any>(`api/v1/product/variants${queryString}`),
+        variants: this.apiService.get<any>(`api/v1/product/variants_V1${queryString}`),
         products: this.apiService.get<any>(`api/v1/product/product${queryString}`)
       }));
 
