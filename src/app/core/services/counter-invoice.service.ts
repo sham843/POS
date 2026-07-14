@@ -42,7 +42,7 @@ export class CounterInvoiceService {
   }
 
   loadInvoiceByBillNo(billNo: string): Observable<any> {
-    return this.apiService.get<any>(`api/v1/invoice/byId?billNo=${billNo}`);
+    return this.apiService.get<any>(`api/v1/invoice/byId_V1?billNo=${billNo}`);
   }
 
   computeTax(materialId: number, totalPrice: number, custStateCode: Number, orgStateCode: number): Observable<any> {

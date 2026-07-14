@@ -637,16 +637,35 @@ export class CounterSaleService {
             product = await this.dbService.products.get(materialId);
           }
 
-          // Calculate GST percentage from invoice details (CGST + SGST + IGST amounts divided by base taxable amount)
-          const cgstAmount = parseFloat(item.cgst) || 0;
-          const sgstAmount = parseFloat(item.sgst) || 0;
-          const igstAmount = parseFloat(item.igst) || 0;
-          const totalGstAmount = cgstAmount + sgstAmount + igstAmount;
-          const baseAmount = parseFloat(item.gstonAmount) || (parseFloat(item.total) - totalGstAmount) || 0;
-
+          // Parse taxBreakdown from API response if available
+          let dynamicTaxes: DynamicTax[] = [];
           let calculatedGstPercent = 0;
-          if (totalGstAmount > 0 && baseAmount > 0) {
-            calculatedGstPercent = Math.round(((totalGstAmount / baseAmount) * 100) * 10) / 10;
+          let calculatedGstAmount = 0;
+
+          if (item.taxBreakdown && Array.isArray(item.taxBreakdown)) {
+            dynamicTaxes = item.taxBreakdown.map((tb: any) => {
+              const match = tb.taxLabel ? tb.taxLabel.match(/([\d.]+)/) : null;
+              const percentage = match ? parseFloat(match[1]) : 0;
+              return {
+                id: tb.componentId || tb.invoiceDetailId || 0,
+                componentName: tb.taxLabel,
+                taxAmount: parseFloat(tb.amount) || 0,
+                taxPercentage: percentage
+              };
+            });
+            calculatedGstAmount = dynamicTaxes.reduce((sum, t) => sum + (t.taxAmount || 0), 0);
+            calculatedGstPercent = dynamicTaxes.reduce((sum, t) => sum + (t.taxPercentage || 0), 0);
+          } else {
+            // Fallback for older formats without taxBreakdown
+            const cgstAmount = parseFloat(item.cgst) || 0;
+            const sgstAmount = parseFloat(item.sgst) || 0;
+            const igstAmount = parseFloat(item.igst) || 0;
+            calculatedGstAmount = cgstAmount + sgstAmount + igstAmount;
+            const baseAmount = parseFloat(item.gstonAmount) || (parseFloat(item.total) - calculatedGstAmount) || 0;
+
+            if (calculatedGstAmount > 0 && baseAmount > 0) {
+              calculatedGstPercent = Math.round(((calculatedGstAmount / baseAmount) * 100) * 10) / 10;
+            }
           }
 
           const gst = calculatedGstPercent || item.gst || product?.gst || product?.taxPercentage || 0;
@@ -660,9 +679,25 @@ export class CounterSaleService {
             };
           }
 
-          const rate = item.rate || product.salePrice || 0;
-          const qty = item.quantity || 1;
-          const discount = item.discount || 0;
+          const rate = parseFloat(item.rate) || product?.salePrice || 0;
+          const qty = parseFloat(item.quantity) || 1;
+          const discount = parseFloat(item.discount) || 0;
+          const discountAmount = parseFloat(item.discountAmount) || 0;
+          const totalVal = parseFloat(item.total) || 0;
+          const netAmountVal = parseFloat(item.gstonAmount) || (totalVal - calculatedGstAmount) || 0;
+
+          let amountVal = netAmountVal;
+          if (discount > 0) {
+            amountVal = netAmountVal / (1 - (discount / 100));
+          } else if (discountAmount > 0) {
+            amountVal = netAmountVal + discountAmount;
+          } else {
+            amountVal = netAmountVal;
+          }
+
+          // Determine if tax was included or excluded
+          const baseAmountForCheck = (rate * qty) - discountAmount;
+          const isTaxIncluded = Math.abs(baseAmountForCheck - totalVal) < 0.5;
 
           const newItem: CartItem = {
             product: product,
@@ -670,16 +705,18 @@ export class CounterSaleService {
             quantity: qty,
             rate: rate,
             discount: discount,
-            amount: 0,
-            netAmount: 0,
+            discountRupee: discountAmount,
+            amount: Math.round(amountVal * 100) / 100,
+            netAmount: netAmountVal,
             gst: gst,
-            gstAmount: 0,
-            total: 0,
-            unit: product.unit || product.uom || product.unitName || product.mensurationUnit || ''
+            gstAmount: calculatedGstAmount,
+            total: totalVal,
+            unit: product.unit || product.uom || product.unitName || product.mensurationUnit || '',
+            dynamicTaxes: dynamicTaxes,
+            isTaxIncluded: isTaxIncluded
           };
 
-          const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', qty.toString());
-          cartItems.push(calculatedItem);
+          cartItems.push(newItem);
         }
 
         const partyId = data.partyId || data.customerId || 0;

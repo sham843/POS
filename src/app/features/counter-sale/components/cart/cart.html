@@ -41,7 +41,7 @@
         <div class="item-name">{{ item.details }} ({{ item.product.mensurationUnit || item.product.unitName || item.unit
           || '' }})</div>
         <div class="item-price">₹{{ item.rate | number:'1.2-2' }}
-          @if (item.gst && item.quantity > 0) {
+          @if (item.dynamicTaxes && item.dynamicTaxes.length > 0 && item.quantity > 0) {
           <span class="item-gst"
             [ngClass]="{'tax-inclusive': item.isTaxIncluded === true, 'tax-exclusive': item.isTaxIncluded === false}">(+{{
             item.gst }}% GST: ₹{{ item.gstAmount | number:'1.2-2' }})</span>
