@@ -86,7 +86,7 @@ export class ProductReport implements OnInit {
 
   // Pagination State
   currentPage = signal<number>(0);
-  pageSize = signal<number>(3);
+  pageSize = signal<number>(5);
 
   // Dynamic product list for dropdown selector
   productList = signal<any[]>([]);
@@ -226,13 +226,13 @@ export class ProductReport implements OnInit {
   setReportType(type: 'details' | 'summary') {
     if (this.reportType() === type) return;
     this.reportType.set(type);
-    
+
     if (type === 'summary') {
-      this.pageSize.set(2);
-    } else {
       this.pageSize.set(3);
+    } else {
+      this.pageSize.set(5);
     }
-    
+
     this.currentPage.set(0);
     this.clearFilters();
   }
@@ -263,7 +263,7 @@ export class ProductReport implements OnInit {
     }
 
     this.fetchProductList(orgId);
-    
+
     // Automatically fetch reports on page load
     this.fetchReport();
   }
@@ -318,7 +318,7 @@ export class ProductReport implements OnInit {
     });
 
     if (this.reportType() === 'details') {
-      const endpoint = `api/v1/report/product-wise-sale?FromDate=${fromDate}&ToDate=${toDate}&MaterialId=${selectedMatId}`;
+      const endpoint = `api/v1/report/product-wise-sale_V1?FromDate=${fromDate}&ToDate=${toDate}&MaterialId=${selectedMatId}`;
       this.apiService.get<any>(endpoint).subscribe({
         next: (response) => {
           const list = response?.responseData || response?.data || response || [];

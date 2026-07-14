@@ -251,7 +251,7 @@ export class UserReport implements OnInit {
     }
 
     this.fetchUserList(orgId);
-    
+
     // Automatically fetch reports on page load
     this.fetchReport();
   }
@@ -302,7 +302,7 @@ export class UserReport implements OnInit {
       'X-Skip-Loader': 'true'
     });
 
-    const endpoint = this.reportType() === 'details' ? 'api/v1/report/user-wise-sale' : 'api/v1/report/user-sale-summary';
+    const endpoint = this.reportType() === 'details' ? 'api/v1/report/user-wise-sale_V1' : 'api/v1/report/user-sale-summary';
 
     this.apiService.post<any>(endpoint, payload, headers).subscribe({
       next: (response) => {
@@ -483,7 +483,7 @@ export class UserReport implements OnInit {
       headers,
       rows,
       footerRow,
-      fileName: isSummary 
+      fileName: isSummary
         ? `User_Sale_Summary_Report_${this.fromDate() || 'all'}_to_${this.toDate() || 'all'}.xlsx`
         : `User_Wise_Sale_Report_${this.fromDate() || 'all'}_to_${this.toDate() || 'all'}.xlsx`
     });
