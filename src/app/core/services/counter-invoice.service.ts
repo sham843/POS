@@ -148,6 +148,7 @@ export class CounterInvoiceService {
     const invoiceDetails = cartItems.map(item => {
       const discountAmount = parseFloat((item.amount * item.discount / 100).toFixed(2));
       const gstonAmount = parseFloat(((item.quantity * item.rate) - (discountAmount + item.gstAmount)).toFixed(2));
+      const dynamicSubTotal = (item.quantity * item.rate - discountAmount);
 
       return {
         id: 0,
@@ -165,7 +166,7 @@ export class CounterInvoiceService {
         igst: (item.dynamicTaxes?.find(t => t.componentName.includes('IGST'))?.taxAmount || 0).toFixed(2),
         cgst: (item.dynamicTaxes?.find(t => t.componentName.includes('CGST'))?.taxAmount || (item.gstAmount / 2)).toFixed(2),
         sgst: (item.dynamicTaxes?.find(t => t.componentName.includes('SGST'))?.taxAmount || (item.gstAmount / 2)).toFixed(2),
-        subTotal: Number(totals.totalPayable.toFixed(2)),
+        subTotal: parseFloat(dynamicSubTotal.toFixed(2)),
         unitId: unitId,
         serverId: 0,
         StockHistoryLocalId: savedSettings.godown.id || 0,
@@ -274,7 +275,6 @@ export class CounterInvoiceService {
         upiId: ""
       }
     }
-
     const endpoint = isUpdate ? 'api/v1/invoice/UpdateSale_V1' : 'api/v1/invoice/Sale_V1';
     return this.apiService.post<any>(endpoint, payload).toPromise();
   }
