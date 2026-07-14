@@ -241,7 +241,7 @@ export class GstReport implements OnInit {
 
     this.isLoading.set(true);
 
-    this.apiService.get<any>(`api/v1/report/GetGstReport?InvoiceId=${invId}&FromDate=${cleanFromDate}&ToDate=${cleanToDate}`).subscribe({
+    this.apiService.get<any>(`api/v1/report/GetGstReport_V1?InvoiceId=${invId}&FromDate=${cleanFromDate}&ToDate=${cleanToDate}`).subscribe({
       next: (response) => {
         if (response && response.data) {
           this.reportData.set(response.data);
@@ -363,7 +363,7 @@ export class GstReport implements OnInit {
 
     const cleanFromDate = this.fromDate().split('T')[0];
     const cleanToDate = this.toDate().split('T')[0];
-    
+
     const selectedInv = this.invoicesList().find(inv => inv.id === this.invoiceId());
     const invName = selectedInv && selectedInv.id !== '' ? (selectedInv.invoiceNo || selectedInv.billNo || selectedInv.id) : null;
 
@@ -371,7 +371,7 @@ export class GstReport implements OnInit {
       { label: 'Total Bills', value: String(this.totalBillsBadge()) },
       { label: 'Total Amount', value: 'Rs. ' + Number(this.totalAmountBadge()).toFixed(2) }
     ];
-    
+
     if (invName) {
       metaInfo.unshift({ label: 'Invoice No', value: String(invName) });
     }
@@ -454,7 +454,7 @@ export class GstReport implements OnInit {
       { label: 'Total Bills', value: String(this.totalBillsBadge()) },
       { label: 'Total Amount', value: 'Rs. ' + Number(this.totalAmountBadge()).toFixed(2) }
     ];
-    
+
     if (invName) {
       metaInfo.unshift({ label: 'Invoice No', value: String(invName) });
     }

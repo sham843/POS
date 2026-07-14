@@ -205,7 +205,7 @@ export class BillReport implements OnInit {
         console.error('Failed to parse user details:', e);
       }
     }
-    
+
     // Automatically fetch reports on page load
     this.fetchReport();
   }
@@ -220,7 +220,7 @@ export class BillReport implements OnInit {
 
     this.isLoading.set(true);
 
-    const endpoint = `api/v1/report/GetBillWiseSale?fromDate=${fromDate}&toDate=${toDate}`;
+    const endpoint = `api/v1/report/GetBillWiseSale_V1?fromDate=${fromDate}&toDate=${toDate}`;
 
     this.apiService.get<any>(endpoint).subscribe({
       next: (response) => {

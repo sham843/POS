@@ -261,7 +261,7 @@ export class SalesInvoiceReport implements OnInit {
     const to = this.toDate();
     const userId = this.userId();
 
-    const url = `api/v1/report/GetInvoiceReport?userId=${userId}&fromDate=${from}&toDate=${to}`;
+    const url = `api/v1/report/GetInvoiceReport_V1?userId=${userId}&fromDate=${from}&toDate=${to}`;
 
     this.apiService.get<any>(url).subscribe({
       next: (response) => {

@@ -224,7 +224,7 @@ export class CustomerReport implements OnInit {
       'X-Skip-Loader': 'true'
     });
 
-    this.apiService.post<any>('api/v1/report/customer-wise-sale', payload, headers).subscribe({
+    this.apiService.post<any>('api/v1/report/customer-wise-sale_V1', payload, headers).subscribe({
       next: (response) => {
         if (response && response.data) {
           this.reportData.set(response.data);
