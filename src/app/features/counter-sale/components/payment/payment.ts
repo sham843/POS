@@ -91,6 +91,11 @@ export class Payment {
       }
     }
 
+    if (!this.counterSaleService.canEditBill()) {
+      this.notificationService.showError('Only Admin can process an existing bill.');
+      return;
+    }
+
     const ref = this.dialog.open(BillingDialog, {
       data: {
         paymentMode,

@@ -356,6 +356,17 @@ export class CounterSaleService {
     }
   }
 
+  canEditBill(): boolean {
+    if (this.invoiceHeader.invoiceId() !== null) {
+      const user = this.Userdetails;
+      const typeId = user?.userTypeId || user?.usertypeid || user?.userTypeID || user?.userTypeId;
+      if (Number(typeId) !== 1) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   numpadSearchAction = new Subject<string>();
 
   handleNumpadInput(val: string) {
@@ -373,6 +384,11 @@ export class CounterSaleService {
       }
       this.searchQuery.set(q);
       this.numpadSearchAction.next(q);
+      return;
+    }
+
+    if (!this.canEditBill()) {
+      this.notificationService.showError('Only Admin can edit an existing bill.');
       return;
     }
 
@@ -411,6 +427,10 @@ export class CounterSaleService {
   }
 
   setNumpadValueExplicit(val: string) {
+    if (!this.canEditBill()) {
+      this.notificationService.showError('Only Admin can edit an existing bill.');
+      return;
+    }
     const idx = this.selectedItemIndex();
     if (idx === null || idx < 0 || idx >= this.cartItems().length) return;
     this.updateActiveBill({ numpadValue: val });
@@ -456,6 +476,11 @@ export class CounterSaleService {
   }
 
   async addToCart(product: Product) {
+    if (!this.canEditBill()) {
+      this.notificationService.showError('Only Admin can edit an existing bill.');
+      this.updateActiveBill({ cartItems: [...this.cartItems()] });
+      return;
+    }
     const cust = this.selectedCustomer();
     let finalProduct = { ...product };
     if (cust && cust.id) {
@@ -524,6 +549,11 @@ export class CounterSaleService {
   }
 
   updateQuantity(index: number, quantity: number) {
+    if (!this.canEditBill()) {
+      this.notificationService.showError('Only Admin can edit an existing bill.');
+      this.updateActiveBill({ cartItems: [...this.cartItems()] });
+      return;
+    }
     if (quantity < 0) {
       this.removeItem(index);
       return;
@@ -540,6 +570,11 @@ export class CounterSaleService {
   }
 
   updateAmount(index: number, amount: number) {
+    if (!this.canEditBill()) {
+      this.notificationService.showError('Only Admin can edit an existing bill.');
+      this.updateActiveBill({ cartItems: [...this.cartItems()] });
+      return;
+    }
     const items = [...this.cartItems()];
     if (items[index]?.product?.mensurationUnit === 'Nos') {
       this.syncNumpadFromCart();
@@ -556,6 +591,11 @@ export class CounterSaleService {
   }
 
   updateDiscount(index: number, discount: number) {
+    if (!this.canEditBill()) {
+      this.notificationService.showError('Only Admin can edit an existing bill.');
+      this.updateActiveBill({ cartItems: [...this.cartItems()] });
+      return;
+    }
     const items = [...this.cartItems()];
     const updatedItem = this.counterNumpadService.updateCartItemFromNumpad(items[index], 'discount', discount.toString());
     items[index] = updatedItem;
@@ -568,6 +608,11 @@ export class CounterSaleService {
   }
 
   removeItem(index: number) {
+    if (!this.canEditBill()) {
+      this.notificationService.showError('Only Admin can edit an existing bill.');
+      this.updateActiveBill({ cartItems: [...this.cartItems()] });
+      return;
+    }
     const items = [...this.cartItems()];
     items.splice(index, 1);
     this.updateActiveBill({ cartItems: items });
@@ -861,6 +906,11 @@ export class CounterSaleService {
   }
 
   async saveInvoice(paymentMode: 'cash' | 'online' | 'card', printAutomatically: boolean) {
+    if (!this.canEditBill()) {
+      this.notificationService.showError('Only Admin can update an existing bill.');
+      return;
+    }
+
     const invalidItems = this.cartItems().filter(item => item.quantity <= 0);
     if (invalidItems.length > 0) {
       this.notificationService.showError("One or more items have quantity 0. Please update the quantity or remove them before saving the bill.");
