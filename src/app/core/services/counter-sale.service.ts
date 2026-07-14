@@ -668,7 +668,12 @@ export class CounterSaleService {
             }
           }
 
-          const gst = calculatedGstPercent || item.gst || product?.gst || product?.taxPercentage || 0;
+          let gst = 0;
+          if (item.taxBreakdown && Array.isArray(item.taxBreakdown)) {
+            gst = calculatedGstPercent;
+          } else {
+            gst = calculatedGstPercent || item.gst || product?.gst || product?.taxPercentage || 0;
+          }
 
           if (!product) {
             product = {
