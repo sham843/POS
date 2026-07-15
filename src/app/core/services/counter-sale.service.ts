@@ -813,11 +813,11 @@ export class CounterSaleService {
             const qty = item.quantity || 1;
             
             // Calculate GST percentage from API if available
-            const cgst = item.cgst || 0;
-            const sgst = item.sgst || 0;
-            const igst = item.igst || 0;
+            const cgst = parseFloat(item.cgst) || 0;
+            const sgst = parseFloat(item.sgst) || 0;
+            const igst = parseFloat(item.igst) || 0;
             const totalGstAmt = cgst + sgst + igst;
-            const taxableAmount = item.taxableAmount || 0;
+            const taxableAmount = parseFloat(item.taxableAmount) || 0;
             let gst = product.gst || product.taxPercentage || 0;
             if (totalGstAmt > 0 && taxableAmount > 0) {
               gst = Math.round((totalGstAmt / taxableAmount) * 100);
@@ -839,6 +839,18 @@ export class CounterSaleService {
 
             const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', qty.toString());
             
+            console.log('Raw order item from API:', item);
+            console.log('taxableAmount:', item.taxableAmount);
+
+            // Override with exact backend values to prevent rounding differences
+            if (item.taxableAmount !== undefined && item.taxableAmount !== null) calculatedItem.amount = parseFloat(item.taxableAmount) || 0;
+            if (item.afterTaxTotal !== undefined) {
+              calculatedItem.total = parseFloat(item.afterTaxTotal) || 0;
+              calculatedItem.netAmount = parseFloat(item.afterTaxTotal) || 0;
+            }
+            if (item.discount !== undefined) calculatedItem.discount = parseFloat(item.discount) || 0;
+            if (item.unitPrice !== undefined) calculatedItem.rate = parseFloat(item.unitPrice) || 0;
+            
             // Map GST from API if available
             if (totalGstAmt > 0) {
               calculatedItem.gstAmount = totalGstAmt;
@@ -846,6 +858,13 @@ export class CounterSaleService {
               if (cgst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'CGST', taxAmount: cgst, id: 1, taxPercentage: 0 });
               if (sgst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'SGST', taxAmount: sgst, id: 2, taxPercentage: 0 });
               if (igst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'IGST', taxAmount: igst, id: 3, taxPercentage: 0 });
+            }
+            
+            // Determine if tax is inclusive based on backend numbers
+            if (calculatedItem.total === (calculatedItem.rate * calculatedItem.quantity)) {
+               calculatedItem.isTaxIncluded = true;
+            } else if (calculatedItem.total > (calculatedItem.rate * calculatedItem.quantity)) {
+               calculatedItem.isTaxIncluded = false;
             }
 
             cartItems.push(calculatedItem);
@@ -855,11 +874,11 @@ export class CounterSaleService {
             const qty = item.quantity || 1;
             
             // Calculate GST percentage from API if available
-            const cgst = item.cgst || 0;
-            const sgst = item.sgst || 0;
-            const igst = item.igst || 0;
+            const cgst = parseFloat(item.cgst) || 0;
+            const sgst = parseFloat(item.sgst) || 0;
+            const igst = parseFloat(item.igst) || 0;
             const totalGstAmt = cgst + sgst + igst;
-            const taxableAmount = item.taxableAmount || 0;
+            const taxableAmount = parseFloat(item.taxableAmount) || 0;
             let gst = 0;
             if (totalGstAmt > 0 && taxableAmount > 0) {
               gst = Math.round((totalGstAmt / taxableAmount) * 100);
@@ -880,6 +899,15 @@ export class CounterSaleService {
             };
             const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', qty.toString());
 
+            // Override with exact backend values to prevent rounding differences
+            if (item.taxableAmount !== undefined) calculatedItem.amount = parseFloat(item.taxableAmount) || 0;
+            if (item.afterTaxTotal !== undefined) {
+              calculatedItem.total = parseFloat(item.afterTaxTotal) || 0;
+              calculatedItem.netAmount = parseFloat(item.afterTaxTotal) || 0;
+            }
+            if (item.discount !== undefined) calculatedItem.discount = parseFloat(item.discount) || 0;
+            if (item.unitPrice !== undefined) calculatedItem.rate = parseFloat(item.unitPrice) || 0;
+
             // Map GST from API if available
             if (totalGstAmt > 0) {
               calculatedItem.gstAmount = totalGstAmt;
@@ -887,6 +915,13 @@ export class CounterSaleService {
               if (cgst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'CGST', taxAmount: cgst, id: 1, taxPercentage: 0 });
               if (sgst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'SGST', taxAmount: sgst, id: 2, taxPercentage: 0 });
               if (igst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'IGST', taxAmount: igst, id: 3, taxPercentage: 0 });
+            }
+            
+            // Determine if tax is inclusive based on backend numbers
+            if (calculatedItem.total === (calculatedItem.rate * calculatedItem.quantity)) {
+               calculatedItem.isTaxIncluded = true;
+            } else if (calculatedItem.total > (calculatedItem.rate * calculatedItem.quantity)) {
+               calculatedItem.isTaxIncluded = false;
             }
 
             cartItems.push(calculatedItem);

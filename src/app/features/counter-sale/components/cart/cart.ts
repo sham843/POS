@@ -64,6 +64,7 @@ export class Cart {
 
   constructor() {
     effect(() => {
+      console.log('Cart Items DataSource:', this.dataSource());
       const selectedIndex = this.counterSaleService.selectedItemIndex();
       if (selectedIndex !== null) {
         setTimeout(() => {

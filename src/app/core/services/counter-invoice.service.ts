@@ -190,7 +190,7 @@ export class CounterInvoiceService {
       companyLedgerId: companyLedgerId,
       createdBy: userId,
       modifiedBy: userId,
-      orderId: loadedOrder?.orderId || selectedCustomer?.orderId || 0,
+      orderId: +loadedOrder?.orderId || +selectedCustomer?.orderId || 0,
       organizationId: organizationId,
       voucherTypeId: 1,
       discountAmount: totals.totalDiscount.toFixed(2),

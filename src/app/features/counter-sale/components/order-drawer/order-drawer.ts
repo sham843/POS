@@ -244,7 +244,18 @@ export class OrderDrawer implements OnInit, OnDestroy {
     this.counterInvoiceService.getOrderById(orderId, unitId).subscribe({
       next: (res) => {
         this.isLoading.set(false);
-        const fullOrder = (res && res.length > 0) ? res[0] : order;
+        
+        let fetchedOrder = null;
+        if (Array.isArray(res) && res.length > 0) {
+          fetchedOrder = res[0];
+        } else if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+          fetchedOrder = res.data[0];
+        } else if (res?.body?.data && Array.isArray(res.body.data) && res.body.data.length > 0) {
+          fetchedOrder = res.body.data[0];
+        }
+        
+        const fullOrder = fetchedOrder ? fetchedOrder : order;
+        
         this.counterSaleService.loadOrderToCart(fullOrder).then(() => {
           this.closeDrawer();
         });
