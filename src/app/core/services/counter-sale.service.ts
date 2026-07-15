@@ -843,10 +843,12 @@ export class CounterSaleService {
             console.log('taxableAmount:', item.taxableAmount);
 
             // Override with exact backend values to prevent rounding differences
-            if (item.taxableAmount !== undefined && item.taxableAmount !== null) calculatedItem.amount = parseFloat(item.taxableAmount) || 0;
+            if (item.taxableAmount !== undefined && item.taxableAmount !== null) {
+              calculatedItem.amount = parseFloat(item.taxableAmount) || 0;
+              calculatedItem.netAmount = parseFloat(item.taxableAmount) || 0;
+            }
             if (item.afterTaxTotal !== undefined) {
               calculatedItem.total = parseFloat(item.afterTaxTotal) || 0;
-              calculatedItem.netAmount = parseFloat(item.afterTaxTotal) || 0;
             }
             if (item.discount !== undefined) calculatedItem.discount = parseFloat(item.discount) || 0;
             if (item.unitPrice !== undefined) calculatedItem.rate = parseFloat(item.unitPrice) || 0;
@@ -900,10 +902,12 @@ export class CounterSaleService {
             const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', qty.toString());
 
             // Override with exact backend values to prevent rounding differences
-            if (item.taxableAmount !== undefined) calculatedItem.amount = parseFloat(item.taxableAmount) || 0;
+            if (item.taxableAmount !== undefined) {
+              calculatedItem.amount = parseFloat(item.taxableAmount) || 0;
+              calculatedItem.netAmount = parseFloat(item.taxableAmount) || 0;
+            }
             if (item.afterTaxTotal !== undefined) {
               calculatedItem.total = parseFloat(item.afterTaxTotal) || 0;
-              calculatedItem.netAmount = parseFloat(item.afterTaxTotal) || 0;
             }
             if (item.discount !== undefined) calculatedItem.discount = parseFloat(item.discount) || 0;
             if (item.unitPrice !== undefined) calculatedItem.rate = parseFloat(item.unitPrice) || 0;

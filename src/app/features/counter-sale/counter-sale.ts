@@ -201,7 +201,7 @@ export class CounterSale implements OnInit, OnDestroy {
 
   closeOrderDrawer() {
     this.isOrderDrawerOpen.set(false);
-    this.startUpcomingOrdersPolling();
+    this.startUpcomingOrdersPolling(true);
   }
 
   clearSelectedCustomer() {
@@ -322,9 +322,11 @@ export class CounterSale implements OnInit, OnDestroy {
     });
   }
 
-  startUpcomingOrdersPolling() {
+  startUpcomingOrdersPolling(skipImmediateFetch: boolean = false) {
     this.stopUpcomingOrdersPolling();
-    this.fetchUpcomingOrdersCount();
+    if (!skipImmediateFetch) {
+      this.fetchUpcomingOrdersCount();
+    }
     const intervalMs = this.configService.getConfig()?.upcomingOrdersPollingInterval ?? 30000;
     this.orderCountInterval = setInterval(() => {
       this.fetchUpcomingOrdersCount();
