@@ -30,7 +30,7 @@
 
     @if (dataSource().length > 0) {
     <!-- Dynamic Cart Items from Backend/Store -->
-    @for (item of dataSource(); track $index) {
+    @for (item of dataSource(); track item.product?.id || item.product?.productCode || $index) {
     <div class="cart-item" [class.selected]="counterSaleService.selectedItemIndex() === $index"
       (click)="counterSaleService.selectItem($index)">
       <div class="item-image">

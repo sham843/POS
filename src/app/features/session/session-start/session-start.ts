@@ -142,14 +142,6 @@ export class SessionStart {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0052CC&color=fff&rounded=true&size=90`;
   }
 
-  logout() {
-    this.sessionService.clearSessionId();
-    localStorage.removeItem('UserDetails');
-    localStorage.removeItem('tk_9xf1BzX');
-    localStorage.removeItem('lastSyncedTime');
-    localStorage.removeItem('app-theme');
-    this.router.navigate(['/login']);
-  }
 
   onVersionBadgeClick() {
     if (this.updateAvailableVersion()) {

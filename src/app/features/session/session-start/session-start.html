@@ -6,12 +6,6 @@
         <div class="position-absolute top-0 end-0 m-3 z-3 d-flex align-items-center gap-2">
             <!-- Status Badge -->
             <app-network-status cssClass="shadow-sm bg-white"></app-network-status>
-
-            <!-- Logout Button -->
-            <button class="logout-btn d-flex align-items-center justify-content-center m-0"
-                (click)="logout()" title="{{ 'HEADER.LOGOUT' | translate }}">
-                <lucide-icon [img]="LogOut"></lucide-icon>
-            </button>
         </div>
 
         <!-- Top Decorative Header -->
@@ -95,16 +89,18 @@
                 <button mat-flat-button color="primary" class="start-btn w-100 py-4 fs-6 rounded-pill shadow-sm"
                     (click)="startSession()" [disabled]="isMasterDataLoading() || isStartingSession()">
                     @if (isMasterDataLoading()) {
-                        Loading Master Data...
+                    Loading Master Data...
                     } @else if (isStartingSession()) {
-                        Starting Session...
+                    Starting Session...
                     } @else {
-                        {{ 'SESSION_SUMMARY.START_SESSION' | translate }}
+                    {{ 'SESSION_SUMMARY.START_SESSION' | translate }}
                     }
                 </button>
                 @if (appVersion()) {
                 <div class="text-center mt-3">
-                    <span class="version-badge" [class.update-available]="updateAvailableVersion()" (click)="onVersionBadgeClick()" [title]="updateAvailableVersion() ? 'New update v' + updateAvailableVersion() + ' ready! Click to install.' : 'Click to check for updates'">
+                    <span class="version-badge" [class.update-available]="updateAvailableVersion()"
+                        (click)="onVersionBadgeClick()"
+                        [title]="updateAvailableVersion() ? 'New update v' + updateAvailableVersion() + ' ready! Click to install.' : 'Click to check for updates'">
                         v{{ appVersion() }}
                         @if (updateAvailableVersion()) {
                         <span class="update-indicator"></span>
@@ -118,10 +114,7 @@
     </div>
 
     <!-- CUSTOM UPDATE CONFIRM MODAL -->
-    <app-update-confirm-modal
-        [show]="showUpdateConfirmModal()"
-        [version]="updateAvailableVersion()"
-        (confirm)="confirmUpdateInstall()"
-        (cancel)="cancelUpdateInstall()">
+    <app-update-confirm-modal [show]="showUpdateConfirmModal()" [version]="updateAvailableVersion()"
+        (confirm)="confirmUpdateInstall()" (cancel)="cancelUpdateInstall()">
     </app-update-confirm-modal>
 </div>
