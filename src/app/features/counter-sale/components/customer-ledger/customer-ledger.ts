@@ -115,7 +115,7 @@ export class CustomerLedger implements OnInit, OnChanges {
         const name = b.customerName || b.bankName || b.ledgerName || b.accountName || b.name || `Bank #${b.id}`;
         return {
           ...b,
-          id: Number(b.id ?? b.bankAccountId ?? 0),
+          id: Number(b.id ?? 0),
           customerName: name,
           bankName: name,
           displayName: name

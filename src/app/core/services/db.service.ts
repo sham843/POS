@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
+import { BankAccount } from '../models/bank-account.model';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class DbService extends Dexie {
   // Declare tables here
-  bankAccounts!: Table<any, number>;
+  bankAccounts!: Table<BankAccount, number>;
   cashLedger!: Table<any, number>;
   companyLedgerList!: Table<any, number>;
   customerList!: Table<any, number>;
@@ -16,7 +18,7 @@ export class DbService extends Dexie {
 
   constructor() {
     super('POSDatabase');
-    
+
     // Define schema
     this.version(2).stores({
       bankAccounts: 'id', // Assuming 'id' is the primary key
