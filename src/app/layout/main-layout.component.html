@@ -9,18 +9,25 @@
         <div class="brand-name">
           Dairy Shop POS
           @if (appVersion()) {
-          <span class="version-badge" [class.update-available]="updateAvailableVersion()"
-            (click)="onVersionBadgeClick()"
-            [title]="updateAvailableVersion() ? 'New update v' + updateAvailableVersion() + ' ready! Click to install.' : 'Click to check for updates'">
-            v{{ appVersion() }}
-            @if (updateAvailableVersion()) {
-            <span class="update-indicator"></span>
-            }
-          </span>
+            <span
+              class="version-badge"
+              [class.update-available]="updateAvailableVersion()"
+              (click)="onVersionBadgeClick()"
+              [title]="
+                updateAvailableVersion()
+                  ? 'New update v' + updateAvailableVersion() + ' ready! Click to install.'
+                  : 'Click to check for updates'
+              "
+            >
+              v{{ appVersion() }}
+              @if (updateAvailableVersion()) {
+                <span class="update-indicator"></span>
+              }
+            </span>
           }
         </div>
         @if (userDetails()?.organizationName) {
-        <div class="org-name-sub">{{ userDetails()?.organizationName }}</div>
+          <div class="org-name-sub">{{ userDetails()?.organizationName }}</div>
         }
       </div>
     </div>
@@ -28,7 +35,7 @@
     <!-- Date Display -->
     <div class="header-date">
       <lucide-icon [img]="Calendar"></lucide-icon>
-      <strong>{{ currentTime() | date:'dd MMM yyyy, hh:mm:ss a' }}</strong>
+      <strong>{{ currentTime() | date: 'dd MMM yyyy, hh:mm:ss a' }}</strong>
     </div>
 
     <!-- Push items to the right -->
@@ -46,55 +53,101 @@
       </a>
       <!-- Reports Menu Container (Click-to-toggle, touch-friendly, no direct navigation) -->
       <div class="reports-menu-container">
-        <a class="nav-link" [class.active]="router.url.includes('reports/')"
-          (click)="showReportsDropdown.update(v => !v)" style="cursor: pointer;">
+        <a
+          class="nav-link"
+          [class.active]="router.url.includes('reports/')"
+          (click)="showReportsDropdown.update((v) => !v)"
+          style="cursor: pointer"
+        >
           <lucide-icon [img]="LineChart"></lucide-icon>
           <span class="nav-text">Reports</span>
-          <lucide-icon [img]="ChevronDown" [size]="12" class="ms-1 dropdown-chevron"
-            [class.rotated-chevron]="showReportsDropdown()"></lucide-icon>
+          <lucide-icon
+            [img]="ChevronDown"
+            [size]="12"
+            class="ms-1 dropdown-chevron"
+            [class.rotated-chevron]="showReportsDropdown()"
+          ></lucide-icon>
         </a>
 
         <!-- Reports Dropdown Menu -->
-        <div class="reports-dropdown" *ngIf="showReportsDropdown()">
-          <a [routerLink]="['reports/user-report']" routerLinkActive="active" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
-            User Report
-          </a>
-          <a [routerLink]="['reports/product-report']" routerLinkActive="active" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
-            Product Report
-          </a>
-          <a [routerLink]="['reports/bill-report']" routerLinkActive="active" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
-            Bill Report
-          </a>
-          <a [routerLink]="['reports/customer-report']" routerLinkActive="active" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
-            Customer Report
-          </a>
-          <a [routerLink]="['reports/all-party-balance']" routerLinkActive="active" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
-            All Party Balance
-          </a>
-          <a [routerLink]="['reports/gst-report']" routerLinkActive="active" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
-            GST Report
-          </a>
-          <a [routerLink]="['reports/customer-payment-history']" routerLinkActive="active" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
-            Customer Payment History
-          </a>
-          <a [routerLink]="['reports/cash-report']" routerLinkActive="active" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
-            Cash Report
-          </a>
-          <a [routerLink]="['reports/sales-invoice-report']" routerLinkActive="active" class="dropdown-item"
-            (click)="showReportsDropdown.set(false)">
-            Sales Invoice Report
-          </a>
-        </div>
+        @if (showReportsDropdown()) {
+          <div class="reports-dropdown">
+            <a
+              [routerLink]="['reports/user-report']"
+              routerLinkActive="active"
+              class="dropdown-item"
+              (click)="showReportsDropdown.set(false)"
+            >
+              User Report
+            </a>
+            <a
+              [routerLink]="['reports/product-report']"
+              routerLinkActive="active"
+              class="dropdown-item"
+              (click)="showReportsDropdown.set(false)"
+            >
+              Product Report
+            </a>
+            <a
+              [routerLink]="['reports/bill-report']"
+              routerLinkActive="active"
+              class="dropdown-item"
+              (click)="showReportsDropdown.set(false)"
+            >
+              Bill Report
+            </a>
+            <a
+              [routerLink]="['reports/customer-report']"
+              routerLinkActive="active"
+              class="dropdown-item"
+              (click)="showReportsDropdown.set(false)"
+            >
+              Customer Report
+            </a>
+            <a
+              [routerLink]="['reports/all-party-balance']"
+              routerLinkActive="active"
+              class="dropdown-item"
+              (click)="showReportsDropdown.set(false)"
+            >
+              All Party Balance
+            </a>
+            <a
+              [routerLink]="['reports/gst-report']"
+              routerLinkActive="active"
+              class="dropdown-item"
+              (click)="showReportsDropdown.set(false)"
+            >
+              GST Report
+            </a>
+            <a
+              [routerLink]="['reports/customer-payment-history']"
+              routerLinkActive="active"
+              class="dropdown-item"
+              (click)="showReportsDropdown.set(false)"
+            >
+              Customer Payment History
+            </a>
+            <a
+              [routerLink]="['reports/cash-report']"
+              routerLinkActive="active"
+              class="dropdown-item"
+              (click)="showReportsDropdown.set(false)"
+            >
+              Cash Report
+            </a>
+            <a
+              [routerLink]="['reports/sales-invoice-report']"
+              routerLinkActive="active"
+              class="dropdown-item"
+              (click)="showReportsDropdown.set(false)"
+            >
+              Sales Invoice Report
+            </a>
+          </div>
+        }
       </div>
-      <a (click)="openSettingsDialog()" class="nav-link" style="cursor: pointer;">
+      <a (click)="openSettingsDialog()" class="nav-link" style="cursor: pointer">
         <lucide-icon [img]="Settings"></lucide-icon>
         <span class="nav-text">Settings</span>
       </a>
@@ -113,17 +166,19 @@
         </button>
 
         <!-- Dropdown Menu -->
-        <div class="profile-dropdown" *ngIf="showProfileMenu()">
-          <div class="dropdown-header">
-            <span class="user-name">{{ userDetails()?.name || 'User Name' }}</span>
-            <span class="user-role">{{ userDetails()?.userType || 'Admin' }}</span>
+        @if (showProfileMenu()) {
+          <div class="profile-dropdown">
+            <div class="dropdown-header">
+              <span class="user-name">{{ userDetails()?.name || 'User Name' }}</span>
+              <span class="user-role">{{ userDetails()?.userType || 'Admin' }}</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item text-danger" (click)="endSession()">
+              <lucide-icon [img]="LogOut"></lucide-icon>
+              End Session
+            </button>
           </div>
-          <div class="dropdown-divider"></div>
-          <button class="dropdown-item text-danger" (click)="endSession()">
-            <lucide-icon [img]="LogOut"></lucide-icon>
-            End Session
-          </button>
-        </div>
+        }
       </div>
     </div>
   </div>
@@ -134,7 +189,11 @@
   </div>
 
   <!-- CUSTOM UPDATE CONFIRM MODAL -->
-  <app-update-confirm-modal [show]="showUpdateConfirmModal()" [version]="updateAvailableVersion()"
-    (confirm)="confirmUpdateInstall()" (cancel)="cancelUpdateInstall()">
+  <app-update-confirm-modal
+    [show]="showUpdateConfirmModal()"
+    [version]="updateAvailableVersion()"
+    (confirm)="confirmUpdateInstall()"
+    (cancel)="cancelUpdateInstall()"
+  >
   </app-update-confirm-modal>
 </div>

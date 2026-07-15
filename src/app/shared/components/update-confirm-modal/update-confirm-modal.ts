@@ -1,14 +1,14 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { LucideAngularModule, RefreshCw } from 'lucide-angular';
 
 @Component({
   selector: 'app-update-confirm-modal',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [LucideAngularModule],
   templateUrl: './update-confirm-modal.html',
   styleUrl: './update-confirm-modal.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateConfirmModalComponent {
   @Input() show = false;

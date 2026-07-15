@@ -16,10 +16,16 @@
     <div class="form-group">
       <label class="field-label">Select Company Ledger <span class="required">*</span></label>
       <mat-form-field appearance="outline" class="full-width no-subscript">
-        <mat-select [(ngModel)]="selectedCompanyLedger" placeholder="Select Company Ledger" [compareWith]="compareById">
-          <mat-option *ngFor="let ledger of companyLedgerList" [value]="ledger">
-            {{ ledger.customerName }}
-          </mat-option>
+        <mat-select
+          [(ngModel)]="selectedCompanyLedger"
+          placeholder="Select Company Ledger"
+          [compareWith]="compareById"
+        >
+          @for (ledger of companyLedgerList; track ledger) {
+            <mat-option [value]="ledger">
+              {{ ledger.customerName }}
+            </mat-option>
+          }
         </mat-select>
       </mat-form-field>
     </div>
@@ -27,10 +33,16 @@
     <div class="form-group">
       <label class="field-label">Select Sale Ledger <span class="required">*</span></label>
       <mat-form-field appearance="outline" class="full-width no-subscript">
-        <mat-select [(ngModel)]="selectedSaleLedger" placeholder="Select Sale Ledger" [compareWith]="compareById">
-          <mat-option *ngFor="let ledger of saleLedgerList" [value]="ledger">
-            {{ ledger.customerName }}
-          </mat-option>
+        <mat-select
+          [(ngModel)]="selectedSaleLedger"
+          placeholder="Select Sale Ledger"
+          [compareWith]="compareById"
+        >
+          @for (ledger of saleLedgerList; track ledger) {
+            <mat-option [value]="ledger">
+              {{ ledger.customerName }}
+            </mat-option>
+          }
         </mat-select>
       </mat-form-field>
     </div>
@@ -38,10 +50,16 @@
     <div class="form-group">
       <label class="field-label">Select Bank Account <span class="required">*</span></label>
       <mat-form-field appearance="outline" class="full-width no-subscript">
-        <mat-select [(ngModel)]="selectedBankAccount" placeholder="Select Bank Account" [compareWith]="compareById">
-          <mat-option *ngFor="let bank of bankAccountList" [value]="bank">
-            {{ bank.bankName || bank.customerName }}
-          </mat-option>
+        <mat-select
+          [(ngModel)]="selectedBankAccount"
+          placeholder="Select Bank Account"
+          [compareWith]="compareById"
+        >
+          @for (bank of bankAccountList; track bank) {
+            <mat-option [value]="bank">
+              {{ bank.bankName || bank.customerName }}
+            </mat-option>
+          }
         </mat-select>
       </mat-form-field>
     </div>
@@ -49,10 +67,16 @@
     <div class="form-group">
       <label class="field-label">Select Cash Account <span class="required">*</span></label>
       <mat-form-field appearance="outline" class="full-width no-subscript">
-        <mat-select [(ngModel)]="selectedCashAccount" placeholder="Select Cash Account" [compareWith]="compareById">
-          <mat-option *ngFor="let cash of cashlist" [value]="cash">
-            {{ cash.bankName || cash.customerName }}
-          </mat-option>
+        <mat-select
+          [(ngModel)]="selectedCashAccount"
+          placeholder="Select Cash Account"
+          [compareWith]="compareById"
+        >
+          @for (cash of cashlist; track cash) {
+            <mat-option [value]="cash">
+              {{ cash.bankName || cash.customerName }}
+            </mat-option>
+          }
         </mat-select>
       </mat-form-field>
     </div>
@@ -70,10 +94,16 @@
     <div class="form-group">
       <label class="field-label">Select Godown <span class="required">*</span></label>
       <mat-form-field appearance="outline" class="full-width no-subscript">
-        <mat-select [(ngModel)]="selectedGodown" placeholder="Select Godown" [compareWith]="compareById">
-          <mat-option *ngFor="let godown of godownlist" [value]="godown">
-            {{ godown.stockYardName }}
-          </mat-option>
+        <mat-select
+          [(ngModel)]="selectedGodown"
+          placeholder="Select Godown"
+          [compareWith]="compareById"
+        >
+          @for (godown of godownlist; track godown) {
+            <mat-option [value]="godown">
+              {{ godown.stockYardName }}
+            </mat-option>
+          }
         </mat-select>
       </mat-form-field>
     </div>

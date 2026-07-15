@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,7 +22,6 @@ import packageInfo from '../../../../../package.json';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -31,11 +30,11 @@ import packageInfo from '../../../../../package.json';
     LucideAngularModule,
     TranslatePipe,
     NetworkStatusComponent,
-    UpdateConfirmModalComponent
+    UpdateConfirmModalComponent,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login implements OnInit {
   loginForm: FormGroup;
@@ -73,19 +72,22 @@ export class Login implements OnInit {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false]
+      rememberMe: [false],
     });
   }
 
   async ngOnInit() {
     const electronAPI = (window as any).electron;
     if (electronAPI && typeof electronAPI.getAppVersion === 'function') {
-      electronAPI.getAppVersion().then((version: string) => {
-        this.appVersion.set(version);
-      }).catch((err: any) => {
-        console.error('Failed to get app version:', err);
-        this.appVersion.set(packageInfo.version);
-      });
+      electronAPI
+        .getAppVersion()
+        .then((version: string) => {
+          this.appVersion.set(version);
+        })
+        .catch((err: any) => {
+          console.error('Failed to get app version:', err);
+          this.appVersion.set(packageInfo.version);
+        });
     } else {
       this.appVersion.set(packageInfo.version);
     }
@@ -120,7 +122,7 @@ export class Login implements OnInit {
       this.loginForm.patchValue({
         username: savedUsername,
         password: savedPassword,
-        rememberMe: true
+        rememberMe: true,
       });
     }
 
@@ -143,7 +145,7 @@ export class Login implements OnInit {
       },
       error: (error) => {
         console.error('Login failed', error);
-      }
+      },
     });
   }
 
@@ -187,7 +189,7 @@ export class Login implements OnInit {
           error: (_err) => {
             this.loaderService.hide(); // Hide loader on error
             this.errorMessage.set('Invalid username or password.');
-          }
+          },
         });
       } catch (e) {
         this.loaderService.hide(); // Ensure loader is hidden on unexpected encryption error

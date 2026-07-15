@@ -4,28 +4,41 @@
     <h2 class="fw-bold m-0 text-dark">{{ unitName }}</h2>
     <p class="text-secondary m-0 mt-1">Cash Report Summary</p>
   </div>
-  
+
   <!-- Header (Hidden on print) -->
-  <div class="modal-header d-print-none d-flex justify-content-between align-items-center bg-white border-bottom px-4 py-3">
+  <div
+    class="modal-header d-print-none d-flex justify-content-between align-items-center bg-white border-bottom px-4 py-3"
+  >
     <div class="d-flex align-items-center gap-3">
-      <div class="icon-wrapper bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+      <div
+        class="icon-wrapper bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+        style="width: 48px; height: 48px"
+      >
         <lucide-icon [img]="ReceiptIcon" class="text-primary"></lucide-icon>
       </div>
       <div>
         <h3 class="m-0 fw-bold text-dark fs-5">Cash Report Summary</h3>
-        <p class="text-muted m-0 mt-1" style="font-size: 13px;">Session Details & Collection Breakdown</p>
+        <p class="text-muted m-0 mt-1" style="font-size: 13px">
+          Session Details & Collection Breakdown
+        </p>
       </div>
     </div>
-    <button mat-icon-button (click)="close()" class="btn-close-custom bg-light rounded-circle border-0 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; transition: all 0.2s;">
+    <button
+      mat-icon-button
+      (click)="close()"
+      class="btn-close-custom bg-light rounded-circle border-0 d-flex align-items-center justify-content-center"
+      style="width: 36px; height: 36px; transition: all 0.2s"
+    >
       <lucide-icon [img]="XIcon" [size]="18" class="text-secondary"></lucide-icon>
     </button>
   </div>
 
   <!-- Content -->
   <div class="modal-body bg-light px-4 py-2">
-    
     <!-- User Info Card -->
-    <div class="user-info-card bg-white rounded-3 p-2 shadow-sm mb-3 border d-flex justify-content-between flex-wrap gap-2">
+    <div
+      class="user-info-card bg-white rounded-3 p-2 shadow-sm mb-3 border d-flex justify-content-between flex-wrap gap-2"
+    >
       <div class="d-flex align-items-center gap-2">
         <lucide-icon [img]="UserIcon" [size]="18" class="text-muted"></lucide-icon>
         <span class="text-secondary">User Name:</span>
@@ -38,7 +51,9 @@
         </div>
         <div class="d-flex align-items-center gap-2 bg-light px-3 py-1 rounded-pill border">
           <lucide-icon [img]="ClockIcon" [size]="16" class="text-muted"></lucide-icon>
-          <span class="fw-medium text-dark" style="font-size: 13px;">{{ data?.startTime || '12:50 PM' }} - {{ data?.endTime || '02:47 PM' }}</span>
+          <span class="fw-medium text-dark" style="font-size: 13px"
+            >{{ data?.startTime || '12:50 PM' }} - {{ data?.endTime || '02:47 PM' }}</span
+          >
         </div>
       </div>
     </div>
@@ -46,7 +61,6 @@
     <div class="row g-3 g-md-4 align-items-stretch">
       <!-- Column 1: Sale Overview -->
       <div class="col-4">
-        
         <!-- Sale Overview -->
         <div class="data-card bg-white rounded-4 shadow-sm border overflow-hidden">
           <div class="card-header bg-white border-bottom px-4 py-3">
@@ -57,38 +71,54 @@
           </div>
           <div class="p-0">
             <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Credit Sale</span>
                 <span class="fw-bold">₹{{ saleOverview.creditSale }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Coupon Sale</span>
                 <span class="fw-bold">₹{{ saleOverview.couponSale }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Online Sale</span>
                 <span class="fw-bold">₹{{ saleOverview.onlineSale }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Cash Sale</span>
                 <span class="fw-bold">₹{{ saleOverview.cashSale }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom bg-primary bg-opacity-10">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom bg-primary bg-opacity-10"
+              >
                 <span class="text-primary fw-bold">Total Sale</span>
                 <span class="fw-bold text-primary fs-6">₹{{ saleOverview.totalSale }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Total Bills</span>
                 <span class="fw-bold">{{ saleOverview.totalBills }}</span>
               </li>
               <li class="list-group-item px-3 py-2 border-0 border-bottom bg-light">
-                <span class="text-muted fw-bold" style="font-size: 13px;">Online</span>
+                <span class="text-muted fw-bold" style="font-size: 13px">Online</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Online Sale</span>
                 <span class="fw-bold">₹{{ saleOverview.onlineSaleDetail }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0"
+              >
                 <span class="text-secondary">Customer Deposit Online</span>
                 <span class="fw-bold">₹{{ saleOverview.customerDepositOnline }}</span>
               </li>
@@ -108,33 +138,49 @@
           </div>
           <div class="p-0">
             <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Cash Sale</span>
                 <span class="fw-bold">₹{{ cashOverview.cashSale }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Opening Balance (Current Shift)</span>
                 <span class="fw-bold">₹{{ cashOverview.openingBalance }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Coupon Customer Adv Received</span>
                 <span class="fw-bold">₹{{ cashOverview.couponAdvReceived }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Other Cash</span>
                 <span class="fw-bold">₹{{ cashOverview.otherCash }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Expense</span>
                 <span class="fw-bold">₹{{ cashOverview.expense }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-2 border-0 border-bottom"
+              >
                 <span class="text-secondary">Opening Balance (Next Shift)</span>
                 <span class="fw-bold">₹{{ cashOverview.nextShiftBalance }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-3 border-0 bg-success bg-opacity-10">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center px-3 py-3 border-0 bg-success bg-opacity-10"
+              >
                 <span class="text-success fw-bold">Actual Cash Received</span>
-                <span class="fw-bold text-success fs-5">₹{{ cashOverview.actualCashReceived }}</span>
+                <span class="fw-bold text-success fs-5"
+                  >₹{{ cashOverview.actualCashReceived }}</span
+                >
               </li>
             </ul>
           </div>
@@ -143,46 +189,61 @@
 
       <!-- Column 3: Denominations -->
       <div class="col-4">
-        <div class="data-card bg-white rounded-4 shadow-sm border overflow-hidden h-100 d-flex flex-column">
+        <div
+          class="data-card bg-white rounded-4 shadow-sm border overflow-hidden h-100 d-flex flex-column"
+        >
           <div class="card-header bg-white border-bottom px-4 py-3">
             <h6 class="m-0 fw-bold text-dark d-flex align-items-center gap-2">
-              <lucide-icon [img]="BanknoteIcon" [size]="18" class="text-warning text-dark"></lucide-icon>
+              <lucide-icon
+                [img]="BanknoteIcon"
+                [size]="18"
+                class="text-warning text-dark"
+              ></lucide-icon>
               Denomination
             </h6>
           </div>
-          
+
           <div class="p-2 flex-grow-1">
             <div class="denomination-grid">
-              <div *ngFor="let den of denominations" class="d-flex align-items-center justify-content-between p-1 px-3 bg-light rounded-2 border border-light" style="margin-bottom: 2px;">
-                <div class="d-flex align-items-center gap-2 w-50" style="font-size: 13px;">
-                  <span class="fw-bold text-dark px-1">₹{{ den.value }}</span>
-                  <span class="text-muted" style="font-size: 10px;">×</span>
-                  <span class="fw-bold text-primary">{{ den.count }}</span>
+              @for (den of denominations; track den) {
+                <div
+                  class="d-flex align-items-center justify-content-between p-1 px-3 bg-light rounded-2 border border-light"
+                  style="margin-bottom: 2px"
+                >
+                  <div class="d-flex align-items-center gap-2 w-50" style="font-size: 13px">
+                    <span class="fw-bold text-dark px-1">₹{{ den.value }}</span>
+                    <span class="text-muted" style="font-size: 10px">×</span>
+                    <span class="fw-bold text-primary">{{ den.count }}</span>
+                  </div>
+                  <div class="fw-bold text-dark" style="font-size: 13px">= ₹{{ den.total }}</div>
                 </div>
-                <div class="fw-bold text-dark" style="font-size: 13px;">= ₹{{ den.total }}</div>
-              </div>
+              }
             </div>
           </div>
 
-          <div class="bg-success text-white p-2 d-flex justify-content-between align-items-center mx-2 mb-2 rounded-3 shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-            <span class="fw-bold" style="font-size: 13px;">Total Collection</span>
+          <div
+            class="bg-success text-white p-2 d-flex justify-content-between align-items-center mx-2 mb-2 rounded-3 shadow-sm"
+            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%)"
+          >
+            <span class="fw-bold" style="font-size: 13px">Total Collection</span>
             <span class="fw-bold fs-5">₹{{ totalCollection }}</span>
           </div>
 
           <div class="px-3 pb-3">
             <div class="p-2 bg-light rounded-2 border">
-              <span class="text-secondary fw-medium" style="font-size: 12px;">Remark:</span>
-              <span class="fw-bold text-dark ms-2" style="font-size: 13px;">{{ remark }}</span>
+              <span class="text-secondary fw-medium" style="font-size: 12px">Remark:</span>
+              <span class="fw-bold text-dark ms-2" style="font-size: 13px">{{ remark }}</span>
             </div>
           </div>
-
         </div>
       </div>
     </div>
   </div>
 
   <!-- Footer Actions -->
-  <div class="modal-footer bg-white border-top px-4 py-3 d-flex justify-content-end gap-2 rounded-bottom-4">
+  <div
+    class="modal-footer bg-white border-top px-4 py-3 d-flex justify-content-end gap-2 rounded-bottom-4"
+  >
     <button class="btn-cancel" (click)="close()">
       <div class="d-flex align-items-center gap-2">
         <lucide-icon [img]="XIcon" [size]="16" class="text-secondary"></lucide-icon> Close

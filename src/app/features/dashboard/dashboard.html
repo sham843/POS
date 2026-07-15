@@ -1,5 +1,4 @@
 <div class="d-flex flex-column h-100 w-100 bg-white">
-
   <!-- SUB HEADER -->
   <div class="pos-sub-header">
     <div class="d-flex align-items-center gap-3">
@@ -14,9 +13,14 @@
           <lucide-icon [img]="TrendingUpIcon" class="chip-icon"></lucide-icon>
           <span>Sales</span>
         </div>
-        <div class="app-chip" [class.active]="activeView() === 'products'" [class.disabled]="!hasProductsData()"
-          [style.pointer-events]="hasProductsData() ? 'auto' : 'none'" [style.opacity]="hasProductsData() ? '1' : '0.5'"
-          (click)="hasProductsData() && setView('products')">
+        <div
+          class="app-chip"
+          [class.active]="activeView() === 'products'"
+          [class.disabled]="!hasProductsData()"
+          [style.pointer-events]="hasProductsData() ? 'auto' : 'none'"
+          [style.opacity]="hasProductsData() ? '1' : '0.5'"
+          (click)="hasProductsData() && setView('products')"
+        >
           <lucide-icon [img]="PackageIcon" class="chip-icon"></lucide-icon>
           <span>Products</span>
         </div>
@@ -26,10 +30,17 @@
     <div class="sub-header-filters align-items-center">
       <!-- From Date Picker -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
-          <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
-            (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
-            placeholder="From Date" [max]="toDateObj() || maxDate">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px">
+          <input
+            matInput
+            [matDatepicker]="fromDateStrPicker"
+            [ngModel]="fromDateObj()"
+            (ngModelChange)="onFromDateChange($event)"
+            readonly
+            (click)="fromDateStrPicker.open()"
+            placeholder="From Date"
+            [max]="toDateObj() || maxDate"
+          />
           <mat-datepicker-toggle matSuffix [for]="fromDateStrPicker"></mat-datepicker-toggle>
           <mat-datepicker #fromDateStrPicker></mat-datepicker>
         </mat-form-field>
@@ -37,19 +48,33 @@
 
       <!-- To Date Picker -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
-          <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
-            (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date"
-            [min]="fromDateObj()" [max]="maxDate">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px">
+          <input
+            matInput
+            [matDatepicker]="toDateStrPicker"
+            [ngModel]="toDateObj()"
+            (ngModelChange)="onToDateChange($event)"
+            readonly
+            (click)="toDateStrPicker.open()"
+            placeholder="To Date"
+            [min]="fromDateObj()"
+            [max]="maxDate"
+          />
           <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
           <mat-datepicker #toDateStrPicker></mat-datepicker>
         </mat-form-field>
       </div>
 
       <!-- Action Buttons -->
-      <div class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2"
-        style="border-color: #BFDBFE !important;">
-        <button class="btn btn-icon-only btn-search" (click)="searchReport()" title="Search Dashboard">
+      <div
+        class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2"
+        style="border-color: #bfdbfe !important"
+      >
+        <button
+          class="btn btn-icon-only btn-search"
+          (click)="searchReport()"
+          title="Search Dashboard"
+        >
           <lucide-icon [img]="SearchIcon" class="btn-icon-large"></lucide-icon>
         </button>
 
@@ -61,278 +86,434 @@
   </div>
 
   <!-- DATA AREA -->
-  <div class="flex-grow-1 p-4 pb-5 overflow-auto bg-light position-relative d-flex flex-column custom-scrollbar"
-    style="min-height: 0;">
-
+  <div
+    class="flex-grow-1 p-4 pb-5 overflow-auto bg-light position-relative d-flex flex-column custom-scrollbar"
+    style="min-height: 0"
+  >
     <!-- Loading Spinner -->
-    <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm" *ngIf="isLoading()">
-      <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
-      <p>Loading dashboard data...</p>
-    </div>
+    @if (isLoading()) {
+      <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm">
+        <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
+        <p>Loading dashboard data...</p>
+      </div>
+    }
 
-    <ng-container *ngIf="!isLoading()">
+    @if (!isLoading()) {
       <!-- STATS CARDS GRID -->
-    <div class="d-flex w-100 flex-nowrap gap-2">
-
-      <!-- Total Sale -->
-      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
-        <div class="stat-card-modern stat-primary">
-          <div class="stat-icon-square">
-            <lucide-icon [img]="IndianRupeeIcon" style="width: 20px; height: 20px;"></lucide-icon>
-          </div>
-          <div class="stat-details">
-            <div class="stat-label">Total Sale</div>
-            <div class="stat-value">₹{{ totalSale() | number:'1.2-2' }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Total Bills -->
-      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
-        <div class="stat-card-modern stat-info">
-          <div class="stat-icon-square">
-            <lucide-icon [img]="ReceiptIcon" style="width: 20px; height: 20px;"></lucide-icon>
-          </div>
-          <div class="stat-details">
-            <div class="stat-label">Total Bills</div>
-            <div class="stat-value">{{ totalBills() }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cash Sale -->
-      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
-        <div class="stat-card-modern stat-success">
-          <div class="stat-icon-square">
-            <lucide-icon [img]="BanknoteIcon" style="width: 20px; height: 20px;"></lucide-icon>
-          </div>
-          <div class="stat-details">
-            <div class="stat-label">Cash Sale</div>
-            <div class="stat-value text-success">₹{{ cashSale() | number:'1.2-2' }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Coupon Sale -->
-      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
-        <div class="stat-card-modern stat-warning">
-          <div class="stat-icon-square">
-            <lucide-icon [img]="TicketIcon" style="width: 20px; height: 20px;"></lucide-icon>
-          </div>
-          <div class="stat-details">
-            <div class="stat-label">Coupon Sale</div>
-            <div class="stat-value text-warning">₹{{ couponSale() | number:'1.2-2' }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Credit Sale -->
-      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
-        <div class="stat-card-modern stat-danger">
-          <div class="stat-icon-square">
-            <lucide-icon [img]="CreditCardIcon" style="width: 20px; height: 20px;"></lucide-icon>
-          </div>
-          <div class="stat-details">
-            <div class="stat-label">Credit Sale</div>
-            <div class="stat-value text-danger">₹{{ creditSale() | number:'1.2-2' }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Online Sale -->
-      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
-        <div class="stat-card-modern stat-purple">
-          <div class="stat-icon-square">
-            <lucide-icon [img]="SmartphoneIcon" style="width: 20px; height: 20px;"></lucide-icon>
-          </div>
-          <div class="stat-details">
-            <div class="stat-label">Online Sale</div>
-            <div class="stat-value" style="color: #6f42c1;">₹{{ onlineSale() | number:'1.2-2' }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Average Sale -->
-      <div class="flex-grow-1" style="flex-basis: 0; min-width: 0;">
-        <div class="stat-card-modern stat-secondary">
-          <div class="stat-icon-square">
-            <lucide-icon [img]="CalculatorIcon" style="width: 20px; height: 20px;"></lucide-icon>
-          </div>
-          <div class="stat-details">
-            <div class="stat-label">Avg. Sale</div>
-            <div class="stat-value text-secondary">₹{{ averageSale() | number:'1.2-2' }}</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- CHARTS GRID -->
-    <div class="row g-4 mt-1">
-      <!-- Last 7 Days Sales -->
-      <div class="col-md-6 d-flex flex-column" *ngIf="activeView() === 'sales'">
-        <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1">
-          @defer (on viewport) {
-            <apx-chart [series]="last7DaysChartOptions.series" [chart]="last7DaysChartOptions.chart"
-              [xaxis]="last7DaysChartOptions.xaxis" [yaxis]="last7DaysChartOptions.yaxis"
-              [tooltip]="last7DaysChartOptions.tooltip" [title]="last7DaysChartOptions.title"
-              [colors]="last7DaysChartOptions.colors" [dataLabels]="last7DaysChartOptions.dataLabels"
-              [stroke]="last7DaysChartOptions.stroke" class="w-100 h-100"></apx-chart>
-          } @placeholder {
-            <div class="d-flex align-items-center justify-content-center w-100 h-100 text-muted" style="min-height: 300px;">
-              Loading chart...
+      <div class="d-flex w-100 flex-nowrap gap-2">
+        <!-- Total Sale -->
+        <div class="flex-grow-1" style="flex-basis: 0; min-width: 0">
+          <div class="stat-card-modern stat-primary">
+            <div class="stat-icon-square">
+              <lucide-icon [img]="IndianRupeeIcon" style="width: 20px; height: 20px"></lucide-icon>
             </div>
-          }
-        </div>
-      </div>
-
-      <!-- Monthly Sales -->
-      <div class="col-md-6 d-flex flex-column" *ngIf="activeView() === 'sales'">
-        <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1">
-          @defer (on viewport) {
-            <apx-chart [series]="monthlyChartOptions.series" [chart]="monthlyChartOptions.chart"
-              [xaxis]="monthlyChartOptions.xaxis" [yaxis]="monthlyChartOptions.yaxis"
-              [tooltip]="monthlyChartOptions.tooltip" [title]="monthlyChartOptions.title"
-              [colors]="monthlyChartOptions.colors" [dataLabels]="monthlyChartOptions.dataLabels"
-              [plotOptions]="monthlyChartOptions.plotOptions" class="w-100 h-100"></apx-chart>
-          } @placeholder {
-            <div class="d-flex align-items-center justify-content-center w-100 h-100 text-muted" style="min-height: 300px;">
-              Loading chart...
+            <div class="stat-details">
+              <div class="stat-label">Total Sale</div>
+              <div class="stat-value">₹{{ totalSale() | number: '1.2-2' }}</div>
             </div>
-          }
-        </div>
-      </div>
-
-      <!-- Product Category Distribution Chart -->
-      <div class="col-md-4 mt-4 mb-5 pb-5 d-flex flex-column gap-3" *ngIf="activeView() === 'products' && categoryWiseSalesHasData()">
-        <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1">
-          @defer (on viewport) {
-            <apx-chart [series]="categoryWiseSalesChartOptions.series" [chart]="categoryWiseSalesChartOptions.chart"
-              [labels]="categoryWiseSalesChartOptions.labels" [title]="categoryWiseSalesChartOptions.title"
-              [plotOptions]="categoryWiseSalesChartOptions.plotOptions" [colors]="categoryWiseSalesChartOptions.colors"
-              [fill]="categoryWiseSalesChartOptions.fill" [dataLabels]="categoryWiseSalesChartOptions.dataLabels"
-              [tooltip]="categoryWiseSalesChartOptions.tooltip" class="w-100 h-100"></apx-chart>
-          } @placeholder {
-            <div class="d-flex align-items-center justify-content-center w-100 h-100 text-muted" style="min-height: 300px;">
-              Loading chart...
-            </div>
-          }
-        </div>
-      </div>
-      <!-- Product Sales Cards -->
-      <div class="col-md-4 mt-4 mb-5 pb-5 d-flex flex-column gap-3" *ngIf="activeView() === 'products'">
-
-        <!-- Top Selling Products -->
-        <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1 d-flex flex-column" *ngIf="topSellingProducts().length">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 style="font-weight: 600; font-size: 15px; color: #4B5563; margin-bottom: 0;">Top Selling Products</h5>
-            <span class="badge rounded-pill"
-              style="background-color: #dcfce7; color: #166534; font-size: 11px; font-weight: 600; padding: 5px 10px;">
-              Total: {{ topSellingProducts().length || 0 }}
-            </span>
           </div>
-          <div class="app-table-wrapper shadow-none border rounded-3 overflow-hidden">
-            <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
-              <table mat-table [dataSource]="topSellingProducts()" class="app-data-table table-hover w-100">
-                <ng-container matColumnDef="productName">
-                  <th mat-header-cell *matHeaderCellDef class="text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px; background-color: #f3f4f6;"> PRODUCT </th>
-                  <td mat-cell *matCellDef="let item" class="text-truncate border-bottom text-secondary"
-                    style="max-width: 150px; font-weight: 500;" [title]="item.productName || item.category">
-                    {{ item.productName || item.category }}
-                  </td>
-                </ng-container>
-
-                <ng-container matColumnDef="quantity">
-                  <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px; background-color: #f3f4f6;"> QTY </th>
-                  <td mat-cell *matCellDef="let item" class="text-end border-bottom text-secondary"> {{ item.quantity ||
-                    0 }} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="amount">
-                  <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px; background-color: #f3f4f6;"> AMOUNT </th>
-                  <td mat-cell *matCellDef="let item" class="text-end fw-bold border-bottom text-dark"> ₹{{ (item.amount
-                    || 0) | number }} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="percentage">
-                  <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px; background-color: #f3f4f6;"> SALE (%) </th>
-                  <td mat-cell *matCellDef="let item" class="border-bottom fw-bold"
-                    style="color: #16a34a !important;">
-                    <div class="d-flex align-items-center justify-content-end gap-1">
-                      {{ totalSale() ? ((item.amount / totalSale()) * 100 | number:'1.1-2') : '0' }}
-                      <lucide-icon [img]="TrendingUpIcon" style="width: 14px; height: 14px;"></lucide-icon>
-                    </div>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              </table>
+        </div>
+        <!-- Total Bills -->
+        <div class="flex-grow-1" style="flex-basis: 0; min-width: 0">
+          <div class="stat-card-modern stat-info">
+            <div class="stat-icon-square">
+              <lucide-icon [img]="ReceiptIcon" style="width: 20px; height: 20px"></lucide-icon>
+            </div>
+            <div class="stat-details">
+              <div class="stat-label">Total Bills</div>
+              <div class="stat-value">{{ totalBills() }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- Cash Sale -->
+        <div class="flex-grow-1" style="flex-basis: 0; min-width: 0">
+          <div class="stat-card-modern stat-success">
+            <div class="stat-icon-square">
+              <lucide-icon [img]="BanknoteIcon" style="width: 20px; height: 20px"></lucide-icon>
+            </div>
+            <div class="stat-details">
+              <div class="stat-label">Cash Sale</div>
+              <div class="stat-value text-success">₹{{ cashSale() | number: '1.2-2' }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- Coupon Sale -->
+        <div class="flex-grow-1" style="flex-basis: 0; min-width: 0">
+          <div class="stat-card-modern stat-warning">
+            <div class="stat-icon-square">
+              <lucide-icon [img]="TicketIcon" style="width: 20px; height: 20px"></lucide-icon>
+            </div>
+            <div class="stat-details">
+              <div class="stat-label">Coupon Sale</div>
+              <div class="stat-value text-warning">₹{{ couponSale() | number: '1.2-2' }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- Credit Sale -->
+        <div class="flex-grow-1" style="flex-basis: 0; min-width: 0">
+          <div class="stat-card-modern stat-danger">
+            <div class="stat-icon-square">
+              <lucide-icon [img]="CreditCardIcon" style="width: 20px; height: 20px"></lucide-icon>
+            </div>
+            <div class="stat-details">
+              <div class="stat-label">Credit Sale</div>
+              <div class="stat-value text-danger">₹{{ creditSale() | number: '1.2-2' }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- Online Sale -->
+        <div class="flex-grow-1" style="flex-basis: 0; min-width: 0">
+          <div class="stat-card-modern stat-purple">
+            <div class="stat-icon-square">
+              <lucide-icon [img]="SmartphoneIcon" style="width: 20px; height: 20px"></lucide-icon>
+            </div>
+            <div class="stat-details">
+              <div class="stat-label">Online Sale</div>
+              <div class="stat-value" style="color: #6f42c1">
+                ₹{{ onlineSale() | number: '1.2-2' }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Average Sale -->
+        <div class="flex-grow-1" style="flex-basis: 0; min-width: 0">
+          <div class="stat-card-modern stat-secondary">
+            <div class="stat-icon-square">
+              <lucide-icon [img]="CalculatorIcon" style="width: 20px; height: 20px"></lucide-icon>
+            </div>
+            <div class="stat-details">
+              <div class="stat-label">Avg. Sale</div>
+              <div class="stat-value text-secondary">₹{{ averageSale() | number: '1.2-2' }}</div>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-md-4 mt-4 mb-5 pb-5 d-flex flex-column gap-3" *ngIf="activeView() === 'products'">
-        <!-- Least Selling Products -->
-        <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1 d-flex flex-column" *ngIf="leastSellingProductsList().length">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 style="font-weight: 600; font-size: 15px; color: #4B5563; margin-bottom: 0;">Least Selling Products</h5>
-            <span class="badge rounded-pill"
-              style="background-color: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 600; padding: 5px 10px;">
-              Total: {{ leastSellingProductsList().length || 0 }}
-            </span>
-          </div>
-          <div class="app-table-wrapper shadow-none border rounded-3 overflow-hidden">
-            <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
-              <table mat-table [dataSource]="leastSellingProductsList()" class="app-data-table table-hover w-100">
-                <ng-container matColumnDef="productName">
-                  <th mat-header-cell *matHeaderCellDef class="text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px; background-color: #f3f4f6;"> PRODUCT </th>
-                  <td mat-cell *matCellDef="let item" class="text-truncate border-bottom text-secondary"
-                    style="max-width: 150px; font-weight: 500;" [title]="item.productName || item.category">
-                    {{ item.productName || item.category }}
-                  </td>
-                </ng-container>
-
-                <ng-container matColumnDef="quantity">
-                  <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px; background-color: #f3f4f6;"> QTY </th>
-                  <td mat-cell *matCellDef="let item" class="text-end border-bottom text-secondary"> {{ item.quantity ||
-                    0 }} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="amount">
-                  <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px; background-color: #f3f4f6;"> AMOUNT </th>
-                  <td mat-cell *matCellDef="let item" class="text-end fw-bold border-bottom text-dark"> ₹{{ (item.amount
-                    || 0) | number }} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="percentage">
-                  <th mat-header-cell *matHeaderCellDef class="text-end text-uppercase text-muted fw-bold border-0 py-2"
-                    style="font-size: 11px; background-color: #f3f4f6;"> SALE (%) </th>
-                  <td mat-cell *matCellDef="let item" class="border-bottom fw-bold"
-                    style="color: #dc2626 !important;">
-                    <div class="d-flex align-items-center justify-content-end gap-1">
-                      {{ totalSale() ? ((item.amount / totalSale()) * 100 | number:'1.1-2') : '0' }}
-                      <lucide-icon [img]="TrendingDownIcon" style="width: 14px; height: 14px;"></lucide-icon>
-                    </div>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              </table>
+      <!-- CHARTS GRID -->
+      <div class="row g-4 mt-1">
+        <!-- Last 7 Days Sales -->
+        @if (activeView() === 'sales') {
+          <div class="col-md-6 d-flex flex-column">
+            <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1">
+              @defer (on viewport) {
+                <apx-chart
+                  [series]="last7DaysChartOptions.series"
+                  [chart]="last7DaysChartOptions.chart"
+                  [xaxis]="last7DaysChartOptions.xaxis"
+                  [yaxis]="last7DaysChartOptions.yaxis"
+                  [tooltip]="last7DaysChartOptions.tooltip"
+                  [title]="last7DaysChartOptions.title"
+                  [colors]="last7DaysChartOptions.colors"
+                  [dataLabels]="last7DaysChartOptions.dataLabels"
+                  [stroke]="last7DaysChartOptions.stroke"
+                  class="w-100 h-100"
+                ></apx-chart>
+              } @placeholder {
+                <div
+                  class="d-flex align-items-center justify-content-center w-100 h-100 text-muted"
+                  style="min-height: 300px"
+                >
+                  Loading chart...
+                </div>
+              }
             </div>
           </div>
-        </div>
-
+        }
+        <!-- Monthly Sales -->
+        @if (activeView() === 'sales') {
+          <div class="col-md-6 d-flex flex-column">
+            <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1">
+              @defer (on viewport) {
+                <apx-chart
+                  [series]="monthlyChartOptions.series"
+                  [chart]="monthlyChartOptions.chart"
+                  [xaxis]="monthlyChartOptions.xaxis"
+                  [yaxis]="monthlyChartOptions.yaxis"
+                  [tooltip]="monthlyChartOptions.tooltip"
+                  [title]="monthlyChartOptions.title"
+                  [colors]="monthlyChartOptions.colors"
+                  [dataLabels]="monthlyChartOptions.dataLabels"
+                  [plotOptions]="monthlyChartOptions.plotOptions"
+                  class="w-100 h-100"
+                ></apx-chart>
+              } @placeholder {
+                <div
+                  class="d-flex align-items-center justify-content-center w-100 h-100 text-muted"
+                  style="min-height: 300px"
+                >
+                  Loading chart...
+                </div>
+              }
+            </div>
+          </div>
+        }
+        <!-- Product Category Distribution Chart -->
+        @if (activeView() === 'products' && categoryWiseSalesHasData()) {
+          <div class="col-md-4 mt-4 mb-5 pb-5 d-flex flex-column gap-3">
+            <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1">
+              @defer (on viewport) {
+                <apx-chart
+                  [series]="categoryWiseSalesChartOptions.series"
+                  [chart]="categoryWiseSalesChartOptions.chart"
+                  [labels]="categoryWiseSalesChartOptions.labels"
+                  [title]="categoryWiseSalesChartOptions.title"
+                  [plotOptions]="categoryWiseSalesChartOptions.plotOptions"
+                  [colors]="categoryWiseSalesChartOptions.colors"
+                  [fill]="categoryWiseSalesChartOptions.fill"
+                  [dataLabels]="categoryWiseSalesChartOptions.dataLabels"
+                  [tooltip]="categoryWiseSalesChartOptions.tooltip"
+                  class="w-100 h-100"
+                ></apx-chart>
+              } @placeholder {
+                <div
+                  class="d-flex align-items-center justify-content-center w-100 h-100 text-muted"
+                  style="min-height: 300px"
+                >
+                  Loading chart...
+                </div>
+              }
+            </div>
+          </div>
+        }
+        <!-- Product Sales Cards -->
+        @if (activeView() === 'products') {
+          <div class="col-md-4 mt-4 mb-5 pb-5 d-flex flex-column gap-3">
+            <!-- Top Selling Products -->
+            @if (topSellingProducts().length) {
+              <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 style="font-weight: 600; font-size: 15px; color: #4b5563; margin-bottom: 0">
+                    Top Selling Products
+                  </h5>
+                  <span
+                    class="badge rounded-pill"
+                    style="
+                      background-color: #dcfce7;
+                      color: #166534;
+                      font-size: 11px;
+                      font-weight: 600;
+                      padding: 5px 10px;
+                    "
+                  >
+                    Total: {{ topSellingProducts().length || 0 }}
+                  </span>
+                </div>
+                <div class="app-table-wrapper shadow-none border rounded-3 overflow-hidden">
+                  <div class="table-responsive" style="max-height: 350px; overflow-y: auto">
+                    <table
+                      mat-table
+                      [dataSource]="topSellingProducts()"
+                      class="app-data-table table-hover w-100"
+                    >
+                      <ng-container matColumnDef="productName">
+                        <th
+                          mat-header-cell
+                          *matHeaderCellDef
+                          class="text-uppercase text-muted fw-bold border-0 py-2"
+                          style="font-size: 11px; background-color: #f3f4f6"
+                        >
+                          PRODUCT
+                        </th>
+                        <td
+                          mat-cell
+                          *matCellDef="let item"
+                          class="text-truncate border-bottom text-secondary"
+                          style="max-width: 150px; font-weight: 500"
+                          [title]="item.productName || item.category"
+                        >
+                          {{ item.productName || item.category }}
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="quantity">
+                        <th
+                          mat-header-cell
+                          *matHeaderCellDef
+                          class="text-end text-uppercase text-muted fw-bold border-0 py-2"
+                          style="font-size: 11px; background-color: #f3f4f6"
+                        >
+                          QTY
+                        </th>
+                        <td
+                          mat-cell
+                          *matCellDef="let item"
+                          class="text-end border-bottom text-secondary"
+                        >
+                          {{ item.quantity || 0 }}
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="amount">
+                        <th
+                          mat-header-cell
+                          *matHeaderCellDef
+                          class="text-end text-uppercase text-muted fw-bold border-0 py-2"
+                          style="font-size: 11px; background-color: #f3f4f6"
+                        >
+                          AMOUNT
+                        </th>
+                        <td
+                          mat-cell
+                          *matCellDef="let item"
+                          class="text-end fw-bold border-bottom text-dark"
+                        >
+                          ₹{{ item.amount || 0 | number }}
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="percentage">
+                        <th
+                          mat-header-cell
+                          *matHeaderCellDef
+                          class="text-end text-uppercase text-muted fw-bold border-0 py-2"
+                          style="font-size: 11px; background-color: #f3f4f6"
+                        >
+                          SALE (%)
+                        </th>
+                        <td
+                          mat-cell
+                          *matCellDef="let item"
+                          class="border-bottom fw-bold"
+                          style="color: #16a34a !important"
+                        >
+                          <div class="d-flex align-items-center justify-content-end gap-1">
+                            {{
+                              totalSale()
+                                ? ((item.amount / totalSale()) * 100 | number: '1.1-2')
+                                : '0'
+                            }}
+                            <lucide-icon
+                              [img]="TrendingUpIcon"
+                              style="width: 14px; height: 14px"
+                            ></lucide-icon>
+                          </div>
+                        </td>
+                      </ng-container>
+                      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+        @if (activeView() === 'products') {
+          <div class="col-md-4 mt-4 mb-5 pb-5 d-flex flex-column gap-3">
+            <!-- Least Selling Products -->
+            @if (leastSellingProductsList().length) {
+              <div class="card shadow-sm border-0 rounded-4 p-3 flex-grow-1 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 style="font-weight: 600; font-size: 15px; color: #4b5563; margin-bottom: 0">
+                    Least Selling Products
+                  </h5>
+                  <span
+                    class="badge rounded-pill"
+                    style="
+                      background-color: #fee2e2;
+                      color: #991b1b;
+                      font-size: 11px;
+                      font-weight: 600;
+                      padding: 5px 10px;
+                    "
+                  >
+                    Total: {{ leastSellingProductsList().length || 0 }}
+                  </span>
+                </div>
+                <div class="app-table-wrapper shadow-none border rounded-3 overflow-hidden">
+                  <div class="table-responsive" style="max-height: 350px; overflow-y: auto">
+                    <table
+                      mat-table
+                      [dataSource]="leastSellingProductsList()"
+                      class="app-data-table table-hover w-100"
+                    >
+                      <ng-container matColumnDef="productName">
+                        <th
+                          mat-header-cell
+                          *matHeaderCellDef
+                          class="text-uppercase text-muted fw-bold border-0 py-2"
+                          style="font-size: 11px; background-color: #f3f4f6"
+                        >
+                          PRODUCT
+                        </th>
+                        <td
+                          mat-cell
+                          *matCellDef="let item"
+                          class="text-truncate border-bottom text-secondary"
+                          style="max-width: 150px; font-weight: 500"
+                          [title]="item.productName || item.category"
+                        >
+                          {{ item.productName || item.category }}
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="quantity">
+                        <th
+                          mat-header-cell
+                          *matHeaderCellDef
+                          class="text-end text-uppercase text-muted fw-bold border-0 py-2"
+                          style="font-size: 11px; background-color: #f3f4f6"
+                        >
+                          QTY
+                        </th>
+                        <td
+                          mat-cell
+                          *matCellDef="let item"
+                          class="text-end border-bottom text-secondary"
+                        >
+                          {{ item.quantity || 0 }}
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="amount">
+                        <th
+                          mat-header-cell
+                          *matHeaderCellDef
+                          class="text-end text-uppercase text-muted fw-bold border-0 py-2"
+                          style="font-size: 11px; background-color: #f3f4f6"
+                        >
+                          AMOUNT
+                        </th>
+                        <td
+                          mat-cell
+                          *matCellDef="let item"
+                          class="text-end fw-bold border-bottom text-dark"
+                        >
+                          ₹{{ item.amount || 0 | number }}
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="percentage">
+                        <th
+                          mat-header-cell
+                          *matHeaderCellDef
+                          class="text-end text-uppercase text-muted fw-bold border-0 py-2"
+                          style="font-size: 11px; background-color: #f3f4f6"
+                        >
+                          SALE (%)
+                        </th>
+                        <td
+                          mat-cell
+                          *matCellDef="let item"
+                          class="border-bottom fw-bold"
+                          style="color: #dc2626 !important"
+                        >
+                          <div class="d-flex align-items-center justify-content-end gap-1">
+                            {{
+                              totalSale()
+                                ? ((item.amount / totalSale()) * 100 | number: '1.1-2')
+                                : '0'
+                            }}
+                            <lucide-icon
+                              [img]="TrendingDownIcon"
+                              style="width: 14px; height: 14px"
+                            ></lucide-icon>
+                          </div>
+                        </td>
+                      </ng-container>
+                      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
       </div>
-      </div>
-    </ng-container>
+    }
   </div>
 </div>

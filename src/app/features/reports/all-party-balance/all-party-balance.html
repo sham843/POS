@@ -1,5 +1,4 @@
 <div class="d-flex flex-column h-100 w-100 bg-white">
-
   <!-- SUB HEADER -->
   <div class="pos-sub-header">
     <div class="d-flex align-items-center gap-3">
@@ -7,17 +6,22 @@
         <lucide-icon [img]="UsersIcon"></lucide-icon>
         <span>All Party Balance</span>
       </div>
-
     </div>
 
     <div class="sub-header-filters align-items-center">
-
       <!-- From Date Picker -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
-          <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
-            (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
-            placeholder="From Date" [max]="toDateObj() || maxDate">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px">
+          <input
+            matInput
+            [matDatepicker]="fromDateStrPicker"
+            [ngModel]="fromDateObj()"
+            (ngModelChange)="onFromDateChange($event)"
+            readonly
+            (click)="fromDateStrPicker.open()"
+            placeholder="From Date"
+            [max]="toDateObj() || maxDate"
+          />
           <mat-datepicker-toggle matSuffix [for]="fromDateStrPicker"></mat-datepicker-toggle>
           <mat-datepicker #fromDateStrPicker></mat-datepicker>
         </mat-form-field>
@@ -25,10 +29,18 @@
 
       <!-- To Date Picker -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px;">
-          <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
-            (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date"
-            [min]="fromDateObj()" [max]="maxDate">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 140px">
+          <input
+            matInput
+            [matDatepicker]="toDateStrPicker"
+            [ngModel]="toDateObj()"
+            (ngModelChange)="onToDateChange($event)"
+            readonly
+            (click)="toDateStrPicker.open()"
+            placeholder="To Date"
+            [min]="fromDateObj()"
+            [max]="maxDate"
+          />
           <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
           <mat-datepicker #toDateStrPicker></mat-datepicker>
         </mat-form-field>
@@ -36,18 +48,29 @@
 
       <!-- Customer Dropdown -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 300px;">
-          <mat-select [ngModel]="customerId()" (ngModelChange)="customerId.set($event)" placeholder="Select Party">
-            <mat-option *ngFor="let c of customersList()" [value]="c.id">
-              <span *ngIf="c.id !== 0">{{ c.id }} - </span>{{ c.name || c.customerName }}
-            </mat-option>
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 300px">
+          <mat-select
+            [ngModel]="customerId()"
+            (ngModelChange)="customerId.set($event)"
+            placeholder="Select Party"
+          >
+            @for (c of customersList(); track c) {
+              <mat-option [value]="c.id">
+                @if (c.id !== 0) {
+                  <span>{{ c.id }} - </span>
+                }
+                {{ c.name || c.customerName }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>
 
       <!-- Action Buttons -->
-      <div class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2"
-        style="border-color: #BFDBFE !important;">
+      <div
+        class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2"
+        style="border-color: #bfdbfe !important"
+      >
         <button class="btn btn-icon-only btn-search" (click)="searchReport()" title="Search Report">
           <lucide-icon [img]="SearchIcon" class="btn-icon-large"></lucide-icon>
         </button>
@@ -56,14 +79,22 @@
           <lucide-icon [img]="ClearIcon" class="btn-icon-large"></lucide-icon>
         </button>
 
-        <button class="btn btn-excel d-flex align-items-center gap-1" (click)="exportToExcel()"
-          [disabled]="reportData().length === 0" title="Export to Excel">
+        <button
+          class="btn btn-excel d-flex align-items-center gap-1"
+          (click)="exportToExcel()"
+          [disabled]="reportData().length === 0"
+          title="Export to Excel"
+        >
           <lucide-icon [img]="ExcelIcon" class="btn-icon"></lucide-icon>
           <span>Excel</span>
         </button>
 
-        <button class="btn btn-pdf d-flex align-items-center gap-1" (click)="exportToPdf()"
-          [disabled]="reportData().length === 0" title="Export to PDF">
+        <button
+          class="btn btn-pdf d-flex align-items-center gap-1"
+          (click)="exportToPdf()"
+          [disabled]="reportData().length === 0"
+          title="Export to PDF"
+        >
           <lucide-icon [img]="PdfIcon" class="btn-icon"></lucide-icon>
           <span>PDF</span>
         </button>
@@ -71,125 +102,131 @@
     </div>
   </div>
 
-
   <!-- DATA AREA -->
   <div class="flex-grow-1 p-4 overflow-auto bg-light position-relative d-flex flex-column gap-3">
-
     <!-- Loading Spinner -->
-    <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm" *ngIf="isLoading()">
-      <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
-      <p>Loading party balance reports...</p>
-    </div>
+    @if (isLoading()) {
+      <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm">
+        <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
+        <p>Loading party balance reports...</p>
+      </div>
+    }
 
     <!-- Table Wrapper -->
-    <div
-      class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white"
-      *ngIf="!isLoading()">
-      <div class="table-responsive flex-grow-1 overflow-auto">
-        <table mat-table [dataSource]="paginatedData()" class="app-data-table table-hover">
-
-          <!-- Sr. No. -->
-          <ng-container matColumnDef="srNo">
-            <th mat-header-cell *matHeaderCellDef> Sr. No. </th>
-            <td mat-cell *matCellDef="let item; let i = index">
-              {{ (currentPage() * pageSize()) + i + 1 }}
-            </td>
-            <td mat-footer-cell *matFooterCellDef class="fw-bold"> Total: </td>
-          </ng-container>
-
-          <!-- Transaction Date -->
-          <ng-container matColumnDef="transactionDate">
-            <th mat-header-cell *matHeaderCellDef> Transaction Date </th>
-            <td mat-cell *matCellDef="let item">
-              {{ item.transactionDate}}
-            </td>
-            <td mat-footer-cell *matFooterCellDef></td>
-          </ng-container>
-
-          <!-- Party Name -->
-          <ng-container matColumnDef="partyName">
-            <th mat-header-cell *matHeaderCellDef> Party Name </th>
-            <td mat-cell *matCellDef="let item">
-              {{ item.partyName }}
-            </td>
-            <td mat-footer-cell *matFooterCellDef></td>
-          </ng-container>
-
-          <!-- Mobile No. -->
-          <ng-container matColumnDef="mobileNumber">
-            <th mat-header-cell *matHeaderCellDef> Mobile No. </th>
-            <td mat-cell *matCellDef="let item">
-              {{ item.mobileNumber || '-' }}
-            </td>
-            <td mat-footer-cell *matFooterCellDef></td>
-          </ng-container>
-
-          <!-- Opening Balance -->
-          <ng-container matColumnDef="openingBalance">
-            <th mat-header-cell *matHeaderCellDef> Opening Balance </th>
-            <td mat-cell *matCellDef="let item">
-              {{ item.openingBalance }}
-            </td>
-            <td mat-footer-cell *matFooterCellDef></td>
-          </ng-container>
-
-
-          <!-- Description -->
-          <ng-container matColumnDef="description">
-            <th mat-header-cell *matHeaderCellDef> Description </th>
-            <td mat-cell *matCellDef="let item">
-              {{ item.description || '-' }}
-            </td>
-            <td mat-footer-cell *matFooterCellDef></td>
-          </ng-container>
-
-          <!-- Credit -->
-          <ng-container matColumnDef="credit">
-            <th mat-header-cell *matHeaderCellDef class="text-end"> Credit (₹) </th>
-            <td mat-cell *matCellDef="let item" class="text-end">
-              ₹{{ item.credit | number:'1.2-2' }}
-            </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold">
-              ₹{{ totalCreditSum() | number:'1.2-2' }}
-            </td>
-          </ng-container>
-
-          <!-- Debit -->
-          <ng-container matColumnDef="debit">
-            <th mat-header-cell *matHeaderCellDef class="text-end"> Debit (₹) </th>
-            <td mat-cell *matCellDef="let item" class="text-end">
-              ₹{{ item.debit | number:'1.2-2' }}
-            </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold">
-              ₹{{ totalDebitSum() | number:'1.2-2' }}
-            </td>
-          </ng-container>
-
-          <!-- Closing Balance -->
-          <ng-container matColumnDef="closingBalance">
-            <th mat-header-cell *matHeaderCellDef> Closing Balance </th>
-            <td mat-cell *matCellDef="let item">
-              {{ item.closingBalance }}
-            </td>
-            <td mat-footer-cell *matFooterCellDef></td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
-          <tr mat-footer-row *matFooterRowDef="displayedColumns(); sticky: true" [hidden]="reportData().length === 0"
-            class="bg-light-blue text-primary"></tr>
-        </table>
-        <app-empty-state *ngIf="reportData().length === 0" [title]="'No Reports Found'"
-          message="Choose a date range, a party, and click Search to pull records." icon="search"
-          class="py-5 bg-white border-top d-block">
-        </app-empty-state>
+    @if (!isLoading()) {
+      <div
+        class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white"
+      >
+        <div class="table-responsive flex-grow-1 overflow-auto">
+          <table mat-table [dataSource]="paginatedData()" class="app-data-table table-hover">
+            <!-- Sr. No. -->
+            <ng-container matColumnDef="srNo">
+              <th mat-header-cell *matHeaderCellDef>Sr. No.</th>
+              <td mat-cell *matCellDef="let item; let i = index">
+                {{ currentPage() * pageSize() + i + 1 }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef class="fw-bold">Total:</td>
+            </ng-container>
+            <!-- Transaction Date -->
+            <ng-container matColumnDef="transactionDate">
+              <th mat-header-cell *matHeaderCellDef>Transaction Date</th>
+              <td mat-cell *matCellDef="let item">
+                {{ item.transactionDate }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef></td>
+            </ng-container>
+            <!-- Party Name -->
+            <ng-container matColumnDef="partyName">
+              <th mat-header-cell *matHeaderCellDef>Party Name</th>
+              <td mat-cell *matCellDef="let item">
+                {{ item.partyName }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef></td>
+            </ng-container>
+            <!-- Mobile No. -->
+            <ng-container matColumnDef="mobileNumber">
+              <th mat-header-cell *matHeaderCellDef>Mobile No.</th>
+              <td mat-cell *matCellDef="let item">
+                {{ item.mobileNumber || '-' }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef></td>
+            </ng-container>
+            <!-- Opening Balance -->
+            <ng-container matColumnDef="openingBalance">
+              <th mat-header-cell *matHeaderCellDef>Opening Balance</th>
+              <td mat-cell *matCellDef="let item">
+                {{ item.openingBalance }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef></td>
+            </ng-container>
+            <!-- Description -->
+            <ng-container matColumnDef="description">
+              <th mat-header-cell *matHeaderCellDef>Description</th>
+              <td mat-cell *matCellDef="let item">
+                {{ item.description || '-' }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef></td>
+            </ng-container>
+            <!-- Credit -->
+            <ng-container matColumnDef="credit">
+              <th mat-header-cell *matHeaderCellDef class="text-end">Credit (₹)</th>
+              <td mat-cell *matCellDef="let item" class="text-end">
+                ₹{{ item.credit | number: '1.2-2' }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef class="text-end fw-bold">
+                ₹{{ totalCreditSum() | number: '1.2-2' }}
+              </td>
+            </ng-container>
+            <!-- Debit -->
+            <ng-container matColumnDef="debit">
+              <th mat-header-cell *matHeaderCellDef class="text-end">Debit (₹)</th>
+              <td mat-cell *matCellDef="let item" class="text-end">
+                ₹{{ item.debit | number: '1.2-2' }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef class="text-end fw-bold">
+                ₹{{ totalDebitSum() | number: '1.2-2' }}
+              </td>
+            </ng-container>
+            <!-- Closing Balance -->
+            <ng-container matColumnDef="closingBalance">
+              <th mat-header-cell *matHeaderCellDef>Closing Balance</th>
+              <td mat-cell *matCellDef="let item">
+                {{ item.closingBalance }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef></td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+            <tr
+              mat-footer-row
+              *matFooterRowDef="displayedColumns(); sticky: true"
+              [hidden]="reportData().length === 0"
+              class="bg-light-blue text-primary"
+            ></tr>
+          </table>
+          @if (reportData().length === 0) {
+            <app-empty-state
+              [title]="'No Reports Found'"
+              message="Choose a date range, a party, and click Search to pull records."
+              icon="search"
+              class="py-5 bg-white border-top d-block"
+            >
+            </app-empty-state>
+          }
+        </div>
+        <!-- Paginator -->
+        <mat-paginator
+          [length]="reportData().length"
+          [pageSize]="pageSize()"
+          hidePageSize="true"
+          showFirstLastButtons="true"
+          [pageIndex]="currentPage()"
+          (page)="onPageChange($event)"
+          aria-label="Select page"
+          class="border-top"
+        >
+        </mat-paginator>
       </div>
-
-      <!-- Paginator -->
-      <mat-paginator [length]="reportData().length" [pageSize]="pageSize()" hidePageSize="true"
-        showFirstLastButtons="true" [pageIndex]="currentPage()" (page)="onPageChange($event)" aria-label="Select page"
-        class="border-top">
-      </mat-paginator>
-    </div>
+    }
   </div>
 </div>

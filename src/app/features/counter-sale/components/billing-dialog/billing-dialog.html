@@ -1,18 +1,29 @@
 <div class="billing-dialog">
-
   <!-- HEADER -->
   <div class="dialog-header">
     <div class="header-left">
       <div class="payment-badge" [ngClass]="data.paymentMode">
         <lucide-icon
-          [img]="data.paymentMode === 'cash' ? Banknote : data.paymentMode === 'online' ? Globe : CreditCard"></lucide-icon>
+          [img]="
+            data.paymentMode === 'cash'
+              ? Banknote
+              : data.paymentMode === 'online'
+                ? Globe
+                : CreditCard
+          "
+        ></lucide-icon>
       </div>
       <div>
-        <h2 class="dialog-title">Bill Summary ({{ data.cartItems.length }} {{ data.cartItems.length === 1 ? 'Item' :
-          'Items' }})</h2>
+        <h2 class="dialog-title">
+          Bill Summary ({{ data.cartItems.length }}
+          {{ data.cartItems.length === 1 ? 'Item' : 'Items' }})
+        </h2>
         <span class="payment-label">{{ paymentLabel }}</span>
-        <span class="customer-name-label" *ngIf="data.customerName"> | Customer: <strong>{{ data.customerName
-            }}</strong></span>
+        @if (data.customerName) {
+          <span class="customer-name-label">
+            | Customer: <strong>{{ data.customerName }}</strong></span
+          >
+        }
       </div>
     </div>
     <button class="close-btn" (click)="cancel()">
@@ -23,7 +34,6 @@
   <!-- ITEMS TABLE -->
   <div class="app-table-wrapper">
     <table mat-table [dataSource]="data.cartItems" class="app-data-table billing-table">
-
       <ng-container matColumnDef="item">
         <th mat-header-cell *matHeaderCellDef>Item</th>
         <td mat-cell *matCellDef="let row">
@@ -34,101 +44,137 @@
 
       <ng-container matColumnDef="rate">
         <th mat-header-cell *matHeaderCellDef>Rate</th>
-        <td mat-cell *matCellDef="let row">₹{{ row.rate | number:'1.2-2' }}</td>
+        <td mat-cell *matCellDef="let row">₹{{ row.rate | number: '1.2-2' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="qty">
         <th mat-header-cell *matHeaderCellDef>Qty</th>
-        <td mat-cell *matCellDef="let row">{{ row?.quantity | number:'1.0-3' }} {{row?.unit}}</td>
+        <td mat-cell *matCellDef="let row">
+          {{ row?.quantity | number: '1.0-3' }} {{ row?.unit }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="discount">
         <th mat-header-cell *matHeaderCellDef>Discount</th>
         <td mat-cell *matCellDef="let row">
-          <span class="disc-badge" *ngIf="row.discount > 0">{{ row.discount }}%</span>
-          <span class="no-disc" *ngIf="row.discount === 0">—</span>
+          @if (row.discount > 0) {
+            <span class="disc-badge">{{ row.discount }}%</span>
+          }
+          @if (row.discount === 0) {
+            <span class="no-disc">—</span>
+          }
         </td>
       </ng-container>
 
       <ng-container matColumnDef="sgst">
         <th mat-header-cell *matHeaderCellDef>SGST</th>
         <td mat-cell *matCellDef="let row">
-          <span *ngIf="row.gstAmount > 0">
-            ₹{{ (row.gstAmount / 2) | number:'1.2-2' }}
-            <span class="tax-pct" style="font-size: 10px; color: var(--pos-text-secondary); margin-left: 2px;">({{
-              (row.gst / 2) }}%)</span>
-          </span>
-          <span class="no-disc" *ngIf="row.gstAmount === 0">—</span>
+          @if (row.gstAmount > 0) {
+            <span>
+              ₹{{ row.gstAmount / 2 | number: '1.2-2' }}
+              <span
+                class="tax-pct"
+                style="font-size: 10px; color: var(--pos-text-secondary); margin-left: 2px"
+                >({{ row.gst / 2 }}%)</span
+              >
+            </span>
+          }
+          @if (row.gstAmount === 0) {
+            <span class="no-disc">—</span>
+          }
         </td>
       </ng-container>
 
       <ng-container matColumnDef="cgst">
         <th mat-header-cell *matHeaderCellDef>CGST</th>
         <td mat-cell *matCellDef="let row">
-          <span *ngIf="row.gstAmount > 0">
-            ₹{{ (row.gstAmount / 2) | number:'1.2-2' }}
-            <span class="tax-pct" style="font-size: 10px; color: var(--pos-text-secondary); margin-left: 2px;">({{
-              (row.gst / 2) }}%)</span>
-          </span>
-          <span class="no-disc" *ngIf="row.gstAmount === 0">—</span>
+          @if (row.gstAmount > 0) {
+            <span>
+              ₹{{ row.gstAmount / 2 | number: '1.2-2' }}
+              <span
+                class="tax-pct"
+                style="font-size: 10px; color: var(--pos-text-secondary); margin-left: 2px"
+                >({{ row.gst / 2 }}%)</span
+              >
+            </span>
+          }
+          @if (row.gstAmount === 0) {
+            <span class="no-disc">—</span>
+          }
         </td>
       </ng-container>
 
       <ng-container matColumnDef="amount">
         <th mat-header-cell *matHeaderCellDef>Amount</th>
-        <td mat-cell *matCellDef="let row">₹{{ row.amount | number:'1.2-2' }}</td>
+        <td mat-cell *matCellDef="let row">₹{{ row.amount | number: '1.2-2' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="total">
         <th mat-header-cell *matHeaderCellDef>Total</th>
-        <td mat-cell *matCellDef="let row"><strong>₹{{ row.total | number:'1.2-2' }}</strong></td>
+        <td mat-cell *matCellDef="let row">
+          <strong>₹{{ row.total | number: '1.2-2' }}</strong>
+        </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
 
-    <div class="empty-cart" *ngIf="data.cartItems.length === 0">
-      <p>No items in cart</p>
-    </div>
+    @if (data.cartItems.length === 0) {
+      <div class="empty-cart">
+        <p>No items in cart</p>
+      </div>
+    }
   </div>
 
   <!-- SUMMARY SECTION -->
   <div class="summary-section">
     <div class="summary-row">
       <span>Sub Total</span>
-      <span>₹{{ data.subTotal | number:'1.2-2' }}</span>
+      <span>₹{{ data.subTotal | number: '1.2-2' }}</span>
     </div>
     <div class="summary-row">
       <span>Discount</span>
-      <span [class.red]="data.totalDiscount > 0" *ngIf="data.totalDiscount > 0">- ₹{{ data.totalDiscount | number:'1.2-2' }}</span>
-      <span *ngIf="data.totalDiscount <= 0">₹0.00</span>
+      @if (data.totalDiscount > 0) {
+        <span [class.red]="data.totalDiscount > 0"
+          >- ₹{{ data.totalDiscount | number: '1.2-2' }}</span
+        >
+      }
+      @if (data.totalDiscount <= 0) {
+        <span>₹0.00</span>
+      }
     </div>
     <div class="summary-row">
       <span>Taxable Amount</span>
-      <span>₹{{ data.taxableAmount | number:'1.2-2' }}</span>
+      <span>₹{{ data.taxableAmount | number: '1.2-2' }}</span>
     </div>
     <mat-divider></mat-divider>
-    <div class="summary-row tax-row" *ngIf="sgst > 0">
-      <span>SGST</span>
-      <span>₹{{ sgst | number:'1.2-2' }}</span>
-    </div>
-    <div class="summary-row tax-row" *ngIf="cgst > 0">
-      <span>CGST</span>
-      <span>₹{{ cgst | number:'1.2-2' }}</span>
-    </div>
-    <div class="summary-row tax-row" *ngIf="igst > 0">
-      <span>IGST</span>
-      <span>₹{{ igst | number:'1.2-2' }}</span>
-    </div>
+    @if (sgst > 0) {
+      <div class="summary-row tax-row">
+        <span>SGST</span>
+        <span>₹{{ sgst | number: '1.2-2' }}</span>
+      </div>
+    }
+    @if (cgst > 0) {
+      <div class="summary-row tax-row">
+        <span>CGST</span>
+        <span>₹{{ cgst | number: '1.2-2' }}</span>
+      </div>
+    }
+    @if (igst > 0) {
+      <div class="summary-row tax-row">
+        <span>IGST</span>
+        <span>₹{{ igst | number: '1.2-2' }}</span>
+      </div>
+    }
     <div class="summary-row">
       <span>Round Off</span>
-      <span>{{ data.roundOff > 0 ? '+' : '' }}₹{{ data.roundOff | number:'1.2-2' }}</span>
+      <span>{{ data.roundOff > 0 ? '+' : '' }}₹{{ data.roundOff | number: '1.2-2' }}</span>
     </div>
     <mat-divider></mat-divider>
     <div class="summary-row total-row">
       <span>Total Payable</span>
-      <span class="total-amount">₹{{ data.totalPayable | number:'1.2-2' }}</span>
+      <span class="total-amount">₹{{ data.totalPayable | number: '1.2-2' }}</span>
     </div>
   </div>
 
@@ -143,5 +189,4 @@
       Confirm {{ paymentLabel }}
     </button>
   </div>
-
 </div>

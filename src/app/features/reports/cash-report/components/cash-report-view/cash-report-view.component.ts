@@ -1,15 +1,27 @@
 import { Component, Inject, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { LucideAngularModule, Receipt, User, Calendar, Clock, CreditCard, Banknote, Printer, X, Wallet, ChevronRight } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Receipt,
+  User,
+  Calendar,
+  Clock,
+  CreditCard,
+  Banknote,
+  Printer,
+  X,
+  Wallet,
+  ChevronRight,
+} from 'lucide-angular';
 import { ApiService } from '../../../../../core/services/api.service';
 
 @Component({
   selector: 'app-cash-report-view',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, LucideAngularModule],
+  imports: [MatDialogModule, LucideAngularModule],
   templateUrl: './cash-report-view.component.html',
-  styleUrl: './cash-report-view.component.scss'
+  styleUrl: './cash-report-view.component.scss',
 })
 export class CashReportViewComponent implements OnInit {
   readonly ReceiptIcon = Receipt;
@@ -27,13 +39,24 @@ export class CashReportViewComponent implements OnInit {
 
   // Initial empty data to prevent ExpressionChangedAfterItHasBeenCheckedError
   saleOverview: any = {
-    creditSale: 0, couponSale: 0, onlineSale: 0, cashSale: 0,
-    totalSale: 0, totalBills: 0, onlineSaleDetail: 0, customerDepositOnline: 0
+    creditSale: 0,
+    couponSale: 0,
+    onlineSale: 0,
+    cashSale: 0,
+    totalSale: 0,
+    totalBills: 0,
+    onlineSaleDetail: 0,
+    customerDepositOnline: 0,
   };
 
   cashOverview: any = {
-    cashSale: 0, openingBalance: 0, couponAdvReceived: 0, otherCash: 0,
-    expense: 0, nextShiftBalance: 0, actualCashReceived: 0
+    cashSale: 0,
+    openingBalance: 0,
+    couponAdvReceived: 0,
+    otherCash: 0,
+    expense: 0,
+    nextShiftBalance: 0,
+    actualCashReceived: 0,
   };
 
   denominations: any[] = [];
@@ -47,10 +70,8 @@ export class CashReportViewComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<CashReportViewComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
-
-  }
+    @Inject(MAT_DIALOG_DATA) public data: any,
+  ) {}
 
   ngOnInit(): void {
     const userStr = localStorage.getItem('UserDetails');
@@ -87,9 +108,13 @@ export class CashReportViewComponent implements OnInit {
         error: (err) => {
           console.error('Error fetching session details', err);
           this.isLoading = false;
-        }
+        },
       });
-    } else if (this.data.reportType === 'summary' && this.data.rawDate && this.data.userId !== undefined) {
+    } else if (
+      this.data.reportType === 'summary' &&
+      this.data.rawDate &&
+      this.data.userId !== undefined
+    ) {
       // Format date from DD-MM-YYYY to YYYY-MM-DD if needed
       let apiDate = this.data.rawDate;
       if (apiDate && apiDate.includes('-')) {
@@ -115,7 +140,7 @@ export class CashReportViewComponent implements OnInit {
         error: (err) => {
           console.error('Error fetching summary details', err);
           this.isLoading = false;
-        }
+        },
       });
     } else {
       console.warn('Missing required data for API call', this.data);
@@ -124,7 +149,7 @@ export class CashReportViewComponent implements OnInit {
   }
 
   private bindData(resData: any) {
-    debugger
+    debugger;
     if (!resData) return;
 
     this.saleOverview = {
@@ -135,7 +160,7 @@ export class CashReportViewComponent implements OnInit {
       totalSale: resData.totalSale || 0,
       totalBills: resData.totalBill || 0,
       onlineSaleDetail: resData.onlineSale || 0,
-      customerDepositOnline: resData.custDepositOnline || 0
+      customerDepositOnline: resData.custDepositOnline || 0,
     };
 
     this.cashOverview = {
@@ -145,7 +170,7 @@ export class CashReportViewComponent implements OnInit {
       otherCash: resData.otherCash || 0,
       expense: resData.expense || 0,
       nextShiftBalance: resData.openingBalanceForNextShift || 0,
-      actualCashReceived: 0 // Will be calculated from denominations
+      actualCashReceived: 0, // Will be calculated from denominations
     };
 
     if (resData.createdDate) {
@@ -167,18 +192,18 @@ export class CashReportViewComponent implements OnInit {
     if (denoms && Array.isArray(denoms) && denoms.length > 0) {
       denoms.forEach((d: any) => {
         const count = d.quantity || 0;
-        const total = d.amount || (d.denomination * count);
+        const total = d.amount || d.denomination * count;
         this.denominations.push({
           value: d.denomination,
           count: count,
-          total: total
+          total: total,
         });
         calculatedTotal += total;
       });
     }
 
     this.totalCollection = calculatedTotal;
-    
+
     // Actual cash received is exactly the total collection in the drawer
     this.cashOverview.actualCashReceived = this.totalCollection;
 

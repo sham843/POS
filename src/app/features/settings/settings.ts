@@ -1,5 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  OnInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,17 +19,16 @@ import { firstValueFrom } from 'rxjs';
   selector: 'app-settings',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatSelectModule,
     MatButtonModule,
-    LucideAngularModule
+    LucideAngularModule,
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Settings implements OnInit {
   dialogRef = inject(MatDialogRef<Settings>);
@@ -57,21 +61,33 @@ export class Settings implements OnInit {
         const userDetails = JSON.parse(userStr);
         unitId = userDetails.unitid || userDetails.unitId || 0;
         organizationId = userDetails.organizationId || 0;
-      } catch (e) { }
+      } catch (e) {}
     }
 
     try {
       const [compRes, saleRes, cashRes, godownRes] = await Promise.all([
-        firstValueFrom(this.apiService.get<any>(`api/v1/customer/company-ledger?organizationId=${organizationId}&unitId=${unitId}`)),
-        firstValueFrom(this.apiService.get<any>(`api/v1/customer/sale-ledger?organizationId=${organizationId}&unitId=${unitId}`)),
-        firstValueFrom(this.apiService.get<any>(`api/v1/customer/cash-ledger?organizationId=${organizationId}&unitId=${unitId}`)),
-        firstValueFrom(this.apiService.get<any>(`api/v1/customer/godown-list?unitId=${unitId}`))
+        firstValueFrom(
+          this.apiService.get<any>(
+            `api/v1/customer/company-ledger?organizationId=${organizationId}&unitId=${unitId}`,
+          ),
+        ),
+        firstValueFrom(
+          this.apiService.get<any>(
+            `api/v1/customer/sale-ledger?organizationId=${organizationId}&unitId=${unitId}`,
+          ),
+        ),
+        firstValueFrom(
+          this.apiService.get<any>(
+            `api/v1/customer/cash-ledger?organizationId=${organizationId}&unitId=${unitId}`,
+          ),
+        ),
+        firstValueFrom(this.apiService.get<any>(`api/v1/customer/godown-list?unitId=${unitId}`)),
       ]);
 
-      this.companyLedgerList = Array.isArray(compRes) ? compRes : (compRes?.data || []);
-      this.saleLedgerList = Array.isArray(saleRes) ? saleRes : (saleRes?.data || []);
-      this.cashlist = Array.isArray(cashRes) ? cashRes : (cashRes?.data || []);
-      this.godownlist = Array.isArray(godownRes) ? godownRes : (godownRes?.data || []);
+      this.companyLedgerList = Array.isArray(compRes) ? compRes : compRes?.data || [];
+      this.saleLedgerList = Array.isArray(saleRes) ? saleRes : saleRes?.data || [];
+      this.cashlist = Array.isArray(cashRes) ? cashRes : cashRes?.data || [];
+      this.godownlist = Array.isArray(godownRes) ? godownRes : godownRes?.data || [];
       this.bankAccountList = await this.dbService.bankAccounts.toArray();
     } catch (e) {
       console.error('Failed to load settings dropdowns', e);
@@ -82,7 +98,7 @@ export class Settings implements OnInit {
     if (savedSettingsStr) {
       try {
         savedSettings = JSON.parse(savedSettingsStr);
-      } catch (e) { }
+      } catch (e) {}
     }
 
     if (savedSettings?.discountType) {
@@ -90,23 +106,28 @@ export class Settings implements OnInit {
     }
 
     if (savedSettings?.companyLedger?.id) {
-      this.selectedCompanyLedger = this.companyLedgerList.find(x => x.id == savedSettings.companyLedger.id) || null;
+      this.selectedCompanyLedger =
+        this.companyLedgerList.find((x) => x.id == savedSettings.companyLedger.id) || null;
     }
 
     if (savedSettings?.saleLedger?.id) {
-      this.selectedSaleLedger = this.saleLedgerList.find(x => x.id == savedSettings.saleLedger.id) || null;
+      this.selectedSaleLedger =
+        this.saleLedgerList.find((x) => x.id == savedSettings.saleLedger.id) || null;
     }
 
     if (savedSettings?.cashAccount?.id) {
-      this.selectedCashAccount = this.cashlist.find(x => x.id == savedSettings.cashAccount.id) || null;
+      this.selectedCashAccount =
+        this.cashlist.find((x) => x.id == savedSettings.cashAccount.id) || null;
     }
 
     if (savedSettings?.bankAccount?.id) {
-      this.selectedBankAccount = this.bankAccountList.find(x => x.id == savedSettings.bankAccount.id) || null;
+      this.selectedBankAccount =
+        this.bankAccountList.find((x) => x.id == savedSettings.bankAccount.id) || null;
     }
 
     if (savedSettings?.godown?.id) {
-      this.selectedGodown = this.godownlist.find((g: any) => g.id == savedSettings.godown.id) || null;
+      this.selectedGodown =
+        this.godownlist.find((g: any) => g.id == savedSettings.godown.id) || null;
     }
 
     this.cdr.markForCheck();
@@ -114,12 +135,26 @@ export class Settings implements OnInit {
 
   save() {
     let obj = {
-      companyLedger: this.selectedCompanyLedger ? { id: this.selectedCompanyLedger.id, name: this.selectedCompanyLedger.customerName } : null,
-      saleLedger: this.selectedSaleLedger ? { id: this.selectedSaleLedger.id, name: this.selectedSaleLedger.customerName } : null,
-      cashAccount: this.selectedCashAccount ? { id: this.selectedCashAccount.id, name: this.selectedCashAccount.bankName || this.selectedCashAccount.customerName } : null,
-      bankAccount: this.selectedBankAccount ? { id: this.selectedBankAccount.id, name: this.selectedBankAccount.bankName || this.selectedBankAccount.customerName } : null,
+      companyLedger: this.selectedCompanyLedger
+        ? { id: this.selectedCompanyLedger.id, name: this.selectedCompanyLedger.customerName }
+        : null,
+      saleLedger: this.selectedSaleLedger
+        ? { id: this.selectedSaleLedger.id, name: this.selectedSaleLedger.customerName }
+        : null,
+      cashAccount: this.selectedCashAccount
+        ? {
+            id: this.selectedCashAccount.id,
+            name: this.selectedCashAccount.bankName || this.selectedCashAccount.customerName,
+          }
+        : null,
+      bankAccount: this.selectedBankAccount
+        ? {
+            id: this.selectedBankAccount.id,
+            name: this.selectedBankAccount.bankName || this.selectedBankAccount.customerName,
+          }
+        : null,
       godown: this.selectedGodown || null,
-      discountType: this.discountType
+      discountType: this.discountType,
     };
 
     localStorage.setItem('posSettings', JSON.stringify(obj));

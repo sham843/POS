@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, Delete, Banknote, Globe, CreditCard, Eraser } from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,11 +10,7 @@ import { DialogService } from '../../../../core/services/dialog.service';
 @Component({
   selector: 'app-payment',
   standalone: true,
-  imports: [
-    CommonModule,
-    LucideAngularModule,
-    MatButtonModule
-  ],
+  imports: [LucideAngularModule, MatButtonModule],
   templateUrl: './payment.html',
   styleUrl: './payment.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,11 +41,13 @@ export class Payment {
     if (idx === null || idx < 0) return true;
     const item = this.counterSaleService.cartItems()[idx];
     if (!item) return true;
-    
+
     const mensurationType = item.product?.['mensurationType'];
     const mensurationUnit = item.product?.['mensurationUnit'];
-    if ((mensurationType && String(mensurationType).toLowerCase() === 'count') || 
-        (mensurationUnit && String(mensurationUnit) === 'Nos')) {
+    if (
+      (mensurationType && String(mensurationType).toLowerCase() === 'count') ||
+      (mensurationUnit && String(mensurationUnit) === 'Nos')
+    ) {
       return false;
     }
     return true;
@@ -74,9 +71,11 @@ export class Payment {
       return;
     }
 
-    const invalidItems = this.counterSaleService.cartItems().filter(item => item.quantity <= 0);
+    const invalidItems = this.counterSaleService.cartItems().filter((item) => item.quantity <= 0);
     if (invalidItems.length > 0) {
-      this.notificationService.showError("One or more items have quantity 0. Please update the quantity or remove them before payment.");
+      this.notificationService.showError(
+        'One or more items have quantity 0. Please update the quantity or remove them before payment.',
+      );
       return;
     }
 
@@ -85,7 +84,9 @@ export class Payment {
       if (customer?.billingType?.toLowerCase() === 'prepaid') {
         const balance = customer.balanceAtDairy || customer.balance || 0;
         if (balance < 0) {
-          this.notificationService.showError('Prepaid customer balance is less than 0. Payment cannot be processed.');
+          this.notificationService.showError(
+            'Prepaid customer balance is less than 0. Payment cannot be processed.',
+          );
           return;
         }
       }
@@ -99,7 +100,10 @@ export class Payment {
     const ref = this.dialog.open(BillingDialog, {
       data: {
         paymentMode,
-        customerName: this.counterSaleService.selectedCustomer()?.customerName || this.counterSaleService.selectedCustomer()?.name || 'Daily Cash Counter Party',
+        customerName:
+          this.counterSaleService.selectedCustomer()?.customerName ||
+          this.counterSaleService.selectedCustomer()?.name ||
+          'Daily Cash Counter Party',
         billingType: this.counterSaleService.selectedCustomer()?.billingType,
         cartItems: this.counterSaleService.cartItems(),
         subTotal: this.counterSaleService.subTotal(),
@@ -115,7 +119,7 @@ export class Payment {
       autoFocus: false,
     });
 
-    ref.afterClosed().subscribe(result => {
+    ref.afterClosed().subscribe((result) => {
       if (result?.confirmed) {
         this.counterSaleService.saveInvoice(result.paymentMode, result.printAutomatically);
       }

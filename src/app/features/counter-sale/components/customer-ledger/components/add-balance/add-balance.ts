@@ -1,11 +1,34 @@
-import { Component, Input, Output, EventEmitter, inject, signal, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  inject,
+  signal,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+  DestroyRef,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LucideAngularModule, Plus, DollarSign, ReceiptText, ClipboardList, Loader } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Plus,
+  DollarSign,
+  ReceiptText,
+  ClipboardList,
+  Loader,
+} from 'lucide-angular';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
-import { CustomDateAdapter, CUSTOM_DATE_FORMATS } from '../../../../../../core/adapters/custom-date-adapter';
+import {
+  CustomDateAdapter,
+  CUSTOM_DATE_FORMATS,
+} from '../../../../../../core/adapters/custom-date-adapter';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -18,21 +41,20 @@ import { SessionService } from '../../../../../../core/services/session.service'
   selector: 'app-add-balance',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     LucideAngularModule,
     MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule
+    MatSelectModule,
   ],
   providers: [
     { provide: DateAdapter, useClass: CustomDateAdapter },
-    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
   ],
   templateUrl: './add-balance.html',
   styleUrl: './add-balance.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddBalanceComponent implements OnInit, OnChanges {
   private dbService = inject(DbService);
@@ -82,19 +104,21 @@ export class AddBalanceComponent implements OnInit, OnChanges {
       chequeDate: [new Date(), Validators.required],
       voucherSubType: ['Sale'],
       transactionNo: [''],
-      remarks: ['']
+      remarks: [''],
     });
 
-    this.ledgerForm.get('transactionDate')?.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    this.ledgerForm
+      .get('transactionDate')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         if (this.ledgerForm.get('chequeDate')?.value) {
           this.ledgerForm.patchValue({ chequeDate: null });
         }
       });
 
-    this.ledgerForm.get('paymentMode')?.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    this.ledgerForm
+      .get('paymentMode')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.updateBankCashLedgerDefault();
       });
@@ -105,7 +129,11 @@ export class AddBalanceComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['isOpen']?.currentValue === true || (this.isOpen && changes['customer']?.currentValue) || changes['partiesList']) {
+    if (
+      changes['isOpen']?.currentValue === true ||
+      (this.isOpen && changes['customer']?.currentValue) ||
+      changes['partiesList']
+    ) {
       this.initFormState();
     } else if (changes['cashLedgersList'] || changes['bankAccountsList']) {
       if (!this.ledgerForm.get('ledger2')?.value) {
@@ -119,20 +147,26 @@ export class AddBalanceComponent implements OnInit, OnChanges {
     const rawCustId = this.customer?.id ?? this.customer?.customerId ?? this.customer?.partyId;
     let custId = rawCustId ? Number(rawCustId) : 0;
 
-    if ((!custId || !this.partiesList.some(p => Number(p.id) === custId)) && this.partiesList.length > 0) {
+    if (
+      (!custId || !this.partiesList.some((p) => Number(p.id) === custId)) &&
+      this.partiesList.length > 0
+    ) {
       custId = Number(this.partiesList[0].id);
     }
 
-    this.ledgerForm.patchValue({
-      ledger1: custId > 0 ? custId : null,
-      paymentMode: 'cash',
-      ledgerAmount: null,
-      transactionDate: today,
-      chequeDate: today,
-      voucherSubType: 'Sale',
-      transactionNo: '',
-      remarks: ''
-    }, { emitEvent: false });
+    this.ledgerForm.patchValue(
+      {
+        ledger1: custId > 0 ? custId : null,
+        paymentMode: 'cash',
+        ledgerAmount: null,
+        transactionDate: today,
+        chequeDate: today,
+        voucherSubType: 'Sale',
+        transactionNo: '',
+        remarks: '',
+      },
+      { emitEvent: false },
+    );
 
     this.updateBankCashLedgerDefault();
     this.cdr.detectChanges();
@@ -173,23 +207,30 @@ export class AddBalanceComponent implements OnInit, OnChanges {
 
     const userDetailsStr = localStorage.getItem('UserDetails');
     let userDetails: any = null;
-    try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) { }
+    try {
+      if (userDetailsStr) userDetails = JSON.parse(userDetailsStr);
+    } catch (e) {}
 
     const orgId = userDetails?.organizationId || 28;
     const unitId = userDetails?.unitid || userDetails?.unitId || 0;
     const userId = userDetails?.id || 0;
 
     const localSessionId = localStorage.getItem('sessionId');
-    const sessionId = this.sessionService.getSessionId() ? parseInt(this.sessionService.getSessionId() || '0', 10) : (localSessionId ? parseInt(localSessionId, 10) : 0);
+    const sessionId = this.sessionService.getSessionId()
+      ? parseInt(this.sessionService.getSessionId() || '0', 10)
+      : localSessionId
+        ? parseInt(localSessionId, 10)
+        : 0;
 
-    const selectedParty = this.partiesList.find(p => Number(p.id) === Number(partyId)) || this.customer;
+    const selectedParty =
+      this.partiesList.find((p) => Number(p.id) === Number(partyId)) || this.customer;
 
     let tDate = new Date().toISOString();
     let rDate = new Date().toISOString();
     try {
       if (formValues.transactionDate) tDate = new Date(formValues.transactionDate).toISOString();
       if (formValues.chequeDate) rDate = new Date(formValues.chequeDate).toISOString();
-    } catch (e) { }
+    } catch (e) {}
 
     let modeId = 1;
     let modeName = 'Cash';
@@ -205,7 +246,7 @@ export class AddBalanceComponent implements OnInit, OnChanges {
     }
 
     const targetBankId = formValues.paymentMode === 'cash' ? 1177 : Number(formValues.ledger2);
-    const foundBank = this.bankAccountsList.find(b => Number(b.id) === targetBankId);
+    const foundBank = this.bankAccountsList.find((b) => Number(b.id) === targetBankId);
     const selectedBankName = foundBank?.customerName || '';
     const bankLedgerId = Number(foundBank?.id || targetBankId || 0);
 
@@ -253,7 +294,7 @@ export class AddBalanceComponent implements OnInit, OnChanges {
       inFavorPartyName: '',
       groupIdForBulk: 0,
       upiId: '',
-      sessionId: sessionId
+      sessionId: sessionId,
     };
 
     this.counterInvoiceService.addCustomerBalance(payload).subscribe({
@@ -262,7 +303,7 @@ export class AddBalanceComponent implements OnInit, OnChanges {
         this.isSaving.set(false);
         this.ledgerForm.patchValue({
           ledgerAmount: null,
-          remarks: ''
+          remarks: '',
         });
 
         await this.updateIndexedDbBalance(amt, Number(partyId));
@@ -273,7 +314,7 @@ export class AddBalanceComponent implements OnInit, OnChanges {
         console.error('Error adding balance:', err);
         this.notificationService.showError('Failed to add customer balance.');
         this.isSaving.set(false);
-      }
+      },
     });
   }
 
@@ -287,7 +328,7 @@ export class AddBalanceComponent implements OnInit, OnChanges {
 
         await this.dbService.customerList.update(partyId, {
           balanceAtDairy: newBalance,
-          balance: newBalance
+          balance: newBalance,
         });
       }
     } catch (e) {

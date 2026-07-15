@@ -1,5 +1,4 @@
 <div class="d-flex flex-column h-100 w-100 bg-white">
-
   <!-- SUB HEADER (Angular Material Styled Filters) -->
   <div class="pos-sub-header">
     <div class="d-flex align-items-center gap-3">
@@ -10,11 +9,19 @@
 
       <!-- Segmented Control for Details / Summary -->
       <div class="app-segment-chips">
-        <div class="app-chip" [class.active]="reportType() === 'details'" (click)="setReportType('details')">
+        <div
+          class="app-chip"
+          [class.active]="reportType() === 'details'"
+          (click)="setReportType('details')"
+        >
           <lucide-icon [img]="ReceiptIcon" class="chip-icon"></lucide-icon>
           <span>Details</span>
         </div>
-        <div class="app-chip" [class.active]="reportType() === 'summary'" (click)="setReportType('summary')">
+        <div
+          class="app-chip"
+          [class.active]="reportType() === 'summary'"
+          (click)="setReportType('summary')"
+        >
           <lucide-icon [img]="ProductIcon" class="chip-icon"></lucide-icon>
           <span>Summary</span>
         </div>
@@ -24,10 +31,17 @@
     <div class="sub-header-filters align-items-center">
       <!-- From Date Picker -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
-          <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
-            (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
-            placeholder="From Date" [max]="toDateObj() || maxDate">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px">
+          <input
+            matInput
+            [matDatepicker]="fromDateStrPicker"
+            [ngModel]="fromDateObj()"
+            (ngModelChange)="onFromDateChange($event)"
+            readonly
+            (click)="fromDateStrPicker.open()"
+            placeholder="From Date"
+            [max]="toDateObj() || maxDate"
+          />
           <mat-datepicker-toggle matSuffix [for]="fromDateStrPicker"></mat-datepicker-toggle>
           <mat-datepicker #fromDateStrPicker></mat-datepicker>
         </mat-form-field>
@@ -35,10 +49,18 @@
 
       <!-- To Date Picker -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
-          <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
-            (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date"
-            [min]="fromDateObj()" [max]="maxDate">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px">
+          <input
+            matInput
+            [matDatepicker]="toDateStrPicker"
+            [ngModel]="toDateObj()"
+            (ngModelChange)="onToDateChange($event)"
+            readonly
+            (click)="toDateStrPicker.open()"
+            placeholder="To Date"
+            [min]="fromDateObj()"
+            [max]="maxDate"
+          />
           <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
           <mat-datepicker #toDateStrPicker></mat-datepicker>
         </mat-form-field>
@@ -46,17 +68,25 @@
 
       <!-- Product Selection Select Dropdown -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 200px;">
-          <mat-select [ngModel]="selectedProduct()" (ngModelChange)="selectedProduct.set($event)" placeholder="Select Product">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 200px">
+          <mat-select
+            [ngModel]="selectedProduct()"
+            (ngModelChange)="selectedProduct.set($event)"
+            placeholder="Select Product"
+          >
             <mat-option [value]="0">All Products</mat-option>
-            <mat-option *ngFor="let p of productList()" [value]="p.id">{{ p.name }}</mat-option>
+            @for (p of productList(); track p) {
+              <mat-option [value]="p.id">{{ p.name }}</mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>
 
       <!-- Action Buttons -->
-      <div class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2"
-        style="border-color: #BFDBFE !important;">
+      <div
+        class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2"
+        style="border-color: #bfdbfe !important"
+      >
         <button class="btn btn-icon-only btn-search" (click)="searchReport()" title="Search Report">
           <lucide-icon [img]="SearchIcon" class="btn-icon-large"></lucide-icon>
         </button>
@@ -65,14 +95,22 @@
           <lucide-icon [img]="ClearIcon" class="btn-icon-large"></lucide-icon>
         </button>
 
-        <button class="btn btn-excel d-flex align-items-center gap-1" (click)="exportToExcel()"
-          [disabled]="activeReportLength() === 0" title="Export to Excel">
+        <button
+          class="btn btn-excel d-flex align-items-center gap-1"
+          (click)="exportToExcel()"
+          [disabled]="activeReportLength() === 0"
+          title="Export to Excel"
+        >
           <lucide-icon [img]="ExcelIcon" class="btn-icon"></lucide-icon>
           <span>Excel</span>
         </button>
 
-        <button class="btn btn-pdf d-flex align-items-center gap-1" (click)="exportToPdf()"
-          [disabled]="activeReportLength() === 0" title="Export to PDF">
+        <button
+          class="btn btn-pdf d-flex align-items-center gap-1"
+          (click)="exportToPdf()"
+          [disabled]="activeReportLength() === 0"
+          title="Export to PDF"
+        >
           <lucide-icon [img]="PdfIcon" class="btn-icon"></lucide-icon>
           <span>PDF</span>
         </button>
@@ -82,166 +120,380 @@
 
   <!-- DATA AREA -->
   <div class="flex-grow-1 p-4 overflow-auto bg-light position-relative d-flex flex-column gap-3">
-
     <!-- Custom Pickup-style Loader -->
-    <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm" *ngIf="isLoading()">
-      <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
-      <p>Loading product sales data...</p>
-    </div>
+    @if (isLoading()) {
+      <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm">
+        <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
+        <p>Loading product sales data...</p>
+      </div>
+    }
 
     <!-- Table Wrapper (Only visible when not loading) -->
-    <div
-      class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white"
-      *ngIf="!isLoading()">
-      <div class="table-responsive flex-grow-1 overflow-auto">
-        <table mat-table [dataSource]="paginatedData()" class="app-data-table table-hover">
-
-          <!-- Date Column (Summary Mode) -->
-          <ng-container matColumnDef="date">
-            <th mat-header-cell *matHeaderCellDef class="text-center" style="width: 180px; border-right: 1px solid #E5E7EB;"> Date </th>
-            <td mat-cell *matCellDef="let row" class="text-center fw-medium" style="border-right: 1px solid #E5E7EB; vertical-align: middle;">
-              {{ formatDateDisplay(row.date) }}
-            </td>
-            <td mat-footer-cell *matFooterCellDef class="fw-bold" style="border-right: 1px solid #E5E7EB;"> Total </td>
-          </ng-container>
-
-          <!-- Products Column (Summary Mode) -->
-          <ng-container matColumnDef="products">
-            <th mat-header-cell *matHeaderCellDef style="padding: 0 !important;">
-              <table class="w-100" style="border-collapse: collapse; margin: 0; table-layout: fixed;">
-                <thead>
-                  <tr style="border-bottom: none;">
-                    <th style="padding: 6px 14px; font-weight: 700; text-align: left; font-size: 11px; border-right: 1px solid #E5E7EB; border-bottom: none !important; background: transparent !important; color: #4B5563 !important;">Product</th>
-                    <th style="padding: 6px 14px; font-weight: 700; text-align: center; font-size: 11px; border-right: 1px solid #E5E7EB; border-bottom: none !important; background: transparent !important; color: #4B5563 !important; width: 100px;">Unit</th>
-                    <th style="padding: 6px 14px; font-weight: 700; text-align: center; font-size: 11px; border-right: 1px solid #E5E7EB; border-bottom: none !important; background: transparent !important; color: #4B5563 !important; width: 100px;">Qty</th>
-                    <th style="padding: 6px 14px; font-weight: 700; text-align: right; font-size: 11px; border-right: 1px solid #E5E7EB; border-bottom: none !important; background: transparent !important; color: #4B5563 !important; width: 120px;">Rate</th>
-                    <th style="padding: 6px 14px; font-weight: 700; text-align: right; font-size: 11px; border-bottom: none !important; background: transparent !important; color: #4B5563 !important; width: 140px;">Total</th>
-                  </tr>
-                </thead>
-              </table>
-            </th>
-            <td mat-cell *matCellDef="let row" style="padding: 0 !important;">
-              <table class="w-100" style="border-collapse: collapse; margin: 0; table-layout: fixed;">
-                <tbody>
-                  <tr *ngFor="let p of row.products; let last = last" [style.border-bottom]="last ? 'none' : '1px solid #E5E7EB'">
-                    <td style="padding: 6px 14px; text-align: left; border-right: 1px solid #E5E7EB;" class="fw-semibold text-dark">{{ p.material_Name || p.productName || '' }}</td>
-                    <td style="padding: 6px 14px; text-align: center; border-right: 1px solid #E5E7EB; width: 100px;">{{ p.unit_Name || p.unit || '' }}</td>
-                    <td style="padding: 6px 14px; text-align: center; border-right: 1px solid #E5E7EB; width: 100px;">{{ (p.quantity || 0) | number:'1.0-2' }}</td>
-                    <td style="padding: 6px 14px; text-align: right; border-right: 1px solid #E5E7EB; width: 120px;">₹{{ (p.rate || 0).toFixed(2) }}</td>
-                    <td style="padding: 6px 14px; text-align: right; width: 140px;">₹{{ (p.total_Amount || 0).toFixed(2) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-            <td mat-footer-cell *matFooterCellDef class="fw-bold text-primary" style="padding: 0 !important;">
-              <table class="w-100" style="border-collapse: collapse; margin: 0; table-layout: fixed;">
-                <tbody>
-                  <tr style="border-bottom: none;">
-                    <td style="padding: 6px 14px; text-align: left; border-right: 1px solid #E5E7EB;"></td>
-                    <td style="padding: 6px 14px; text-align: center; border-right: 1px solid #E5E7EB; width: 100px;"></td>
-                    <td style="padding: 6px 14px; text-align: center; border-right: 1px solid #E5E7EB; width: 100px; color: #374151 !important;">{{ summaryTotalQuantity() | number:'1.0-2' }}</td>
-                    <td style="padding: 6px 14px; text-align: right; border-right: 1px solid #E5E7EB; width: 120px;"></td>
-                    <td style="padding: 6px 14px; text-align: right; width: 140px;" class="text-primary fw-bold">₹{{ summaryTotalAmount().toFixed(2) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </ng-container>
-
-          <!-- Product Name Column -->
-          <ng-container matColumnDef="productName">
-            <th mat-header-cell *matHeaderCellDef> Product Name </th>
-            <td mat-cell *matCellDef="let item" class="fw-semibold text-dark"> {{ item.productName }} </td>
-            <td mat-footer-cell *matFooterCellDef class="fw-bold"> Total </td>
-          </ng-container>
-
-          <!-- Rate Column -->
-          <ng-container matColumnDef="rate">
-            <th mat-header-cell *matHeaderCellDef class="text-end"> Rate (₹) </th>
-            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.rate.toFixed(2) }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end"></td>
-          </ng-container>
-
-          <!-- Quantity Column -->
-          <ng-container matColumnDef="quantity">
-            <th mat-header-cell *matHeaderCellDef class="text-center"> Quantity </th>
-            <td mat-cell *matCellDef="let item" class="text-center"> {{ item.quantity | number:'1.0-2' }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-center fw-bold"> {{ totalQuantity() | number:'1.0-2' }} </td>
-          </ng-container>
-
-          <!-- Unit Column -->
-          <ng-container matColumnDef="unit">
-            <th mat-header-cell *matHeaderCellDef class="text-center"> Unit </th>
-            <td mat-cell *matCellDef="let item" class="text-center"> {{ item.unit }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-center"></td>
-          </ng-container>
-
-          <!-- Sub Total Column -->
-          <ng-container matColumnDef="subTotal">
-            <th mat-header-cell *matHeaderCellDef class="text-end"> Sub Total (₹) </th>
-            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.subTotal.toFixed(2) }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalSubTotal().toFixed(2) }} </td>
-          </ng-container>
-
-          <!-- Discount Column -->
-          <ng-container matColumnDef="discount">
-            <th mat-header-cell *matHeaderCellDef class="text-end"> Discount (₹) </th>
-            <td mat-cell *matCellDef="let item" class="text-end text-danger"> ₹{{ item.discount.toFixed(2) }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-danger"> ₹{{ totalDiscount().toFixed(2) }} </td>
-          </ng-container>
-
-          <!-- Taxable Amount Column -->
-          <ng-container matColumnDef="taxableAmount">
-            <th mat-header-cell *matHeaderCellDef class="text-end"> Taxable Amount (₹) </th>
-            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.taxableAmount.toFixed(2) }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalTaxableAmount().toFixed(2) }} </td>
-          </ng-container>
-
-          <!-- SGST Column -->
-          <ng-container matColumnDef="sgst">
-            <th mat-header-cell *matHeaderCellDef class="text-end"> SGST (₹) </th>
-            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.sgst.toFixed(2) }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalSgst().toFixed(2) }} </td>
-          </ng-container>
-
-          <!-- CGST Column -->
-          <ng-container matColumnDef="cgst">
-            <th mat-header-cell *matHeaderCellDef class="text-end"> CGST (₹) </th>
-            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.cgst.toFixed(2) }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalCgst().toFixed(2) }} </td>
-          </ng-container>
-
-          <!-- IGST Column -->
-          <ng-container matColumnDef="igst">
-            <th mat-header-cell *matHeaderCellDef class="text-end"> IGST (₹) </th>
-            <td mat-cell *matCellDef="let item" class="text-end"> ₹{{ item.igst.toFixed(2) }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold"> ₹{{ totalIgst().toFixed(2) }} </td>
-          </ng-container>
-
-          <!-- Total Amount Column -->
-          <ng-container matColumnDef="totalAmount">
-            <th mat-header-cell *matHeaderCellDef class="text-end" style="padding-right: 20px;"> Total Amount (₹) </th>
-            <td mat-cell *matCellDef="let item" class="text-end fw-bold text-primary" style="padding-right: 20px;"> ₹{{ item.totalAmount.toFixed(2) }} </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-primary" style="padding-right: 20px;"> ₹{{ totalAmount().toFixed(2) }} </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
-          <tr mat-footer-row *matFooterRowDef="displayedColumns(); sticky: true" [hidden]="activeReportLength() === 0"></tr>
-        </table>
-
-        <app-empty-state *ngIf="activeReportLength() === 0" title="No product sale records found"
-          message="Adjust your filters or dates range above and click search." icon="search"
-          class="py-5 bg-white border-top d-block">
-        </app-empty-state>
+    @if (!isLoading()) {
+      <div
+        class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white"
+      >
+        <div class="table-responsive flex-grow-1 overflow-auto">
+          <table mat-table [dataSource]="paginatedData()" class="app-data-table table-hover">
+            <!-- Date Column (Summary Mode) -->
+            <ng-container matColumnDef="date">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="text-center"
+                style="width: 180px; border-right: 1px solid #e5e7eb"
+              >
+                Date
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let row"
+                class="text-center fw-medium"
+                style="border-right: 1px solid #e5e7eb; vertical-align: middle"
+              >
+                {{ formatDateDisplay(row.date) }}
+              </td>
+              <td
+                mat-footer-cell
+                *matFooterCellDef
+                class="fw-bold"
+                style="border-right: 1px solid #e5e7eb"
+              >
+                Total
+              </td>
+            </ng-container>
+            <!-- Products Column (Summary Mode) -->
+            <ng-container matColumnDef="products">
+              <th mat-header-cell *matHeaderCellDef style="padding: 0 !important">
+                <table
+                  class="w-100"
+                  style="border-collapse: collapse; margin: 0; table-layout: fixed"
+                >
+                  <thead>
+                    <tr style="border-bottom: none">
+                      <th
+                        style="
+                          padding: 6px 14px;
+                          font-weight: 700;
+                          text-align: left;
+                          font-size: 11px;
+                          border-right: 1px solid #e5e7eb;
+                          border-bottom: none !important;
+                          background: transparent !important;
+                          color: #4b5563 !important;
+                        "
+                      >
+                        Product
+                      </th>
+                      <th
+                        style="
+                          padding: 6px 14px;
+                          font-weight: 700;
+                          text-align: center;
+                          font-size: 11px;
+                          border-right: 1px solid #e5e7eb;
+                          border-bottom: none !important;
+                          background: transparent !important;
+                          color: #4b5563 !important;
+                          width: 100px;
+                        "
+                      >
+                        Unit
+                      </th>
+                      <th
+                        style="
+                          padding: 6px 14px;
+                          font-weight: 700;
+                          text-align: center;
+                          font-size: 11px;
+                          border-right: 1px solid #e5e7eb;
+                          border-bottom: none !important;
+                          background: transparent !important;
+                          color: #4b5563 !important;
+                          width: 100px;
+                        "
+                      >
+                        Qty
+                      </th>
+                      <th
+                        style="
+                          padding: 6px 14px;
+                          font-weight: 700;
+                          text-align: right;
+                          font-size: 11px;
+                          border-right: 1px solid #e5e7eb;
+                          border-bottom: none !important;
+                          background: transparent !important;
+                          color: #4b5563 !important;
+                          width: 120px;
+                        "
+                      >
+                        Rate
+                      </th>
+                      <th
+                        style="
+                          padding: 6px 14px;
+                          font-weight: 700;
+                          text-align: right;
+                          font-size: 11px;
+                          border-bottom: none !important;
+                          background: transparent !important;
+                          color: #4b5563 !important;
+                          width: 140px;
+                        "
+                      >
+                        Total
+                      </th>
+                    </tr>
+                  </thead>
+                </table>
+              </th>
+              <td mat-cell *matCellDef="let row" style="padding: 0 !important">
+                <table
+                  class="w-100"
+                  style="border-collapse: collapse; margin: 0; table-layout: fixed"
+                >
+                  <tbody>
+                    @for (p of row.products; track p; let last = $last) {
+                      <tr [style.border-bottom]="last ? 'none' : '1px solid #E5E7EB'">
+                        <td
+                          style="
+                            padding: 6px 14px;
+                            text-align: left;
+                            border-right: 1px solid #e5e7eb;
+                          "
+                          class="fw-semibold text-dark"
+                        >
+                          {{ p.material_Name || p.productName || '' }}
+                        </td>
+                        <td
+                          style="
+                            padding: 6px 14px;
+                            text-align: center;
+                            border-right: 1px solid #e5e7eb;
+                            width: 100px;
+                          "
+                        >
+                          {{ p.unit_Name || p.unit || '' }}
+                        </td>
+                        <td
+                          style="
+                            padding: 6px 14px;
+                            text-align: center;
+                            border-right: 1px solid #e5e7eb;
+                            width: 100px;
+                          "
+                        >
+                          {{ p.quantity || 0 | number: '1.0-2' }}
+                        </td>
+                        <td
+                          style="
+                            padding: 6px 14px;
+                            text-align: right;
+                            border-right: 1px solid #e5e7eb;
+                            width: 120px;
+                          "
+                        >
+                          ₹{{ (p.rate || 0).toFixed(2) }}
+                        </td>
+                        <td style="padding: 6px 14px; text-align: right; width: 140px">
+                          ₹{{ (p.total_Amount || 0).toFixed(2) }}
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </td>
+              <td
+                mat-footer-cell
+                *matFooterCellDef
+                class="fw-bold text-primary"
+                style="padding: 0 !important"
+              >
+                <table
+                  class="w-100"
+                  style="border-collapse: collapse; margin: 0; table-layout: fixed"
+                >
+                  <tbody>
+                    <tr style="border-bottom: none">
+                      <td
+                        style="padding: 6px 14px; text-align: left; border-right: 1px solid #e5e7eb"
+                      ></td>
+                      <td
+                        style="
+                          padding: 6px 14px;
+                          text-align: center;
+                          border-right: 1px solid #e5e7eb;
+                          width: 100px;
+                        "
+                      ></td>
+                      <td
+                        style="
+                          padding: 6px 14px;
+                          text-align: center;
+                          border-right: 1px solid #e5e7eb;
+                          width: 100px;
+                          color: #374151 !important;
+                        "
+                      >
+                        {{ summaryTotalQuantity() | number: '1.0-2' }}
+                      </td>
+                      <td
+                        style="
+                          padding: 6px 14px;
+                          text-align: right;
+                          border-right: 1px solid #e5e7eb;
+                          width: 120px;
+                        "
+                      ></td>
+                      <td
+                        style="padding: 6px 14px; text-align: right; width: 140px"
+                        class="text-primary fw-bold"
+                      >
+                        ₹{{ summaryTotalAmount().toFixed(2) }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </ng-container>
+            <!-- Product Name Column -->
+            <ng-container matColumnDef="productName">
+              <th mat-header-cell *matHeaderCellDef>Product Name</th>
+              <td mat-cell *matCellDef="let item" class="fw-semibold text-dark">
+                {{ item.productName }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef class="fw-bold">Total</td>
+            </ng-container>
+            <!-- Rate Column -->
+            <ng-container matColumnDef="rate">
+              <th mat-header-cell *matHeaderCellDef class="text-end">Rate (₹)</th>
+              <td mat-cell *matCellDef="let item" class="text-end">₹{{ item.rate.toFixed(2) }}</td>
+              <td mat-footer-cell *matFooterCellDef class="text-end"></td>
+            </ng-container>
+            <!-- Quantity Column -->
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef class="text-center">Quantity</th>
+              <td mat-cell *matCellDef="let item" class="text-center">
+                {{ item.quantity | number: '1.0-2' }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef class="text-center fw-bold">
+                {{ totalQuantity() | number: '1.0-2' }}
+              </td>
+            </ng-container>
+            <!-- Unit Column -->
+            <ng-container matColumnDef="unit">
+              <th mat-header-cell *matHeaderCellDef class="text-center">Unit</th>
+              <td mat-cell *matCellDef="let item" class="text-center">{{ item.unit }}</td>
+              <td mat-footer-cell *matFooterCellDef class="text-center"></td>
+            </ng-container>
+            <!-- Sub Total Column -->
+            <ng-container matColumnDef="subTotal">
+              <th mat-header-cell *matHeaderCellDef class="text-end">Sub Total (₹)</th>
+              <td mat-cell *matCellDef="let item" class="text-end">
+                ₹{{ item.subTotal.toFixed(2) }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef class="text-end fw-bold">
+                ₹{{ totalSubTotal().toFixed(2) }}
+              </td>
+            </ng-container>
+            <!-- Discount Column -->
+            <ng-container matColumnDef="discount">
+              <th mat-header-cell *matHeaderCellDef class="text-end">Discount (₹)</th>
+              <td mat-cell *matCellDef="let item" class="text-end text-danger">
+                ₹{{ item.discount.toFixed(2) }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-danger">
+                ₹{{ totalDiscount().toFixed(2) }}
+              </td>
+            </ng-container>
+            <!-- Taxable Amount Column -->
+            <ng-container matColumnDef="taxableAmount">
+              <th mat-header-cell *matHeaderCellDef class="text-end">Taxable Amount (₹)</th>
+              <td mat-cell *matCellDef="let item" class="text-end">
+                ₹{{ item.taxableAmount.toFixed(2) }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef class="text-end fw-bold">
+                ₹{{ totalTaxableAmount().toFixed(2) }}
+              </td>
+            </ng-container>
+            <!-- SGST Column -->
+            <ng-container matColumnDef="sgst">
+              <th mat-header-cell *matHeaderCellDef class="text-end">SGST (₹)</th>
+              <td mat-cell *matCellDef="let item" class="text-end">₹{{ item.sgst.toFixed(2) }}</td>
+              <td mat-footer-cell *matFooterCellDef class="text-end fw-bold">
+                ₹{{ totalSgst().toFixed(2) }}
+              </td>
+            </ng-container>
+            <!-- CGST Column -->
+            <ng-container matColumnDef="cgst">
+              <th mat-header-cell *matHeaderCellDef class="text-end">CGST (₹)</th>
+              <td mat-cell *matCellDef="let item" class="text-end">₹{{ item.cgst.toFixed(2) }}</td>
+              <td mat-footer-cell *matFooterCellDef class="text-end fw-bold">
+                ₹{{ totalCgst().toFixed(2) }}
+              </td>
+            </ng-container>
+            <!-- IGST Column -->
+            <ng-container matColumnDef="igst">
+              <th mat-header-cell *matHeaderCellDef class="text-end">IGST (₹)</th>
+              <td mat-cell *matCellDef="let item" class="text-end">₹{{ item.igst.toFixed(2) }}</td>
+              <td mat-footer-cell *matFooterCellDef class="text-end fw-bold">
+                ₹{{ totalIgst().toFixed(2) }}
+              </td>
+            </ng-container>
+            <!-- Total Amount Column -->
+            <ng-container matColumnDef="totalAmount">
+              <th mat-header-cell *matHeaderCellDef class="text-end" style="padding-right: 20px">
+                Total Amount (₹)
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let item"
+                class="text-end fw-bold text-primary"
+                style="padding-right: 20px"
+              >
+                ₹{{ item.totalAmount.toFixed(2) }}
+              </td>
+              <td
+                mat-footer-cell
+                *matFooterCellDef
+                class="text-end fw-bold text-primary"
+                style="padding-right: 20px"
+              >
+                ₹{{ totalAmount().toFixed(2) }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+            <tr
+              mat-footer-row
+              *matFooterRowDef="displayedColumns(); sticky: true"
+              [hidden]="activeReportLength() === 0"
+            ></tr>
+          </table>
+          @if (activeReportLength() === 0) {
+            <app-empty-state
+              title="No product sale records found"
+              message="Adjust your filters or dates range above and click search."
+              icon="search"
+              class="py-5 bg-white border-top d-block"
+            >
+            </app-empty-state>
+          }
+        </div>
+        <!-- Angular Material Paginator -->
+        <mat-paginator
+          [length]="activeReportLength()"
+          [pageSize]="pageSize()"
+          hidePageSize="true"
+          showFirstLastButtons="true"
+          [pageIndex]="currentPage()"
+          (page)="onPageChange($event)"
+          aria-label="Select page"
+          class="border-top"
+        >
+        </mat-paginator>
       </div>
-
-      <!-- Angular Material Paginator -->
-      <mat-paginator [length]="activeReportLength()" [pageSize]="pageSize()" hidePageSize="true"
-        showFirstLastButtons="true" [pageIndex]="currentPage()" (page)="onPageChange($event)" aria-label="Select page"
-        class="border-top">
-      </mat-paginator>
-    </div>
-
+    }
   </div>
 </div>

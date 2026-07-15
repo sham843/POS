@@ -1,5 +1,4 @@
 <div class="d-flex flex-column h-100 w-100 bg-white">
-
   <!-- SUB HEADER -->
   <div class="pos-sub-header">
     <div class="d-flex align-items-center gap-3">
@@ -10,11 +9,19 @@
 
       <!-- Segmented Control for Details / Summary -->
       <div class="app-segment-chips">
-        <div class="app-chip" [class.active]="reportType() === 'details'" (click)="setReportType('details')">
+        <div
+          class="app-chip"
+          [class.active]="reportType() === 'details'"
+          (click)="setReportType('details')"
+        >
           <lucide-icon [img]="ListIcon" class="chip-icon"></lucide-icon>
           <span>Details</span>
         </div>
-        <div class="app-chip" [class.active]="reportType() === 'summary'" (click)="setReportType('summary')">
+        <div
+          class="app-chip"
+          [class.active]="reportType() === 'summary'"
+          (click)="setReportType('summary')"
+        >
           <lucide-icon [img]="UserIcon" class="chip-icon"></lucide-icon>
           <span>Summary</span>
         </div>
@@ -24,40 +31,64 @@
     <div class="sub-header-filters align-items-center">
       <!-- From Date Picker -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
-          <input matInput [matDatepicker]="fromDateStrPicker" [ngModel]="fromDateObj()"
-            (ngModelChange)="onFromDateChange($event)" readonly (click)="fromDateStrPicker.open()"
-            [placeholder]="reportType() === 'summary' ? 'Date' : 'From Date'" [max]="toDateObj()">
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px">
+          <input
+            matInput
+            [matDatepicker]="fromDateStrPicker"
+            [ngModel]="fromDateObj()"
+            (ngModelChange)="onFromDateChange($event)"
+            readonly
+            (click)="fromDateStrPicker.open()"
+            [placeholder]="reportType() === 'summary' ? 'Date' : 'From Date'"
+            [max]="toDateObj()"
+          />
           <mat-datepicker-toggle matSuffix [for]="fromDateStrPicker"></mat-datepicker-toggle>
           <mat-datepicker #fromDateStrPicker></mat-datepicker>
         </mat-form-field>
       </div>
 
       <!-- To Date Picker -->
-      <div class="filter-item" *ngIf="reportType() === 'details'">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 160px;">
-          <input matInput [matDatepicker]="toDateStrPicker" [ngModel]="toDateObj()"
-            (ngModelChange)="onToDateChange($event)" readonly (click)="toDateStrPicker.open()" placeholder="To Date"
-            [min]="fromDateObj()">
-          <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
-          <mat-datepicker #toDateStrPicker></mat-datepicker>
-        </mat-form-field>
-      </div>
+      @if (reportType() === 'details') {
+        <div class="filter-item">
+          <mat-form-field appearance="outline" class="no-subscript" style="width: 160px">
+            <input
+              matInput
+              [matDatepicker]="toDateStrPicker"
+              [ngModel]="toDateObj()"
+              (ngModelChange)="onToDateChange($event)"
+              readonly
+              (click)="toDateStrPicker.open()"
+              placeholder="To Date"
+              [min]="fromDateObj()"
+            />
+            <mat-datepicker-toggle matSuffix [for]="toDateStrPicker"></mat-datepicker-toggle>
+            <mat-datepicker #toDateStrPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      }
 
       <!-- User Dropdown -->
       <div class="filter-item">
-        <mat-form-field appearance="outline" class="no-subscript" style="width: 300px;">
-          <mat-select [ngModel]="userId()" (ngModelChange)="userId.set($event)" placeholder="All Users">
-            <mat-option *ngFor="let u of usersList()" [value]="u.id">
-              {{ u.name }}
-            </mat-option>
+        <mat-form-field appearance="outline" class="no-subscript" style="width: 300px">
+          <mat-select
+            [ngModel]="userId()"
+            (ngModelChange)="userId.set($event)"
+            placeholder="All Users"
+          >
+            @for (u of usersList(); track u) {
+              <mat-option [value]="u.id">
+                {{ u.name }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>
 
       <!-- Action Buttons -->
-      <div class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2 ms-auto"
-        style="border-color: #BFDBFE !important;">
+      <div
+        class="filter-actions d-flex align-items-center gap-2 ps-3 border-start border-2 ms-auto"
+        style="border-color: #bfdbfe !important"
+      >
         <button class="btn btn-icon-only btn-search" (click)="searchReport()" title="Search Report">
           <lucide-icon [img]="SearchIcon" class="btn-icon-large"></lucide-icon>
         </button>
@@ -66,125 +97,187 @@
           <lucide-icon [img]="ClearIcon" class="btn-icon-large"></lucide-icon>
         </button>
 
-        <button class="btn btn-excel d-flex align-items-center gap-1" (click)="exportExcel()"
-          [disabled]="reportData().length === 0" title="Export to Excel">
+        <button
+          class="btn btn-excel d-flex align-items-center gap-1"
+          (click)="exportExcel()"
+          [disabled]="reportData().length === 0"
+          title="Export to Excel"
+        >
           <lucide-icon [img]="ExcelIcon" class="btn-icon"></lucide-icon>
           <span>Excel</span>
         </button>
 
-        <button class="btn btn-pdf d-flex align-items-center gap-1" (click)="exportPDF()"
-          [disabled]="reportData().length === 0" title="Export to PDF">
+        <button
+          class="btn btn-pdf d-flex align-items-center gap-1"
+          (click)="exportPDF()"
+          [disabled]="reportData().length === 0"
+          title="Export to PDF"
+        >
           <lucide-icon [img]="PdfIcon" class="btn-icon"></lucide-icon>
           <span>PDF</span>
         </button>
       </div>
-
     </div>
   </div>
 
   <!-- DATA AREA -->
   <div class="flex-grow-1 p-4 overflow-auto bg-light position-relative d-flex flex-column gap-3">
-
     <!-- Loading Spinner -->
-    <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm" *ngIf="isLoading()">
-      <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
-      <p>Loading cash report...</p>
-    </div>
-
-    <div
-      class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white"
-      *ngIf="!isLoading()">
-
-      <div class="table-responsive flex-grow-1 overflow-auto">
-        <table mat-table [dataSource]="paginatedData()" class="app-data-table table-hover">
-
-          <!-- Sr. No. -->
-          <ng-container matColumnDef="srNo">
-            <th mat-header-cell *matHeaderCellDef class="text-center"> Sr. No. </th>
-            <td mat-cell *matCellDef="let item; let i = index" class="text-center fw-medium text-muted">
-              {{ (currentPage() * pageSize()) + i + 1 }}
-            </td>
-            <td mat-footer-cell *matFooterCellDef class="fw-bold">Total</td>
-          </ng-container>
-
-          <!-- Deposit Date & Time -->
-          <ng-container matColumnDef="depositDate">
-            <th mat-header-cell *matHeaderCellDef> Deposit Date & Time </th>
-            <td mat-cell *matCellDef="let item">
-              <div class="d-flex align-items-center py-2 gap-3">
-                <div class="d-flex align-items-center gap-2">
-                  <lucide-icon [img]="CalendarIcon" class="text-primary" style="width: 15px; height: 15px;"></lucide-icon>
-                  <span class="text-dark fw-bold" style="font-size: 13px;">{{ item.depositDate || '-' }}</span>
-                </div>
-                
-                <div *ngIf="item.startTime || item.endTime" class="d-flex align-items-center gap-1 px-2 py-1 bg-light rounded-pill border" style="width: fit-content; font-size: 11px;">
-                  <lucide-icon [img]="ClockIcon" class="text-secondary" style="width: 12px; height: 12px;"></lucide-icon>
-                  <span class="text-secondary fw-medium">
-                    {{ item.startTime || '-' }} 
-                    <span class="mx-1 text-muted">to</span> 
-                    {{ item.endTime || '-' }}
-                  </span>
-                </div>
-              </div>
-            </td>
-            <td mat-footer-cell *matFooterCellDef></td>
-          </ng-container>
-
-          <!-- User Name -->
-          <ng-container matColumnDef="personName">
-            <th mat-header-cell *matHeaderCellDef> User Name </th>
-            <td mat-cell *matCellDef="let item">
-              <div class="d-flex flex-column align-items-start gap-1 py-1">
-                <span class="text-dark fw-medium">{{ item.personName }}</span>
-              </div>
-            </td>
-            <td mat-footer-cell *matFooterCellDef></td>
-          </ng-container>
-
-          <!-- Total Amount -->
-          <ng-container matColumnDef="totalAmount">
-            <th mat-header-cell *matHeaderCellDef class="text-end"> Total Amount (₹) </th>
-            <td mat-cell *matCellDef="let item" class="text-end">
-              ₹{{ item.totalAmount | number:'1.2-2' }}
-            </td>
-            <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-primary">
-              ₹{{ totals().amount | number:'1.2-2' }}
-            </td>
-          </ng-container>
-
-          <!-- Action -->
-          <ng-container matColumnDef="action">
-            <th mat-header-cell *matHeaderCellDef class="text-center"> Action </th>
-            <td mat-cell *matCellDef="let item" class="text-center">
-              <button class="btn d-inline-flex align-items-center justify-content-center p-0" 
-                      style="width: 32px; height: 32px; border-radius: 8px; background-color: #ffffff; border: 1px solid #bfdbfe; color: #60a5fa; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);"
-                      onmouseover="this.style.backgroundColor='#eff6ff'; this.style.borderColor='#93c5fd'; this.style.color='#3b82f6'" 
-                      onmouseout="this.style.backgroundColor='#ffffff'; this.style.borderColor='#bfdbfe'; this.style.color='#60a5fa'"
-                      (click)="viewDetails(item)"
-                      title="View details">
-                <lucide-icon [img]="EyeIcon" style="width: 16px; height: 16px;"></lucide-icon>
-              </button>
-            </td>
-            <td mat-footer-cell *matFooterCellDef></td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="bg-light text-secondary"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row-hover align-middle"></tr>
-          <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true" [hidden]="reportData().length === 0"
-            class="bg-light-blue text-primary"></tr>
-        </table>
-
-        <app-empty-state *ngIf="reportData().length === 0" [title]="'No Cash Report Found'"
-          message="Adjust the date range or filters and click Search." icon="search"
-          class="py-5 bg-white border-top d-block">
-        </app-empty-state>
+    @if (isLoading()) {
+      <div class="loading-state flex-grow-1 bg-white rounded-3 shadow-sm">
+        <lucide-icon [img]="LoaderIcon" class="spinner"></lucide-icon>
+        <p>Loading cash report...</p>
       </div>
+    }
 
-      <!-- Paginator -->
-      <mat-paginator [length]="reportData().length" [pageSize]="pageSize()" hidePageSize="true"
-        showFirstLastButtons="true" [pageIndex]="currentPage()" (page)="onPageChange($event)" aria-label="Select page"
-        class="border-top">
-      </mat-paginator>
-    </div>
+    @if (!isLoading()) {
+      <div
+        class="app-table-wrapper shadow-sm flex-grow-1 d-flex flex-column justify-content-between overflow-hidden bg-white"
+      >
+        <div class="table-responsive flex-grow-1 overflow-auto">
+          <table mat-table [dataSource]="paginatedData()" class="app-data-table table-hover">
+            <!-- Sr. No. -->
+            <ng-container matColumnDef="srNo">
+              <th mat-header-cell *matHeaderCellDef class="text-center">Sr. No.</th>
+              <td
+                mat-cell
+                *matCellDef="let item; let i = index"
+                class="text-center fw-medium text-muted"
+              >
+                {{ currentPage() * pageSize() + i + 1 }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef class="fw-bold">Total</td>
+            </ng-container>
+            <!-- Deposit Date & Time -->
+            <ng-container matColumnDef="depositDate">
+              <th mat-header-cell *matHeaderCellDef>Deposit Date & Time</th>
+              <td mat-cell *matCellDef="let item">
+                <div class="d-flex align-items-center py-2 gap-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <lucide-icon
+                      [img]="CalendarIcon"
+                      class="text-primary"
+                      style="width: 15px; height: 15px"
+                    ></lucide-icon>
+                    <span class="text-dark fw-bold" style="font-size: 13px">{{
+                      item.depositDate || '-'
+                    }}</span>
+                  </div>
+                  @if (item.startTime || item.endTime) {
+                    <div
+                      class="d-flex align-items-center gap-1 px-2 py-1 bg-light rounded-pill border"
+                      style="width: fit-content; font-size: 11px"
+                    >
+                      <lucide-icon
+                        [img]="ClockIcon"
+                        class="text-secondary"
+                        style="width: 12px; height: 12px"
+                      ></lucide-icon>
+                      <span class="text-secondary fw-medium">
+                        {{ item.startTime || '-' }}
+                        <span class="mx-1 text-muted">to</span>
+                        {{ item.endTime || '-' }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              </td>
+              <td mat-footer-cell *matFooterCellDef></td>
+            </ng-container>
+            <!-- User Name -->
+            <ng-container matColumnDef="personName">
+              <th mat-header-cell *matHeaderCellDef>User Name</th>
+              <td mat-cell *matCellDef="let item">
+                <div class="d-flex flex-column align-items-start gap-1 py-1">
+                  <span class="text-dark fw-medium">{{ item.personName }}</span>
+                </div>
+              </td>
+              <td mat-footer-cell *matFooterCellDef></td>
+            </ng-container>
+            <!-- Total Amount -->
+            <ng-container matColumnDef="totalAmount">
+              <th mat-header-cell *matHeaderCellDef class="text-end">Total Amount (₹)</th>
+              <td mat-cell *matCellDef="let item" class="text-end">
+                ₹{{ item.totalAmount | number: '1.2-2' }}
+              </td>
+              <td mat-footer-cell *matFooterCellDef class="text-end fw-bold text-primary">
+                ₹{{ totals().amount | number: '1.2-2' }}
+              </td>
+            </ng-container>
+            <!-- Action -->
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef class="text-center">Action</th>
+              <td mat-cell *matCellDef="let item" class="text-center">
+                <button
+                  class="btn d-inline-flex align-items-center justify-content-center p-0"
+                  style="
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 8px;
+                    background-color: #ffffff;
+                    border: 1px solid #bfdbfe;
+                    color: #60a5fa;
+                    transition: all 0.2s;
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+                  "
+                  onmouseover="
+                    this.style.backgroundColor = '#eff6ff';
+                    this.style.borderColor = '#93c5fd';
+                    this.style.color = '#3b82f6';
+                  "
+                  onmouseout="
+                    this.style.backgroundColor = '#ffffff';
+                    this.style.borderColor = '#bfdbfe';
+                    this.style.color = '#60a5fa';
+                  "
+                  (click)="viewDetails(item)"
+                  title="View details"
+                >
+                  <lucide-icon [img]="EyeIcon" style="width: 16px; height: 16px"></lucide-icon>
+                </button>
+              </td>
+              <td mat-footer-cell *matFooterCellDef></td>
+            </ng-container>
+            <tr
+              mat-header-row
+              *matHeaderRowDef="displayedColumns; sticky: true"
+              class="bg-light text-secondary"
+            ></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              class="table-row-hover align-middle"
+            ></tr>
+            <tr
+              mat-footer-row
+              *matFooterRowDef="displayedColumns; sticky: true"
+              [hidden]="reportData().length === 0"
+              class="bg-light-blue text-primary"
+            ></tr>
+          </table>
+          @if (reportData().length === 0) {
+            <app-empty-state
+              [title]="'No Cash Report Found'"
+              message="Adjust the date range or filters and click Search."
+              icon="search"
+              class="py-5 bg-white border-top d-block"
+            >
+            </app-empty-state>
+          }
+        </div>
+        <!-- Paginator -->
+        <mat-paginator
+          [length]="reportData().length"
+          [pageSize]="pageSize()"
+          hidePageSize="true"
+          showFirstLastButtons="true"
+          [pageIndex]="currentPage()"
+          (page)="onPageChange($event)"
+          aria-label="Select page"
+          class="border-top"
+        >
+        </mat-paginator>
+      </div>
+    }
   </div>
 </div>

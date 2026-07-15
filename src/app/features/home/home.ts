@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,30 +11,29 @@ import { LanguageService } from '../../core/services/language.service';
 @Component({
   selector: 'app-home',
   imports: [
-    CommonModule,
     MatToolbarModule,
     MatButtonModule,
     LucideAngularModule,
     MatMenuModule,
     RouterModule,
-    TranslatePipe
+    TranslatePipe,
   ],
   standalone: true,
   templateUrl: './home.html',
   styleUrl: './home.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Home implements OnInit {
   public themeService = inject(ThemeService);
   public languageService = inject(LanguageService);
-  
+
   currentLangLabel = 'English';
   currentTheme = 'system';
 
   languages = [
     { code: 'en', label: 'English' },
     { code: 'mr', label: 'मराठी' },
-    { code: 'hi', label: 'हिंदी' }
+    { code: 'hi', label: 'हिंदी' },
   ];
 
   // Expose icons
@@ -48,13 +46,13 @@ export class Home implements OnInit {
   themes = [
     { code: 'light', label: 'Light', icon: Sun },
     { code: 'dark', label: 'Dark', icon: Moon },
-    { code: 'system', label: 'System', icon: SunMoon }
+    { code: 'system', label: 'System', icon: SunMoon },
   ];
 
   ngOnInit() {
     this.currentTheme = this.themeService.getCurrentTheme();
     const savedLangCode = this.languageService.getCurrentLanguage();
-    const lang = this.languages.find(l => l.code === savedLangCode);
+    const lang = this.languages.find((l) => l.code === savedLangCode);
     this.currentLangLabel = lang ? lang.label : 'English';
   }
 
@@ -68,4 +66,3 @@ export class Home implements OnInit {
     this.languageService.setLanguage(langCode);
   }
 }
-

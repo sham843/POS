@@ -14,22 +14,32 @@
       <span class="d-none d-sm-inline ms-1">{{ currentLangLabel }}</span>
     </button>
     <mat-menu #langMenu="matMenu">
-      <button mat-menu-item *ngFor="let lang of languages" (click)="setLanguage(lang.code, lang.label)">
-        {{ lang.label }}
-      </button>
+      @for (lang of languages; track lang) {
+        <button mat-menu-item (click)="setLanguage(lang.code, lang.label)">
+          {{ lang.label }}
+        </button>
+      }
     </mat-menu>
 
     <!-- Theme Selector -->
     <button mat-icon-button [matMenuTriggerFor]="themeMenu" aria-label="Toggle theme" class="me-2">
-      <lucide-icon [img]="Sun" *ngIf="currentTheme === 'light'"></lucide-icon>
-      <lucide-icon [img]="Moon" *ngIf="currentTheme === 'dark'"></lucide-icon>
-      <lucide-icon [img]="SunMoon" *ngIf="currentTheme === 'system'"></lucide-icon>
+      @if (currentTheme === 'light') {
+        <lucide-icon [img]="Sun"></lucide-icon>
+      }
+      @if (currentTheme === 'dark') {
+        <lucide-icon [img]="Moon"></lucide-icon>
+      }
+      @if (currentTheme === 'system') {
+        <lucide-icon [img]="SunMoon"></lucide-icon>
+      }
     </button>
     <mat-menu #themeMenu="matMenu">
-      <button mat-menu-item *ngFor="let theme of themes" (click)="setTheme(theme.code)">
-        <lucide-icon [img]="theme.icon"></lucide-icon>
-        <span class="ms-2">{{ theme.label }}</span>
-      </button>
+      @for (theme of themes; track theme) {
+        <button mat-menu-item (click)="setTheme(theme.code)">
+          <lucide-icon [img]="theme.icon"></lucide-icon>
+          <span class="ms-2">{{ theme.label }}</span>
+        </button>
+      }
     </mat-menu>
 
     <!-- Login Button -->
