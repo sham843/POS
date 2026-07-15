@@ -615,7 +615,16 @@ export class CounterSaleService {
     }
     const items = [...this.cartItems()];
     items.splice(index, 1);
-    this.updateActiveBill({ cartItems: items });
+
+    if (items.length === 0) {
+      this.invoiceHeader.loadedInvoiceDate.set(null);
+      this.invoiceHeader.invoiceDate.set(null);
+      this.invoiceHeader.invoiceNo.set(null);
+      this.invoiceHeader.invoiceId.set(null);
+      this.updateActiveBill({ cartItems: items, loadedOrder: null });
+    } else {
+      this.updateActiveBill({ cartItems: items });
+    }
 
     if (this.selectedItemIndex() === index) {
       this.selectItem(items.length > 0 ? items.length - 1 : null);
