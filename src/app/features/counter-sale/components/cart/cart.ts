@@ -40,7 +40,6 @@ export class Cart {
   loadedOrder = this.counterSaleService.loadedOrder;
 
   get loadedOrderDate(): string {
-    debugger
     const order = this.loadedOrder();
     if (!order) return '';
     return order.orderDate || order.deliveryDate || order.createdDate || order.date || '';

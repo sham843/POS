@@ -71,7 +71,7 @@ export class CashReportViewComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<CashReportViewComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const userStr = localStorage.getItem('UserDetails');
@@ -149,7 +149,6 @@ export class CashReportViewComponent implements OnInit {
   }
 
   private bindData(resData: any) {
-    debugger;
     if (!resData) return;
 
     this.saleOverview = {

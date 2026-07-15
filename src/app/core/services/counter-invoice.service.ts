@@ -276,6 +276,9 @@ export class CounterInvoiceService {
         upiId: ""
       }
     }
+
+    console.log(payload)
+    return
     const endpoint = isUpdate ? 'api/v1/invoice/UpdateSale_V1' : 'api/v1/invoice/Sale_V1';
     return firstValueFrom(this.apiService.post<any>(endpoint, payload));
   }
@@ -348,6 +351,10 @@ export class CounterInvoiceService {
       url += `&textSearch=${encodeURIComponent(textSearch)}`;
     }
     return this.apiService.get<any>(url);
+  }
+
+  getOrderById(orderId: number, unitId: number = 0): Observable<any> {
+    return this.apiService.get<any>(`api/v1/Order/getOrdersById?OrderId=${orderId}&unitId=${unitId}&status=Upcoming`);
   }
 
   updateOrderStatus(orderId: number, status: string = 'delivered'): Observable<any> {

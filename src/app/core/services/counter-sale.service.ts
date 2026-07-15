@@ -802,15 +802,26 @@ export class CounterSaleService {
     const cartItems: CartItem[] = [];
 
     // 1. Fetch products from IndexedDB for each item in the order
-    for (const item of order.items || []) {
+    const orderItems = order.orderDetails || order.items || [];
+    for (const item of orderItems) {
       const materialId = item.materialId || item.productId || item.id || 0;
       if (materialId) {
         try {
           const product = await this.dbService.products.get(materialId);
           if (product) {
             const rate = product.salePrice || product.mrp || product.rate || product.price || product.saleRate || 0;
-            const gst = product.gst || product.taxPercentage || 0;
             const qty = item.quantity || 1;
+            
+            // Calculate GST percentage from API if available
+            const cgst = item.cgst || 0;
+            const sgst = item.sgst || 0;
+            const igst = item.igst || 0;
+            const totalGstAmt = cgst + sgst + igst;
+            const taxableAmount = item.taxableAmount || 0;
+            let gst = product.gst || product.taxPercentage || 0;
+            if (totalGstAmt > 0 && taxableAmount > 0) {
+              gst = Math.round((totalGstAmt / taxableAmount) * 100);
+            }
 
             const newItem: CartItem = {
               product: product,
@@ -827,11 +838,33 @@ export class CounterSaleService {
             };
 
             const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', qty.toString());
+            
+            // Map GST from API if available
+            if (totalGstAmt > 0) {
+              calculatedItem.gstAmount = totalGstAmt;
+              calculatedItem.dynamicTaxes = [];
+              if (cgst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'CGST', taxAmount: cgst, id: 1, taxPercentage: 0 });
+              if (sgst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'SGST', taxAmount: sgst, id: 2, taxPercentage: 0 });
+              if (igst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'IGST', taxAmount: igst, id: 3, taxPercentage: 0 });
+            }
+
             cartItems.push(calculatedItem);
           } else {
             // Fallback product if not in DB
-            const rate = item.rate || 0;
+            const rate = item.unitPrice || item.rate || 0;
             const qty = item.quantity || 1;
+            
+            // Calculate GST percentage from API if available
+            const cgst = item.cgst || 0;
+            const sgst = item.sgst || 0;
+            const igst = item.igst || 0;
+            const totalGstAmt = cgst + sgst + igst;
+            const taxableAmount = item.taxableAmount || 0;
+            let gst = 0;
+            if (totalGstAmt > 0 && taxableAmount > 0) {
+              gst = Math.round((totalGstAmt / taxableAmount) * 100);
+            }
+
             const newItem: CartItem = {
               product: { id: materialId, productName: item.materialName || 'Unknown Product', salePrice: rate },
               details: item.materialName || 'Unknown Product',
@@ -840,12 +873,22 @@ export class CounterSaleService {
               discount: 0,
               amount: 0,
               netAmount: 0,
-              gst: 0,
+              gst: gst,
               gstAmount: 0,
               total: 0,
               unit: ''
             };
             const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', qty.toString());
+
+            // Map GST from API if available
+            if (totalGstAmt > 0) {
+              calculatedItem.gstAmount = totalGstAmt;
+              calculatedItem.dynamicTaxes = [];
+              if (cgst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'CGST', taxAmount: cgst, id: 1, taxPercentage: 0 });
+              if (sgst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'SGST', taxAmount: sgst, id: 2, taxPercentage: 0 });
+              if (igst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'IGST', taxAmount: igst, id: 3, taxPercentage: 0 });
+            }
+
             cartItems.push(calculatedItem);
           }
         } catch (e) {

@@ -227,8 +227,36 @@ export class OrderDrawer implements OnInit, OnDestroy {
 
   selectOrder(order: any, event: Event) {
     event.stopPropagation();
-    this.counterSaleService.loadOrderToCart(order).then(() => {
-      this.closeDrawer();
+    const orderId = order.orderId || order.id;
+    if (!orderId) {
+      // Fallback
+      this.counterSaleService.loadOrderToCart(order).then(() => {
+        this.closeDrawer();
+      });
+      return;
+    }
+
+    this.isLoading.set(true);
+    const userDetailsStr = localStorage.getItem('UserDetails');
+    let unitId = 0;
+    try { if (userDetailsStr) unitId = JSON.parse(userDetailsStr)?.unitid || JSON.parse(userDetailsStr)?.unitId || 0; } catch (e) { }
+
+    this.counterInvoiceService.getOrderById(orderId, unitId).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        const fullOrder = (res && res.length > 0) ? res[0] : order;
+        this.counterSaleService.loadOrderToCart(fullOrder).then(() => {
+          this.closeDrawer();
+        });
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        console.error('Failed to get full order details', err);
+        // Fallback to basic load
+        this.counterSaleService.loadOrderToCart(order).then(() => {
+          this.closeDrawer();
+        });
+      }
     });
   }
 }
