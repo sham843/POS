@@ -79,10 +79,10 @@ export class CustomerLedger implements OnInit, OnChanges {
     try {
       const parties = await this.dbService.customerList.toArray();
       const mappedParties = (parties || []).map(p => {
-        const cName = p.customerName || p.displayName || p.name || `Customer #${p.id}`;
+        const cName = p.customerName || p.name || `Customer #${p.id}`;
         return {
           ...p,
-          id: Number(p.id ?? p.customerId ?? p.partyId ?? 0),
+          id: Number(p.id ?? 0),
           customerName: cName,
           displayName: cName
         };

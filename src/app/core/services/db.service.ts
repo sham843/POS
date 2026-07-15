@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
 import { BankAccount } from '../models/bank-account.model';
 import { CashLedger } from '../models/cash-ledger.model';
-
+import { CompanyLedger } from '../models/company-ledger.model';
+import { Customer } from '../models/customer.model';
 @Injectable({
   providedIn: 'root'
 })
@@ -10,8 +11,8 @@ export class DbService extends Dexie {
   // Declare tables here
   bankAccounts!: Table<BankAccount, number>;
   cashLedger!: Table<CashLedger, number>;
-  companyLedgerList!: Table<any, number>;
-  customerList!: Table<any, number>;
+  companyLedgerList!: Table<CompanyLedger, number>;
+  customerList!: Table<Customer, number>;
   saleLedgerList!: Table<any, number>;
   products!: Table<any, number>;
   categories!: Table<any, number>;
