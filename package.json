@@ -6,7 +6,10 @@
   "main": "main.js",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "npm run start:uat",
+    "start:dev": "ng serve --proxy-config proxy.conf.dev.json",
+    "start:uat": "ng serve --proxy-config proxy.conf.uat.json",
+    "start:prod": "ng serve --proxy-config proxy.conf.prod.json",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
