@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
@@ -25,7 +25,7 @@ export class CounterInvoiceService {
   private snackBar = inject(MatSnackBar);
   private paymentList$?: Observable<any>;
 
-  get Userdetails() {
+  get userDetails() {
     const userStr = localStorage.getItem('UserDetails');
     if (userStr) {
       try {
@@ -45,7 +45,7 @@ export class CounterInvoiceService {
     return this.apiService.get<any>(`api/v1/invoice/byId_V1?billNo=${billNo}`);
   }
 
-  computeTax(materialId: number, totalPrice: number, custStateCode: Number, orgStateCode: number): Observable<any> {
+  computeTax(materialId: number, totalPrice: number, custStateCode: number, orgStateCode: number): Observable<any> {
     return this.apiService.get<any>(`api/v1/invoice/GetComputeTax?MaterialId=${materialId}&TotalPrice=${totalPrice}&CustStateCode=${custStateCode}&OrgStateCode=${orgStateCode}`);
   }
 
@@ -82,7 +82,7 @@ export class CounterInvoiceService {
   ): Promise<any> {
     const isUpdate = !!existingInvoiceHeader?.invoiceId;
     const now = new Date().toISOString();
-    const userDetails = this.Userdetails;
+    const userDetails = this.userDetails;
 
     const unitId = userDetails?.unitid || userDetails?.unitId || 0;
     const userId = userDetails?.id || 0;
@@ -276,7 +276,7 @@ export class CounterInvoiceService {
       }
     }
     const endpoint = isUpdate ? 'api/v1/invoice/UpdateSale_V1' : 'api/v1/invoice/Sale_V1';
-    return this.apiService.post<any>(endpoint, payload).toPromise();
+    return firstValueFrom(this.apiService.post<any>(endpoint, payload));
   }
 
   printReceipt(
@@ -294,7 +294,7 @@ export class CounterInvoiceService {
       totalIgst?: number;
     }
   ) {
-    const userDetails = this.Userdetails;
+    const userDetails = this.userDetails;
     const now = new Date().toISOString();
 
     const itemsToPrint = cartItems.map(item => ({
