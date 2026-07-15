@@ -19,7 +19,7 @@ export class ConfigService {
       // console.error('Failed to load application configuration', error);
       this.config = {
         formFieldAppearance: 'outline',
-        apiUrl: 'https://demoposapi.hitechdairy.in',
+        apiUrl: 'https://uatposapi.hitechdairy.in',
         orderSearchDebounceTime: 300,
         orderDrawerWidth: 800,
         upcomingOrdersPollingInterval: 60000

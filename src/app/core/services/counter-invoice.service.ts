@@ -78,7 +78,8 @@ export class CounterInvoiceService {
       invoiceId: number | null;
       invoiceNo: string | null;
       invoiceDate: string | null;
-    }
+    },
+    loadedOrder?: any | null
   ): Promise<any> {
     const isUpdate = !!existingInvoiceHeader?.invoiceId;
     const now = new Date().toISOString();
@@ -189,7 +190,7 @@ export class CounterInvoiceService {
       companyLedgerId: companyLedgerId,
       createdBy: userId,
       modifiedBy: userId,
-      orderId: selectedCustomer?.orderId || 0,
+      orderId: loadedOrder?.orderId || selectedCustomer?.orderId || 0,
       organizationId: organizationId,
       voucherTypeId: 1,
       discountAmount: totals.totalDiscount.toFixed(2),
@@ -226,7 +227,7 @@ export class CounterInvoiceService {
       sgst: (totals.totalSgst || (totals.totalGst / 2)).toFixed(2),
       stateFlag: 1,
       isPaymentReceived: isPaymentReceived,
-      isOrder: 0,
+      isOrder: loadedOrder ? 1 : 0,
       isPrint: false, // Managed programmatically in print receipt
       spinvoicedetailsModel: invoiceDetails,
       ledgerTransaction: {

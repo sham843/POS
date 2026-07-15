@@ -955,7 +955,8 @@ export class CounterSaleService {
           invoiceId: this.invoiceHeader.invoiceId(),
           invoiceNo: this.invoiceHeader.invoiceNo(),
           invoiceDate: this.invoiceHeader.invoiceDate()
-        }
+        },
+        this.loadedOrder()
       );
 
       const invoiceData = res?.data;
