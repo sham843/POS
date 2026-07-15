@@ -9,4 +9,6 @@ export interface Customer {
   
   // Additional properties used in UI components
   name?: string | null;
+  phone?: string | null;
+  balanceAtDairy?: number | null;
 }

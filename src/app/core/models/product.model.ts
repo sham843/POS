@@ -22,4 +22,13 @@ export interface Product {
   rate?: number;
   price?: number;
   saleRate?: number;
+  category?: string | null;
+  productName?: string | null;
+  name?: string | null;
+  productCode?: string | null;
+  code?: string | null;
+  unit?: string | null;
+  uom?: string | null;
+  unitName?: string | null;
+  gst?: number | null;
 }
