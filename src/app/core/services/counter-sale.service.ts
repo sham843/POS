@@ -393,13 +393,13 @@ export class CounterSaleService {
     }
 
     const item = this.cartItems()[idx];
-    
+
     // Do not allow decimal point or quick weights in quantity if product mensurationType is 'Count' or mensurationUnit is 'Nos'
     if (val.startsWith('.') && this.numpadMode() === 'quantity') {
       const mensurationType = item.product?.['mensurationType'];
       const mensurationUnit = item.product?.['mensurationUnit'];
-      if ((mensurationType && String(mensurationType).toLowerCase() === 'count') || 
-          (mensurationUnit && String(mensurationUnit) === 'Nos')) {
+      if ((mensurationType && String(mensurationType).toLowerCase() === 'count') ||
+        (mensurationUnit && String(mensurationUnit) === 'Nos')) {
         this.notificationService.showError(`Decimal values are not allowed for ${mensurationUnit || 'Count'}`);
         return;
       }
@@ -509,7 +509,7 @@ export class CounterSaleService {
       const existingItem = { ...items[existingItemIndex] };
       // Update rate just in case it changed
       existingItem.rate = finalProduct.salePrice || finalProduct.mrp || finalProduct.rate || finalProduct.price || finalProduct.saleRate || existingItem.rate;
-      
+
       const nextItem = this.counterNumpadService.updateCartItemFromNumpad(
         existingItem,
         'quantity',
@@ -873,7 +873,7 @@ export class CounterSaleService {
       if (mobile) {
         try {
           const customers = await this.dbService.customerList.toArray();
-          selectedCustomer = customers.find(c => String(c.mobileNo || c.phone || '').includes(mobile));
+          selectedCustomer = customers.find(c => String(c.mobileNo || '').includes(mobile));
         } catch (e) { }
       }
     }

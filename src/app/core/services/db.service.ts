@@ -4,6 +4,10 @@ import { BankAccount } from '../models/bank-account.model';
 import { CashLedger } from '../models/cash-ledger.model';
 import { CompanyLedger } from '../models/company-ledger.model';
 import { Customer } from '../models/customer.model';
+import { SaleLedger } from '../models/sale-ledger.model';
+import { Product } from '../models/product.model';
+import { Category } from '../models/category.model';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -13,9 +17,9 @@ export class DbService extends Dexie {
   cashLedger!: Table<CashLedger, number>;
   companyLedgerList!: Table<CompanyLedger, number>;
   customerList!: Table<Customer, number>;
-  saleLedgerList!: Table<any, number>;
-  products!: Table<any, number>;
-  categories!: Table<any, number>;
+  saleLedgerList!: Table<SaleLedger, number>;
+  products!: Table<Product, number>;
+  categories!: Table<Category, number>;
 
   constructor() {
     super('POSDatabase');
