@@ -1,6 +1,28 @@
-import { Component, Input, Output, EventEmitter, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  Input,
+  inject,
+  signal,
+  computed,
+  OnInit,
+  OnDestroy,
+  ChangeDetectionStrategy,
+  output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Search, X, ShoppingBag, ClipboardList, Calendar, DollarSign, Loader, CheckCircle, Eye, Truck } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Search,
+  X,
+  ShoppingBag,
+  ClipboardList,
+  Calendar,
+  DollarSign,
+  Loader,
+  CheckCircle,
+  Eye,
+  Truck,
+} from 'lucide-angular';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CounterInvoiceService } from '../../../../core/services/counter-invoice.service';
@@ -17,7 +39,7 @@ import { debounceTime } from 'rxjs/operators';
   imports: [CommonModule, LucideAngularModule, MatExpansionModule, MatTooltipModule, EmptyState],
   templateUrl: './order-drawer.html',
   styleUrl: './order-drawer.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderDrawer implements OnInit, OnDestroy {
   private counterInvoiceService = inject(CounterInvoiceService);
@@ -36,14 +58,13 @@ export class OrderDrawer implements OnInit, OnDestroy {
   }
   private _isOpen = false;
 
-  @Output() close = new EventEmitter<void>();
+  readonly close = output<void>();
 
   allOrders = signal<any[]>([]);
   orderSearchQuery = signal<string>('');
   selectedStatus = signal<'Upcoming' | 'delivered'>('Upcoming');
   isLoading = signal<boolean>(false);
   deliveringOrderId = signal<number | null>(null);
-
 
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
@@ -64,7 +85,7 @@ export class OrderDrawer implements OnInit, OnDestroy {
     const query = this.orderSearchQuery().toLowerCase().trim();
     const list = this.allOrders();
     if (!query) return list;
-    return list.filter(order => {
+    return list.filter((order) => {
       const orderNo = String(this.getOrderNo(order)).toLowerCase();
       const customerName = String(this.getCustomerName(order)).toLowerCase();
       const phone = String(this.getMobileNo(order)).toLowerCase();
@@ -74,12 +95,12 @@ export class OrderDrawer implements OnInit, OnDestroy {
 
   ngOnInit() {
     const debounceMs = this.configService.getConfig()?.orderSearchDebounceTime ?? 300;
-    this.searchSubscription = this.searchSubject.pipe(
-      debounceTime(debounceMs)
-    ).subscribe(value => {
-      this.orderSearchQuery.set(value);
-      this.loadOrders(value, this.selectedStatus()); // Trigger server-side API search
-    });
+    this.searchSubscription = this.searchSubject
+      .pipe(debounceTime(debounceMs))
+      .subscribe((value) => {
+        this.orderSearchQuery.set(value);
+        this.loadOrders(value, this.selectedStatus()); // Trigger server-side API search
+      });
   }
 
   ngOnDestroy() {
@@ -100,7 +121,7 @@ export class OrderDrawer implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Error fetching orders:', err);
         this.isLoading.set(false);
-      }
+      },
     });
   }
 
@@ -133,11 +154,25 @@ export class OrderDrawer implements OnInit, OnDestroy {
   }
 
   getCustomerName(order: any): string {
-    return order.customerName || order.partyName || order.name || order.customer?.customerName || order.customer?.name || 'Unknown Customer';
+    return (
+      order.customerName ||
+      order.partyName ||
+      order.name ||
+      order.customer?.customerName ||
+      order.customer?.name ||
+      'Unknown Customer'
+    );
   }
 
   getMobileNo(order: any): string {
-    return order.mobileNumber || order.mobileNo || order.phone || order.mobile || order.customer?.mobileNo || '';
+    return (
+      order.mobileNumber ||
+      order.mobileNo ||
+      order.phone ||
+      order.mobile ||
+      order.customer?.mobileNo ||
+      ''
+    );
   }
 
   getOrderDate(order: any): any {
@@ -176,7 +211,9 @@ export class OrderDrawer implements OnInit, OnDestroy {
     this.deliveringOrderId.set(orderId);
     this.counterInvoiceService.updateOrderStatus(orderId, 'delivered').subscribe({
       next: () => {
-        this.notificationService.showSuccess('Order #' + orderId + ' marked as delivered successfully.');
+        this.notificationService.showSuccess(
+          'Order #' + orderId + ' marked as delivered successfully.',
+        );
         this.deliveringOrderId.set(null);
         this.loadOrders(this.orderSearchQuery(), this.selectedStatus());
       },
@@ -184,7 +221,7 @@ export class OrderDrawer implements OnInit, OnDestroy {
         console.error('Error delivering order:', err);
         this.notificationService.showError('Failed to mark order as delivered.');
         this.deliveringOrderId.set(null);
-      }
+      },
     });
   }
 
@@ -195,4 +232,3 @@ export class OrderDrawer implements OnInit, OnDestroy {
     });
   }
 }
-

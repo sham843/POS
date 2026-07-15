@@ -1,7 +1,30 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, OnInit, OnDestroy, inject, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  signal,
+  OnInit,
+  OnDestroy,
+  inject,
+  ElementRef,
+  ChangeDetectionStrategy,
+  viewChild,
+} from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { LucideAngularModule, Package, ReceiptText, User, Search, X, Plus, Calendar, ArrowUp, CheckCircle, List, ShoppingBag, RefreshCw } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Package,
+  ReceiptText,
+  User,
+  Search,
+  X,
+  Plus,
+  Calendar,
+  ArrowUp,
+  CheckCircle,
+  List,
+  ShoppingBag,
+  RefreshCw,
+} from 'lucide-angular';
 import { ProductList } from './components/product-list/product-list';
 import { Cart } from './components/cart/cart';
 import { BillSummary } from './components/bill-summary/bill-summary';
@@ -18,8 +41,6 @@ import { MasterDataService } from '../../core/services/master-data.service';
 import { Subject, Subscription, timer } from 'rxjs';
 import { debounce } from 'rxjs/operators';
 
-
-
 @Component({
   selector: 'app-counter-sale',
   standalone: true,
@@ -33,7 +54,7 @@ import { debounce } from 'rxjs/operators';
     CustomerDrawer,
     OrderDrawer,
     CustomerLedger,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   templateUrl: './counter-sale.html',
   styleUrl: './counter-sale.scss',
@@ -51,19 +72,21 @@ export class CounterSale implements OnInit, OnDestroy {
   isOrderDrawerOpen = signal<boolean>(false);
   isLedgerDrawerOpen = signal<boolean>(false);
   isSyncingData = signal<boolean>(false);
-  lastSyncedTime = signal<Date | null>((() => {
-    const stored = localStorage.getItem('lastSyncedTime');
-    if (stored) return new Date(stored);
-    const now = new Date();
-    localStorage.setItem('lastSyncedTime', now.toISOString());
-    return now;
-  })());
+  lastSyncedTime = signal<Date | null>(
+    (() => {
+      const stored = localStorage.getItem('lastSyncedTime');
+      if (stored) return new Date(stored);
+      const now = new Date();
+      localStorage.setItem('lastSyncedTime', now.toISOString());
+      return now;
+    })(),
+  );
   selectedCustomer = this.counterSaleService.selectedCustomer;
 
   upcomingOrdersCount = signal<number>(0);
   private orderCountInterval?: any;
 
-  @ViewChild('searchInput', { static: false }) searchInput?: ElementRef<HTMLInputElement>;
+  readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   currentTime = signal(new Date());
   private timer: any;
@@ -96,23 +119,23 @@ export class CounterSale implements OnInit, OnDestroy {
       this.currentTime.set(new Date());
     }, 1000);
 
-    this.numpadSub = this.counterSaleService.numpadSearchAction.subscribe(query => {
+    this.numpadSub = this.counterSaleService.numpadSearchAction.subscribe((query) => {
       this.searchSubject.next(query);
     });
 
-    this.searchSubscription = this.searchSubject.pipe(
-      debounce(() => timer(800))
-    ).subscribe(value => {
-      if (this.searchType() === 'customer' && value.trim().length > 0) {
-        this.onSearchEnter(true); // show snackbar after debounce if not found
-      } else if (this.searchType() === 'bill') {
-        if (value.trim().length > 0) {
-          this.onSearchEnter(false); // fetch bill on debounce silently without error snackbar
-        } else {
-          this.counterSaleService.clearCart();
+    this.searchSubscription = this.searchSubject
+      .pipe(debounce(() => timer(800)))
+      .subscribe((value) => {
+        if (this.searchType() === 'customer' && value.trim().length > 0) {
+          this.onSearchEnter(true); // show snackbar after debounce if not found
+        } else if (this.searchType() === 'bill') {
+          if (value.trim().length > 0) {
+            this.onSearchEnter(false); // fetch bill on debounce silently without error snackbar
+          } else {
+            this.counterSaleService.clearCart();
+          }
         }
-      }
-    });
+      });
   }
 
   async syncMasterData() {
@@ -155,8 +178,9 @@ export class CounterSale implements OnInit, OnDestroy {
   setSearchType(type: 'product' | 'bill' | 'customer') {
     this.searchType.set(type);
     this.counterSaleService.updateSearchQuery('');
-    if (this.searchInput?.nativeElement) {
-      this.searchInput.nativeElement.value = '';
+    const searchInput = this.searchInput();
+    if (searchInput?.nativeElement) {
+      searchInput.nativeElement.value = '';
     }
     this.searchSubject.next('');
     this.counterSaleService.clearCart();
@@ -181,19 +205,20 @@ export class CounterSale implements OnInit, OnDestroy {
   }
 
   clearSelectedCustomer() {
-    this.counterSaleService.updateActiveBill({ 
+    this.counterSaleService.updateActiveBill({
       selectedCustomer: null,
       cartItems: [],
       selectedItemIndex: null,
       numpadMode: 'quantity',
       numpadValue: '',
       numpadShouldReplace: false,
-      numpadHasQuickWeight: false
+      numpadHasQuickWeight: false,
     });
     this.counterSaleService.updateSearchQuery('');
     this.searchSubject.next('');
-    if (this.searchInput?.nativeElement) {
-      this.searchInput.nativeElement.value = '';
+    const searchInput = this.searchInput();
+    if (searchInput?.nativeElement) {
+      searchInput.nativeElement.value = '';
     }
   }
 
@@ -227,21 +252,21 @@ export class CounterSale implements OnInit, OnDestroy {
       if (!query) return;
 
       const customers = await this.dbService.customerList.toArray();
-      const found = customers.find(c => {
+      const found = customers.find((c) => {
         const name = (c.customerName || c.name || '').toLowerCase();
         const phone = (c.mobileNo || c.phone || '').toLowerCase();
         return name.includes(query) || phone.includes(query);
       });
 
       if (found) {
-        this.counterSaleService.updateActiveBill({ 
+        this.counterSaleService.updateActiveBill({
           selectedCustomer: found,
           cartItems: [],
           selectedItemIndex: null,
           numpadMode: 'quantity',
           numpadValue: '',
           numpadShouldReplace: false,
-          numpadHasQuickWeight: false
+          numpadHasQuickWeight: false,
         });
         this.counterSaleService.updateSearchQuery('');
       } else if (showSnackbar) {
@@ -252,7 +277,7 @@ export class CounterSale implements OnInit, OnDestroy {
       if (!query) return;
 
       const cleanBillNo = query.split('/')[0];
-      
+
       // Prevent backend 500 error if string is not a valid number
       if (!/^\d+$/.test(cleanBillNo)) {
         if (showSnackbar) {
@@ -260,7 +285,7 @@ export class CounterSale implements OnInit, OnDestroy {
         }
         return;
       }
-      
+
       this.counterSaleService.loadInvoiceByBillNo(cleanBillNo);
     }
   }
@@ -293,7 +318,7 @@ export class CounterSale implements OnInit, OnDestroy {
         const list = res?.data || res || [];
         this.upcomingOrdersCount.set(Array.isArray(list) ? list.length : 0);
       },
-      error: (err) => console.error('Error fetching upcoming orders count:', err)
+      error: (err) => console.error('Error fetching upcoming orders count:', err),
     });
   }
 

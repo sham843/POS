@@ -1,4 +1,14 @@
-import { Component, Input, Output, EventEmitter, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  computed,
+  OnInit,
+  OnDestroy,
+  ChangeDetectionStrategy,
+  input,
+  output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Search, X, CheckCircle, Users, UserCheck } from 'lucide-angular';
 import { MatTableModule } from '@angular/material/table';
@@ -14,14 +24,14 @@ import { debounceTime } from 'rxjs/operators';
   imports: [CommonModule, LucideAngularModule, MatTableModule, EmptyState],
   templateUrl: './customer-drawer.html',
   styleUrl: './customer-drawer.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerDrawer implements OnInit, OnDestroy {
   private dbService = inject(DbService);
   private counterSaleService = inject(CounterSaleService);
 
-  @Input() isOpen = false;
-  @Output() close = new EventEmitter<void>();
+  readonly isOpen = input(false);
+  readonly close = output<void>();
 
   allCustomers = signal<any[]>([]);
   customerSearchQuery = signal<string>('');
@@ -43,7 +53,7 @@ export class CustomerDrawer implements OnInit, OnDestroy {
     const query = this.customerSearchQuery().toLowerCase().trim();
     const list = this.allCustomers();
     if (!query) return list;
-    const result = list.filter(c => {
+    const result = list.filter((c) => {
       const name = (c.customerName || c.name || '').toLowerCase();
       const phone = (c.mobileNo || c.phone || '').toLowerCase();
       return name.includes(query) || phone.includes(query);
@@ -54,9 +64,7 @@ export class CustomerDrawer implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadCustomers();
-    this.searchSubscription = this.searchSubject.pipe(
-      debounceTime(300)
-    ).subscribe(value => {
+    this.searchSubscription = this.searchSubject.pipe(debounceTime(300)).subscribe((value) => {
       this.customerSearchQuery.set(value);
     });
   }
@@ -98,25 +106,25 @@ export class CustomerDrawer implements OnInit, OnDestroy {
   selectCustomer(c: any) {
     const current = this.selectedCustomer();
     if (current?.id === c.id) {
-      this.counterSaleService.updateActiveBill({ 
+      this.counterSaleService.updateActiveBill({
         selectedCustomer: null,
         cartItems: [],
         selectedItemIndex: null,
         numpadMode: 'quantity',
         numpadValue: '',
         numpadShouldReplace: false,
-        numpadHasQuickWeight: false
+        numpadHasQuickWeight: false,
       });
       this.closeDrawer();
     } else {
-      this.counterSaleService.updateActiveBill({ 
+      this.counterSaleService.updateActiveBill({
         selectedCustomer: c,
         cartItems: [],
         selectedItemIndex: null,
         numpadMode: 'quantity',
         numpadValue: '',
         numpadShouldReplace: false,
-        numpadHasQuickWeight: false
+        numpadHasQuickWeight: false,
       });
       this.counterSaleService.searchType.set('customer');
       this.counterSaleService.updateSearchQuery(c.customerName || c.name || '');

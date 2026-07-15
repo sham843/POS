@@ -1,6 +1,13 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, ShoppingCart, Package, Search, Inbox, AlertCircle } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  ShoppingCart,
+  Package,
+  Search,
+  Inbox,
+  AlertCircle,
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-empty-state',
@@ -8,15 +15,15 @@ import { LucideAngularModule, ShoppingCart, Package, Search, Inbox, AlertCircle 
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './empty-state.html',
   styleUrl: './empty-state.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmptyState {
-  @Input() title: string = 'No Data Found';
+  readonly title = input<string>('No Data Found');
   @Input() message: string = 'There is no data available to display.';
-  @Input() icon: 'product' | 'cart' | 'search' | 'inbox' | 'alert' = 'inbox';
+  readonly icon = input<'product' | 'cart' | 'search' | 'inbox' | 'alert'>('inbox');
 
   get iconImage() {
-    switch (this.icon) {
+    switch (this.icon()) {
       case 'product':
         return Package;
       case 'cart':

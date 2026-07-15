@@ -1,15 +1,18 @@
-@if (show) {
-<div class="custom-modal-overlay">
-  <div class="custom-modal-card">
-    <div class="modal-icon-wrapper">
-      <lucide-icon [img]="RefreshCw" class="modal-icon spin-pulse"></lucide-icon>
-    </div>
-    <h3 class="modal-title">Update Ready!</h3>
-    <p class="modal-message">A new update v{{version || '1.0.12'}} has been downloaded. The application needs to restart to apply the update.</p>
-    <div class="modal-actions">
-      <button class="modal-btn btn-cancel" (click)="onCancel()">Later</button>
-      <button class="modal-btn btn-confirm" (click)="onConfirm()">Update Now</button>
+@if (show()) {
+  <div class="custom-modal-overlay">
+    <div class="custom-modal-card">
+      <div class="modal-icon-wrapper">
+        <lucide-icon [img]="RefreshCw" class="modal-icon spin-pulse"></lucide-icon>
+      </div>
+      <h3 class="modal-title">Update Ready!</h3>
+      <p class="modal-message">
+        A new update v{{ version() || '1.0.12' }} has been downloaded. The application needs to
+        restart to apply the update.
+      </p>
+      <div class="modal-actions">
+        <button class="modal-btn btn-cancel" (click)="onCancel()">Later</button>
+        <button class="modal-btn btn-confirm" (click)="onConfirm()">Update Now</button>
+      </div>
     </div>
   </div>
-</div>
 }

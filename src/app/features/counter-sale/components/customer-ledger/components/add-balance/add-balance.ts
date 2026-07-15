@@ -1,8 +1,5 @@
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
   inject,
   signal,
   ChangeDetectorRef,
@@ -11,6 +8,8 @@ import {
   OnInit,
   OnChanges,
   SimpleChanges,
+  input,
+  output,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -65,14 +64,14 @@ export class AddBalanceComponent implements OnInit, OnChanges {
   private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
 
-  @Input() isOpen = false;
-  @Input() customer: any = null;
-  @Input() partiesList: any[] = [];
-  @Input() bankAccountsList: any[] = [];
-  @Input() cashLedgersList: any[] = [];
+  readonly isOpen = input(false);
+  readonly customer = input<any>(null);
+  readonly partiesList = input<any[]>([]);
+  readonly bankAccountsList = input<any[]>([]);
+  readonly cashLedgersList = input<any[]>([]);
 
-  @Output() close = new EventEmitter<void>();
-  @Output() balanceAdded = new EventEmitter<void>();
+  readonly close = output<void>();
+  readonly balanceAdded = output<void>();
 
   isSaving = signal<boolean>(false);
   ledgerForm: FormGroup;
@@ -131,7 +130,7 @@ export class AddBalanceComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (
       changes['isOpen']?.currentValue === true ||
-      (this.isOpen && changes['customer']?.currentValue) ||
+      (this.isOpen() && changes['customer']?.currentValue) ||
       changes['partiesList']
     ) {
       this.initFormState();
@@ -144,14 +143,13 @@ export class AddBalanceComponent implements OnInit, OnChanges {
 
   initFormState() {
     const today = new Date();
-    const rawCustId = this.customer?.id ?? this.customer?.customerId ?? this.customer?.partyId;
+    const customer = this.customer();
+    const rawCustId = customer?.id ?? customer?.customerId ?? customer?.partyId;
     let custId = rawCustId ? Number(rawCustId) : 0;
 
-    if (
-      (!custId || !this.partiesList.some((p) => Number(p.id) === custId)) &&
-      this.partiesList.length > 0
-    ) {
-      custId = Number(this.partiesList[0].id);
+    const partiesList = this.partiesList();
+    if ((!custId || !partiesList.some((p) => Number(p.id) === custId)) && partiesList.length > 0) {
+      custId = Number(partiesList[0].id);
     }
 
     this.ledgerForm.patchValue(
@@ -179,8 +177,8 @@ export class AddBalanceComponent implements OnInit, OnChanges {
   updateBankCashLedgerDefault() {
     const paymentMode = this.ledgerForm.get('paymentMode')?.value;
     if (paymentMode === 'cash') {
-      if (this.cashLedgersList.length > 0) {
-        this.ledgerForm.patchValue({ ledger2: this.cashLedgersList[0].id });
+      if (this.cashLedgersList().length > 0) {
+        this.ledgerForm.patchValue({ ledger2: this.cashLedgersList()[0].id });
       } else {
         this.ledgerForm.patchValue({ ledger2: null });
       }
@@ -223,7 +221,7 @@ export class AddBalanceComponent implements OnInit, OnChanges {
         : 0;
 
     const selectedParty =
-      this.partiesList.find((p) => Number(p.id) === Number(partyId)) || this.customer;
+      this.partiesList().find((p) => Number(p.id) === Number(partyId)) || this.customer();
 
     let tDate = new Date().toISOString();
     let rDate = new Date().toISOString();
@@ -246,7 +244,7 @@ export class AddBalanceComponent implements OnInit, OnChanges {
     }
 
     const targetBankId = formValues.paymentMode === 'cash' ? 1177 : Number(formValues.ledger2);
-    const foundBank = this.bankAccountsList.find((b) => Number(b.id) === targetBankId);
+    const foundBank = this.bankAccountsList().find((b) => Number(b.id) === targetBankId);
     const selectedBankName = foundBank?.customerName || '';
     const bankLedgerId = Number(foundBank?.id || targetBankId || 0);
 

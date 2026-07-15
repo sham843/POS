@@ -1,4 +1,17 @@
-import { Component, Input, Output, EventEmitter, inject, signal, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  inject,
+  signal,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+  DestroyRef,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  input,
+  output,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, X, Plus, ReceiptText, ClipboardList } from 'lucide-angular';
@@ -11,15 +24,10 @@ import { LedgerHistoryComponent } from './components/ledger-history/ledger-histo
 @Component({
   selector: 'app-customer-ledger',
   standalone: true,
-  imports: [
-    CommonModule,
-    LucideAngularModule,
-    AddBalanceComponent,
-    LedgerHistoryComponent
-  ],
+  imports: [CommonModule, LucideAngularModule, AddBalanceComponent, LedgerHistoryComponent],
   templateUrl: './customer-ledger.html',
   styleUrl: './customer-ledger.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerLedger implements OnInit, OnChanges {
   private dbService = inject(DbService);
@@ -29,10 +37,10 @@ export class CustomerLedger implements OnInit, OnChanges {
   private destroyRef = inject(DestroyRef);
 
   @Input() isOpen = false;
-  @Input() customer: any = null;
+  readonly customer = input<any>(null);
 
-  @Output() close = new EventEmitter<void>();
-  @Output() balanceAdded = new EventEmitter<void>();
+  readonly close = output<void>();
+  readonly balanceAdded = output<void>();
 
   activeTab = signal<'add' | 'history'>('add');
 
@@ -54,7 +62,10 @@ export class CustomerLedger implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['isOpen']?.currentValue === true || (this.isOpen && changes['customer']?.currentValue)) {
+    if (
+      changes['isOpen']?.currentValue === true ||
+      (this.isOpen && changes['customer']?.currentValue)
+    ) {
       this.loadDropdownData();
     }
   }
@@ -72,35 +83,47 @@ export class CustomerLedger implements OnInit, OnChanges {
   }
 
   getDrawerWidth(): number {
-    return this.configService.getConfig()?.customerLedgerWidth ?? this.configService.getConfig()?.orderDrawerWidth ?? 650;
+    return (
+      this.configService.getConfig()?.customerLedgerWidth ??
+      this.configService.getConfig()?.orderDrawerWidth ??
+      650
+    );
   }
 
   async loadDropdownData() {
     try {
       const parties = await this.dbService.customerList.toArray();
-      const mappedParties = (parties || []).map(p => {
-        const cName = p.customerName || p.name || `Customer #${p.id}`;
-        return {
-          ...p,
-          id: Number(p.id ?? 0),
-          customerName: cName,
-          displayName: cName
-        };
-      }).filter(p => p.id > 0);
+      const mappedParties = (parties || [])
+        .map((p) => {
+          const cName = p.customerName || p.name || `Customer #${p.id}`;
+          return {
+            ...p,
+            id: Number(p.id ?? 0),
+            customerName: cName,
+            displayName: cName,
+          };
+        })
+        .filter((p) => p.id > 0);
 
       mappedParties.sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''));
 
-      const rawCustId = this.customer?.id ?? this.customer?.customerId ?? this.customer?.partyId;
+      const customer = this.customer();
+      const rawCustId = customer?.id ?? customer?.customerId ?? customer?.partyId;
       if (rawCustId) {
         const custId = Number(rawCustId);
-        const cName = this.customer.customerName || this.customer.name || this.customer.displayName || `Customer #${custId}`;
-        const existing = mappedParties.find(p => Number(p.id) === custId);
+        const customerValue = this.customer();
+        const cName =
+          customerValue.customerName ||
+          customerValue.name ||
+          customerValue.displayName ||
+          `Customer #${custId}`;
+        const existing = mappedParties.find((p) => Number(p.id) === custId);
         if (!existing) {
           mappedParties.unshift({
-            ...this.customer,
+            ...this.customer(),
             id: custId,
             customerName: cName,
-            displayName: cName
+            displayName: cName,
           });
         } else {
           existing.customerName = cName;
@@ -111,44 +134,55 @@ export class CustomerLedger implements OnInit, OnChanges {
       this.partiesList.set(mappedParties);
 
       const banks = await this.dbService.bankAccounts.toArray();
-      const mappedBanks = (banks || []).map(b => {
-        const name = b.customerName || b.bankName || b.ledgerName || b.accountName || b.name || `Bank #${b.id}`;
-        return {
-          ...b,
-          id: Number(b.id ?? 0),
-          customerName: name,
-          bankName: name,
-          displayName: name
-        };
-      }).filter(b => b.id > 0);
+      const mappedBanks = (banks || [])
+        .map((b) => {
+          const name =
+            b.customerName ||
+            b.bankName ||
+            b.ledgerName ||
+            b.accountName ||
+            b.name ||
+            `Bank #${b.id}`;
+          return {
+            ...b,
+            id: Number(b.id ?? 0),
+            customerName: name,
+            bankName: name,
+            displayName: name,
+          };
+        })
+        .filter((b) => b.id > 0);
       this.bankAccountsList.set(mappedBanks);
 
       const cash = await this.dbService.cashLedger.toArray();
-      const mappedCash = (cash || []).map(c => {
-        const name = c.customerName || c.ledgerName || c.name || `Cash #${c.id}`;
-        return {
-          ...c,
-          id: Number(c.id ?? 0),
-          customerName: name,
-          ledgerName: name,
-          displayName: name
-        };
-      }).filter(c => c.id > 0);
+      const mappedCash = (cash || [])
+        .map((c) => {
+          const name = c.customerName || c.ledgerName || c.name || `Cash #${c.id}`;
+          return {
+            ...c,
+            id: Number(c.id ?? 0),
+            customerName: name,
+            ledgerName: name,
+            displayName: name,
+          };
+        })
+        .filter((c) => c.id > 0);
       this.cashLedgersList.set(mappedCash);
 
       // Combine cash and bank accounts for filter and deduplicate by ID
       const combinedMap = new Map<number, any>();
-      mappedCash.forEach(c => {
+      mappedCash.forEach((c) => {
         if (c.id > 0) combinedMap.set(c.id, { id: c.id, name: c.displayName, type: 'Cash' });
       });
-      mappedBanks.forEach(b => {
+      mappedBanks.forEach((b) => {
         if (b.id > 0 && !combinedMap.has(b.id)) {
           combinedMap.set(b.id, { id: b.id, name: b.displayName, type: 'Bank' });
         }
       });
       this.combinedBankCashList.set(Array.from(combinedMap.values()));
 
-      this.counterInvoiceService.getPaymentList()
+      this.counterInvoiceService
+        .getPaymentList()
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (res: any) => {
@@ -160,7 +194,7 @@ export class CustomerLedger implements OnInit, OnChanges {
           },
           error: (err: any) => {
             console.error('Error fetching payment modes:', err);
-          }
+          },
         });
 
       this.cdr.markForCheck();

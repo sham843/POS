@@ -1,6 +1,27 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { Component, OnInit, AfterViewInit, inject, signal, computed, ViewChild, ElementRef, HostListener, ChangeDetectionStrategy, effect } from '@angular/core';
-import { LucideAngularModule, Package, Ellipsis, Star, Search, PlusCircle, CheckCircle, ArrowUp } from 'lucide-angular';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  inject,
+  signal,
+  computed,
+  ElementRef,
+  HostListener,
+  ChangeDetectionStrategy,
+  effect,
+  viewChild,
+} from '@angular/core';
+import {
+  LucideAngularModule,
+  Package,
+  Ellipsis,
+  Star,
+  Search,
+  PlusCircle,
+  CheckCircle,
+  ArrowUp,
+} from 'lucide-angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -18,7 +39,7 @@ import { CounterSaleService, Product } from '../../../../core/services/counter-s
     MatMenuModule,
     MatPaginatorModule,
     EmptyState,
-    NgOptimizedImage
+    NgOptimizedImage,
   ],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
@@ -29,9 +50,9 @@ export class ProductList implements OnInit, AfterViewInit {
   private counterSaleService = inject(CounterSaleService);
 
   // Container ref for available width measurement
-  @ViewChild('pillsContainer', { static: false }) pillsContainer!: ElementRef<HTMLDivElement>;
+  readonly pillsContainer = viewChild.required<ElementRef<HTMLDivElement>>('pillsContainer');
   // Hidden measurement container — renders all buttons invisibly to get real widths
-  @ViewChild('measureContainer', { static: false }) measureContainer!: ElementRef<HTMLDivElement>;
+  readonly measureContainer = viewChild.required<ElementRef<HTMLDivElement>>('measureContainer');
 
   // Expose icons to template
   readonly Package = Package;
@@ -68,27 +89,30 @@ export class ProductList implements OnInit, AfterViewInit {
     const query = this.menuSearchQuery().toLowerCase().trim();
     const overflow = this.overflowCategories();
     if (!query) return overflow;
-    return overflow.filter(cat => cat.name.toLowerCase().includes(query));
+    return overflow.filter((cat) => cat.name.toLowerCase().includes(query));
   });
 
   // More button becomes active when selected category is in overflow
   isOverflowActive = computed(() => {
     const active = this.activeCategory();
-    return this.overflowCategories().some(cat => cat.name === active);
+    return this.overflowCategories().some((cat) => cat.name === active);
   });
 
   constructor() {
     // Reactively fetch products from IndexedDB whenever query, page, size, or category changes.
-    effect(() => {
-      const category = this.activeCategory();
-      const searchType = this.counterSaleService.searchType();
-      const query = searchType === 'product' ? this.counterSaleService.searchQuery() : '';
-      const page = this.currentPage();
-      const size = this.pageSize();
-      const activeCats = this.allCategories();
+    effect(
+      () => {
+        const category = this.activeCategory();
+        const searchType = this.counterSaleService.searchType();
+        const query = searchType === 'product' ? this.counterSaleService.searchQuery() : '';
+        const page = this.currentPage();
+        const size = this.pageSize();
+        const activeCats = this.allCategories();
 
-      this.fetchPaginatedProducts(category, query, page, size, activeCats);
-    }, { allowSignalWrites: true });
+        this.fetchPaginatedProducts(category, query, page, size, activeCats);
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   // Debounce timer to avoid heavy DOM queries on every resize pixel
@@ -105,7 +129,13 @@ export class ProductList implements OnInit, AfterViewInit {
     setTimeout(() => this.updateCategoriesOverflow(), 0);
   }
 
-  async fetchPaginatedProducts(category: string, query: string, page: number, size: number, activeCats: any[]) {
+  async fetchPaginatedProducts(
+    category: string,
+    query: string,
+    page: number,
+    size: number,
+    activeCats: any[],
+  ) {
     const queryLower = query.toLowerCase().trim();
     const categoryLower = category.toLowerCase().trim();
 
@@ -126,8 +156,8 @@ export class ProductList implements OnInit, AfterViewInit {
         if (category !== 'All') {
           matchingCategoryIds = new Set(
             activeCats
-              .filter(c => (c.productName || c.name || '').toLowerCase() === categoryLower)
-              .map(c => c.id)
+              .filter((c) => (c.productName || c.name || '').toLowerCase() === categoryLower)
+              .map((c) => c.id),
           );
         }
 
@@ -135,36 +165,38 @@ export class ProductList implements OnInit, AfterViewInit {
         if (queryLower) {
           matchingProductIds = new Set(
             activeCats
-              .filter(c => {
+              .filter((c) => {
                 const prodName = (c.productName || c.name || '').toLowerCase();
                 const prodCode = (c.productCode || c.code || c.materialCode || '').toLowerCase();
                 return prodName.includes(queryLower) || prodCode.includes(queryLower);
               })
-              .map(c => c.id)
+              .map((c) => c.id),
           );
         }
 
-        const allFiltered = await this.dbService.products.filter(p => {
-          // Filter by Category
-          if (category !== 'All' && matchingCategoryIds) {
-            const matchesParent = p.productId && matchingCategoryIds.has(p.productId);
-            const cat = (p.categoryName || p.category || p.materialGroupName || '').toLowerCase();
-            const matName = (p.materialName || p.productName || p.name || '').toLowerCase();
-            if (!(matchesParent || cat === categoryLower || matName.includes(categoryLower))) {
-              return false;
+        const allFiltered = await this.dbService.products
+          .filter((p) => {
+            // Filter by Category
+            if (category !== 'All' && matchingCategoryIds) {
+              const matchesParent = p.productId && matchingCategoryIds.has(p.productId);
+              const cat = (p.categoryName || p.category || p.materialGroupName || '').toLowerCase();
+              const matName = (p.materialName || p.productName || p.name || '').toLowerCase();
+              if (!(matchesParent || cat === categoryLower || matName.includes(categoryLower))) {
+                return false;
+              }
             }
-          }
-          // Filter by Search Query
-          if (queryLower && matchingProductIds) {
-            const matchesParent = p.productId && matchingProductIds.has(p.productId);
-            const name = (p.productName || p.materialName || p.name || '').toLowerCase();
-            const code = (p.productCode || p.code || p.materialCode || '').toLowerCase();
-            if (!(matchesParent || name.includes(queryLower) || code.includes(queryLower))) {
-              return false;
+            // Filter by Search Query
+            if (queryLower && matchingProductIds) {
+              const matchesParent = p.productId && matchingProductIds.has(p.productId);
+              const name = (p.productName || p.materialName || p.name || '').toLowerCase();
+              const code = (p.productCode || p.code || p.materialCode || '').toLowerCase();
+              if (!(matchesParent || name.includes(queryLower) || code.includes(queryLower))) {
+                return false;
+              }
             }
-          }
-          return true;
-        }).toArray();
+            return true;
+          })
+          .toArray();
 
         this.totalFilteredProductsCount.set(allFiltered.length);
         const start = (page - 1) * size;
@@ -191,8 +223,8 @@ export class ProductList implements OnInit, AfterViewInit {
       if (loadedCategories.length > 0) {
         // Direct map — preserve exact DB order, no Set() reordering
         const categoryItems = loadedCategories
-          .filter(cat => cat.productName)
-          .map(cat => ({ name: String(cat.productName) }));
+          .filter((cat) => cat.productName)
+          .map((cat) => ({ name: String(cat.productName) }));
         if (categoryItems.length > 0) {
           this.categories.set(categoryItems);
           // Set all visible initially; updateCategoriesOverflow runs after DOM renders
@@ -207,12 +239,12 @@ export class ProductList implements OnInit, AfterViewInit {
         const uniqueCategories = Array.from(
           new Set(
             sampleProducts
-              .map(p => p.categoryName || p.category || p.materialGroupName)
-              .filter(Boolean)
-          )
+              .map((p) => p.categoryName || p.category || p.materialGroupName)
+              .filter(Boolean),
+          ),
         );
         if (uniqueCategories.length > 0) {
-          const items = uniqueCategories.map(name => ({ name: String(name) }));
+          const items = uniqueCategories.map((name) => ({ name: String(name) }));
           this.categories.set(items);
           this.visibleCategories.set(items);
           this.overflowCategories.set([]);
@@ -230,17 +262,19 @@ export class ProductList implements OnInit, AfterViewInit {
    * Then splits into visible/overflow based on #pillsContainer clientWidth.
    */
   updateCategoriesOverflow() {
-    if (!this.pillsContainer || !this.measureContainer) return;
+    const pillsContainer = this.pillsContainer();
+    const measureContainer = this.measureContainer();
+    if (!pillsContainer || !measureContainer) return;
 
     const allCats = this.categories();
     if (allCats.length === 0) return;
 
-    const containerWidth = this.pillsContainer.nativeElement.clientWidth;
+    const containerWidth = pillsContainer.nativeElement.clientWidth;
     if (!containerWidth) return;
 
     // Measure actual widths from the hidden container
     const measureBtns = Array.from(
-      this.measureContainer.nativeElement.querySelectorAll('.pill-btn-measure')
+      measureContainer.nativeElement.querySelectorAll('.pill-btn-measure'),
     ) as HTMLElement[];
 
     if (measureBtns.length !== allCats.length) {
@@ -331,7 +365,8 @@ export class ProductList implements OnInit, AfterViewInit {
       (product.productCode && ids.has(product.productCode)) ||
       (product.productName && ids.has(product.productName)) ||
       (product.materialName && ids.has(product.materialName)) ||
-      (product.name && ids.has(product.name)) || false
+      (product.name && ids.has(product.name)) ||
+      false
     );
   }
 
@@ -363,5 +398,4 @@ export class ProductList implements OnInit, AfterViewInit {
     const isAvailable = Number(stock) >= 0;
     return isAvailable ? 'in-stock' : 'out-of-stock';
   }
-
 }

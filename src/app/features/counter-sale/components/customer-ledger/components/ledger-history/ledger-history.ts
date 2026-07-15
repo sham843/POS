@@ -1,11 +1,25 @@
-import { Component, Input, inject, signal, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+  DestroyRef,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  input,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LucideAngularModule, Loader, Search, RotateCcw } from 'lucide-angular';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
-import { CustomDateAdapter, CUSTOM_DATE_FORMATS } from '../../../../../../core/adapters/custom-date-adapter';
+import {
+  CustomDateAdapter,
+  CUSTOM_DATE_FORMATS,
+} from '../../../../../../core/adapters/custom-date-adapter';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -25,15 +39,15 @@ import { EmptyState } from '../../../../../../shared/components/empty-state/empt
     MatInputModule,
     MatSelectModule,
     MatTableModule,
-    EmptyState
+    EmptyState,
   ],
   providers: [
     { provide: DateAdapter, useClass: CustomDateAdapter },
-    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
   ],
   templateUrl: './ledger-history.html',
   styleUrl: './ledger-history.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LedgerHistoryComponent implements OnInit, OnChanges {
   private counterInvoiceService = inject(CounterInvoiceService);
@@ -41,10 +55,10 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
   private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
 
-  @Input() isOpen = false;
-  @Input() customer: any = null;
-  @Input() partiesList: any[] = [];
-  @Input() combinedBankCashList: any[] = [];
+  readonly isOpen = input(false);
+  readonly customer = input<any>(null);
+  readonly partiesList = input<any[]>([]);
+  readonly combinedBankCashList = input<any[]>([]);
 
   isLoading = signal<boolean>(false);
   ledgerHistory = signal<any[]>([]);
@@ -75,11 +89,12 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
       partyId: [null, Validators.required],
       bankLedgerId: [null],
       fromDate: [thirtyDaysAgo, Validators.required],
-      toDate: [new Date(), Validators.required]
+      toDate: [new Date(), Validators.required],
     });
 
-    this.filterForm.get('fromDate')?.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    this.filterForm
+      .get('fromDate')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.filterForm.patchValue({ toDate: null }, { emitEvent: false });
       });
@@ -90,7 +105,12 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['isOpen']?.currentValue === true || (this.isOpen && changes['customer']?.currentValue) || changes['partiesList'] || changes['combinedBankCashList']) {
+    if (
+      changes['isOpen']?.currentValue === true ||
+      (this.isOpen() && changes['customer']?.currentValue) ||
+      changes['partiesList'] ||
+      changes['combinedBankCashList']
+    ) {
       this.initFilterState();
     }
   }
@@ -100,19 +120,24 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
     const start = new Date();
     start.setDate(start.getDate() - 30);
 
-    const rawCustId = this.customer?.id ?? this.customer?.customerId ?? this.customer?.partyId;
+    const customer = this.customer();
+    const rawCustId = customer?.id ?? customer?.customerId ?? customer?.partyId;
     let custId = rawCustId ? Number(rawCustId) : 0;
 
-    if ((!custId || !this.partiesList.some(p => Number(p.id) === custId)) && this.partiesList.length > 0) {
-      custId = Number(this.partiesList[0].id);
+    const partiesList = this.partiesList();
+    if ((!custId || !partiesList.some((p) => Number(p.id) === custId)) && partiesList.length > 0) {
+      custId = Number(partiesList[0].id);
     }
 
-    this.filterForm.patchValue({
-      partyId: custId > 0 ? custId : null,
-      bankLedgerId: null,
-      fromDate: start,
-      toDate: today
-    }, { emitEvent: false });
+    this.filterForm.patchValue(
+      {
+        partyId: custId > 0 ? custId : null,
+        bankLedgerId: null,
+        fromDate: start,
+        toDate: today,
+      },
+      { emitEvent: false },
+    );
 
     if (custId > 0) {
       this.loadLedgerHistory(custId);
@@ -132,17 +157,19 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
     const start = new Date();
     start.setDate(start.getDate() - 30);
 
-    const rawCustId = this.customer?.id ?? this.customer?.customerId ?? this.customer?.partyId;
+    const customer = this.customer();
+    const rawCustId = customer?.id ?? customer?.customerId ?? customer?.partyId;
     let custId = rawCustId ? Number(rawCustId) : 0;
-    if ((!custId || !this.partiesList.some(p => Number(p.id) === custId)) && this.partiesList.length > 0) {
-      custId = Number(this.partiesList[0].id);
+    const partiesList = this.partiesList();
+    if ((!custId || !partiesList.some((p) => Number(p.id) === custId)) && partiesList.length > 0) {
+      custId = Number(partiesList[0].id);
     }
 
     this.filterForm.patchValue({
       partyId: custId > 0 ? custId : null,
       bankLedgerId: null,
       fromDate: start,
-      toDate: today
+      toDate: today,
     });
 
     if (custId > 0) {
@@ -151,13 +178,16 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
   }
 
   async loadLedgerHistory(selectedPartyId?: number) {
-    const partyId = selectedPartyId || this.filterForm?.get('partyId')?.value || this.customer?.id;
+    const partyId =
+      selectedPartyId || this.filterForm?.get('partyId')?.value || this.customer()?.id;
     if (!partyId) return;
     this.isLoading.set(true);
 
     const userDetailsStr = localStorage.getItem('UserDetails');
     let userDetails: any = null;
-    try { if (userDetailsStr) userDetails = JSON.parse(userDetailsStr); } catch (e) { }
+    try {
+      if (userDetailsStr) userDetails = JSON.parse(userDetailsStr);
+    } catch (e) {}
     const orgId = userDetails?.organizationId || userDetails?.organizationid || 28;
     const unitId = userDetails?.unitid || userDetails?.unitId || 0;
     const userId = userDetails?.id || userDetails?.userId || 0;
@@ -167,16 +197,17 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
     const fromDate = fromDateVal ? new Date(fromDateVal).toISOString() : undefined;
     const toDate = toDateVal ? new Date(toDateVal).toISOString() : undefined;
 
-    this.counterInvoiceService.getCustomerLedger({
-      partyId: Number(partyId),
-      organizationId: orgId,
-      unitId: unitId,
-      userId: userId,
-      fromDate: fromDate,
-      toDate: toDate,
-      pageNo: 1,
-      pageSize: 1000
-    })
+    this.counterInvoiceService
+      .getCustomerLedger({
+        partyId: Number(partyId),
+        organizationId: orgId,
+        unitId: unitId,
+        userId: userId,
+        fromDate: fromDate,
+        toDate: toDate,
+        pageNo: 1,
+        pageSize: 1000,
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res: any) => {
@@ -191,7 +222,7 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
           this.ledgerHistory.set([]);
           this.applyFilters();
           this.isLoading.set(false);
-        }
+        },
       });
   }
 
@@ -203,16 +234,15 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
 
     if (filters.bankLedgerId) {
       const bankId = Number(filters.bankLedgerId);
-      filtered = filtered.filter(row =>
-        Number(row.bankCashLedger) === bankId ||
-        Number(row.ledger2) === bankId
+      filtered = filtered.filter(
+        (row) => Number(row.bankCashLedger) === bankId || Number(row.ledger2) === bankId,
       );
     }
 
     if (filters.fromDate) {
       const fromDate = new Date(filters.fromDate);
       fromDate.setHours(0, 0, 0, 0);
-      filtered = filtered.filter(row => {
+      filtered = filtered.filter((row) => {
         const date = new Date(row.transactionDate || row.showDate);
         return date >= fromDate;
       });
@@ -221,7 +251,7 @@ export class LedgerHistoryComponent implements OnInit, OnChanges {
     if (filters.toDate) {
       const toDate = new Date(filters.toDate);
       toDate.setHours(23, 59, 59, 999);
-      filtered = filtered.filter(row => {
+      filtered = filtered.filter((row) => {
         const date = new Date(row.transactionDate || row.showDate);
         return date <= toDate;
       });

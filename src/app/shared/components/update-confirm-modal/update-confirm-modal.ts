@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 
 import { LucideAngularModule, RefreshCw } from 'lucide-angular';
 
@@ -11,10 +11,10 @@ import { LucideAngularModule, RefreshCw } from 'lucide-angular';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateConfirmModalComponent {
-  @Input() show = false;
-  @Input() version = '';
-  @Output() confirm = new EventEmitter<void>();
-  @Output() cancel = new EventEmitter<void>();
+  readonly show = input(false);
+  readonly version = input('');
+  readonly confirm = output<void>();
+  readonly cancel = output<void>();
 
   readonly RefreshCw = RefreshCw;
 
