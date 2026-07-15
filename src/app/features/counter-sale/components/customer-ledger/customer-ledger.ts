@@ -128,7 +128,7 @@ export class CustomerLedger implements OnInit, OnChanges {
         const name = c.customerName || c.ledgerName || c.name || `Cash #${c.id}`;
         return {
           ...c,
-          id: Number(c.id ?? c.cashLedgerId ?? 0),
+          id: Number(c.id ?? 0),
           customerName: name,
           ledgerName: name,
           displayName: name
