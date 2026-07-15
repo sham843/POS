@@ -221,10 +221,19 @@ export class ProductList implements OnInit, AfterViewInit {
       this.allCategories.set(loadedCategories);
 
       if (loadedCategories.length > 0) {
-        // Direct map — preserve exact DB order, no Set() reordering
-        const categoryItems = loadedCategories
-          .filter((cat) => cat.productName)
-          .map((cat) => ({ name: String(cat.productName) }));
+        // Extract unique category names while preserving exact DB order
+        const uniqueNames = new Set<string>();
+        const categoryItems: { name: string }[] = [];
+        
+        for (const cat of loadedCategories) {
+          if (cat.productName) {
+            const nameStr = String(cat.productName);
+            if (!uniqueNames.has(nameStr)) {
+              uniqueNames.add(nameStr);
+              categoryItems.push({ name: nameStr });
+            }
+          }
+        }
         if (categoryItems.length > 0) {
           this.categories.set(categoryItems);
           // Set all visible initially; updateCategoriesOverflow runs after DOM renders
