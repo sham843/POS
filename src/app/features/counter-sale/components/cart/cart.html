@@ -8,7 +8,7 @@
     </div>
 
     <div class="header-right">
-      @if (loadedOrder()) {
+      @if (loadedOrder() && dataSource().length) {
       <div class="order-badge">
         <span class="order-id">#{{ loadedOrder().orderId || loadedOrder().orderNo || loadedOrder().id }}</span>
         <span class="order-date">
