@@ -36,3 +36,32 @@ Numpad हे फ्रंटएंडचं एक मोठं इंजिन
 - संपूर्ण कार्टमधील प्रॉडक्ट्स, कस्टमर आयडी, टॅक्सची रक्कम आणि निवडलेले 'Company Ledger', 'Cash Account' हे सर्व एका JSON (Payload) मध्ये बांधले जातात.
 - **`POST api/v1/invoice/add`** (किंवा तत्सम Save API) ला कॉल करून हे बिल थेट डेटाबेसमध्ये सेव्ह केलं जातं. 
 - त्यानंतर कार्ट रिकामी होते आणि 'Bill Saved Successfully' असा मेसेज येतो.
+
+
+जर Price GST Inclusive असेल (उदा. ₹40 मध्ये 12% GST समाविष्ट आहे and 1 % Disc), तर Formula असा असेल:
+
+Discount Amount
+Discount = Selling Price × Discount % / 100
+Final Amount (GST Inclusive)
+Final Amount = Selling Price - Discount
+Taxable Amount
+Taxable Amount = Final Amount ÷ (1 + GST% / 100)
+CGST
+CGST = Taxable Amount × (GST% / 2) / 100
+SGST
+SGST = Taxable Amount × (GST% / 2) / 100
+Final Check
+Taxable + CGST + SGST = Final Amount
+उदाहरण
+Selling Price = ₹40
+GST = 12%
+Discount = 1%
+Discount = ₹0.40
+Final Amount = ₹39.60
+Taxable = ₹39.60 ÷ 1.12 = ₹35.36
+CGST (6%) = ₹2.12
+SGST (6%) = ₹2.12
+Total = ₹39.60 ✅
+
+Rule (Short):
+Discount आधी → मग GST Reverse Calculate → मग CGST/SGST Calculate.
