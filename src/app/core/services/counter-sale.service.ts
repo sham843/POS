@@ -820,7 +820,7 @@ export class CounterSaleService {
           if (product) {
             const rate = product.salePrice || product.mrp || product.rate || product.price || product.saleRate || 0;
             const qty = item.quantity || 1;
-            
+
             // Calculate GST percentage from API if available
             const cgst = parseFloat(item.cgst) || 0;
             const sgst = parseFloat(item.sgst) || 0;
@@ -847,7 +847,7 @@ export class CounterSaleService {
             };
 
             const calculatedItem = this.counterNumpadService.updateCartItemFromNumpad(newItem, 'quantity', qty.toString());
-            
+
             console.log('Raw order item from API:', item);
             console.log('taxableAmount:', item.taxableAmount);
 
@@ -861,7 +861,7 @@ export class CounterSaleService {
             }
             if (item.discount !== undefined) calculatedItem.discount = parseFloat(item.discount) || 0;
             if (item.unitPrice !== undefined) calculatedItem.rate = parseFloat(item.unitPrice) || 0;
-            
+
             // Map GST from API if available
             if (totalGstAmt > 0) {
               calculatedItem.gstAmount = totalGstAmt;
@@ -870,12 +870,12 @@ export class CounterSaleService {
               if (sgst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'SGST', taxAmount: sgst, id: 2, taxPercentage: 0 });
               if (igst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'IGST', taxAmount: igst, id: 3, taxPercentage: 0 });
             }
-            
+
             // Determine if tax is inclusive based on backend numbers
             if (calculatedItem.total === (calculatedItem.rate * calculatedItem.quantity)) {
-               calculatedItem.isTaxIncluded = true;
+              calculatedItem.isTaxIncluded = true;
             } else if (calculatedItem.total > (calculatedItem.rate * calculatedItem.quantity)) {
-               calculatedItem.isTaxIncluded = false;
+              calculatedItem.isTaxIncluded = false;
             }
 
             cartItems.push(calculatedItem);
@@ -883,7 +883,7 @@ export class CounterSaleService {
             // Fallback product if not in DB
             const rate = item.unitPrice || item.rate || 0;
             const qty = item.quantity || 1;
-            
+
             // Calculate GST percentage from API if available
             const cgst = parseFloat(item.cgst) || 0;
             const sgst = parseFloat(item.sgst) || 0;
@@ -929,12 +929,12 @@ export class CounterSaleService {
               if (sgst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'SGST', taxAmount: sgst, id: 2, taxPercentage: 0 });
               if (igst > 0) calculatedItem.dynamicTaxes.push({ componentName: 'IGST', taxAmount: igst, id: 3, taxPercentage: 0 });
             }
-            
+
             // Determine if tax is inclusive based on backend numbers
             if (calculatedItem.total === (calculatedItem.rate * calculatedItem.quantity)) {
-               calculatedItem.isTaxIncluded = true;
+              calculatedItem.isTaxIncluded = true;
             } else if (calculatedItem.total > (calculatedItem.rate * calculatedItem.quantity)) {
-               calculatedItem.isTaxIncluded = false;
+              calculatedItem.isTaxIncluded = false;
             }
 
             cartItems.push(calculatedItem);
