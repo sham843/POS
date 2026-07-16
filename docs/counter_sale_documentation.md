@@ -65,3 +65,9 @@ Total = ₹39.60 ✅
 
 Rule (Short):
 Discount आधी → मग GST Reverse Calculate → मग CGST/SGST Calculate.
+
+Sub Total = Discount आधीची Item Price ची बेरीज (40 + 65 = 105)
+Discount = फक्त पहिल्या Item वर 1% = ₹0.40
+Taxable Value = सर्व Items च्या Taxable Amount ची बेरीज
+CGST/SGST = प्रत्येक Item च्या GST ची बेरीज
+Bill Amount = Taxable + CGST + SGST
