@@ -149,7 +149,7 @@ export class CounterInvoiceService {
     const invoiceDetails = cartItems.map(item => {
       const discountAmount = parseFloat((item.amount * item.discount / 100).toFixed(2));
       const gstonAmount = parseFloat(((item.quantity * item.rate) - (discountAmount + item.gstAmount)).toFixed(2));
-      const dynamicSubTotal = (item.quantity * item.rate - discountAmount);
+      const dynamicSubTotal = item.quantity * item.rate //(item.quantity * item.rate - discountAmount);
 
       return {
         id: 0,
@@ -323,7 +323,7 @@ export class CounterInvoiceService {
       items: itemsToPrint,
       totals: {
         total: totalSum.toFixed(2),
-        subTotal: totals.subTotal.toFixed(2),
+        subTotal: cartItems.reduce((sum, item) => sum + (item.rate * item.quantity), 0).toFixed(2),
         discountPercent: '',
         discount: totals.totalDiscount.toFixed(2),
         sgst: (totals.totalSgst || (totals.totalGst / 2)).toFixed(2),

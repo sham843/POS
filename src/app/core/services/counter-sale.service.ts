@@ -143,9 +143,14 @@ export class CounterSaleService {
   set numpadHasQuickWeight(val: boolean) { this.updateActiveBill({ numpadHasQuickWeight: val }); }
 
   // Computed totals for bill summary
-  subTotal = computed(() => this.cartItems().reduce((acc, item) => acc + item.amount, 0));
+  subTotal = computed(() => this.cartItems().reduce((acc, item) => acc + (item.rate * item.quantity), 0));
   taxableAmount = computed(() => this.cartItems().reduce((acc, item) => acc + item.netAmount, 0));
-  totalDiscount = computed(() => this.subTotal() - this.taxableAmount());
+  totalDiscount = computed(() => this.cartItems().reduce((acc, item) => {
+    const base = item.rate * item.quantity;
+    if ((item.discount || 0) > 0) return acc + (base * item.discount / 100);
+    if ((item.discountRupee || 0) > 0) return acc + (item.discountRupee || 0);
+    return acc;
+  }, 0));
   totalGst = computed(() => this.cartItems().reduce((acc, item) => acc + item.gstAmount, 0));
   totalCgst = computed(() => this.cartItems().reduce((acc, item) => acc + (item.dynamicTaxes?.find(t => t.componentName.includes('CGST'))?.taxAmount || (item.gstAmount / 2)), 0));
   totalSgst = computed(() => this.cartItems().reduce((acc, item) => acc + (item.dynamicTaxes?.find(t => t.componentName.includes('SGST'))?.taxAmount || (item.gstAmount / 2)), 0));
