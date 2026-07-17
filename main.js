@@ -16,13 +16,31 @@ function startLocalServer() {
     server = http.createServer((req, res) => {
       const urlPath = decodeURIComponent(req.url.split('?')[0]);
 
+const https = require('https');
+
       // Handle Proxy request (starts with /api)
       if (urlPath.startsWith('/api/')) {
-        const targetUrlStr = 'https://uatposapi.hitechdairy.in';
+        let targetUrlStr = 'https://demoposapi.hitechdairy.in';
+        try {
+          const configPath = path.join(__dirname, 'dist/POS/browser/assets/config/app-config.json');
+          if (fs.existsSync(configPath)) {
+            const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            if (config.proxyTarget) {
+              targetUrlStr = config.proxyTarget;
+            } else if (config.apiUrl) {
+              // Just in case they put it in apiUrl
+              targetUrlStr = config.apiUrl;
+            }
+          }
+        } catch (e) {
+          console.error('[Proxy] Error reading app-config.json', e);
+        }
+
         const parsedTarget = new URL(targetUrlStr);
+        const requestModule = parsedTarget.protocol === 'https:' ? https : http;
         const options = {
           hostname: parsedTarget.hostname,
-          port: parsedTarget.port || 80,
+          port: parsedTarget.port || (parsedTarget.protocol === 'https:' ? 443 : 80),
           path: req.url,
           method: req.method,
           headers: {
@@ -31,7 +49,7 @@ function startLocalServer() {
           }
         };
 
-        const proxyReq = http.request(options, (proxyRes) => {
+        const proxyReq = requestModule.request(options, (proxyRes) => {
           res.writeHead(proxyRes.statusCode, proxyRes.headers);
           proxyRes.pipe(res, { end: true });
         });

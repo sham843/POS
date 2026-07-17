@@ -1,6 +1,7 @@
 {
   "formFieldAppearance": "outline",
   "apiUrl": "",
+  "proxyTarget": "https://demoposapi.hitechdairy.in",
   "orderSearchDebounceTime": 300,
   "orderDrawerWidth": 800,
   "upcomingOrdersPollingInterval": 60000

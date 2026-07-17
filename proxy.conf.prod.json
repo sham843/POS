@@ -1,8 +1,0 @@
-{
-  "/api": {
-    "target": "https://posapi.hitechdairy.in",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug"
-  }
-}
