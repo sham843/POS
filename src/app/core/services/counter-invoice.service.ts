@@ -147,8 +147,15 @@ export class CounterInvoiceService {
     }
 
     const invoiceDetails = cartItems.map(item => {
-      const discountAmount = parseFloat((item.amount * item.discount / 100).toFixed(2));
-      const gstonAmount = parseFloat(((item.quantity * item.rate) - (discountAmount + item.gstAmount)).toFixed(2));
+      const baseTotal = item.quantity * item.rate;
+      const discountAmount = item.discountRupee || parseFloat((baseTotal * (item.discount || 0) / 100).toFixed(2));
+      const isInclusive = item.isTaxIncluded ?? (item.product as any)?.isTaxInclusive ?? false;
+      const gstonAmount = parseFloat(
+        (isInclusive
+          ? (baseTotal - discountAmount - (item.gstAmount || 0))
+          : (baseTotal - discountAmount)
+        ).toFixed(2)
+      );
       const dynamicSubTotal = item.quantity * item.rate //(item.quantity * item.rate - discountAmount);
 
       return {
@@ -277,8 +284,6 @@ export class CounterInvoiceService {
       }
     }
 
-    console.log(payload);
-    return;
     const endpoint = isUpdate ? 'api/v1/invoice/UpdateSale_V1' : 'api/v1/invoice/Sale_V1';
     return firstValueFrom(this.apiService.post<any>(endpoint, payload));
   }
